@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UBA Automations</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <section id="uba-dashboard">
+    <div class="uba-shell">
+      <aside class="uba-sidebar">
+        <div><div class="uba-logo">MHM <span>UBA</span></div></div>
+        <div class="uba-language"><label for="language-select-top" data-i18n="language.label">Language</label><select id="language-select-top"><option>en</option></select></div>
+        <nav class="uba-nav">
+          <a class="uba-nav-btn" href="index.html">📈 Dashboard</a>
+          <a class="uba-nav-btn" href="clients.html">🧑‍💻 Clients</a>
+          <a class="uba-nav-btn" href="projects.html">💼 Projects</a>
+          <a class="uba-nav-btn" href="tasks.html">✅ Tasks</a>
+          <a class="uba-nav-btn" href="invoices.html">💵 Invoices</a>
+          <a class="uba-nav-btn active" href="automations.html">🤖 Automations</a>
+          <a class="uba-nav-btn" href="calendar.html">📅 Calendar</a>
+          <a class="uba-nav-btn" href="leads.html">🧲 Leads</a>
+          <a class="uba-nav-btn" href="expenses.html">📤 Expenses</a>
+          <a class="uba-nav-btn" href="files.html">📁 Files</a>
+          <a class="uba-nav-btn" href="reports.html">📑 Reports</a>
+          <a class="uba-nav-btn" href="smart-tools.html">🧠 Smart Tools</a>
+          <a class="uba-nav-btn" href="insights.html">📊 Insights</a>
+          <a class="uba-nav-btn" href="success.html">💬 Help</a>
+          <a class="uba-nav-btn" href="settings.html">🛠️ Settings</a>
+        </nav>
+        <div class="uba-sidebar-footer" data-i18n="sidebar.footer"></div>
+      </aside>
+
+      <main class="uba-main">
+        <header class="uba-topbar">
+          <div class="uba-top-left"><p class="uba-top-kicker">Automation</p><h1 id="uba-view-title" data-i18n="view.automations.title">Automations</h1><p id="uba-view-desc" data-i18n="view.automations.desc">Automate repetitive tasks and trigger actions.</p></div>
+          <div class="uba-top-right"><select id="workspace-select" class="uba-select"><option>Main workspace</option></select><div class="uba-user-pill"><span class="uba-avatar"></span><span id="uba-user-label">Admin</span></div></div>
+        </header>
+
+        <div class="uba-views">
+          <section class="uba-view" data-view="automations">
+            <div class="uba-card" style="padding:12px;">
+              <p>No automations yet. Create your first workflow using triggers and actions.</p>
+              <div style="margin-top:12px;"><button class="uba-btn-primary">New automation</button></div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </section>
+
+  <script src="assets/js/i18n.js"></script>
+  <script>if (window.ubaI18n && window.ubaI18n.applyTranslations) window.ubaI18n.applyTranslations(localStorage.getItem('uba-lang')||'en');</script>
+</body>
+</html>

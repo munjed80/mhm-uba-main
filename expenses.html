@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UBA Expenses</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <section id="uba-dashboard">
+    <div class="uba-shell">
+      <aside class="uba-sidebar">
+        <div>
+          <div class="uba-logo">
+            MHM <span>UBA</span>
+          </div>
+          <p class="uba-tagline" data-i18n="app.tagline">Universal Business Automator — one workspace for clients, tasks, invoices and smart tools.</p>
+          <div class="uba-badge"><span class="uba-badge-dot"></span><span data-i18n="app.badge">Private beta · Built in the Netherlands</span></div>
+        </div>
+
+        <div class="uba-language">
+          <label for="language-select" data-i18n="language.label">Language</label>
+          <select id="language-select">
+            <option value="en" data-i18n="language.en">English</option>
+            <option value="ar" data-i18n="language.ar">Arabic</option>
+            <option value="nl" data-i18n="language.nl">Dutch</option>
+            <option value="fr" data-i18n="language.fr">French</option>
+            <option value="es" data-i18n="language.es">Spanish</option>
+            <option value="de" data-i18n="language.de">German</option>
+          </select>
+        </div>
+
+        <div>
+          <div class="uba-nav-label" data-i18n="nav.workspaceLabel">Workspace</div>
+          <nav class="uba-nav">
+            <a class="uba-nav-btn" href="index.html"><span class="icon">📈</span><span data-i18n="nav.dashboard">Dashboard</span><small data-i18n="nav.dashboardSub">Overview</small></a>
+            <a class="uba-nav-btn" href="clients.html"><span class="icon">🧑‍💻</span><span data-i18n="nav.clients">Clients</span><small data-i18n="nav.clientsSub">CRM</small></a>
+            <a class="uba-nav-btn" href="projects.html"><span class="icon">💼</span><span data-i18n="nav.projects">Projects</span><small data-i18n="nav.projectsSub">Pipeline</small></a>
+            <a class="uba-nav-btn" href="tasks.html"><span class="icon">✅</span><span data-i18n="nav.tasks">Tasks</span><small data-i18n="nav.tasksSub">Today</small></a>
+            <a class="uba-nav-btn" href="invoices.html"><span class="icon">💵</span><span data-i18n="nav.invoices">Invoices</span><small data-i18n="nav.invoicesSub">Billing</small></a>
+            <a class="uba-nav-btn" href="automations.html"><span class="icon">🤖</span><span data-i18n="nav.automations">Automations</span><small data-i18n="nav.automationsSub">Flows</small></a>
+            <a class="uba-nav-btn" href="calendar.html"><span class="icon">📅</span><span>Calendar</span></a>
+            <a class="uba-nav-btn" href="leads.html"><span class="icon">🧲</span><span>Leads</span></a>
+            <a class="uba-nav-btn active" href="expenses.html"><span class="icon">📤</span><span>Expenses</span></a>
+            <a class="uba-nav-btn" href="files.html"><span class="icon">📁</span><span>Files</span></a>
+            <a class="uba-nav-btn" href="reports.html"><span class="icon">📑</span><span>Reports</span></a>
+            <a class="uba-nav-btn" href="smart-tools.html"><span class="icon">🧠</span><span data-i18n="nav.smartTools">UBA Smart Tools</span><small data-i18n="nav.smartToolsSub">AI ops</small></a>
+            <a class="uba-nav-btn" href="insights.html"><span class="icon">📊</span><span data-i18n="nav.insights">Insights Lab</span><small data-i18n="nav.insightsSub">Reports</small></a>
+            <a class="uba-nav-btn" href="help.html"><span class="icon">💬</span><span data-i18n="nav.support">Success Desk</span><small data-i18n="nav.supportSub">Guidance</small></a>
+            <a class="uba-nav-btn" href="settings.html"><span class="icon">🛠️</span><span data-i18n="nav.settings">Settings</span><small data-i18n="nav.settingsSub">Workspace</small></a>
+          </nav>
+        </div>
+        <div class="uba-sidebar-footer" data-i18n="sidebar.footer">Designed for small teams and solo founders who are tired of 7 different tools just to run one business.</div>
+      </aside>
+
+      <main class="uba-main">
+        <header class="uba-topbar">
+          <div class="uba-top-left">
+            <p class="uba-top-kicker">Finance</p>
+            <h1 id="uba-view-title">Expenses</h1>
+            <p id="uba-view-desc">Track expenses and statuses.</p>
+          </div>
+          <div class="uba-top-right">
+            <div class="uba-pill">Month: Nov 2025</div>
+          </div>
+        </header>
+
+        <div class="uba-views">
+          <section class="uba-view" data-view="expenses">
+            <div class="uba-grid">
+              <div class="uba-grid-col">
+                <section class="uba-card">
+                  <div class="uba-card-header">
+                    <div>
+                      <div class="uba-card-title">Expenses</div>
+                      <p class="uba-card-sub">Overview of recent expenses</p>
+                    </div>
+                    <span class="uba-pill" id="expenses-total">Total</span>
+                  </div>
+
+                  <div style="padding:12px;">
+                    <div style="display:flex;gap:8px;margin-bottom:10px;">
+                      <div class="uba-card" style="padding:8px;min-width:160px;"><div class="uba-card-title" style="font-size:14px">This month</div><div id="expenses-this-month" style="font-weight:700">€0</div></div>
+                      <div class="uba-card" style="padding:8px;min-width:160px;"><div class="uba-card-title" style="font-size:14px">Top categories</div><ul id="expenses-cats" style="margin:6px 0 0;padding-left:16px;color:var(--muted)"></ul></div>
+                    </div>
+
+                    <div class="uba-table-wrap">
+                      <table class="uba-table">
+                        <thead>
+                          <tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th><th>Status</th></tr>
+                        </thead>
+                        <tbody id="expenses-body"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </section>
+
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script>
+    (function(){
+      const store = window.ubaStore;
+
+      const render = () => {
+        const expenses = (store && store.expenses.getAll()) || window.ubaExpenses || [];
+        const thisMonth = expenses.filter(e=>e.date && e.date.startsWith(new Date().getFullYear()+'-'+String(new Date().getMonth()+1).padStart(2,'0')));
+        const total = thisMonth.reduce((s,e)=>s+Number(e.amount||0),0);
+        document.getElementById('expenses-this-month').textContent = `€ ${total.toFixed(2)}`;
+        // top categories
+        const cats = {};
+        thisMonth.forEach(e=>cats[e.category]=(cats[e.category]||0)+Number(e.amount||0));
+        const sorted = Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,3);
+        const ul = document.getElementById('expenses-cats'); ul.innerHTML = '';
+        sorted.forEach(s=>{ const li=document.createElement('li'); li.textContent = `${s[0]} — € ${s[1].toFixed(2)}`; ul.appendChild(li); });
+
+        const body = document.getElementById('expenses-body'); body.innerHTML = '';
+        expenses.forEach(e=>{
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${e.date}</td><td>${e.category}</td><td>${e.desc}</td><td>€ ${Number(e.amount||0).toFixed(2)}</td><td>${e.status}</td>`;
+          const actions = document.createElement('td');
+          actions.innerHTML = '';
+          const edit = document.createElement('button'); edit.type='button'; edit.className='uba-btn-link'; edit.textContent='Edit';
+          edit.addEventListener('click', ()=>{
+            const date = prompt('Date (YYYY-MM-DD)', e.date)||e.date;
+            const category = prompt('Category', e.category)||e.category;
+            const desc = prompt('Description', e.desc)||e.desc;
+            const amount = Number(prompt('Amount', e.amount)||e.amount)||0;
+            const status = prompt('Status', e.status)||e.status;
+            if (store && store.expenses) store.expenses.update(e.id, { date, category, desc, amount, status });
+            render();
+          });
+          const del = document.createElement('button'); del.type='button'; del.className='uba-btn-link'; del.textContent='Delete';
+          del.addEventListener('click', ()=>{ if(!confirm('Delete expense?')) return; if(store && store.expenses) store.expenses.delete(e.id); render(); });
+          const tdActions = document.createElement('td'); tdActions.appendChild(edit); tdActions.appendChild(del);
+          tr.appendChild(tdActions);
+          body.appendChild(tr);
+        });
+      };
+
+      // insert simple add form
+      const header = document.querySelector('.uba-card-header');
+      if (header) {
+        const bar = document.createElement('div'); bar.style.display='flex'; bar.style.gap='8px'; bar.style.marginTop='8px';
+        bar.innerHTML = `<input id="exp-date" type="date" style="width:160px;"/><input id="exp-cat" placeholder="Category" style="flex:1;"/><input id="exp-desc" placeholder="Description" style="flex:1;"/><input id="exp-amount" placeholder="Amount" style="width:120px;"/><select id="exp-status"><option value="paid">Paid</option><option value="pending">Pending</option></select><button id="exp-add" class="uba-btn-primary">Add</button>`;
+        header.appendChild(bar);
+        document.getElementById('exp-add').addEventListener('click', ()=>{
+          const date = document.getElementById('exp-date').value || new Date().toISOString().slice(0,10);
+          const category = document.getElementById('exp-cat').value.trim()||'Misc';
+          const desc = document.getElementById('exp-desc').value.trim()||'';
+          const amount = Number(document.getElementById('exp-amount').value)||0;
+          const status = document.getElementById('exp-status').value;
+          if (!date) { alert('Date required'); return; }
+          if (store && store.expenses) store.expenses.create({ date, category, desc, amount, status });
+          render();
+          document.getElementById('exp-date').value=''; document.getElementById('exp-cat').value=''; document.getElementById('exp-desc').value=''; document.getElementById('exp-amount').value='';
+        });
+      }
+
+      render();
+      if (window.ubaI18n && window.ubaI18n.applyTranslations) window.ubaI18n.applyTranslations(localStorage.getItem('uba-lang')||'en');
+    })();
+  </script>
+</body>
+</html>

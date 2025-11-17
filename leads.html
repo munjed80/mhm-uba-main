@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UBA Leads</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <section id="uba-dashboard">
+    <div class="uba-shell">
+      <aside class="uba-sidebar">
+        <div>
+          <div class="uba-logo">MHM <span>UBA</span></div>
+          <p class="uba-tagline" data-i18n="app.tagline">Universal Business Automator — one workspace for clients, tasks, invoices and smart tools.</p>
+          <div class="uba-badge"><span class="uba-badge-dot"></span><span data-i18n="app.badge">Private beta · Built in the Netherlands</span></div>
+        </div>
+
+        <div class="uba-language">
+          <label for="language-select" data-i18n="language.label">Language</label>
+          <select id="language-select">
+            <option value="en" data-i18n="language.en">English</option>
+            <option value="ar" data-i18n="language.ar">Arabic</option>
+            <option value="nl" data-i18n="language.nl">Dutch</option>
+            <option value="fr" data-i18n="language.fr">French</option>
+            <option value="es" data-i18n="language.es">Spanish</option>
+            <option value="de" data-i18n="language.de">German</option>
+          </select>
+        </div>
+
+        <div>
+          <div class="uba-nav-label" data-i18n="nav.workspaceLabel">Workspace</div>
+          <nav class="uba-nav">
+            <a class="uba-nav-btn" href="index.html"><span class="icon">📈</span><span data-i18n="nav.dashboard">Dashboard</span><small data-i18n="nav.dashboardSub">Overview</small></a>
+            <a class="uba-nav-btn active" href="leads.html"><span class="icon">🧲</span><span>Leads</span></a>
+            <a class="uba-nav-btn" href="clients.html"><span class="icon">🧑‍💻</span><span data-i18n="nav.clients">Clients</span><small data-i18n="nav.clientsSub">CRM</small></a>
+            <a class="uba-nav-btn" href="projects.html"><span class="icon">💼</span><span data-i18n="nav.projects">Projects</span><small data-i18n="nav.projectsSub">Pipeline</small></a>
+            <a class="uba-nav-btn" href="reports.html"><span class="icon">📑</span><span>Reports</span></a>
+            <a class="uba-nav-btn" href="smart-tools.html"><span class="icon">🧠</span><span data-i18n="nav.smartTools">UBA Smart Tools</span><small data-i18n="nav.smartToolsSub">AI ops</small></a>
+            <a class="uba-nav-btn" href="insights.html"><span class="icon">📊</span><span data-i18n="nav.insights">Insights Lab</span><small data-i18n="nav.insightsSub">Reports</small></a>
+            <a class="uba-nav-btn" href="help.html"><span class="icon">💬</span><span data-i18n="nav.support">Success Desk</span><small data-i18n="nav.supportSub">Guidance</small></a>
+            <a class="uba-nav-btn" href="tasks.html"><span class="icon">✅</span><span data-i18n="nav.tasks">Tasks</span><small data-i18n="nav.tasksSub">Today</small></a>
+            <a class="uba-nav-btn" href="invoices.html"><span class="icon">💵</span><span data-i18n="nav.invoices">Invoices</span><small data-i18n="nav.invoicesSub">Billing</small></a>
+            <a class="uba-nav-btn" href="calendar.html"><span class="icon">📅</span><span>Calendar</span></a>
+            <a class="uba-nav-btn" href="expenses.html"><span class="icon">📤</span><span>Expenses</span></a>
+            <a class="uba-nav-btn" href="files.html"><span class="icon">📁</span><span>Files</span></a>
+            <a class="uba-nav-btn" href="settings.html"><span class="icon">🛠️</span><span data-i18n="nav.settings">Settings</span><small data-i18n="nav.settingsSub">Workspace</small></a>
+          </nav>
+        </div>
+        <div class="uba-sidebar-footer" data-i18n="sidebar.footer">Designed for small teams and solo founders who are tired of 7 different tools just to run one business.</div>
+      </aside>
+
+      <main class="uba-main">
+        <header class="uba-topbar">
+          <div class="uba-top-left">
+            <p class="uba-top-kicker">Sales</p>
+            <h1 id="uba-view-title">Leads</h1>
+            <p id="uba-view-desc">Sales pipeline and lead management.</p>
+          </div>
+          <div class="uba-top-right">
+            <div class="uba-pill">Total: <span id="leads-count">0</span></div>
+            <div style="margin-left:8px;">Value: <strong id="leads-value">€0</strong></div>
+          </div>
+        </header>
+
+        <div class="uba-views">
+          <section class="uba-view" data-view="leads">
+            <div class="uba-card">
+              <div class="uba-card-header">
+                <div>
+                  <div class="uba-card-title">Leads</div>
+                  <p class="uba-card-sub">Pipeline board</p>
+                </div>
+              </div>
+
+              <div class="uba-leads-board" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:12px;">
+                <div class="uba-card" id="col-new"><h4>New</h4><div class="col-body"></div></div>
+                <div class="uba-card" id="col-contacted"><h4>Contacted</h4><div class="col-body"></div></div>
+                <div class="uba-card" id="col-qualified"><h4>Qualified</h4><div class="col-body"></div></div>
+                <div class="uba-card" id="col-wonlost"><h4>Won / Lost</h4><div class="col-body"></div></div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </section>
+
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/store.js"></script>
+  <script>
+    (function(){
+      const store = window.ubaStore;
+
+      const render = () => {
+        const leads = (store && store.leads.getAll()) || window.ubaLeads || [];
+        const mapping = { new: '#col-new .col-body', contacted: '#col-contacted .col-body', qualified: '#col-qualified .col-body', lost: '#col-wonlost .col-body', won: '#col-wonlost .col-body' };
+        const counts = { total: leads.length, value: leads.reduce((s,l)=>s+(l.value||0),0) };
+        document.getElementById('leads-count').textContent = counts.total;
+        document.getElementById('leads-value').textContent = `€ ${counts.value.toLocaleString()}`;
+
+        // clear columns
+        Object.values(mapping).forEach(sel => { const el = document.querySelector(sel); if (el) el.innerHTML = ''; });
+
+        leads.forEach(l => {
+          const card = document.createElement('div');
+          card.className = 'uba-support-card';
+          card.style.marginBottom = '8px';
+          card.innerHTML = `<div style="width:36px;">${l.value? '€'+(l.value/1000)+'k':''}</div><div><h4 style="margin:0">${l.name}</h4><div style="font-size:13px;color:var(--muted)">${l.company}</div><div style="margin-top:6px;"><span class="uba-pill" style="padding:4px 8px">${l.status}</span></div></div>`;
+
+          const actions = document.createElement('div');
+          actions.style.marginTop = '8px';
+          const edit = document.createElement('button');
+          edit.type = 'button'; edit.className = 'uba-btn-link'; edit.textContent = 'Edit';
+          edit.addEventListener('click', () => {
+            const name = prompt('Name', l.name) || l.name;
+            const company = prompt('Company', l.company) || l.company;
+            const value = Number(prompt('Value', l.value) || l.value) || 0;
+            const status = prompt('Status (new/contacted/qualified/lost)', l.status) || l.status;
+            if (store && store.leads) store.leads.update(l.id, { name, company, value, status });
+            render();
+          });
+
+          const del = document.createElement('button');
+          del.type = 'button'; del.className = 'uba-btn-link'; del.textContent = 'Delete';
+          del.addEventListener('click', () => {
+            if (!confirm('Delete lead?')) return;
+            if (store && store.leads) store.leads.delete(l.id);
+            render();
+          });
+
+          actions.appendChild(edit); actions.appendChild(del);
+          card.appendChild(actions);
+
+          const selector = l.status === 'new' ? mapping.new : (l.status === 'contacted' ? mapping.contacted : (l.status === 'qualified' ? mapping.qualified : mapping.lost));
+          const target = document.querySelector(selector);
+          if (target) target.appendChild(card);
+        });
+      };
+
+      // Add simple inline add form above the board
+      const header = document.querySelector('.uba-card-header');
+      if (header) {
+        const addBar = document.createElement('div');
+        addBar.style.display = 'flex'; addBar.style.gap = '8px'; addBar.style.marginTop = '8px';
+        addBar.innerHTML = `<input id="lead-name" placeholder="Name" style="flex:1;"/><input id="lead-company" placeholder="Company" style="flex:1;"/><input id="lead-value" placeholder="Value" style="width:120px;"/><select id="lead-status"><option value="new">New</option><option value="contacted">Contacted</option><option value="qualified">Qualified</option><option value="lost">Lost</option></select><button id="lead-add" class="uba-btn-primary">Add lead</button>`;
+        header.appendChild(addBar);
+        const addBtn = addBar.querySelector('#lead-add');
+        addBtn.addEventListener('click', () => {
+          const name = (document.getElementById('lead-name').value || '').trim();
+          if (!name) { alert('Name required'); return; }
+          const company = document.getElementById('lead-company').value.trim();
+          const value = Number(document.getElementById('lead-value').value) || 0;
+          const status = document.getElementById('lead-status').value;
+          if (store && store.leads) store.leads.create({ name, company, value, status });
+          document.getElementById('lead-name').value=''; document.getElementById('lead-company').value=''; document.getElementById('lead-value').value='';
+          render();
+        });
+      }
+
+      render();
+      if (window.ubaI18n && window.ubaI18n.applyTranslations) window.ubaI18n.applyTranslations(localStorage.getItem('uba-lang')||'en');
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UBA Clients</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <section id="uba-dashboard">
+    <div class="uba-shell">
+      <aside class="uba-sidebar">
+        <div>
+          <div class="uba-logo">
+            MHM <span>UBA</span>
+          </div>
+          <p class="uba-tagline" data-i18n="app.tagline">
+            Universal Business Automator — one workspace for clients, tasks, invoices and smart tools.
+          </p>
+          <div class="uba-badge">
+            <span class="uba-badge-dot"></span>
+            <span data-i18n="app.badge">Private beta · Built in the Netherlands</span>
+          </div>
+        </div>
+
+        <div class="uba-language">
+          <label for="language-select" data-i18n="language.label">Language</label>
+          <select id="language-select">
+            <option value="en" data-i18n="language.en">English</option>
+            <option value="ar" data-i18n="language.ar">Arabic</option>
+            <option value="nl" data-i18n="language.nl">Dutch</option>
+            <option value="fr" data-i18n="language.fr">French</option>
+            <option value="es" data-i18n="language.es">Spanish</option>
+            <option value="de" data-i18n="language.de">German</option>
+          </select>
+        </div>
+
+        <div>
+          <div class="uba-nav-label" data-i18n="nav.workspaceLabel">Workspace</div>
+          <nav class="uba-nav">
+            <a class="uba-nav-btn" href="index.html">
+              <span class="icon">📈</span>
+              <span data-i18n="nav.dashboard">Dashboard</span>
+              <small data-i18n="nav.dashboardSub">Overview</small>
+            </a>
+            <a class="uba-nav-btn active" href="clients.html">
+              <span class="icon">🧑‍💻</span>
+              <span data-i18n="nav.clients">Clients</span>
+              <small data-i18n="nav.clientsSub">CRM</small>
+            </a>
+            <a class="uba-nav-btn" href="projects.html">
+              <span class="icon">💼</span>
+              <span data-i18n="nav.projects">Projects</span>
+              <small data-i18n="nav.projectsSub">Pipeline</small>
+            </a>
+            <a class="uba-nav-btn" href="tasks.html">
+              <span class="icon">✅</span>
+              <span data-i18n="nav.tasks">Tasks</span>
+              <small data-i18n="nav.tasksSub">Today</small>
+            </a>
+            <a class="uba-nav-btn" href="invoices.html">
+              <span class="icon">💵</span>
+              <span data-i18n="nav.invoices">Invoices</span>
+              <small data-i18n="nav.invoicesSub">Billing</small>
+            </a>
+            <a class="uba-nav-btn" href="automations.html">
+              <span class="icon">🤖</span>
+              <span data-i18n="nav.automations">Automations</span>
+              <small data-i18n="nav.automationsSub">Flows</small>
+            </a>
+            <a class="uba-nav-btn" href="calendar.html">
+              <span class="icon">📅</span>
+              <span>Calendar</span>
+            </a>
+            <a class="uba-nav-btn" href="leads.html">
+              <span class="icon">🧲</span>
+              <span>Leads</span>
+            </a>
+            <a class="uba-nav-btn" href="expenses.html">
+              <span class="icon">📤</span>
+              <span>Expenses</span>
+            </a>
+            <a class="uba-nav-btn" href="files.html">
+              <span class="icon">📁</span>
+              <span>Files</span>
+            </a>
+            <a class="uba-nav-btn" href="reports.html">
+              <span class="icon">📑</span>
+              <span>Reports</span>
+            </a>
+            <a class="uba-nav-btn" href="smart-tools.html">
+              <span class="icon">🧠</span>
+              <span data-i18n="nav.smartTools">UBA Smart Tools</span>
+              <small data-i18n="nav.smartToolsSub">AI ops</small>
+            </a>
+            <a class="uba-nav-btn" href="insights.html">
+              <span class="icon">📊</span>
+              <span data-i18n="nav.insights">Insights Lab</span>
+              <small data-i18n="nav.insightsSub">Reports</small>
+            </a>
+            <a class="uba-nav-btn" href="help.html">
+              <span class="icon">💬</span>
+              <span data-i18n="nav.support">Success Desk</span>
+              <small data-i18n="nav.supportSub">Guidance</small>
+            </a>
+            <a class="uba-nav-btn" href="settings.html">
+              <span class="icon">🛠️</span>
+              <span data-i18n="nav.settings">Settings</span>
+              <small data-i18n="nav.settingsSub">Workspace</small>
+            </a>
+          </nav>
+        </div>
+
+        <div class="uba-sidebar-footer" data-i18n="sidebar.footer">
+          Designed for small teams and solo founders who are tired of 7 different tools just to run one business.
+        </div>
+      </aside>
+
+      <main class="uba-main">
+        <header class="uba-topbar">
+          <div class="uba-top-left">
+            <p class="uba-top-kicker" data-i18n="view.clients.title">Clients</p>
+            <h1 id="uba-view-title" data-i18n="view.clients.title">Clients</h1>
+            <p id="uba-view-desc" data-i18n="view.clients.desc">Local CRM board with quick add, edit, and delete.</p>
+          </div>
+          <div class="uba-top-right">
+            <div class="uba-language"><label for="language-select-top">Lang</label></div>
+            <select id="workspace-select" class="uba-select"><option>Main workspace</option></select>
+            <div class="uba-user-pill"><span class="uba-avatar"></span><span id="uba-user-label">Admin</span></div>
+          </div>
+        </header>
+
+        <div class="uba-views">
+          <section class="uba-view" data-view="clients">
+            <div class="uba-grid">
+              <div class="uba-grid-col">
+                <section class="uba-card">
+                  <div class="uba-card-header">
+                    <div>
+                      <div class="uba-card-title" data-i18n="view.clients.title">Clients</div>
+                      <p class="uba-card-sub" data-i18n="view.clients.desc">Manage contacts and CRM data.</p>
+                    </div>
+                    <span class="uba-pill" data-i18n="view.clients.badge">Local CRM</span>
+                  </div>
+
+                  <div style="padding:12px;">
+                    <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;">
+                      <input type="search" id="clients-search" placeholder="Search clients" style="flex:1;" />
+                      <button class="uba-btn-primary">New client</button>
+                    </div>
+
+                    <div class="uba-table-wrap">
+                      <table class="uba-table">
+                        <thead><tr><th data-i18n="table.name">Name</th><th data-i18n="table.company">Company</th><th data-i18n="table.email">Email</th><th>Last activity</th><th data-i18n="table.actions">Actions</th></tr></thead>
+                        <tbody id="clients-body"><tr><td colspan="5">Loading…</td></tr></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </section>
+              </div>
+
+              <div class="uba-grid-col">
+                <section class="uba-card">
+                  <div class="uba-card-header"><div><div class="uba-card-title">Client details</div><p class="uba-card-sub">Select a client to view details or create a new client.</p></div></div>
+                  <div style="padding:12px;">Placeholder for client details and edit form.</div>
+                </section>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </section>
+
+  <script src="assets/js/i18n.js"></script>
+  <script>
+    if (window.ubaI18n && window.ubaI18n.applyTranslations) window.ubaI18n.applyTranslations(localStorage.getItem('uba-lang')||'en');
+  </script>
+</body>
+</html>
