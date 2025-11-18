@@ -45,7 +45,7 @@
 
         <div>
           <div class="uba-nav-label" data-i18n="nav.workspaceLabel">Workspace</div>
-          <nav class="uba-nav">
+          <nav class="uba-nav" role="navigation" aria-label="Workspace navigation">
             <button class="uba-nav-btn active" data-section="dashboard">
               <span class="icon">📈</span>
               <span data-i18n="nav.dashboard">Dashboard</span>
@@ -932,7 +932,10 @@
 
                     <div class="uba-form-row">
                       <button type="submit" class="uba-btn-primary" data-i18n="settings.workspace.save">Save preferences</button>
-                      <span id="settings-status" class="uba-chip soft" aria-live="polite" data-i18n="settings.workspace.status">Unsaved</span>
+                        <span id="settings-status" class="uba-chip soft" aria-live="polite" data-i18n="settings.workspace.status">Unsaved</span>
+                        <button id="reset-demo-data" type="button" class="uba-btn-ghost" style="margin-left:8px;">
+                          <span data-i18n="settings.resetDemo">Reset demo data</span>
+                        </button>
                     </div>
                   </form>
                 </section>

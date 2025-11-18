@@ -151,15 +151,20 @@
         bar.innerHTML = `<input id="exp-date" type="date" style="width:160px;"/><input id="exp-cat" placeholder="Category" style="flex:1;"/><input id="exp-desc" placeholder="Description" style="flex:1;"/><input id="exp-amount" placeholder="Amount" style="width:120px;"/><select id="exp-status"><option value="paid">Paid</option><option value="pending">Pending</option></select><button id="exp-add" class="uba-btn-primary">Add</button>`;
         header.appendChild(bar);
         document.getElementById('exp-add').addEventListener('click', ()=>{
-          const date = document.getElementById('exp-date').value || new Date().toISOString().slice(0,10);
-          const category = document.getElementById('exp-cat').value.trim()||'Misc';
+          const dateEl = document.getElementById('exp-date');
+          const date = dateEl.value || new Date().toISOString().slice(0,10);
+          const categoryEl = document.getElementById('exp-cat');
+          const category = categoryEl.value.trim()||'Misc';
           const desc = document.getElementById('exp-desc').value.trim()||'';
-          const amount = Number(document.getElementById('exp-amount').value)||0;
+          const amountEl = document.getElementById('exp-amount');
+          const amount = Number(amountEl.value)||0;
           const status = document.getElementById('exp-status').value;
-          if (!date) { alert('Date required'); return; }
-          if (store && store.expenses) store.expenses.create({ date, category, desc, amount, status });
+          if (!date) { dateEl.focus(); alert('Date required'); return; }
+          if (Number.isNaN(amount) || amount <= 0) { amountEl.focus(); alert('Amount must be a positive number'); return; }
+          if (store && store.expenses) store.expenses.create({ id: 'exp-'+Date.now(), date, category, desc, amount, status });
           render();
           document.getElementById('exp-date').value=''; document.getElementById('exp-cat').value=''; document.getElementById('exp-desc').value=''; document.getElementById('exp-amount').value='';
+          if (window.showToast) window.showToast(t('expenses.added','Expense added'));
         });
       }
 

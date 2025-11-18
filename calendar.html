@@ -150,13 +150,51 @@
   </section>
 
   <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/store.js"></script>
   <script src="assets/js/uba-pages-data.js"></script>
   <script src="assets/js/assistant.js"></script>
   <script>
     (function () {
       // Simple month grid for November 2025 (start on Sunday)
       const grid = document.getElementById('calendar-grid');
-      const events = window.ubaCalendarEvents || [];
+      const store = window.ubaStore;
+
+      // Aggregate events from local store: invoices (due), tasks (due), projects (items with due)
+      const events = [];
+
+      try {
+        if (store && store.invoices && store.invoices.getAll) {
+          const invs = store.invoices.getAll() || [];
+          invs.forEach(i => {
+            if (i.due) events.push({ id: `inv-${i.id}`, date: i.due, type: 'invoice', title: `${i.label || 'Invoice'} — ${i.client || ''}`, time: i.time || '' });
+          });
+        }
+
+        if (store && store.tasks && store.tasks.getAll) {
+          const tasksRaw = store.tasks.getAll() || [];
+          // board-style (columns) or flat list
+          if (Array.isArray(tasksRaw) && tasksRaw.length && tasksRaw[0].tasks) {
+            tasksRaw.forEach(col => (col.tasks || []).forEach(t => { if (t.due && /^\d{4}-\d{2}-\d{2}/.test(t.due)) events.push({ id: `task-${t.id}`, date: t.due, type: 'project', title: t.title, time: t.time || '' }); }));
+          } else if (Array.isArray(tasksRaw)) {
+            tasksRaw.forEach(t => { if (t.due && /^\d{4}-\d{2}-\d{2}/.test(t.due)) events.push({ id: `task-${t.id}`, date: t.due, type: 'project', title: t.title, time: t.time || '' }); });
+          }
+        }
+
+        if (store && store.projects && store.projects.getAll) {
+          const projectsRaw = store.projects.getAll() || [];
+          // stages with items
+          if (Array.isArray(projectsRaw)) {
+            projectsRaw.forEach(stage => { (stage.items || []).forEach(it => { if (it.due || it.date) { const d = it.due || it.date; if (/^\d{4}-\d{2}-\d{2}/.test(d)) events.push({ id: `proj-${it.id}`, date: d, type: 'project', title: it.name || it.title || 'Project milestone', time: it.time || '' }); } }); });
+          }
+        }
+
+        // fallback demo events appended last
+        if (window.ubaCalendarEvents && Array.isArray(window.ubaCalendarEvents)) {
+          window.ubaCalendarEvents.forEach(e => events.push(e));
+        }
+      } catch (e) {
+        console.warn('calendar aggregate error', e);
+      }
       const filterButtons = document.querySelectorAll('[data-filter]');
       let currentFilter = 'all';
 

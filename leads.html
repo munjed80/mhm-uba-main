@@ -147,14 +147,16 @@
         header.appendChild(addBar);
         const addBtn = addBar.querySelector('#lead-add');
         addBtn.addEventListener('click', () => {
-          const name = (document.getElementById('lead-name').value || '').trim();
-          if (!name) { alert('Name required'); return; }
+          const nameEl = document.getElementById('lead-name');
+          const name = (nameEl.value || '').trim();
+          if (!name) { nameEl.focus(); alert('Name required'); return; }
           const company = document.getElementById('lead-company').value.trim();
           const value = Number(document.getElementById('lead-value').value) || 0;
           const status = document.getElementById('lead-status').value;
-          if (store && store.leads) store.leads.create({ name, company, value, status });
+          if (store && store.leads) store.leads.create({ id: 'lead-'+Date.now(), name, company, value, status });
           document.getElementById('lead-name').value=''; document.getElementById('lead-company').value=''; document.getElementById('lead-value').value='';
           render();
+          if (window.showToast) window.showToast(t('leads.added','Lead added'));
         });
       }
 

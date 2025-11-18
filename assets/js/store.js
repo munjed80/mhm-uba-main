@@ -12,6 +12,8 @@
     leads: "uba-local-leads",
     expenses: "uba-local-expenses",
     files: "uba-local-files",
+    reports: "uba-local-reports",
+    settings: "uba-settings",
   };
 
   const read = (key) => {
@@ -42,9 +44,47 @@
 
   const nowISO = () => new Date().toISOString();
 
+  // Session (current user + workspace) persisted in localStorage
+  const SESSION_KEY = `${PREFIX}session`;
+  const USERS_KEY = `${PREFIX}users`;
+  const WORKSPACES_KEY = `${PREFIX}workspaces`;
+
+  const readJSON = (k, fallback) => {
+    try {
+      const raw = localStorage.getItem(k);
+      if (!raw) return fallback;
+      return JSON.parse(raw);
+    } catch (e) {
+      return fallback;
+    }
+  };
+
+  const saveJSON = (k, v) => {
+    try {
+      localStorage.setItem(k, JSON.stringify(v));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  };
+
+  const getSession = () => readJSON(SESSION_KEY, null);
+  const setSession = (obj) => saveJSON(SESSION_KEY, obj);
+  const clearSession = () => localStorage.removeItem(SESSION_KEY);
+
+  // Helper: resolve storage key for a collection, scoped to user+workspace when session exists
+  const resolveStorageKey = (name) => {
+    const session = getSession();
+    if (session && session.userId && session.workspaceId) {
+      return `${PREFIX}${session.userId}_${session.workspaceId}_${name}`;
+    }
+    // fallback to global KEYS map or prefixed name
+    return KEYS[name] || `${PREFIX}${name}`;
+  };
+
   // Generic collection API
-  const loadCollection = (name) => read(KEYS[name] || name);
-  const saveCollection = (name, items) => write(KEYS[name] || name, items);
+  const loadCollection = (name) => read(resolveStorageKey(name));
+  const saveCollection = (name, items) => write(resolveStorageKey(name), items);
 
   // CRUD factories
   const makeHelpers = (name) => ({
@@ -91,11 +131,127 @@
   // Provide seeds for first-run demo data
   const ensureSeed = (name, seed) => {
     const items = loadCollection(name);
-    if (!items || items.length === 0) {
-      saveCollection(name, seed || []);
+    if (!items || (Array.isArray(items) && items.length === 0)) {
+      saveCollection(name, Array.isArray(seed) ? seed : seed || []);
       return loadCollection(name);
     }
     return items;
+  };
+
+  // ------------------
+  // Auth & workspace helpers
+  // ------------------
+  const getAllUsers = () => readJSON(USERS_KEY, []);
+  const saveAllUsers = (u) => saveJSON(USERS_KEY, u || []);
+  const getAllWorkspaces = () => readJSON(WORKSPACES_KEY, []);
+  const saveAllWorkspaces = (w) => saveJSON(WORKSPACES_KEY, w || []);
+
+  const auth = {
+    createUser({ name, email, password, language } = {}) {
+      if (!email) throw new Error('Email required');
+      const users = getAllUsers();
+      if (users.find(u => u.email === email)) throw new Error('User exists');
+      const id = generateId('user');
+      const user = { id, name: name || '', email, password: password || '', language: language || 'en', createdAt: nowISO() };
+      users.push(user);
+      saveAllUsers(users);
+      return user;
+    },
+    getUserByEmail(email) {
+      if (!email) return null;
+      const users = getAllUsers();
+      return users.find(u => u.email === email) || null;
+    },
+    login(email, password) {
+      const user = auth.getUserByEmail(email);
+      if (!user) throw new Error('No such user');
+      if (user.password !== password) throw new Error('Invalid credentials');
+      // choose a workspace for the user or create a default one
+      const workspaces = getAllWorkspaces();
+      let ws = workspaces.find(w => w.ownerId === user.id);
+      if (!ws) {
+        ws = { id: generateId('ws'), ownerId: user.id, name: `${user.name || 'Workspace'}`, meta: { timezone: 'UTC', industry: '' }, createdAt: nowISO() };
+        workspaces.push(ws);
+        saveAllWorkspaces(workspaces);
+      }
+      const session = { userId: user.id, workspaceId: ws.id };
+      setSession(session);
+      return { user, workspace: ws };
+    },
+    logout() {
+      clearSession();
+    },
+    currentUser() {
+      const s = getSession();
+      if (!s || !s.userId) return null;
+      const users = getAllUsers();
+      return users.find(u => u.id === s.userId) || null;
+    },
+    setCurrentUserById(userId) {
+      const s = getSession() || {};
+      s.userId = userId;
+      setSession(s);
+    }
+    ,
+    updateUser(userId, patch = {}) {
+      const users = getAllUsers();
+      let found = false;
+      const next = users.map(u => {
+        if (u.id === userId) {
+          found = true;
+          return { ...u, ...patch, updatedAt: nowISO() };
+        }
+        return u;
+      });
+      if (found) {
+        saveAllUsers(next);
+        return next.find(u => u.id === userId) || null;
+      }
+      return null;
+    }
+  };
+
+  const workspace = {
+    createWorkspace({ name, ownerId, meta } = {}) {
+      const w = { id: generateId('ws'), ownerId: ownerId || null, name: name || 'Workspace', meta: meta || { timezone: 'UTC' }, createdAt: nowISO() };
+      const all = getAllWorkspaces();
+      all.push(w);
+      saveAllWorkspaces(all);
+      return w;
+    },
+    listForUser(userId) {
+      const all = getAllWorkspaces();
+      return all.filter(w => w.ownerId === userId);
+    },
+    getCurrentWorkspace() {
+      const s = getSession();
+      if (!s || !s.workspaceId) return null;
+      return getAllWorkspaces().find(w => w.id === s.workspaceId) || null;
+    },
+    setCurrentWorkspace(workspaceId) {
+      const s = getSession() || {};
+      s.workspaceId = workspaceId;
+      setSession(s);
+    }
+    ,
+    updateWorkspace(workspaceId, patch = {}) {
+      const all = getAllWorkspaces();
+      let found = false;
+      const next = all.map(w => {
+        if (w.id === workspaceId) {
+          found = true;
+          // merge meta object carefully
+          const nextMeta = { ...(w.meta || {}), ...(patch.meta || {}) };
+          return { ...w, ...patch, meta: nextMeta, updatedAt: nowISO() };
+        }
+        return w;
+      });
+      if (found) {
+        saveAllWorkspaces(next);
+        return next.find(w => w.id === workspaceId) || null;
+      }
+      return null;
+    }
   };
 
   const store = {
@@ -111,6 +267,15 @@
     leads: makeHelpers("leads"),
     expenses: makeHelpers("expenses"),
     files: makeHelpers("files"),
+    auth,
+    workspace,
+    _internal: {
+      getSession,
+      setSession,
+      clearSession,
+      getAllUsers,
+      getAllWorkspaces,
+    },
   };
 
   window.ubaStore = store;

@@ -120,11 +120,18 @@
 
     // Wire events
     fab.addEventListener("click", () => openAssistant());
-    document.getElementById("uba-assistant-close").addEventListener("click", () => closeAssistant());
+    const closeBtn = document.getElementById("uba-assistant-close");
+    if (closeBtn) closeBtn.addEventListener("click", () => closeAssistant());
 
-    document.getElementById("uba-assistant-send").addEventListener("click", () => handleSend());
-    document.getElementById("uba-assistant-input").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") handleSend();
+    const sendBtn = document.getElementById("uba-assistant-send");
+    const inputField = document.getElementById("uba-assistant-input");
+    if (sendBtn) sendBtn.addEventListener("click", () => handleSend());
+    if (inputField) inputField.addEventListener("keydown", (e) => {
+      // Enter sends, Shift+Enter inserts newline
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        handleSend();
+      }
     });
 
     Array.from(panel.querySelectorAll(".uba-assist-suggest")).forEach((btn) => {
@@ -140,7 +147,11 @@
   // Convenience: append a user/bot message using the renderer
   function appendMessage(who, text) {
     // who: 'user' or 'bot'
-    renderAssistantMessage(who === 'user' ? 'user' : 'bot', text);
+    try {
+      renderAssistantMessage(who === 'user' ? 'user' : 'bot', text);
+    } catch (err) {
+      console.error('Assistant appendMessage error', err);
+    }
   }
 
   function getCurrentSection() {
@@ -196,7 +207,7 @@
   function respondTo(question) {
     const section = getCurrentSection();
     const convo = document.getElementById("uba-assistant-conversation");
-    renderAssistantMessage("bot", "Thinking...");
+    try { renderAssistantMessage("bot", "Thinking..."); } catch(e){}
 
     setTimeout(() => {
       // remove the last 'Thinking...' bot message
@@ -209,12 +220,14 @@
       const match = findBestAnswer(question, section);
       if (match) {
         // render the matched answer
-        renderAssistantMessage('bot', match.answer);
+        try { renderAssistantMessage('bot', match.answer); } catch(e){}
 
         // if entry asked to navigate, trigger SPA navigation by clicking the sidebar button
         if (match.navigateTo) {
-          const navBtn = document.querySelector(`.uba-nav-btn[data-section="${match.navigateTo}"]`);
-          if (navBtn) navBtn.click();
+          try {
+            const navBtn = document.querySelector(`.uba-nav-btn[data-section="${match.navigateTo}"]`);
+            if (navBtn) navBtn.click();
+          } catch (err) { /* ignore missing navigation on standalone pages */ }
         }
       } else {
         // fallback: show helpful summary for section
@@ -222,7 +235,7 @@
         const summary = sectionEntries.length
           ? sectionEntries.map((s) => `• ${s.answer}`).join('\n\n')
           : 'I don’t have an exact answer yet. Try asking about the dashboard, clients, invoices, projects, tasks or settings.';
-        renderAssistantMessage('bot', `I don't have an exact answer yet, but here's what you can do in this section:\n\n${summary}`);
+        try { renderAssistantMessage('bot', `I don't have an exact answer yet, but here's what you can do in this section:\n\n${summary}`); } catch(e){}
       }
       convo.scrollTop = convo.scrollHeight;
     }, 350);
@@ -250,12 +263,18 @@
 
   function handleSend() {
     const input = document.getElementById("uba-assistant-input");
+    const sendBtn = document.getElementById("uba-assistant-send");
     if (!input) return;
     const text = input.value.trim();
     if (!text) return;
-    appendMessage("user", text);
-    input.value = "";
-    respondTo(text);
+    if (sendBtn) sendBtn.disabled = true;
+    try {
+      appendMessage("user", text);
+      input.value = "";
+      respondTo(text);
+    } finally {
+      if (sendBtn) setTimeout(() => (sendBtn.disabled = false), 400);
+    }
   }
 
   function openAssistant() {

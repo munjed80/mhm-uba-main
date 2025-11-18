@@ -122,6 +122,7 @@
   top:16px;
   align-self:start;
   height:calc(100vh - 32px);
+  min-width:220px;
   overflow-y:auto;
 }
 
@@ -519,6 +520,17 @@
   gap:8px;
 }
 
+/* Form label styling to align across forms */
+.uba-form-label{
+  display:block;
+  font-size:13px;
+  font-weight:600;
+  color:var(--muted);
+  margin-bottom:6px;
+}
+
+.uba-form-row{ align-items:start; }
+
 .uba-form-row{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
@@ -538,6 +550,18 @@
   transition:border-color .2s, box-shadow .2s;
 }
 
+/* Field-level error */
+.uba-field-error{ color: #ffb4b4; font-size:12px; margin-top:6px; }
+.uba-field-error-input{ outline:2px solid rgba(239,68,68,0.12); }
+
+/* Toast */
+.uba-toast{ background:linear-gradient(120deg,var(--accent),var(--accent-2)); color:#071427; padding:10px 14px; border-radius:10px; box-shadow:0 8px 30px rgba(11,18,32,.6); margin-top:8px; transition:opacity .3s; max-width:320px; word-break:break-word; }
+.uba-toast.success{ background: linear-gradient(120deg, rgba(34,197,94,0.9), rgba(16,185,129,0.9)); color:#071427; }
+.uba-toast.error{ background: linear-gradient(120deg, rgba(239,68,68,0.95), rgba(249,115,22,0.9)); color:#071427; }
+
+/* Focus visible for inputs and buttons (accessibility) */
+input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid rgba(34,211,238,.18); outline-offset:2px; }
+
 .uba-form input:focus,
 .mini-invoices-form input:focus,
 .mini-invoices-form select:focus{
@@ -547,7 +571,8 @@
 }
 
 .uba-btn-primary{
-  padding:10px 12px;
+  padding:10px 16px;
+  min-height:40px;
   border-radius:12px;
   background:linear-gradient(120deg,var(--accent),var(--accent-2));
   border:none;
@@ -555,6 +580,7 @@
   font-weight:600;
   cursor:pointer;
   transition:filter .2s, transform .2s;
+  display:inline-flex; align-items:center; gap:8px; justify-content:center;
 }
 
 .uba-btn-primary:hover{
@@ -567,7 +593,7 @@
   color:var(--accent);
   border:none;
   padding:0;
-  font-size:12px;
+  font-size:13px;
   cursor:pointer;
 }
 
@@ -775,11 +801,30 @@
 
 .uba-support-card{
   display:flex;
-  gap:10px;
-  padding:12px;
+  gap:12px;
+  padding:14px;
   background:rgba(15,23,42,.8);
   border:1px solid rgba(51,65,85,.6);
-  border-radius:var(--radius-sm);
+  border-radius:12px;
+  align-items:flex-start;
+  box-shadow: 0 10px 20px rgba(11,18,32,0.55);
+}
+
+/* Smart Tools specific layout */
+.smart-tools-container{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  flex-wrap:wrap;
+}
+.smart-tools-left{ flex:1 1 320px; min-width:260px; }
+.smart-tools-right{ width:360px; min-width:220px; display:flex; flex-direction:column; gap:12px; }
+
+/* Ensure UBA card visual consistency inside Smart Tools */
+.smart-tools-left .uba-support-card, .smart-tools-right .uba-support-card, .smart-tools-left .uba-card, .smart-tools-right .uba-card{
+  border-radius:12px;
+  padding:12px;
+  box-shadow:0 12px 28px rgba(11,18,32,0.6);
 }
 
 .uba-support-icon{
@@ -792,8 +837,8 @@
   font-size:18px;
 }
 
-.uba-support-card h4{ margin:0 0 6px; }
-.uba-support-card p{ margin:0 0 8px; color:var(--muted); }
+.uba-support-card h4{ margin:0 0 6px; font-size:15px; font-weight:700; }
+.uba-support-card p{ margin:0 0 8px; color:var(--muted); font-size:13px; }
 
 .uba-analytic-grid{
   display:grid;
@@ -947,10 +992,10 @@
 
 .uba-card{
   background:var(--card);
-  border-radius:var(--radius-sm);
+  border-radius:12px;
   border:1px solid rgba(55,65,81,.9);
-  padding:16px 16px 14px;
-  box-shadow:0 22px 50px rgba(15,23,42,.8);
+  padding:14px;
+  box-shadow:0 12px 36px rgba(15,23,42,0.7);
 }
 
 .uba-card-header{
@@ -1134,6 +1179,12 @@
   background:rgba(168,85,247,.1);
 }
 
+/* Subtle elevation for Projects/Tasks cards to improve visual consistency */
+.uba-pipeline .uba-card, #projects-board .uba-card, #tasks-board .uba-card {
+  box-shadow: 0 18px 36px rgba(11,18,32,0.6);
+  border:1px solid rgba(55,65,81,0.95);
+}
+
 .uba-pipe-title{
   margin:0 0 1px;
   font-size:11px;
@@ -1260,6 +1311,19 @@
     min-height:420px;
   }
 
+  /* Smart tools responsive adjustments */
+  .smart-tools-container{ flex-direction:column; }
+  .smart-tools-right{ width:100%; }
+
+
+/* Mobile: stack support cards and ensure icons align */
+@media(max-width:720px){
+  .uba-support-card{ flex-direction:column; align-items:flex-start; }
+  .uba-support-icon{ width:36px; height:36px; }
+  .uba-support-card .uba-chip-row{ margin-top:8px; }
+  .uba-table th, .uba-table td { padding:8px 6px; }
+  .uba-kpi-strip{ grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); }
+}
   .uba-topbar{
     flex-direction:column;
     align-items:flex-start;
