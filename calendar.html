@@ -140,7 +140,7 @@
                   <button class="uba-pill" data-filter="invoice">Invoices</button>
                 </div>
 
-                <div id="calendar-grid" class="uba-calendar-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;"></div>
+                <div id="calendar-grid" class="uba-calendar-grid"></div>
               </div>
             </div>
           </section>
@@ -204,28 +204,26 @@
         // display 30 days for simplicity
         for (let d = 1; d <= 30; d++) {
           const day = document.createElement('div');
-          day.className = 'uba-card';
-          day.style.padding = '8px';
+          day.className = 'uba-card uba-calendar-day';
           const dateStr = `2025-11-${String(d).padStart(2,'0')}`;
           const title = document.createElement('div');
-          title.style.fontWeight = '700';
+          title.className = 'calendar-day-label';
           title.style.marginBottom = '6px';
           title.textContent = `Nov ${d}`;
           day.appendChild(title);
           const list = document.createElement('div');
+          list.className = 'calendar-events';
           const todays = events.filter(e => e.date === dateStr && (currentFilter === 'all' || e.type === currentFilter));
           if (todays.length) {
             todays.forEach(ev => {
               const evDiv = document.createElement('div');
-              evDiv.className = 'uba-support-card';
-              evDiv.style.marginBottom = '6px';
+              evDiv.className = 'uba-support-card calendar-event-card';
               evDiv.innerHTML = `<div style="width:36px;">${ev.time}</div><div><strong>${ev.title}</strong><div style="font-size:12px;color:var(--muted)">${ev.type}</div></div>`;
               list.appendChild(evDiv);
             });
           } else {
             const empty = document.createElement('div');
-            empty.style.color = 'var(--muted)';
-            empty.style.fontSize = '13px';
+            empty.className = 'calendar-empty';
             empty.textContent = '—';
             list.appendChild(empty);
           }
