@@ -350,6 +350,30 @@
   caret-color: var(--accent);
 }
 
+/* Send button: ensure visible, tappable and aligned with input */
+#uba-assistant-panel .uba-assistant-input-row button#uba-assistant-send,
+.uba-assistant-input-row button#uba-assistant-send {
+  min-width:64px;
+  padding:8px 12px;
+  border-radius:10px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 8px 20px rgba(11,18,32,0.5);
+  border:none;
+  z-index:1300; /* above most content, below the panel when open */
+}
+
+/* Disabled state */
+.uba-assistant-input-row button#uba-assistant-send[disabled]{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+/* Ensure the assistant panel appears above overlays and the FAB stacks beneath when open */
+#uba-assistant-panel{ z-index:1400; }
+#uba-assistant-fab{ z-index:1380; }
+
 .uba-assistant-suggest{ display:flex; gap:8px; padding:0 12px 8px; flex-wrap:wrap; }
 .uba-assist-suggest{ padding:6px 10px; border-radius:10px; font-size:12px; }
 
@@ -1197,6 +1221,69 @@ input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible
   color:var(--muted);
 }
 
+/* ===== Projects & Tasks board card polish =====
+   Keep layout and data intact; improve padding, radius,
+   subtle shadow and slightly lighter background for readability.
+   Also ensure mobile-friendly horizontal scrolling of columns. */
+
+.uba-pipeline .uba-card,
+.uba-pipeline .uba-support-card,
+.uba-pipe-col .uba-support-card,
+.uba-leads-board .uba-card,
+.uba-leads-board .uba-support-card,
+#projects-board .uba-support-card,
+#tasks-board .uba-support-card {
+  background: rgba(20,28,40,0.95);
+  border-radius: 14px;
+  padding: 16px;
+  border: 1px solid rgba(55,65,81,0.85);
+  box-shadow: 0 10px 26px rgba(2,6,23,0.55);
+  color: var(--text);
+}
+
+.uba-pipeline .uba-card h4,
+.uba-leads-board .uba-card h4,
+.uba-support-card h4 {
+  color: var(--text);
+  margin-bottom:6px;
+}
+
+.uba-pipeline .uba-card p,
+.uba-leads-board .uba-card p,
+.uba-support-card p {
+  color: var(--muted);
+  font-size:13px;
+}
+
+/* Make columns scroll horizontally on small screens while keeping desktop grid */
+@media (max-width: 960px) {
+  .uba-pipeline,
+  .uba-leads-board {
+    display: flex !important;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .uba-pipeline > .uba-pipe-col,
+  .uba-leads-board .uba-card {
+    min-width: 260px;
+    flex: 0 0 260px;
+  }
+
+  /* prevent content from being cut off inside columns */
+  .uba-pipeline .uba-pipe-item,
+  .uba-leads-board .col-body {
+    overflow: visible;
+  }
+}
+
+@media (max-width: 720px) {
+  .uba-pipeline > .uba-pipe-col,
+  .uba-leads-board .uba-card { min-width:220px; flex:0 0 220px; }
+}
+
 /* ======================
    Automations snapshot
    ====================== */
@@ -1340,6 +1427,75 @@ input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible
   .uba-grid{
     grid-template-columns:1fr;
   }
+}
+
+/* ======================
+   Calendar grid styles
+   Normalize day cells, padding, font sizes, borders and responsive behavior
+   ====================== */
+.uba-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.uba-calendar-grid > .uba-card {
+  /* day cell */
+  padding: 10px;
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(18,25,36,0.98);
+  border: 1px solid rgba(55,65,81,0.85);
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.55);
+}
+
+.uba-calendar-grid .uba-card .uba-card-title,
+.uba-calendar-grid .uba-card > div > div:first-child {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.uba-calendar-grid .uba-support-card {
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(12,18,28,0.85);
+  border: 1px solid rgba(55,65,81,0.75);
+  box-shadow: 0 6px 12px rgba(2,6,23,0.45);
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.uba-calendar-grid .uba-support-card strong { font-size: 13px; }
+.uba-calendar-grid .uba-support-card div { line-height:1.25; }
+
+/* Empty day placeholder styling */
+
+
+/* Responsive: allow horizontal scrolling on narrow screens while keeping a 7-column month */
+@media (max-width: 760px) {
+  .uba-calendar-grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(220px, 1fr);
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .uba-calendar-grid > .uba-card { min-width: 220px; }
+}
+
+@media (max-width: 420px) {
+  .uba-calendar-grid {
+    grid-auto-columns: minmax(180px, 1fr);
+  }
+  .uba-calendar-grid > .uba-card { min-width: 180px; padding:8px; min-height:90px; }
+  .uba-calendar-grid .uba-support-card { padding:6px; }
 }
 
 /* ================================
