@@ -921,6 +921,108 @@ document.addEventListener("DOMContentLoaded", () => {
     console.warn('Smart Tools init failed', e);
   }
 
+  // Initialize standalone Projects page (columns with ids: projects-leads, projects-inprogress, projects-ongoing, projects-completed)
+  try {
+    if (document.getElementById('projects-leads') || document.getElementById('projects-inprogress')) {
+      if (typeof renderProjectsStandalone !== 'function') {
+        // lightweight renderer that adapts existing store shape into the four column layout
+        window.renderProjectsStandalone = function () {
+          try {
+            const store = window.ubaStore;
+            const cols = {
+              leads: document.getElementById('projects-leads'),
+              inprogress: document.getElementById('projects-inprogress'),
+              ongoing: document.getElementById('projects-ongoing'),
+              completed: document.getElementById('projects-completed'),
+            };
+            Object.values(cols).forEach(el => { if (el) el.innerHTML = ''; });
+
+            const stages = (store && store.projects.getAll && store.projects.getAll()) || ensureSeedData(LOCAL_KEYS.projects, projectStagesSeed) || [];
+
+            // flatten items from either grouped stages or flat project list
+            let items = [];
+            if (Array.isArray(stages) && stages.length && (stages[0].items || stages[0].title)) {
+              stages.forEach(stage => { (stage.items || []).forEach(it => items.push({ ...it, _fromStage: stage.id || stage.title })); });
+            } else if (Array.isArray(stages)) {
+              items = stages;
+            }
+
+            const mapToColumn = (it) => {
+              const key = ((it.status || it.stage || it._fromStage || '') + '').toLowerCase();
+              if (/discov|lead|proposal|pitch|prospect/.test(key)) return 'leads';
+              if (/progress|in_progress|delivery|inprogress|doing/.test(key)) return 'inprogress';
+              if (/ongoing|maintenance|live|active/.test(key)) return 'ongoing';
+              if (/done|complete|completed|closed/.test(key)) return 'completed';
+              return 'leads';
+            };
+
+            items.forEach(item => {
+              const colKey = mapToColumn(item);
+              const colEl = cols[colKey];
+              if (!colEl) return;
+              const card = document.createElement('div');
+              card.className = 'uba-support-card';
+              card.dataset.projectId = item.id || '';
+              card.innerHTML = `<div class="uba-support-icon">📌</div><div><h4>${escapeHtml(item.name||item.title||item.id||'Untitled')}</h4><p style="color:var(--muted,#6b7280);">${escapeHtml(item.client||item.company||'')}</p><div class="uba-chip-row"><span class="uba-chip">${escapeHtml(item.budget||item.value||'')}</span><span class="uba-chip soft">${escapeHtml(item.note||'')}</span></div></div>`;
+              card.addEventListener('click', () => {
+                const drawer = document.getElementById('project-detail-drawer');
+                if (!drawer) return;
+                drawer.innerHTML = `<h3>${escapeHtml(item.name||item.title||'Project')}</h3><p><strong>Client:</strong> ${escapeHtml(item.client||'')}</p><p><strong>Budget:</strong> ${escapeHtml(item.budget||item.value||'')}</p><p style="white-space:pre-wrap;margin-top:8px;color:var(--muted,#6b7280);">${escapeHtml(item.note||'No notes')}</p>`;
+              });
+              colEl.appendChild(card);
+            });
+
+          } catch (e) { console.error('renderProjectsStandalone error', e); }
+        };
+      }
+      // run it now
+      try { window.renderProjectsStandalone(); } catch (e) { console.warn('projects standalone render failed', e); }
+    }
+  } catch (e) { console.warn('Projects standalone init failed', e); }
+
+  // Initialize standalone Tasks page (columns: tasks-backlog, tasks-today, tasks-inprogress, tasks-done)
+  try {
+    if (document.getElementById('tasks-backlog') || document.getElementById('tasks-inprogress')) {
+      if (typeof renderTasksStandalone !== 'function') {
+        window.renderTasksStandalone = function () {
+          try {
+            const store = window.ubaStore;
+            const cols = {
+              backlog: document.getElementById('tasks-backlog'),
+              today: document.getElementById('tasks-today'),
+              inprogress: document.getElementById('tasks-inprogress'),
+              done: document.getElementById('tasks-done'),
+            };
+            Object.values(cols).forEach(el => { if (el) el.innerHTML = ''; });
+
+            const board = (store && store.tasks.getAll && store.tasks.getAll()) || ensureSeedData(LOCAL_KEYS.tasks, taskBoardSeed) || [];
+
+            // If tasks are grouped into columns
+            if (Array.isArray(board) && board.length && board[0].tasks) {
+              board.forEach(col => {
+                const key = (col.id||col.title||'').toLowerCase();
+                const target = (/todo|backlog/.test(key) ? cols.backlog : /progress|in_progress|doing/.test(key) ? cols.inprogress : /review|today/.test(key) ? cols.today : /done|complete/.test(key) ? cols.done : cols.backlog);
+                (col.tasks||[]).forEach(task => {
+                  const el = document.createElement('div'); el.className = 'uba-support-card'; el.innerHTML = `<div class="uba-support-icon">✅</div><div><h4>${escapeHtml(task.title||task.id||'Task')}</h4><p style="color:var(--muted,#6b7280);">${escapeHtml(task.owner||'')} · ${escapeHtml(task.due||'')}</p></div>`;
+                  if (target) target.appendChild(el);
+                });
+              });
+            } else if (Array.isArray(board)) {
+              // flat list — group by status/due
+              board.forEach(task => {
+                const key = (task.status||'').toLowerCase();
+                const target = (key === 'done' ? cols.done : key === 'in_progress' ? cols.inprogress : (task.due && /today/i.test(task.due)) ? cols.today : cols.backlog);
+                const el = document.createElement('div'); el.className = 'uba-support-card'; el.innerHTML = `<div class="uba-support-icon">✅</div><div><h4>${escapeHtml(task.title||task.id||'Task')}</h4><p style="color:var(--muted,#6b7280);">${escapeHtml(task.owner||'')} · ${escapeHtml(task.due||'')}</p></div>`;
+                if (target) target.appendChild(el);
+              });
+            }
+          } catch (e) { console.error('renderTasksStandalone error', e); }
+        };
+      }
+      try { window.renderTasksStandalone(); } catch (e) { console.warn('tasks standalone render failed', e); }
+    }
+  } catch (e) { console.warn('Tasks standalone init failed', e); }
+
   // 6.5 Sidebar navigation
   const navButtons = document.querySelectorAll(".uba-nav-btn[data-section]");
   const viewSections = document.querySelectorAll(".uba-view[data-view]");
