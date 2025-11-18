@@ -360,15 +360,18 @@
     if (isSmartToolsPage()) createAssistantUI();
   }
 
-  // Open assistant when user clicks the UBA Assistant card in the Smart Tools grid
+  // Fix: Open assistant when user clicks the UBA Assistant card OR its button in the Smart Tools grid
   document.addEventListener('click', function (e) {
     if (!isSmartToolsPage()) return;
-    const container = e.target.closest && e.target.closest('#smart-tools-grid');
-    if (!container) return;
-    const card = e.target.closest('.uba-support-card');
-    if (!card) return;
-    // Use an explicit attribute to identify the assistant card so it works across locales
-    if (card.hasAttribute('data-assistant-card') || card.dataset.assistantCard === 'true') {
+    // If the Open Assistant button is clicked
+    if (e.target && e.target.matches('.uba-support-card[data-assistant-card] .uba-btn-ghost, .uba-support-card[data-assistant-card]')) {
+      createAssistantUI();
+      openAssistant();
+      return;
+    }
+    // If the card itself is clicked (not the button)
+    const card = e.target.closest && e.target.closest('.uba-support-card[data-assistant-card]');
+    if (card) {
       createAssistantUI();
       openAssistant();
     }
