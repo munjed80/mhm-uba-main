@@ -342,8 +342,8 @@
   flex:1 1 auto;
   padding:9px 10px;
   border-radius:10px;
-  border:1px solid rgba(55,65,81,.8);
-  background:#020617;
+  border:1px solid rgba(148,163,184,.35);
+  background:rgba(12,18,32,.95);
   /* Ensure typed text is visible on dark theme and in RTL locales. */
   color: var(--text) !important;
   -webkit-text-fill-color: var(--text) !important;
@@ -354,7 +354,7 @@
 #uba-assistant-panel .uba-assistant-input-row button#uba-assistant-send,
 .uba-assistant-input-row button#uba-assistant-send {
   min-width:64px;
-  padding:8px 12px;
+  padding:10px 14px;
   border-radius:10px;
   display:inline-flex;
   align-items:center;
@@ -362,6 +362,7 @@
   box-shadow:0 8px 20px rgba(11,18,32,0.5);
   border:none;
   z-index:1300; /* above most content, below the panel when open */
+  height:40px;
 }
 
 /* Disabled state */
@@ -1176,8 +1177,9 @@ input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible
 .uba-pipeline{
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:6px;
+  gap:12px;
   font-size:11px;
+  align-items:start;
 }
 
 .uba-pipe-col h4{
@@ -1189,13 +1191,14 @@ input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible
 }
 
 .uba-pipe-item{
-  padding:5px 7px;
-  border-radius:8px;
+  padding:10px 12px;
+  border-radius:12px;
   border:1px solid rgba(55,65,81,.9);
-  background:#020617;
-  margin-bottom:4px;
+  background:rgba(13,19,33,.95);
+  margin-bottom:8px;
   transition:all .2s ease;
   cursor:move; /* future drag & drop */
+  box-shadow:0 10px 24px rgba(2,6,23,.45);
 }
 
 .uba-pipe-item:hover{
@@ -1233,11 +1236,11 @@ input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible
 .uba-leads-board .uba-support-card,
 #projects-board .uba-support-card,
 #tasks-board .uba-support-card {
-  background: rgba(20,28,40,0.95);
+  background: linear-gradient(180deg, rgba(22,30,46,.96), rgba(13,18,32,.96));
   border-radius: 14px;
   padding: 16px;
-  border: 1px solid rgba(55,65,81,0.85);
-  box-shadow: 0 10px 26px rgba(2,6,23,0.55);
+  border: 1px solid rgba(55,65,81,0.82);
+  box-shadow: 0 12px 28px rgba(2,6,23,0.55);
   color: var(--text);
 }
 
@@ -1253,6 +1256,14 @@ input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible
 .uba-support-card p {
   color: var(--muted);
   font-size:13px;
+}
+
+/* Column bodies stack cards with breathing room */
+.uba-pipe-col .col-body,
+.uba-leads-board .col-body {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }
 
 /* Make columns scroll horizontally on small screens while keeping desktop grid */
@@ -1435,35 +1446,41 @@ input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible
    ====================== */
 .uba-calendar-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(7, minmax(0,1fr));
+  gap: 10px;
+  align-items: stretch;
 }
 
-.uba-calendar-grid > .uba-card {
-  /* day cell */
-  padding: 10px;
-  min-height: 110px;
+.uba-calendar-grid > .uba-calendar-day {
+  padding: 12px;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: linear-gradient(180deg, rgba(22,30,46,.96), rgba(12,18,28,.96));
+  border: 1px solid rgba(55,65,81,0.82);
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(2,6,23,0.55);
+}
+
+.uba-calendar-day .calendar-day-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.calendar-events {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  background: rgba(18,25,36,0.98);
-  border: 1px solid rgba(55,65,81,0.85);
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(2,6,23,0.55);
-}
-
-.uba-calendar-grid .uba-card .uba-card-title,
-.uba-calendar-grid .uba-card > div > div:first-child {
-  font-size: 13px;
-  font-weight: 700;
 }
 
 .uba-calendar-grid .uba-support-card {
-  padding: 8px;
+  padding: 9px 10px;
   border-radius: 10px;
-  background: rgba(12,18,28,0.85);
-  border: 1px solid rgba(55,65,81,0.75);
-  box-shadow: 0 6px 12px rgba(2,6,23,0.45);
+  background: rgba(10,15,26,0.9);
+  border: 1px solid rgba(55,65,81,0.78);
+  box-shadow: 0 8px 16px rgba(2,6,23,0.45);
   display: flex;
   gap: 8px;
   align-items: flex-start;
@@ -1471,6 +1488,13 @@ input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible
 
 .uba-calendar-grid .uba-support-card strong { font-size: 13px; }
 .uba-calendar-grid .uba-support-card div { line-height:1.25; }
+
+.calendar-event-card { margin-bottom: 2px; }
+
+.calendar-empty {
+  color: var(--muted);
+  font-size: 13px;
+}
 
 /* Empty day placeholder styling */
 
@@ -1487,14 +1511,14 @@ input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible
     -webkit-overflow-scrolling: touch;
   }
 
-  .uba-calendar-grid > .uba-card { min-width: 220px; }
+  .uba-calendar-grid > .uba-calendar-day { min-width: 220px; }
 }
 
 @media (max-width: 420px) {
   .uba-calendar-grid {
     grid-auto-columns: minmax(180px, 1fr);
   }
-  .uba-calendar-grid > .uba-card { min-width: 180px; padding:8px; min-height:90px; }
+  .uba-calendar-grid > .uba-calendar-day { min-width: 180px; padding:8px; min-height:90px; }
   .uba-calendar-grid .uba-support-card { padding:6px; }
 }
 
