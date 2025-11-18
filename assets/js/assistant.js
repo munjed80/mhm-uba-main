@@ -63,9 +63,10 @@
 
   // Create assistant DOM once
   function createAssistantUI() {
+    // If the page already includes a static panel, don't create a new one.
     if (document.getElementById("uba-assistant-panel")) return;
 
-    // Panel
+    // otherwise create a minimal floating panel (fallback)
     const panel = document.createElement("div");
     panel.id = "uba-assistant-panel";
     panel.className = "uba-card uba-assistant-panel";
@@ -73,81 +74,40 @@
       <div class="uba-card-header">
         <div>
           <div class="uba-card-title">UBA Assistant</div>
-          <div class="uba-card-sub">Contextual help — powered by local knowledge</div>
+          <div class="uba-card-sub">Contextual help — local assistant</div>
         </div>
         <button id="uba-assistant-close" class="uba-btn-ghost">✕</button>
       </div>
-      <div id="uba-assistant-conversation" class="uba-assistant-conversation" aria-live="polite"></div>
-      <div class="uba-assistant-suggest">
-        <button class="uba-btn-ghost uba-assist-suggest">How do I create an invoice?</button>
-        <button class="uba-btn-ghost uba-assist-suggest">How do I add a new client?</button>
-        <button class="uba-btn-ghost uba-assist-suggest">How do I track tasks?</button>
+      <div class="uba-assistant-quick">
+        <button class="uba-assistant-quick-btn uba-btn-ghost">How do I add a new client?</button>
+        <button class="uba-assistant-quick-btn uba-btn-ghost">How do I create an invoice?</button>
+        <button class="uba-assistant-quick-btn uba-btn-ghost">How do I track tasks?</button>
       </div>
+      <div class="uba-assistant-messages" aria-live="polite"></div>
       <div class="uba-assistant-input-row">
-        <input id="uba-assistant-input" placeholder="Ask a question..." />
+        <input id="uba-assistant-input" class="uba-assistant-input" placeholder="Ask a question..." />
         <button id="uba-assistant-send" class="uba-btn-primary">Send</button>
       </div>
     `;
-
     document.body.appendChild(panel);
 
-    // Floating button
-    const fab = document.createElement("button");
-    fab.id = "uba-assistant-fab";
-    fab.className = "uba-btn-primary uba-assistant-fab";
-    fab.textContent = "Ask UBA Assistant";
-    document.body.appendChild(fab);
-
-    // i18n: use the shared translator and set data attributes so
-    // `applyTranslations` updates the panel when language changes.
-    const i18n = window.ubaI18n;
-    const t = (k, fallback = "") => (i18n && typeof i18n.t === 'function') ? i18n.t(k, fallback) : fallback || k;
-    const titleEl = panel.querySelector('.uba-card-title');
-    const subEl = panel.querySelector('.uba-card-sub');
-    const inputEl = panel.querySelector('#uba-assistant-input');
-    if (titleEl) {
-      titleEl.setAttribute('data-i18n', 'assistant_title');
-      titleEl.textContent = t('assistant_title', 'UBA Assistant');
-    }
-    if (subEl) {
-      subEl.setAttribute('data-i18n', 'assistant_subtitle');
-      subEl.textContent = t('assistant_subtitle', 'Contextual help — powered by local knowledge');
-    }
-    if (inputEl) {
-      inputEl.setAttribute('data-i18n-placeholder', 'assistant_placeholder');
-      inputEl.placeholder = t('assistant_placeholder', 'Ask a question…');
-    }
-
-    // Wire events
-    fab.addEventListener("click", () => openAssistant());
-    const closeBtn = document.getElementById("uba-assistant-close");
-    if (closeBtn) closeBtn.addEventListener("click", () => closeAssistant());
-
-    const sendBtn = document.getElementById("uba-assistant-send");
-    const inputField = document.getElementById("uba-assistant-input");
-    if (sendBtn) sendBtn.addEventListener("click", () => handleSend());
-    if (inputField) inputField.addEventListener("keydown", (e) => {
-      // Enter sends, Shift+Enter inserts newline
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        handleSend();
-      }
-    });
-
-    Array.from(panel.querySelectorAll(".uba-assist-suggest")).forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const q = btn.textContent.trim();
-        appendMessage("user", q);
-        respondTo(q);
-        openAssistant();
-      });
-    });
+    // wire events for fallback panel
+    const closeBtn = panel.querySelector('#uba-assistant-close');
+    if (closeBtn) closeBtn.addEventListener('click', () => closeAssistant());
+    const sendBtn = panel.querySelector('#uba-assistant-send');
+    const inputField = panel.querySelector('#uba-assistant-input');
+    if (sendBtn) sendBtn.addEventListener('click', () => handleSend());
+    if (inputField) inputField.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } });
+    Array.from(panel.querySelectorAll('.uba-assistant-quick-btn')).forEach((btn) => btn.addEventListener('click', () => { const q = btn.textContent.trim(); setInputAndSend(q); }));
   }
 
   // Convenience: append a user/bot message using the renderer
   function appendMessage(who, text) {
     // who: 'user' or 'bot'
     try {
+      // store in-memory conversation
+      if (!window._uba_conversation) window._uba_conversation = [];
+      window._uba_conversation.push({ role: who === 'user' ? 'user' : 'assistant', text: text });
       renderAssistantMessage(who === 'user' ? 'user' : 'bot', text);
     } catch (err) {
       console.error('Assistant appendMessage error', err);
@@ -204,51 +164,109 @@
     return null;
   }
 
-  function respondTo(question) {
-    const section = getCurrentSection();
-    const convo = document.getElementById("uba-assistant-conversation");
-    try { renderAssistantMessage("bot", "Thinking..."); } catch(e){}
+  // Simple intent router: return a friendly multi-paragraph reply text
+  function generateReply(text) {
+    const q = (text || '').toLowerCase();
+    if (q.includes('client')) {
+      return (
+        'Clients (CRM)\n\n' +
+        '• To add a client: Open the Clients page and click the "New Client" button, fill the contact details and save.\n' +
+        '• To edit: click a client row to open details, update fields and save.\n' +
+        '• To remove: open the client and choose Delete (confirmation required).'
+      );
+    }
+    if (q.includes('invoice')) {
+      return (
+        'Invoices\n\n' +
+        '• Create an invoice from the Invoices page or use the mini-invoice form on the dashboard.\n' +
+        '• Fill client, items and amounts, then save as draft or send.\n' +
+        '• Mark as paid when payment arrives; overdue invoices appear in KPIs.'
+      );
+    }
+    if (q.includes('project')) {
+      return (
+        'Projects & Pipeline\n\n' +
+        '• The Projects board shows pipeline columns (lead, in_progress, ongoing).\n' +
+        '• Drag cards between columns to update stage.\n' +
+        '• Click a project card to edit details and assign tasks.'
+      );
+    }
+    if (q.includes('task')) {
+      return (
+        'Tasks\n\n' +
+        '• Use the Tasks board to view todo, in_progress and done lists.\n' +
+        '• Click a task to edit, use the checkbox to mark done, or drag to reorder.\n' +
+        '• Create quick tasks from the dashboard or the Tasks page.'
+      );
+    }
+    if (q.includes('lead')) {
+      return (
+        'Leads\n\n' +
+        '• Leads flow through the pipeline similar to projects.\n' +
+        '• Capture new leads from forms or import, then qualify and move them through stages.\n' +
+        '• Use notes to track communications.'
+      );
+    }
+    if (q.includes('calendar')) {
+      return (
+        'Calendar\n\n' +
+        '• The Calendar view shows events and due dates.\n' +
+        '• Use filters to show tasks, invoices or project milestones.\n' +
+        '• Click a day to add a new event.'
+      );
+    }
+    if (q.includes('language') || q.includes('translate')) {
+      return (
+        'Language & Translations\n\n' +
+        '• Use the Language selector in the sidebar to switch languages.\n' +
+        '• Supported languages are English, Arabic, Dutch, French, Spanish and German.\n' +
+        '• When switching to Arabic the layout will flip to RTL.'
+      );
+    }
+    if (q.includes('reset') || q.includes('demo data')) {
+      return (
+        'Reset Demo Data\n\n' +
+        '• You can reset the local demo data in Settings → Reset demo data.\n' +
+        '• This clears localStorage seeds and restores the app to demo defaults.\n' +
+        '• Use this when you want to start fresh or test onboarding flows.'
+      );
+    }
 
+    // fallback
+    return (
+      "I'm not sure I fully understand, but here are some tips:\n\n" +
+      "• Navigate using the sidebar to open Dashboard, Clients, Projects, Tasks or Invoices.\n" +
+      "• Try asking about clients, invoices, tasks or settings for specific help."
+    );
+  }
+
+  function respondTo(question) {
+    const convoArea = document.querySelector('.uba-assistant-messages') || document.getElementById('uba-assistant-conversation');
+    if (!convoArea) return;
+    // show small thinking indicator
+    appendMessage('assistant', 'Thinking...');
     setTimeout(() => {
-      // remove the last 'Thinking...' bot message
-      const placeholders = convo.querySelectorAll('.assistant-msg.bot');
-      if (placeholders && placeholders.length) {
-        const last = placeholders[placeholders.length - 1];
+      // remove the last 'Thinking...' message
+      const msgs = Array.from(convoArea.querySelectorAll('.assistant-msg.bot'));
+      if (msgs.length) {
+        const last = msgs[msgs.length - 1];
         if (last && last.textContent && last.textContent.trim() === 'Thinking...') last.remove();
       }
-
-      const match = findBestAnswer(question, section);
-      if (match) {
-        // render the matched answer
-        try { renderAssistantMessage('bot', match.answer); } catch(e){}
-
-        // if entry asked to navigate, trigger SPA navigation by clicking the sidebar button
-        if (match.navigateTo) {
-          try {
-            const navBtn = document.querySelector(`.uba-nav-btn[data-section="${match.navigateTo}"]`);
-            if (navBtn) navBtn.click();
-          } catch (err) { /* ignore missing navigation on standalone pages */ }
-        }
-      } else {
-        // fallback: show helpful summary for section
-        const sectionEntries = ubaAssistantKnowledge.filter((e) => e.section === section || e.section === 'global');
-        const summary = sectionEntries.length
-          ? sectionEntries.map((s) => `• ${s.answer}`).join('\n\n')
-          : 'I don’t have an exact answer yet. Try asking about the dashboard, clients, invoices, projects, tasks or settings.';
-        try { renderAssistantMessage('bot', `I don't have an exact answer yet, but here's what you can do in this section:\n\n${summary}`); } catch(e){}
-      }
-      convo.scrollTop = convo.scrollHeight;
+      const reply = generateReply(question);
+      appendMessage('assistant', reply);
+      // scroll
+      convoArea.scrollTop = convoArea.scrollHeight;
     }, 350);
   }
 
   // Render a message bubble in the conversation area.
   function renderAssistantMessage(who, text) {
-    const convo = document.getElementById('uba-assistant-conversation');
+    const convo = document.querySelector('.uba-assistant-messages') || document.getElementById('uba-assistant-conversation');
     if (!convo) return;
     const wrapper = document.createElement('div');
     wrapper.className = `assistant-msg ${who}`;
     const bubble = document.createElement('div');
-    bubble.className = 'assistant-bubble uba-assistant-message';
+    bubble.className = `uba-assistant-bubble ${who === 'user' ? 'user' : 'bot'}`;
     bubble.innerHTML = escapeHtml(text).replace(/\n/g, '<br/>');
     wrapper.appendChild(bubble);
     convo.appendChild(wrapper);
@@ -262,15 +280,15 @@
   }
 
   function handleSend() {
-    const input = document.getElementById("uba-assistant-input");
-    const sendBtn = document.getElementById("uba-assistant-send");
+    const input = document.getElementById('uba-assistant-input');
+    const sendBtn = document.getElementById('uba-assistant-send');
     if (!input) return;
     const text = input.value.trim();
     if (!text) return;
     if (sendBtn) sendBtn.disabled = true;
     try {
-      appendMessage("user", text);
-      input.value = "";
+      appendMessage('user', text);
+      input.value = '';
       respondTo(text);
     } finally {
       if (sendBtn) setTimeout(() => (sendBtn.disabled = false), 400);
@@ -279,15 +297,50 @@
 
   function openAssistant() {
     createAssistantUI();
-    document.getElementById("uba-assistant-panel").classList.add("open");
-    const panel = document.getElementById("uba-assistant-panel");
-    const input = document.getElementById("uba-assistant-input");
+    const panel = document.getElementById('uba-assistant-panel');
+    if (!panel) return;
+    panel.classList.remove('is-hidden');
+    panel.setAttribute('aria-hidden','false');
+    const input = document.getElementById('uba-assistant-input');
     if (input) input.focus();
+    // bind quick buttons and send/close if not already bound
+    bindAssistantControls();
   }
 
   function closeAssistant() {
-    const panel = document.getElementById("uba-assistant-panel");
-    if (panel) panel.classList.remove("open");
+    const panel = document.getElementById('uba-assistant-panel');
+    if (!panel) return;
+    panel.classList.add('is-hidden');
+    panel.setAttribute('aria-hidden','true');
+  }
+
+  function setInputAndSend(text){
+    const input = document.getElementById('uba-assistant-input');
+    if (!input) return;
+    input.value = text;
+    handleSend();
+  }
+
+  // Bind send/close/quick buttons once
+  let _assistantBound = false;
+  function bindAssistantControls(){
+    if (_assistantBound) return; _assistantBound = true;
+    const panel = document.getElementById('uba-assistant-panel');
+    if (!panel) return;
+    const closeBtn = panel.querySelector('#uba-assistant-close');
+    if (closeBtn) closeBtn.addEventListener('click', () => closeAssistant());
+    const sendBtn = panel.querySelector('#uba-assistant-send');
+    const input = panel.querySelector('#uba-assistant-input');
+    if (sendBtn) sendBtn.addEventListener('click', () => handleSend());
+    if (input) input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } if (e.key === 'Escape') closeAssistant(); });
+    Array.from(panel.querySelectorAll('.uba-assistant-quick-btn, .uba-assist-suggest')).forEach((btn) => {
+      btn.addEventListener('click', (ev)=>{
+        const q = (ev.target.textContent || '').trim();
+        if (!q) return; setInputAndSend(q);
+      });
+    });
+    // allow ESC to close when panel open
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { const p = document.getElementById('uba-assistant-panel'); if (p && !p.classList.contains('is-hidden')) closeAssistant(); } });
   }
 
   // Only initialize the assistant UI automatically on the Smart Tools page.

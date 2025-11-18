@@ -100,6 +100,31 @@
             </div>
           </section>
         </div>
+
+        <!-- UBA Assistant panel (static in-page markup) -->
+        <div id="uba-assistant-panel" class="uba-assistant-panel is-hidden" aria-hidden="true" role="dialog" aria-label="UBA Assistant">
+          <div class="uba-assistant-header uba-card-header">
+            <div>
+              <div class="uba-card-title" data-i18n="assistant_title">UBA Assistant</div>
+              <div class="uba-card-sub" data-i18n="assistant_subtitle">Contextual help — local assistant</div>
+            </div>
+            <button id="uba-assistant-close" class="uba-btn-ghost" aria-label="Close">✕</button>
+          </div>
+
+          <div class="uba-assistant-quick" style="padding:8px 12px; display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="uba-assistant-quick-btn uba-btn-ghost">How do I add a new client?</button>
+            <button class="uba-assistant-quick-btn uba-btn-ghost">How do I create an invoice?</button>
+            <button class="uba-assistant-quick-btn uba-btn-ghost">How do I track tasks?</button>
+            <button class="uba-assistant-quick-btn uba-btn-ghost">How do I reset demo data?</button>
+          </div>
+
+          <div class="uba-assistant-messages" aria-live="polite" style="padding:8px 12px; max-height:46vh; overflow:auto;"></div>
+
+          <div class="uba-assistant-input-row" style="padding:10px; display:flex; gap:8px; align-items:center;">
+            <input id="uba-assistant-input" class="uba-assistant-input" placeholder="Ask a question..." aria-label="Ask a question" />
+            <button id="uba-assistant-send" class="uba-btn-primary">Send</button>
+          </div>
+        </div>
       </main>
     </div>
   </section>
