@@ -974,9 +974,9 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.addEventListener("click", () => {
         const target = btn.getAttribute("data-section") || "dashboard";
         console.log("Switching view to:", target);
-        // Open a dedicated help page for the Support / Success Desk menu
+        // Open the standalone help page for the Support / Success Desk menu
         if (target === "support") {
-          window.location.href = "success.html";
+          window.location.href = "help.html";
           return;
         }
         // If we're on a standalone page (not index.html), navigate to the page instead
