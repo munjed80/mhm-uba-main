@@ -60,27 +60,42 @@
         <div class="uba-views">
           <section class="uba-view" data-view="smart-tools">
             <div class="uba-card" style="padding:12px;">
-              <div class="smart-tools-container">
-                <div class="smart-tools-left">
-                  <label for="smart-client-select" data-i18n="smart.client.select">Select client</label>
-                  <input id="smart-client-search" placeholder="Search client" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e5e7eb;margin-bottom:8px;" />
-                  <select id="smart-client-select" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e5e7eb;margin-bottom:8px;"></select>
-
-                  <div id="smart-client-brief" style="margin-top:8px;"></div>
+              <div id="smart-tools-grid" class="uba-feature-grid" style="margin-top:4px;">
+                <!-- Client brief -->
+                <div class="uba-support-card" style="min-width:220px;">
+                  <div class="uba-support-icon">👤</div>
+                  <h4 data-i18n="tool.clientBrief.title">Client brief</h4>
+                  <p data-i18n="tool.clientBrief.desc">Snapshot of selected client including recent invoices, open tasks and contact details.</p>
                 </div>
 
-                <div class="smart-tools-right">
+                <!-- Smart outreach -->
+                <div class="uba-support-card" style="min-width:220px;">
+                  <div class="uba-support-icon">✉️</div>
                   <h4 data-i18n="tool.outreach.title">Smart outreach</h4>
-                  <div id="smart-outreach" style="margin-top:8px;"></div>
-
-                  <h4 style="margin-top:12px;" data-i18n="tool.actions.title">Next-best actions</h4>
-                  <div id="smart-actions" style="margin-top:8px;"></div>
+                  <p data-i18n="tool.outreach.desc">Create personalised outreach sequences using templates and client data.</p>
                 </div>
-              </div>
 
-              <div style="margin-top:18px;">
-                <h4 data-i18n="tool.insights.title">Quick insights</h4>
-                <div id="smart-insights" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;"></div>
+                <!-- Next-best action -->
+                <div class="uba-support-card" style="min-width:220px;">
+                  <div class="uba-support-icon">⚡</div>
+                  <h4 data-i18n="tool.actions.title">Next-best action</h4>
+                  <p data-i18n="tool.actions.desc">One-click suggestions for high-impact actions tailored to each client.</p>
+                </div>
+
+                <!-- Quick insights -->
+                <div class="uba-support-card" style="min-width:220px;">
+                  <div class="uba-support-icon">📊</div>
+                  <h4 data-i18n="tool.insights.title">Quick insights</h4>
+                  <p data-i18n="tool.insights.desc">Fast metrics and signals — revenue, overdue invoices, and engagement trends.</p>
+                </div>
+
+                <!-- UBA Assistant (opens assistant) -->
+                <div class="uba-support-card" data-assistant-card="true" style="min-width:220px;cursor:pointer;">
+                  <div class="uba-support-icon">🤖</div>
+                  <h4 data-i18n="tool.assistant.title">UBA Assistant</h4>
+                  <p data-i18n="tool.assistant.desc">Ask UBA for help with the workspace, create drafts, or get step-by-step guidance.</p>
+                  <div style="margin-top:8px;"><button class="uba-btn-ghost" data-i18n="tool.assistant.open">Open Assistant</button></div>
+                </div>
               </div>
             </div>
           </section>

@@ -290,27 +290,34 @@
     if (panel) panel.classList.remove("open");
   }
 
-  // Initialize on DOM ready
+  // Only initialize the assistant UI automatically on the Smart Tools page.
+  function isSmartToolsPage() {
+    const p = window.location.pathname.toLowerCase();
+    if (p.endsWith('smart-tools.html') || p.includes('smart-tools')) return true;
+    if (document.querySelector('[data-view="smart-tools"]')) return true;
+    if (document.getElementById('smart-tools-grid')) return true;
+    return false;
+  }
+
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", createAssistantUI);
+    document.addEventListener("DOMContentLoaded", () => {
+      if (isSmartToolsPage()) createAssistantUI();
+    });
   } else {
-    createAssistantUI();
+    if (isSmartToolsPage()) createAssistantUI();
   }
 
   // Open assistant when user clicks the UBA Assistant card in the Smart Tools grid
   document.addEventListener('click', function (e) {
-    const h = e.target.closest && e.target.closest('#smart-tools-grid');
-    if (h) {
-      // clicked inside grid; find nearest card title
-      const card = e.target.closest('.uba-support-card');
-      if (card) {
-        const titleEl = card.querySelector('h4');
-        if (titleEl && titleEl.textContent.trim() === 'UBA Assistant') {
-          // ensure UI exists and open
-          createAssistantUI();
-          openAssistant();
-        }
-      }
+    if (!isSmartToolsPage()) return;
+    const container = e.target.closest && e.target.closest('#smart-tools-grid');
+    if (!container) return;
+    const card = e.target.closest('.uba-support-card');
+    if (!card) return;
+    // Use an explicit attribute to identify the assistant card so it works across locales
+    if (card.hasAttribute('data-assistant-card') || card.dataset.assistantCard === 'true') {
+      createAssistantUI();
+      openAssistant();
     }
   });
 
