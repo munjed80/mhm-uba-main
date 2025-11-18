@@ -125,12 +125,16 @@
         <div class="uba-views">
           <section class="uba-view" data-view="tasks">
             <div class="uba-card" style="padding:12px;">
-              <div style="display:flex;gap:12px;margin-bottom:12px;"><button class="uba-pill">Filter</button><div style="flex:1"></div><button class="uba-btn-primary">New task</button></div>
+              <div style="display:flex;gap:12px;margin-bottom:12px;">
+                <button class="uba-pill">Filter</button>
+                <div style="flex:1"></div>
+                <button class="uba-btn-primary">New task</button>
+              </div>
               <div class="uba-leads-board" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
-                <div class="uba-card"><h4>Backlog</h4><div class="col-body">Placeholder</div></div>
-                <div class="uba-card"><h4>Today</h4><div class="col-body">Placeholder</div></div>
-                <div class="uba-card"><h4>In progress</h4><div class="col-body">Placeholder</div></div>
-                <div class="uba-card"><h4>Done</h4><div class="col-body">Placeholder</div></div>
+                <div class="uba-card"><h4>Backlog</h4><div class="col-body" id="tasks-backlog"><!-- Real tasks will be rendered here by JS --></div></div>
+                <div class="uba-card"><h4>Today</h4><div class="col-body" id="tasks-today"><!-- Real tasks will be rendered here by JS --></div></div>
+                <div class="uba-card"><h4>In progress</h4><div class="col-body" id="tasks-inprogress"><!-- Real tasks will be rendered here by JS --></div></div>
+                <div class="uba-card"><h4>Done</h4><div class="col-body" id="tasks-done"><!-- Real tasks will be rendered here by JS --></div></div>
               </div>
             </div>
           </section>

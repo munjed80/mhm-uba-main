@@ -134,15 +134,35 @@
             <div class="uba-grid" style="grid-template-columns: repeat(1,1fr); gap:12px;">
               <div class="uba-card">
                 <div class="uba-card-header"><div><div class="uba-card-title">Pipeline stages</div><p class="uba-card-sub">Leads → In progress → Ongoing → Completed</p></div></div>
-                <div style="padding:12px; display:flex; gap:12px;">
-                  <div style="flex:1"><div class="uba-card">Leads placeholder</div></div>
-                  <div style="flex:1"><div class="uba-card">In progress placeholder</div></div>
-                  <div style="flex:1"><div class="uba-card">Ongoing placeholder</div></div>
-                  <div style="flex:1"><div class="uba-card">Completed placeholder</div></div>
+                <div class="uba-pipeline" style="margin-top:8px;">
+                  <div class="uba-pipe-col">
+                    <h4>Leads</h4>
+                    <div class="col-body" id="projects-leads">
+                      <!-- Real project cards will be rendered here by JS -->
+                    </div>
+                  </div>
+                  <div class="uba-pipe-col">
+                    <h4>In progress</h4>
+                    <div class="col-body" id="projects-inprogress">
+                      <!-- Real project cards will be rendered here by JS -->
+                    </div>
+                  </div>
+                  <div class="uba-pipe-col">
+                    <h4>Ongoing</h4>
+                    <div class="col-body" id="projects-ongoing">
+                      <!-- Real project cards will be rendered here by JS -->
+                    </div>
+                  </div>
+                  <div class="uba-pipe-col">
+                    <h4>Completed</h4>
+                    <div class="col-body" id="projects-completed">
+                      <!-- Real project cards will be rendered here by JS -->
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div class="uba-card"><div class="uba-card-header"><div><div class="uba-card-title">Project details</div><p class="uba-card-sub">Select a project to see details</p></div></div><div style="padding:12px;">Detail drawer placeholder.</div></div>
+              <div class="uba-card"><div class="uba-card-header"><div><div class="uba-card-title">Project details</div><p class="uba-card-sub">Select a project to see details</p></div></div><div style="padding:12px;" id="project-detail-drawer">No project selected.</div></div>
             </div>
           </section>
         </div>
