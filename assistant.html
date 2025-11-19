@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UBA Assistant</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div id="uba-dashboard-shell">
+    <!-- Sidebar -->
+    <nav id="uba-sidebar">
+      <ul>
+        <li><a href="index.html" data-i18n="nav.dashboard">Dashboard</a></li>
+        <li><a href="clients.html" data-i18n="nav.clients">Clients</a></li>
+        <li><a href="projects.html" data-i18n="nav.projects">Projects</a></li>
+        <li><a href="tasks.html" data-i18n="nav.tasks">Tasks</a></li>
+        <li><a href="smart-tools.html" data-i18n="nav.smarttools">Smart Tools</a></li>
+        <li class="active"><a href="assistant.html" data-i18n="nav.assistant">Assistant</a></li>
+      </ul>
+    </nav>
+    <!-- Main Content -->
+    <main id="uba-main-content">
+      <header id="uba-topbar">
+        <h1 data-i18n="assistant.title">UBA Assistant</h1>
+      </header>
+      <section id="assistant-chat-container">
+        <div id="assistant-messages" class="uba-chat-messages"></div>
+        <form id="assistant-form" autocomplete="off">
+          <input type="text" id="assistant-input" placeholder="Type your message..." data-i18n-placeholder="assistant.input" required>
+          <button type="submit" class="uba-btn-primary" data-i18n="assistant.send">Send</button>
+        </form>
+      </section>
+    </main>
+  </div>
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/assistant.js"></script>
+  <script src="assets/js/page-loader.js"></script>
+</body>
+</html>

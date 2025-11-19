@@ -92,13 +92,11 @@
 
                 <!-- UBA Assistant (opens assistant) -->
                 <div class="uba-support-card" data-assistant-card="true" style="min-width:220px;cursor:pointer;">
-                  <div class="uba-support-icon">
-                    🤖
-                  </div>
+                  <div class="uba-support-icon">🤖</div>
                   <h4 data-i18n="tool.assistant.title">UBA Assistant</h4>
                   <p data-i18n="tool.assistant.desc">Ask UBA for help with the workspace, create drafts, or get step-by-step guidance.</p>
                   <div style="margin-top:8px;">
-                    <button id="uba-assistant-open" class="uba-btn" data-i18n="tool.assistant.open">Open UBA Assistant</button>
+                    <a href="assistant.html" class="uba-btn-primary" data-i18n="tool.assistant.open">Open UBA Assistant</a>
                   </div>
                 </div>
               </div>
@@ -106,24 +104,7 @@
           </section>
         </div>
 
-        <!-- UBA Assistant panel (static in-page markup) -->
-        <div id="uba-assistant-panel" class="uba-assistant-panel assistant-hidden is-hidden" aria-hidden="true" role="dialog" aria-label="UBA Assistant">
-          <div class="uba-assistant-header uba-card-header">
-            <div>
-              <div class="uba-card-title" data-i18n="assistant_title">UBA Assistant</div>
-              <div class="uba-card-sub" data-i18n="assistant_subtitle">Contextual help 
-              </div>
-            </div>
-            <button id="uba-assistant-close" class="uba-btn-ghost" aria-label="Close">✕</button>
-          </div>
-
-          <div class="uba-assistant-messages" aria-live="polite" style="padding:8px 12px; max-height:46vh; overflow:auto;"></div>
-
-          <div class="uba-assistant-input-row" style="padding:10px; display:flex; gap:8px; align-items:center;">
-            <input id="uba-assistant-input" class="uba-assistant-input" placeholder="Ask a question..." aria-label="Ask a question" />
-            <button id="uba-assistant-send" class="uba-btn-primary">Send</button>
-          </div>
-        </div>
+        <!-- UBA Assistant panel removed: now available as a dedicated page -->
       </main>
     </div>
     </div>

@@ -93,7 +93,6 @@
           break;
         case 'smarttools-page':
           if (typeof initSmartTools === 'function') initSmartTools();
-          if (typeof initAssistant === 'function') initAssistant();
           break;
         case 'insights-page':
           if (typeof initInsightsPage === 'function') initInsightsPage();
@@ -102,7 +101,7 @@
           if (typeof initCalendarPage === 'function') initCalendarPage();
           break;
         case 'assistant-page':
-          if (typeof initAssistant === 'function') initAssistant();
+          if (typeof initAssistantPage === 'function') initAssistantPage();
           break;
         default:
           if (pageId && pageId.indexOf('projects') !== -1 && typeof initProjectsPage === 'function') {
