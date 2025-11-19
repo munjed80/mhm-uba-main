@@ -126,7 +126,7 @@
           </div>
           <div class="uba-top-right">
             <select id="workspace-select" class="uba-select"><option>Main workspace</option></select>
-            <button id="add-project-btn" class="uba-btn-primary" style="margin-left:8px;">Add project</button>
+            <button id="add-project-btn" class="uba-btn-primary" style="margin-left:8px;" data-i18n="projects.add">Add project</button>
             <div class="uba-user-pill"><span class="uba-avatar"></span><span id="uba-user-label">Admin</span></div>
           </div>
         </header>
@@ -176,16 +176,16 @@
   <!-- Project form modal (hidden by default) -->
   <div id="project-form-modal" class="uba-modal is-hidden" role="dialog" aria-hidden="true" style="position:fixed;left:0;right:0;top:0;bottom:0;display:flex;align-items:center;justify-content:center;padding:20px;z-index:60;">
     <div class="uba-card" style="width:100%;max-width:520px;">
-      <div class="uba-card-header"><div><div class="uba-card-title">Project</div><div class="uba-card-sub">Create or edit a project</div></div><div><button id="project-form-close" class="uba-btn-ghost">✕</button></div></div>
+      <div class="uba-card-header"><div><div class="uba-card-title" data-i18n="projects.modal.title">Project</div><div class="uba-card-sub" data-i18n="projects.modal.sub">Create or edit a project</div></div><div><button id="project-form-close" class="uba-btn-ghost" aria-label="Close">✕</button></div></div>
       <div style="padding:12px;">
         <form id="project-form">
           <input type="hidden" id="project-id" />
           <div style="display:flex;gap:8px;margin-bottom:8px;">
-            <input id="project-title" placeholder="Project title" style="flex:1;" required />
-            <input id="project-client" placeholder="Client" style="width:180px;" />
+            <input id="project-title" placeholder="Project title" style="flex:1;" required data-i18n-placeholder="projects.form.titlePlaceholder" />
+            <input id="project-client" placeholder="Client" style="width:180px;" data-i18n-placeholder="projects.form.clientPlaceholder" />
           </div>
           <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-            <input id="project-budget" type="number" placeholder="Budget" style="width:140px;" />
+            <input id="project-budget" type="number" placeholder="Budget" style="width:140px;" data-i18n-placeholder="projects.form.budgetPlaceholder" />
             <select id="project-stage">
               <option value="leads">Leads</option>
               <option value="in_progress">In progress</option>
@@ -193,10 +193,10 @@
               <option value="completed">Completed</option>
             </select>
           </div>
-          <div style="margin-bottom:8px;"><textarea id="project-notes" placeholder="Notes (optional)" style="width:100%;min-height:80px;"></textarea></div>
+          <div style="margin-bottom:8px;"><textarea id="project-notes" placeholder="Notes (optional)" style="width:100%;min-height:80px;" data-i18n-placeholder="projects.form.notesPlaceholder"></textarea></div>
           <div style="display:flex;gap:8px;justify-content:flex-end;">
-            <button type="button" id="project-cancel" class="uba-btn-ghost">Cancel</button>
-            <button type="submit" id="project-save" class="uba-btn-primary">Save</button>
+            <button type="button" id="project-cancel" class="uba-btn-ghost" data-i18n="projects.form.cancel">Cancel</button>
+            <button type="submit" id="project-save" class="uba-btn-primary" data-i18n="projects.form.save">Save</button>
           </div>
         </form>
       </div>
