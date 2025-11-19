@@ -164,6 +164,12 @@
 
   function initProjectsPage() {
     try {
+      const boardGrid = document.getElementById("projects-columns");
+      if (boardGrid && typeof window.renderProjectsBoard === "function") {
+        window.renderProjectsBoard();
+        return;
+      }
+
       // wire add button
       const add = qs("add-project-btn");
       if (add) add.addEventListener("click", openAddForm);

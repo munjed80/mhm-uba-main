@@ -13,34 +13,109 @@
           <aside class="uba-sidebar">
             <div>
               <div class="uba-logo">MHM <span>UBA</span></div>
+              <p class="uba-tagline" data-i18n="app.tagline">
+                Universal Business Automator — one workspace for clients, tasks,
+                invoices and smart tools.
+              </p>
+              <div class="uba-badge">
+                <span class="uba-badge-dot"></span
+                ><span data-i18n="app.badge">
+                  Private beta · Built in the Netherlands
+                </span>
+              </div>
             </div>
+
             <div class="uba-language">
-              <label for="language-select-top" data-i18n="language.label"
+              <label for="language-select" data-i18n="language.label"
                 >Language</label
-              ><select id="language-select-top">
-                <option>en</option>
+              >
+              <select id="language-select">
+                <option value="en" data-i18n="language.en">English</option>
+                <option value="ar" data-i18n="language.ar">Arabic</option>
+                <option value="nl" data-i18n="language.nl">Dutch</option>
+                <option value="fr" data-i18n="language.fr">French</option>
+                <option value="es" data-i18n="language.es">Spanish</option>
+                <option value="de" data-i18n="language.de">German</option>
               </select>
             </div>
-            <nav class="uba-nav">
-              <a class="uba-nav-btn" href="index.html">📈 Dashboard</a>
-              <a class="uba-nav-btn" href="clients.html">🧑‍💻 Clients</a>
-              <a class="uba-nav-btn" href="projects.html">💼 Projects</a>
-              <a class="uba-nav-btn" href="tasks.html">✅ Tasks</a>
-              <a class="uba-nav-btn" href="invoices.html">💵 Invoices</a>
-              <a class="uba-nav-btn active" href="automations.html"
-                >🤖 Automations</a
-              >
-              <a class="uba-nav-btn" href="calendar.html">📅 Calendar</a>
-              <a class="uba-nav-btn" href="leads.html">🧲 Leads</a>
-              <a class="uba-nav-btn" href="expenses.html">📤 Expenses</a>
-              <a class="uba-nav-btn" href="files.html">📁 Files</a>
-              <a class="uba-nav-btn" href="reports.html">📑 Reports</a>
-              <a class="uba-nav-btn" href="smart-tools.html">🧠 Smart Tools</a>
-              <a class="uba-nav-btn" href="insights.html">📊 Insights</a>
-              <a class="uba-nav-btn" href="success.html">💬 Help</a>
-              <a class="uba-nav-btn" href="settings.html">🛠️ Settings</a>
-            </nav>
-            <div class="uba-sidebar-footer" data-i18n="sidebar.footer"></div>
+
+            <div>
+              <div class="uba-nav-label" data-i18n="nav.workspaceLabel">
+                Workspace
+              </div>
+              <nav class="uba-nav">
+                <a class="uba-nav-btn" href="index.html"
+                  ><span class="icon">📈</span>
+                  <span data-i18n="nav.dashboard">Dashboard</span>
+                  <small data-i18n="nav.dashboardSub">Overview</small></a
+                >
+                <a class="uba-nav-btn" href="clients.html"
+                  ><span class="icon">🧑‍💻</span>
+                  <span data-i18n="nav.clients">Clients</span>
+                  <small data-i18n="nav.clientsSub">CRM</small></a
+                >
+                <a class="uba-nav-btn" href="projects.html"
+                  ><span class="icon">💼</span>
+                  <span data-i18n="nav.projects">Projects</span>
+                  <small data-i18n="nav.projectsSub">Pipeline</small></a
+                >
+                <a class="uba-nav-btn" href="tasks.html"
+                  ><span class="icon">✅</span>
+                  <span data-i18n="nav.tasks">Tasks</span>
+                  <small data-i18n="nav.tasksSub">Today</small></a
+                >
+                <a class="uba-nav-btn" href="invoices.html"
+                  ><span class="icon">💵</span>
+                  <span data-i18n="nav.invoices">Invoices</span>
+                  <small data-i18n="nav.invoicesSub">Billing</small></a
+                >
+                <a class="uba-nav-btn active" href="automations.html"
+                  ><span class="icon">🤖</span>
+                  <span data-i18n="nav.automations">Automations</span>
+                  <small data-i18n="nav.automationsSub">Flows</small></a
+                >
+                <a class="uba-nav-btn" href="calendar.html"
+                  ><span class="icon">📅</span><span>Calendar</span></a
+                >
+                <a class="uba-nav-btn" href="leads.html"
+                  ><span class="icon">🧲</span><span>Leads</span></a
+                >
+                <a class="uba-nav-btn" href="expenses.html"
+                  ><span class="icon">📤</span><span>Expenses</span></a
+                >
+                <a class="uba-nav-btn" href="files.html"
+                  ><span class="icon">📁</span><span>Files</span></a
+                >
+                <a class="uba-nav-btn" href="reports.html"
+                  ><span class="icon">📑</span><span>Reports</span></a
+                >
+                <a class="uba-nav-btn" href="smart-tools.html"
+                  ><span class="icon">🧠</span>
+                  <span data-i18n="nav.smartTools">UBA Smart Tools</span>
+                  <small data-i18n="nav.smartToolsSub">AI ops</small></a
+                >
+                <a class="uba-nav-btn" href="insights.html"
+                  ><span class="icon">📊</span>
+                  <span data-i18n="nav.insights">Insights Lab</span>
+                  <small data-i18n="nav.insightsSub">Reports</small></a
+                >
+                <a class="uba-nav-btn" href="help.html"
+                  ><span class="icon">💬</span>
+                  <span data-i18n="nav.support">Success Desk</span>
+                  <small data-i18n="nav.supportSub">Guidance</small></a
+                >
+                <a class="uba-nav-btn" href="settings.html"
+                  ><span class="icon">🛠️</span>
+                  <span data-i18n="nav.settings">Settings</span>
+                  <small data-i18n="nav.settingsSub">Workspace</small></a
+                >
+              </nav>
+            </div>
+
+            <div class="uba-sidebar-footer" data-i18n="sidebar.footer">
+              Designed for small teams and solo founders who are tired of 7
+              different tools just to run one business.
+            </div>
           </aside>
 
           <main class="uba-main">
@@ -51,7 +126,7 @@
                   Automations
                 </h1>
                 <p id="uba-view-desc" data-i18n="view.automations.desc">
-                  Automate repetitive tasks and trigger actions.
+                  Overview of flows with sample activity logs.
                 </p>
               </div>
               <div class="uba-top-right">
@@ -67,15 +142,69 @@
 
             <div class="uba-views">
               <section class="uba-view" data-view="automations">
-                <div class="uba-card" style="padding: 12px">
-                  <p>
-                    No automations yet. Create your first workflow using
-                    triggers and actions.
-                  </p>
-                  <div style="margin-top: 12px">
-                    <button class="uba-btn-primary" data-automation-new>
-                      New automation
-                    </button>
+                <div class="uba-grid">
+                  <div class="uba-grid-col">
+                    <section class="uba-card" id="automations-page">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="view.automations.title"
+                          >
+                            Automations
+                          </div>
+                          <p
+                            class="uba-card-sub"
+                            data-i18n="view.automations.desc"
+                          >
+                            Overview of flows with sample activity logs.
+                          </p>
+                        </div>
+                        <span
+                          class="uba-pill"
+                          data-i18n="view.automations.badge"
+                          >Preview</span
+                        >
+                      </div>
+
+                      <div class="uba-support-grid" id="automation-tiles">
+                        <!-- tiles from JS -->
+                      </div>
+
+                      <div class="uba-section-hero">
+                        <div>
+                          <p
+                            class="uba-banner-label"
+                            data-i18n="view.automations.logTitle"
+                          >
+                            Recent runs
+                          </p>
+                          <h3 data-i18n="view.automations.logDesc">
+                            Lightweight history of automation activity
+                          </h3>
+                          <p data-i18n="view.automations.logHint">
+                            Static sample data for now.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div class="uba-table-wrap">
+                        <table class="uba-table">
+                          <thead>
+                            <tr>
+                              <th data-i18n="view.automations.logAutomation">
+                                Automation
+                              </th>
+                              <th data-i18n="view.automations.logStatus">
+                                Status
+                              </th>
+                              <th data-i18n="view.automations.logTime">When</th>
+                            </tr>
+                          </thead>
+                          <tbody id="automation-log-body"></tbody>
+                        </table>
+                      </div>
+                    </section>
                   </div>
                 </div>
               </section>

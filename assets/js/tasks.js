@@ -172,6 +172,12 @@
 
   function initTasksPage() {
     try {
+      const boardGrid = document.getElementById("tasks-columns");
+      if (boardGrid && typeof window.renderTasksBoard === "function") {
+        window.renderTasksBoard();
+        return;
+      }
+
       renderTasksStandalone();
     } catch (e) {
       console.warn("initTasksPage error", e);

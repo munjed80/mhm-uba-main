@@ -19,9 +19,9 @@
               </p>
               <div class="uba-badge">
                 <span class="uba-badge-dot"></span
-                ><span data-i18n="app.badge"
-                  >Private beta · Built in the Netherlands</span
-                >
+                ><span data-i18n="app.badge">
+                  Private beta · Built in the Netherlands
+                </span>
               </div>
             </div>
 
@@ -45,34 +45,34 @@
               </div>
               <nav class="uba-nav">
                 <a class="uba-nav-btn" href="index.html"
-                  ><span class="icon">📈</span
-                  ><span data-i18n="nav.dashboard">Dashboard</span
-                  ><small data-i18n="nav.dashboardSub">Overview</small></a
+                  ><span class="icon">📈</span>
+                  <span data-i18n="nav.dashboard">Dashboard</span>
+                  <small data-i18n="nav.dashboardSub">Overview</small></a
                 >
                 <a class="uba-nav-btn" href="clients.html"
-                  ><span class="icon">🧑‍💻</span
-                  ><span data-i18n="nav.clients">Clients</span
-                  ><small data-i18n="nav.clientsSub">CRM</small></a
+                  ><span class="icon">🧑‍💻</span>
+                  <span data-i18n="nav.clients">Clients</span>
+                  <small data-i18n="nav.clientsSub">CRM</small></a
                 >
                 <a class="uba-nav-btn" href="projects.html"
-                  ><span class="icon">💼</span
-                  ><span data-i18n="nav.projects">Projects</span
-                  ><small data-i18n="nav.projectsSub">Pipeline</small></a
+                  ><span class="icon">💼</span>
+                  <span data-i18n="nav.projects">Projects</span>
+                  <small data-i18n="nav.projectsSub">Pipeline</small></a
                 >
                 <a class="uba-nav-btn" href="tasks.html"
-                  ><span class="icon">✅</span
-                  ><span data-i18n="nav.tasks">Tasks</span
-                  ><small data-i18n="nav.tasksSub">Today</small></a
+                  ><span class="icon">✅</span>
+                  <span data-i18n="nav.tasks">Tasks</span>
+                  <small data-i18n="nav.tasksSub">Today</small></a
                 >
                 <a class="uba-nav-btn active" href="invoices.html"
-                  ><span class="icon">💵</span
-                  ><span data-i18n="nav.invoices">Invoices</span
-                  ><small data-i18n="nav.invoicesSub">Billing</small></a
+                  ><span class="icon">💵</span>
+                  <span data-i18n="nav.invoices">Invoices</span>
+                  <small data-i18n="nav.invoicesSub">Billing</small></a
                 >
                 <a class="uba-nav-btn" href="automations.html"
-                  ><span class="icon">🤖</span
-                  ><span data-i18n="nav.automations">Automations</span
-                  ><small data-i18n="nav.automationsSub">Flows</small></a
+                  ><span class="icon">🤖</span>
+                  <span data-i18n="nav.automations">Automations</span>
+                  <small data-i18n="nav.automationsSub">Flows</small></a
                 >
                 <a class="uba-nav-btn" href="calendar.html"
                   ><span class="icon">📅</span><span>Calendar</span></a
@@ -90,24 +90,24 @@
                   ><span class="icon">📑</span><span>Reports</span></a
                 >
                 <a class="uba-nav-btn" href="smart-tools.html"
-                  ><span class="icon">🧠</span
-                  ><span data-i18n="nav.smartTools">UBA Smart Tools</span
-                  ><small data-i18n="nav.smartToolsSub">AI ops</small></a
+                  ><span class="icon">🧠</span>
+                  <span data-i18n="nav.smartTools">UBA Smart Tools</span>
+                  <small data-i18n="nav.smartToolsSub">AI ops</small></a
                 >
                 <a class="uba-nav-btn" href="insights.html"
-                  ><span class="icon">📊</span
-                  ><span data-i18n="nav.insights">Insights Lab</span
-                  ><small data-i18n="nav.insightsSub">Reports</small></a
+                  ><span class="icon">📊</span>
+                  <span data-i18n="nav.insights">Insights Lab</span>
+                  <small data-i18n="nav.insightsSub">Reports</small></a
                 >
                 <a class="uba-nav-btn" href="help.html"
-                  ><span class="icon">💬</span
-                  ><span data-i18n="nav.support">Success Desk</span
-                  ><small data-i18n="nav.supportSub">Guidance</small></a
+                  ><span class="icon">💬</span>
+                  <span data-i18n="nav.support">Success Desk</span>
+                  <small data-i18n="nav.supportSub">Guidance</small></a
                 >
                 <a class="uba-nav-btn" href="settings.html"
-                  ><span class="icon">🛠️</span
-                  ><span data-i18n="nav.settings">Settings</span
-                  ><small data-i18n="nav.settingsSub">Workspace</small></a
+                  ><span class="icon">🛠️</span>
+                  <span data-i18n="nav.settings">Settings</span>
+                  <small data-i18n="nav.settingsSub">Workspace</small></a
                 >
               </nav>
             </div>
@@ -142,44 +142,139 @@
 
             <div class="uba-views">
               <section class="uba-view" data-view="invoices">
-                <div class="uba-card" style="padding: 12px">
-                  <div
-                    style="
-                      display: flex;
-                      justify-content: space-between;
-                      align-items: center;
-                      margin-bottom: 12px;
-                    "
-                  >
-                    <div>
-                      <strong>Open:</strong> €0 &nbsp; <strong>Paid:</strong> €0
-                      &nbsp; <strong>Overdue:</strong> €0
-                    </div>
-                    <div>
-                      <select>
-                        <option>All</option>
-                      </select>
-                      <button class="uba-btn-primary">New invoice</button>
-                    </div>
-                  </div>
+                <div class="uba-grid">
+                  <div class="uba-grid-col">
+                    <section class="uba-card" id="invoices-page">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="view.invoices.title"
+                          >
+                            Invoices
+                          </div>
+                          <p
+                            class="uba-card-sub"
+                            data-i18n="view.invoices.desc"
+                          >
+                            Full CRUD with local storage, matching the dashboard
+                            style.
+                          </p>
+                        </div>
+                        <span class="uba-pill" data-i18n="view.invoices.badge"
+                          >Local billing</span
+                        >
+                      </div>
 
-                  <div class="uba-table-wrap">
-                    <table class="uba-table">
-                      <thead>
-                        <tr>
-                          <th>#</th>
-                          <th data-i18n="table.client">Client</th>
-                          <th data-i18n="table.amount">Amount</th>
-                          <th data-i18n="table.status">Status</th>
-                          <th data-i18n="view.invoices.due">Due</th>
-                        </tr>
-                      </thead>
-                      <tbody id="invoices-body">
-                        <tr>
-                          <td colspan="5">No invoices yet.</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                      <form id="invoice-form" class="uba-form">
+                        <input type="hidden" id="invoice-edit-id" />
+                        <div class="uba-form-row">
+                          <input
+                            type="text"
+                            id="invoice-client"
+                            placeholder="Client"
+                            data-i18n-placeholder="table.client"
+                            required
+                          />
+                          <input
+                            type="text"
+                            id="invoice-label"
+                            placeholder="Label"
+                            data-i18n-placeholder="table.label"
+                          />
+                        </div>
+
+                        <div class="uba-form-row">
+                          <input
+                            type="number"
+                            id="invoice-amount"
+                            placeholder="Amount (€)"
+                            step="0.01"
+                            min="0"
+                            data-i18n-placeholder="form.amount"
+                            required
+                          />
+                          <select id="invoice-status">
+                            <option value="draft" data-i18n="form.draft">
+                              Draft
+                            </option>
+                            <option value="sent" data-i18n="form.sent">
+                              Sent
+                            </option>
+                            <option value="paid" data-i18n="form.paid">
+                              Paid
+                            </option>
+                          </select>
+                          <input type="date" id="invoice-due" />
+                        </div>
+
+                        <div class="uba-form-row">
+                          <input
+                            type="text"
+                            id="invoice-notes"
+                            placeholder="Notes"
+                            data-i18n-placeholder="form.notes"
+                          />
+                          <button
+                            type="submit"
+                            class="uba-btn-primary"
+                            data-i18n="form.saveInvoice"
+                          >
+                            Save invoice
+                          </button>
+                        </div>
+                        <p
+                          id="invoice-error"
+                          class="uba-text-danger"
+                          aria-live="polite"
+                        ></p>
+                      </form>
+
+                      <div class="mini-invoices-meta">
+                        <div>
+                          <p class="label" data-i18n="mini.meta.count">
+                            Invoices in view
+                          </p>
+                          <strong id="invoice-count">0</strong>
+                        </div>
+                        <div>
+                          <p class="label" data-i18n="mini.meta.total">
+                            Total amount
+                          </p>
+                          <strong id="invoice-total">€ 0</strong>
+                        </div>
+                        <div class="mini-chip" data-i18n="view.invoices.local">
+                          Local only
+                        </div>
+                      </div>
+
+                      <div class="uba-table-wrap">
+                        <table class="uba-table">
+                          <thead>
+                            <tr>
+                              <th data-i18n="table.client">Client</th>
+                              <th data-i18n="table.label">Label</th>
+                              <th data-i18n="table.amount">Amount</th>
+                              <th data-i18n="table.status">Status</th>
+                              <th data-i18n="view.invoices.due">Due</th>
+                              <th
+                                style="width: 120px"
+                                data-i18n="table.actions"
+                              >
+                                Actions
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody id="invoice-table-body">
+                            <tr>
+                              <td colspan="6" data-i18n="mini.none">
+                                No invoices yet. Add your first one.
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
                   </div>
                 </div>
               </section>
