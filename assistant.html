@@ -1,40 +1,103 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>UBA Assistant</title>
-  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
-  <div id="uba-dashboard-shell">
-    <!-- Sidebar -->
-    <nav id="uba-sidebar">
-      <ul>
-        <li><a href="index.html" data-i18n="nav.dashboard">Dashboard</a></li>
-        <li><a href="clients.html" data-i18n="nav.clients">Clients</a></li>
-        <li><a href="projects.html" data-i18n="nav.projects">Projects</a></li>
-        <li><a href="tasks.html" data-i18n="nav.tasks">Tasks</a></li>
-        <li><a href="smart-tools.html" data-i18n="nav.smarttools">Smart Tools</a></li>
-        <li class="active"><a href="assistant.html" data-i18n="nav.assistant">Assistant</a></li>
-      </ul>
-    </nav>
-    <!-- Main Content -->
-    <main id="uba-main-content">
-      <header id="uba-topbar">
-        <h1 data-i18n="assistant.title">UBA Assistant</h1>
-      </header>
-      <section id="assistant-chat-container">
-        <div id="assistant-messages" class="uba-chat-messages"></div>
-        <form id="assistant-form" autocomplete="off">
-          <input type="text" id="assistant-input" placeholder="Type your message..." data-i18n-placeholder="assistant.input" required>
-          <button type="submit" class="uba-btn-primary" data-i18n="assistant.send">Send</button>
-        </form>
-      </section>
-    </main>
-  </div>
+  <section id="uba-dashboard">
+    <div id="page-id" data-page="assistant-page">
+    <div class="uba-shell">
+      <aside class="uba-sidebar">
+        <div>
+          <div class="uba-logo">MHM <span>UBA</span></div>
+          <p class="uba-tagline" data-i18n="app.tagline">Universal Business Automator — one workspace for clients, tasks, invoices and smart tools.</p>
+          <div class="uba-badge"><span class="uba-badge-dot"></span><span data-i18n="app.badge">Private beta · Built in the Netherlands</span></div>
+        </div>
+
+        <div class="uba-language">
+          <label for="language-select" data-i18n="language.label">Language</label>
+          <select id="language-select">
+            <option value="en" data-i18n="language.en">English</option>
+            <option value="ar" data-i18n="language.ar">Arabic</option>
+            <option value="nl" data-i18n="language.nl">Dutch</option>
+            <option value="fr" data-i18n="language.fr">French</option>
+            <option value="es" data-i18n="language.es">Spanish</option>
+            <option value="de" data-i18n="language.de">German</option>
+          </select>
+        </div>
+
+        <div>
+          <div class="uba-nav-label" data-i18n="nav.workspaceLabel">Workspace</div>
+          <nav class="uba-nav">
+            <a class="uba-nav-btn" href="index.html"><span class="icon">📈</span><span data-i18n="nav.dashboard">Dashboard</span><small data-i18n="nav.dashboardSub">Overview</small></a>
+            <a class="uba-nav-btn" href="clients.html"><span class="icon">🧑‍💻</span><span data-i18n="nav.clients">Clients</span><small data-i18n="nav.clientsSub">CRM</small></a>
+            <a class="uba-nav-btn" href="projects.html"><span class="icon">💼</span><span data-i18n="nav.projects">Projects</span><small data-i18n="nav.projectsSub">Pipeline</small></a>
+            <a class="uba-nav-btn" href="tasks.html"><span class="icon">✅</span><span data-i18n="nav.tasks">Tasks</span><small data-i18n="nav.tasksSub">Today</small></a>
+            <a class="uba-nav-btn" href="invoices.html"><span class="icon">💵</span><span data-i18n="nav.invoices">Invoices</span><small data-i18n="nav.invoicesSub">Billing</small></a>
+            <a class="uba-nav-btn" href="automations.html"><span class="icon">🤖</span><span data-i18n="nav.automations">Automations</span><small data-i18n="nav.automationsSub">Flows</small></a>
+            <a class="uba-nav-btn" href="calendar.html"><span class="icon">📅</span><span>Calendar</span></a>
+            <a class="uba-nav-btn" href="leads.html"><span class="icon">🧲</span><span>Leads</span></a>
+            <a class="uba-nav-btn" href="expenses.html"><span class="icon">📤</span><span>Expenses</span></a>
+            <a class="uba-nav-btn" href="files.html"><span class="icon">📁</span><span>Files</span></a>
+            <a class="uba-nav-btn" href="reports.html"><span class="icon">📑</span><span>Reports</span></a>
+            <a class="uba-nav-btn" href="smart-tools.html"><span class="icon">🧠</span><span data-i18n="nav.smartTools">UBA Smart Tools</span><small data-i18n="nav.smartToolsSub">AI ops</small></a>
+            <a class="uba-nav-btn active" href="assistant.html"><span class="icon">🤖</span><span data-i18n="nav.assistant">Assistant</span><small data-i18n="nav.assistantSub">Chat</small></a>
+            <a class="uba-nav-btn" href="insights.html"><span class="icon">📊</span><span data-i18n="nav.insights">Insights Lab</span><small data-i18n="nav.insightsSub">Reports</small></a>
+            <a class="uba-nav-btn" href="help.html"><span class="icon">💬</span><span data-i18n="nav.support">Success Desk</span><small data-i18n="nav.supportSub">Guidance</small></a>
+            <a class="uba-nav-btn" href="settings.html"><span class="icon">🛠️</span><span data-i18n="nav.settings">Settings</span><small data-i18n="nav.settingsSub">Workspace</small></a>
+          </nav>
+        </div>
+
+        <div class="uba-sidebar-footer" data-i18n="sidebar.footer">Designed for small teams and solo founders who are tired of 7 different tools just to run one business.</div>
+      </aside>
+
+      <main class="uba-main">
+        <header class="uba-topbar">
+          <div class="uba-top-left"><p class="uba-top-kicker">Assistant</p><h1 id="uba-view-title" data-i18n="assistant.title">UBA Assistant</h1><p id="uba-view-desc" data-i18n="assistant.desc">Ask UBA for help, get workspace guidance, or chat with the assistant.</p></div>
+          <div class="uba-top-right"><select id="workspace-select" class="uba-select"><option>Main workspace</option></select><div class="uba-user-pill"><span class="uba-avatar"></span><span id="uba-user-label">Admin</span></div></div>
+        </header>
+
+        <div class="uba-views">
+          <section class="uba-view" data-view="assistant">
+            <div class="uba-card" style="max-width:600px;margin:32px auto;">
+              <div class="uba-card-header">
+                <div>
+                  <div class="uba-card-title" data-i18n="assistant.title">UBA Assistant</div>
+                  <p class="uba-card-sub" data-i18n="assistant.desc">Chat with the assistant for workspace help and guidance.</p>
+                </div>
+              </div>
+              <div id="assistant-messages" class="uba-assistant-messages" style="height:320px;overflow-y:auto;padding:12px 0 8px 0;background:var(--uba-bg-light);border-radius:8px;margin-bottom:12px;"></div>
+              <form id="assistant-form" style="display:flex;gap:8px;align-items:center;">
+                <input id="assistant-input" type="text" placeholder="Type your question…" style="flex:1;" autocomplete="off" />
+                <button type="submit" class="uba-btn-primary" data-i18n="assistant.send">Send</button>
+              </form>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+    </div>
+  </section>
+
   <script src="assets/js/i18n.js"></script>
   <script src="assets/js/assistant.js"></script>
   <script src="assets/js/page-loader.js"></script>
+  <script>
+    (function(){
+      const lang = localStorage.getItem('uba-lang') || 'en';
+      if (window.ubaI18n && typeof window.ubaI18n.applyTranslations === 'function') {
+        window.ubaI18n.applyTranslations(lang);
+      }
+      if (lang === 'ar') document.documentElement.dir = 'rtl';
+    })();
+  </script>
+  <script>
+    const pageId = document.getElementById("page-id").dataset.page;
+    loadPageScripts(pageId);
+  </script>
 </body>
 </html>
