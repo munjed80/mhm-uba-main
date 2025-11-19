@@ -28,7 +28,23 @@
 
   // Create assistant UI only once
   function createAssistantUI() {
-    if (document.getElementById('uba-assistant-panel')) return;
+    const existing = document.getElementById('uba-assistant-panel');
+    if (existing) {
+      // If a static panel exists in the page markup, ensure controls are bound and FAB is present
+        bindAssistantControls();
+        // render any saved history
+        renderConversationHistory(20);
+      if (!document.getElementById('uba-assistant-fab')) {
+        const fab = document.createElement('button');
+        fab.id = 'uba-assistant-fab';
+        fab.className = 'uba-assistant-fab uba-btn-primary';
+        fab.title = 'Open UBA Assistant';
+        fab.innerHTML = '🤖';
+        fab.addEventListener('click', () => openAssistant());
+        document.body.appendChild(fab);
+      }
+      return;
+    }
 
     const panel = document.createElement('div');
     panel.id = 'uba-assistant-panel';
@@ -122,15 +138,58 @@
 
   function appendUserMessage(text) {
     renderAssistantMessage('user', { text });
-    // store conversation history in-memory
+    // store conversation history in-memory and persist
     window._uba_conversation = window._uba_conversation || [];
-    window._uba_conversation.push({ role: 'user', text, time: new Date().toISOString() });
+    window._uba_conversation.push({ role: 'user', text, time: new Date().toISOString(), lang: detectLanguage(text) });
+    saveConversationToStorage();
   }
 
   function appendBotMessage(obj) {
     renderAssistantMessage('bot', obj);
     window._uba_conversation = window._uba_conversation || [];
-    window._uba_conversation.push({ role: 'assistant', text: obj.text, time: new Date().toISOString() });
+    window._uba_conversation.push({ role: 'assistant', text: obj.text, time: new Date().toISOString(), lang: 'en' });
+    saveConversationToStorage();
+  }
+
+  // Conversation persistence
+  const ASSISTANT_HISTORY_KEY = 'ubaAssistantHistory';
+
+  function saveConversationToStorage() {
+    try {
+      const list = window._uba_conversation || [];
+      // keep full history but persist only last 200 messages
+      const toSave = list.slice(-200);
+      localStorage.setItem(ASSISTANT_HISTORY_KEY, JSON.stringify(toSave));
+    } catch (e) { console.warn('assistant save error', e); }
+  }
+
+  function loadConversationFromStorage() {
+    try {
+      const raw = localStorage.getItem(ASSISTANT_HISTORY_KEY);
+      if (!raw) return [];
+      const arr = JSON.parse(raw) || [];
+      window._uba_conversation = arr;
+      return arr;
+    } catch (e) { return []; }
+  }
+
+  function renderConversationHistory(limit = 20) {
+    try {
+      const convoArea = document.querySelector('.uba-assistant-messages');
+      if (!convoArea) return;
+      convoArea.innerHTML = '';
+      const list = (window._uba_conversation || []).slice(-limit);
+      list.forEach(m => {
+        if (m.role === 'user') renderAssistantMessage('user', { text: m.text });
+        else renderAssistantMessage('bot', { text: m.text, suggestions: m.suggestions || [], actions: m.actions || [] });
+      });
+    } catch (e) { console.warn(e); }
+  }
+
+  function detectLanguage(text) {
+    if (!text) return 'en';
+    const ar = /[\u0600-\u06FF]/;
+    return ar.test(text) ? 'ar' : 'en';
   }
 
   // Simple KB lookup
@@ -175,6 +234,129 @@
     };
   }
 
+  // --- Local intent detection and response generation ---
+  function generateResponse(question) {
+    const q = (question || '').toLowerCase();
+    const lang = detectLanguage(question);
+
+    // navigation keywords (english => target page, plus Arabic equivalents)
+    const navMap = [
+      { kws: ['clients', 'client', 'crm', 'عملاء'], target: 'clients' },
+      { kws: ['projects', 'project', 'pipeline', 'مشاريع'], target: 'projects' },
+      { kws: ['tasks', 'task', 'todo', 'مهام'], target: 'tasks' },
+      { kws: ['invoices', 'invoice', 'bill', 'فواتير'], target: 'invoices' },
+      { kws: ['calendar', 'calendar', 'تقويم'], target: 'calendar' },
+      { kws: ['leads', 'lead', 'عملاء محتملون'], target: 'leads' },
+      { kws: ['expenses', 'expense', 'مصروفات'], target: 'expenses' },
+      { kws: ['files', 'file', 'ملفات'], target: 'files' },
+      { kws: ['reports', 'report', 'تقارير'], target: 'reports' },
+      { kws: ['smart tools', 'assistant', 'smarttools', 'مختص الذكاء'], target: 'smart-tools' },
+      { kws: ['insights', 'insight', 'analytics', 'تحليلات'], target: 'insights' },
+      { kws: ['support', 'help', 'success desk', 'مساعدة', 'support'], target: 'help' },
+      { kws: ['settings', 'setting', 'إعدادات'], target: 'settings' }
+    ];
+
+    // CRUD keywords
+    const crudMap = [
+      { kws: ['add client', 'create client', 'new client', 'إضافة عميل'], intent: 'add_client' },
+      { kws: ['edit client', 'update client', 'delete client', 'حذف عميل', 'تعديل عميل'], intent: 'crud_client' },
+      { kws: ['create invoice', 'new invoice', 'add invoice', 'إنشاء فاتورة'], intent: 'crud_invoice' },
+      { kws: ['create project', 'new project', 'add project', 'إنشاء مشروع'], intent: 'crud_project' },
+      { kws: ['create task', 'new task', 'add task', 'إضافة مهمة'], intent: 'crud_task' }
+    ];
+
+    // Summaries and data queries
+    const summaryKws = ['summary', 'how many', 'count', 'how many open', 'summary of', 'كم', 'كم عدد'];
+
+    // FAQ simple checks
+    const faqKws = ['what is', 'explain', 'how to use', 'كيف', 'ما هي'];
+
+    // 1) navigation intent
+    for (const m of navMap) {
+      for (const kw of m.kws) {
+        if (q.indexOf(kw) !== -1) {
+          const text = `Opening ${capitalize(m.target)}...`; // user-visible
+          // attempt SPA load then fallback to navigation
+          try {
+            if (typeof window.loadPageScripts === 'function') window.loadPageScripts(m.target + '-page');
+          } catch (e) {}
+          try { window.location.href = `${m.target}.html`; } catch (e) {}
+          return { text: text, suggestions: [], actions: [{ label: `Open ${capitalize(m.target)}`, type: 'navigate', target: m.target }] };
+        }
+      }
+    }
+
+    // 2) CRUD guidance
+    for (const c of crudMap) {
+      for (const kw of c.kws) {
+        if (q.indexOf(kw) !== -1) {
+          return { text: crudHelpText(c.intent), suggestions: ['Show steps', 'Open page'], actions: c.intent.indexOf('client') !== -1 ? [{ label: 'Open Clients', type: 'navigate', target: 'clients' }] : [] };
+        }
+      }
+    }
+
+    // 3) data summaries
+    for (const sk of summaryKws) {
+      if (q.indexOf(sk) !== -1) {
+        // check specific collections
+        if (q.indexOf('client') !== -1 || q.indexOf('عملاء') !== -1) {
+          const clients = (window.ubaStore && window.ubaStore.clients) ? window.ubaStore.clients.getAll() : [];
+          return { text: `You have ${clients.length} client${clients.length !== 1 ? 's' : ''}.`, suggestions: ['Show recent clients', 'Open Clients'], actions: [{ label: 'Open Clients', type: 'navigate', target: 'clients' }] };
+        }
+        if (q.indexOf('invoice') !== -1 || q.indexOf('فاتورة') !== -1) {
+          const invoices = (window.ubaStore && window.ubaStore.invoices) ? window.ubaStore.invoices.getAll() : [];
+          const openInv = invoices.filter(i => !(i.status && i.status.toLowerCase() === 'paid')).length;
+          return { text: `There are ${invoices.length} invoices total and ${openInv} open/unpaid.`, suggestions: ['Show invoices', 'Open Invoices'], actions: [{ label: 'Open Invoices', type: 'navigate', target: 'invoices' }] };
+        }
+        if (q.indexOf('task') !== -1 || q.indexOf('مهام') !== -1) {
+          const tasks = (window.ubaStore && window.ubaStore.tasks) ? window.ubaStore.tasks.getAll() : [];
+          const todo = tasks.filter(t => !(t.status && t.status === 'done')).length;
+          return { text: `You have ${tasks.length} tasks, ${todo} are not done yet.`, suggestions: ['Show tasks', 'Open Tasks'], actions: [{ label: 'Open Tasks', type: 'navigate', target: 'tasks' }] };
+        }
+      }
+    }
+
+    // 4) FAQs
+    for (const fk of faqKws) {
+      if (q.indexOf(fk) !== -1) {
+        return { text: faqAnswer(q), suggestions: ['How do I add a client?', 'How do I create an invoice?'], actions: [] };
+      }
+    }
+
+    // 5) fallback
+    return { text: "I didn't fully understand. Try asking about Clients, Invoices, Projects, or Tasks. You can also say 'Open Clients' or 'How many invoices are open?'.", suggestions: ['Open Clients', 'How many open invoices?'], actions: [] };
+  }
+
+  function crudHelpText(intent) {
+    switch (intent) {
+      case 'add_client':
+        return 'To add a client: open the Clients page, click "New Client", fill in the contact details and save.';
+      case 'crud_client':
+        return 'To edit a client: open the client in the Clients page, change fields and save. To delete, open the client and choose Delete (confirmation required).';
+      case 'crud_invoice':
+        return 'Create an invoice from the Invoices page or the mini-invoice form on the dashboard. Fill client, items and amounts, then save as draft or send.';
+      case 'crud_project':
+        return 'Create a project on the Projects page. Add title, description, and move cards between pipeline columns to update stage.';
+      case 'crud_task':
+        return 'Quick tasks can be added from the Tasks page or the dashboard. Click a task to edit, or drag between columns to change status.';
+      default:
+        return 'To perform CRUD actions, open the appropriate page (Clients, Invoices, Projects, Tasks) and use the New / Edit controls.';
+    }
+  }
+
+  function faqAnswer(q) {
+    if (q.indexOf('dashboard') !== -1 || q.indexOf('لوحة') !== -1) {
+      return 'The dashboard surfaces KPIs from your invoices, tasks and clients. Use demo mode to explore sample data or connect Supabase for real data.';
+    }
+    if (q.indexOf('projects') !== -1 || q.indexOf('pipeline') !== -1) {
+      return 'The Projects board uses columns to represent stages. Drag a card between columns to update its stage; click a card to edit details.';
+    }
+    if (q.indexOf('calendar') !== -1) {
+      return 'The Calendar view shows events and due dates. Click a day to add events and use filters to display tasks or invoices.';
+    }
+    return 'This workspace contains Clients, Projects, Tasks, Invoices and Smart Tools; ask about any of those for more details.';
+  }
+
   function capitalize(s) { return (s || '').charAt(0).toUpperCase() + (s || '').slice(1); }
 
   // Action handler
@@ -202,30 +384,45 @@
 
   // Main responder
   function respond(question) {
-    // show typing indicator
-    appendBotMessage({ text: 'Thinking...' });
+    const TYPING_TEXT = 'Typing...';
+    // show typing indicator (not persisted)
+    renderAssistantMessage('bot', { text: TYPING_TEXT });
+
+    // compute reply asynchronously to simulate thinking
     setTimeout(() => {
-      // remove the last 'Thinking...' bubble
+      // remove the last typing bubble if present
       const convo = document.querySelector('.uba-assistant-messages');
       if (convo) {
         const msgs = convo.querySelectorAll('.assistant-msg.bot .uba-assistant-bubble');
         if (msgs && msgs.length) {
           const last = msgs[msgs.length - 1];
-          if (last && last.textContent.trim() === 'Thinking...') {
+          if (last && last.textContent.trim() === TYPING_TEXT) {
             const parent = last.closest('.assistant-msg.bot');
             if (parent) parent.remove();
           }
         }
       }
 
-      const reply = composeReply(question);
-      // make reply text clearer: add a short lead when appropriate
-      const lead = '';
-      appendBotMessage({ text: (lead ? lead + '\n\n' : '') + reply.text, suggestions: reply.suggestions, actions: reply.actions });
+      // generate reply using local logic
+      const result = generateResponse(question);
+      if (result && result.text) {
+        appendBotMessage({ text: result.text, suggestions: result.suggestions || [], actions: result.actions || [] });
+      } else {
+        appendBotMessage({ text: "Sorry, I couldn't find an answer — could you rephrase?", suggestions: ['How do I add a client?', 'Open Clients'], actions: [] });
+      }
 
-      // after reply, offer quick feedback chips
+      // optional feedback prompt
       appendBotMessage({ text: 'Did this help?', suggestions: ['Yes', 'No'], actions: [] });
-    }, 400);
+
+      // re-enable send button if present
+      try {
+        const panel = document.getElementById('uba-assistant-panel');
+        if (panel) {
+          const send = panel.querySelector('#uba-assistant-send');
+          if (send) send.disabled = false;
+        }
+      } catch (e) {}
+    }, 600 + Math.floor(Math.random() * 400));
   }
 
   // Bind UI controls
@@ -239,7 +436,18 @@
     const input = panel.querySelector('#uba-assistant-input');
 
     if (close) close.addEventListener('click', closeAssistant);
-    if (send) send.addEventListener('click', () => { const v = input.value.trim(); if (!v) return; appendUserMessage(v); input.value = ''; respond(v); });
+    if (send) send.addEventListener('click', () => {
+      if (!input) return;
+      const v = input.value.trim();
+      if (!v) return;
+      // disable send and show typing
+      send.disabled = true;
+      appendUserMessage(v);
+      input.value = '';
+      // process
+      respond(v);
+    });
+
     if (input) input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send.click(); } if (e.key === 'Escape') closeAssistant(); });
 
     // delegate suggestion chips and action buttons
@@ -253,6 +461,14 @@
         // action buttons already have click handlers attached directly on creation
       }
     });
+    // quick buttons in static panel (e.g. 'How do I add a new client?')
+    try {
+      Array.from(panel.querySelectorAll('.uba-assistant-quick-btn')).forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const q = (btn.textContent || '').trim(); if (!q) return; setInputAndSend(q);
+        });
+      });
+    } catch (e) { /* ignore */ }
   }
 
   function openAssistant() {
@@ -302,6 +518,41 @@
     if (isSmart) createAssistantUI();
   };
 
+  // On init, restore history if present
+  try {
+    const hist = loadConversationFromStorage();
+    if (hist && hist.length) {
+      // ensure UI exists so messages can be rendered
+      document.addEventListener('DOMContentLoaded', function () {
+        createAssistantUI();
+        renderConversationHistory(20);
+      });
+    }
+  } catch (e) {
+    /* ignore */
+  }
+
   // Auto-initialize when script loads if on Smart Tools page
   try { if (document.readyState === 'complete' || document.readyState === 'interactive') { window.initAssistant(); } else { document.addEventListener('DOMContentLoaded', window.initAssistant); } } catch (e) { console.warn('assistant init error', e); }
+
+  // Open assistant when the assistant card/button is clicked in Smart Tools
+  document.addEventListener('click', function (e) {
+    try {
+      const el = e.target;
+      if (!el) return;
+      // If click inside a .uba-support-card with data-assistant-card
+      const card = el.closest && el.closest('.uba-support-card[data-assistant-card]');
+      if (card) {
+        createAssistantUI();
+        openAssistant();
+        return;
+      }
+      // Also if an explicit open-assistant button exists
+      if (el.matches && el.matches('[data-open-assistant], .uba-support-card [data-i18n="tool.assistant.open"]')) {
+        createAssistantUI(); openAssistant(); return;
+      }
+    } catch (err) {
+      // non-fatal
+    }
+  });
 })();
