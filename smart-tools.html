@@ -92,10 +92,14 @@
 
                 <!-- UBA Assistant (opens assistant) -->
                 <div class="uba-support-card" data-assistant-card="true" style="min-width:220px;cursor:pointer;">
-                  <div class="uba-support-icon">🤖</div>
+                  <div class="uba-support-icon">
+                    🤖
+                  </div>
                   <h4 data-i18n="tool.assistant.title">UBA Assistant</h4>
                   <p data-i18n="tool.assistant.desc">Ask UBA for help with the workspace, create drafts, or get step-by-step guidance.</p>
-                  <div style="margin-top:8px;"><button class="uba-btn-ghost" data-i18n="tool.assistant.open">Open Assistant</button></div>
+                  <div style="margin-top:8px;">
+                    <button id="uba-assistant-open" class="uba-btn" data-i18n="tool.assistant.open">Open UBA Assistant</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -103,20 +107,14 @@
         </div>
 
         <!-- UBA Assistant panel (static in-page markup) -->
-        <div id="uba-assistant-panel" class="uba-assistant-panel is-hidden" aria-hidden="true" role="dialog" aria-label="UBA Assistant">
+        <div id="uba-assistant-panel" class="uba-assistant-panel assistant-hidden" aria-hidden="true" role="dialog" aria-label="UBA Assistant">
           <div class="uba-assistant-header uba-card-header">
             <div>
               <div class="uba-card-title" data-i18n="assistant_title">UBA Assistant</div>
-              <div class="uba-card-sub" data-i18n="assistant_subtitle">Contextual help — local assistant</div>
+              <div class="uba-card-sub" data-i18n="assistant_subtitle">Contextual help 
+              </div>
             </div>
             <button id="uba-assistant-close" class="uba-btn-ghost" aria-label="Close">✕</button>
-          </div>
-
-          <div class="uba-assistant-quick" style="padding:8px 12px; display:flex; gap:8px; flex-wrap:wrap;">
-            <button class="uba-assistant-quick-btn uba-btn-ghost">How do I add a new client?</button>
-            <button class="uba-assistant-quick-btn uba-btn-ghost">How do I create an invoice?</button>
-            <button class="uba-assistant-quick-btn uba-btn-ghost">How do I track tasks?</button>
-            <button class="uba-assistant-quick-btn uba-btn-ghost">How do I reset demo data?</button>
           </div>
 
           <div class="uba-assistant-messages" aria-live="polite" style="padding:8px 12px; max-height:46vh; overflow:auto;"></div>

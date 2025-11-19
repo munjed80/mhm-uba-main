@@ -66,6 +66,7 @@
           break;
         case 'smarttools-page':
           if (typeof initSmartTools === 'function') initSmartTools();
+          if (typeof initAssistant === 'function') initAssistant();
           break;
         case 'insights-page':
           if (typeof initInsightsPage === 'function') initInsightsPage();
@@ -190,6 +191,9 @@
       case "smarttools-page":
         if (typeof initSmartTools === "function") {
           initSmartTools();
+        }
+        if (typeof initAssistant === "function") {
+          initAssistant();
         }
         break;
 

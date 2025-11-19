@@ -488,71 +488,51 @@
     panel.setAttribute('aria-hidden', 'true');
   }
 
+  // helper to set input value and trigger send
   function setInputAndSend(text) {
-    const input = document.getElementById('uba-assistant-input');
-    if (!input) return;
-    input.value = text;
-    const send = document.getElementById('uba-assistant-send');
+    const panel = document.getElementById('uba-assistant-panel');
+    if (!panel) return;
+    const input = panel.querySelector('#uba-assistant-input');
+    const send = panel.querySelector('#uba-assistant-send');
+    if (input) {
+      input.value = text;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    }
     if (send) send.click();
   }
 
-  // Exposed API
+  // Assistant initialization (for static button)
+  function initAssistant() {
+    const openButton = document.getElementById('uba-assistant-open');
+    const panel = document.getElementById('uba-assistant-panel');
+    const closeButton = document.getElementById('uba-assistant-close');
+
+    if (!openButton || !panel || !closeButton) {
+      console.log('initAssistant: Missing elements for assistant initialization');
+      return;
+    }
+
+    openButton.addEventListener('click', () => {
+      panel.classList.remove('assistant-hidden');
+      panel.setAttribute('aria-hidden', 'false');
+    });
+
+    closeButton.addEventListener('click', () => {
+      panel.classList.add('assistant-hidden');
+      panel.setAttribute('aria-hidden', 'true');
+    });
+
+    console.log('initAssistant: Assistant initialized successfully');
+  }
+
+  // Load initial conversation history if available
+  loadConversationFromStorage();
+
+  // Expose public methods for testing or external control
   window.ubaAssistant = {
     open: openAssistant,
     close: closeAssistant,
-    ask: (q) => { appendUserMessage(q); respond(q); },
-    kb: KB,
+    respond,
+    initAssistant
   };
-
-  // Small init function used by page-loader
-  window.initAssistant = function () {
-    // Only auto-create UI when on a page that has the Smart Tools view or the assistant card
-    const isSmart = (function () {
-      const p = window.location.pathname.toLowerCase();
-      if (p.endsWith('smart-tools.html') || p.includes('smart-tools')) return true;
-      if (document.querySelector('[data-view="smart-tools"]')) return true;
-      if (document.getElementById('smart-tools-grid')) return true;
-      return false;
-    })();
-
-    if (isSmart) createAssistantUI();
-  };
-
-  // On init, restore history if present
-  try {
-    const hist = loadConversationFromStorage();
-    if (hist && hist.length) {
-      // ensure UI exists so messages can be rendered
-      document.addEventListener('DOMContentLoaded', function () {
-        createAssistantUI();
-        renderConversationHistory(20);
-      });
-    }
-  } catch (e) {
-    /* ignore */
-  }
-
-  // Auto-initialize when script loads if on Smart Tools page
-  try { if (document.readyState === 'complete' || document.readyState === 'interactive') { window.initAssistant(); } else { document.addEventListener('DOMContentLoaded', window.initAssistant); } } catch (e) { console.warn('assistant init error', e); }
-
-  // Open assistant when the assistant card/button is clicked in Smart Tools
-  document.addEventListener('click', function (e) {
-    try {
-      const el = e.target;
-      if (!el) return;
-      // If click inside a .uba-support-card with data-assistant-card
-      const card = el.closest && el.closest('.uba-support-card[data-assistant-card]');
-      if (card) {
-        createAssistantUI();
-        openAssistant();
-        return;
-      }
-      // Also if an explicit open-assistant button exists
-      if (el.matches && el.matches('[data-open-assistant], .uba-support-card [data-i18n="tool.assistant.open"]')) {
-        createAssistantUI(); openAssistant(); return;
-      }
-    } catch (err) {
-      // non-fatal
-    }
-  });
 })();
