@@ -1009,6 +1009,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const renderer = viewRenderers[selected];
     if (typeof renderer === "function") {
       renderer();
+      // Ensure page-specific init runs for SPA navigation (projects/tasks etc.)
+      try {
+        if (typeof window.loadPageScripts === 'function') {
+          // call with -page suffix (matches page-id dataset values)
+          window.loadPageScripts(selected + '-page');
+        }
+      } catch (e) {
+        console.warn('spa: loadPageScripts call failed', e);
+      }
     }
   };
 
