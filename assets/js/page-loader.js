@@ -25,6 +25,15 @@
       if (typeof renderTasksBoard === 'function' && document.getElementById('tasks-columns')) {
         try { renderTasksBoard(); } catch (e) { /* noop */ }
       }
+
+      // After running any init tasks, ensure translations are applied for the page
+      try {
+        if (window.ubaI18n && typeof window.ubaI18n.applyTranslations === 'function') {
+          window.ubaI18n.applyTranslations();
+        }
+      } catch (e) {
+        console.warn('i18n apply after init failed', e);
+      }
     } catch (err) {
       console.warn('ubaPageLoader init error', err);
     }
@@ -79,6 +88,24 @@
     } catch (e) {
       console.warn('loadPageScripts error', e);
     }
+
+    // After initializing the page, ensure translations are applied and view header is updated
+    try {
+      if (window.ubaI18n && typeof window.ubaI18n.applyTranslations === 'function') {
+        // set a sensible view key if available (strip -page suffix)
+        try {
+          const viewKey = (pageId || '').replace(/-page$/, '');
+          if (typeof window.ubaI18n.setCurrentView === 'function') {
+            window.ubaI18n.setCurrentView(viewKey);
+          }
+        } catch (e) {
+          // ignore
+        }
+        window.ubaI18n.applyTranslations();
+      }
+    } catch (e) {
+      console.warn('i18n apply after loadPageScripts failed', e);
+    }
   }
 
   window.ubaPageLoader = { init, loadPageScripts };
@@ -114,6 +141,15 @@
       }
       if (typeof renderTasksBoard === 'function' && document.getElementById('tasks-columns')) {
         try { renderTasksBoard(); } catch (e) { /* noop */ }
+      }
+
+      // After running any init tasks, ensure translations are applied for the page
+      try {
+        if (window.ubaI18n && typeof window.ubaI18n.applyTranslations === 'function') {
+          window.ubaI18n.applyTranslations();
+        }
+      } catch (e) {
+        console.warn('i18n apply after init failed', e);
       }
     } catch (err) {
       console.warn('ubaPageLoader init error', err);
@@ -165,6 +201,21 @@
 
       default:
         console.log("No initialization defined for:", pageId);
+    }
+
+    // After initializing the page, ensure translations are applied and view header is updated
+    try {
+      if (window.ubaI18n && typeof window.ubaI18n.applyTranslations === 'function') {
+        try {
+          const viewKey = (pageId || '').replace(/-page$/, '');
+          if (typeof window.ubaI18n.setCurrentView === 'function') {
+            window.ubaI18n.setCurrentView(viewKey);
+          }
+        } catch (e) { /* ignore */ }
+        window.ubaI18n.applyTranslations();
+      }
+    } catch (e) {
+      console.warn('i18n apply after loadPageScripts failed', e);
     }
     }
 
