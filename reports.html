@@ -106,21 +106,6 @@
   <script src="assets/js/app.js"></script>
   <script src="assets/js/page-loader.js"></script>
   <script src="assets/js/uba-pages-data.js"></script>
-    <script>
-      const pageId = document.getElementById("page-id").dataset.page;
-      loadPageScripts(pageId);
-    </script>
-  <script>
-    (function(){
-      const r = window.ubaReports || {};
-      document.getElementById('revenue-kpi').innerHTML = `<div class="uba-kpi"><div class="uba-kpi-label">This month</div><div class="uba-kpi-value">€ ${r.revenue?.thisMonth||0}</div></div>`;
-      const tbody = document.getElementById('revenue-table');
-      tbody.innerHTML = `<tr><td>Invoices</td><td>${r.revenue?.invoices||0}</td></tr><tr><td>Revenue</td><td>€ ${r.revenue?.thisMonth||0}</td></tr>`;
-      document.getElementById('active-clients').textContent = r.activeClients || 0;
-      document.getElementById('projects-summary').innerHTML = `<div>In progress: ${r.projects?.inProgress||0}</div><div>Completed: ${r.projects?.completed||0}</div><div>Stalled: ${r.projects?.stalled||0}</div>`;
-      document.getElementById('tasks-overview').innerHTML = `<div>To do: ${r.tasks?.todo||0}</div><div>In progress: ${r.tasks?.inProgress||0}</div><div>Done: ${r.tasks?.done||0}</div>`;
-      if (window.ubaI18n && window.ubaI18n.applyTranslations) window.ubaI18n.applyTranslations(localStorage.getItem('uba-lang')||'en');
-    })();
-  </script>
+  <script src="assets/js/reports.js"></script>
 </body>
 </html>

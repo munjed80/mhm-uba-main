@@ -8,6 +8,7 @@
 </head>
 <body>
   <section id="uba-dashboard">
+    <div id="page-id" data-page="automations-page">
     <div class="uba-shell">
       <aside class="uba-sidebar">
         <div><div class="uba-logo">MHM <span>UBA</span></div></div>
@@ -42,29 +43,19 @@
           <section class="uba-view" data-view="automations">
             <div class="uba-card" style="padding:12px;">
               <p>No automations yet. Create your first workflow using triggers and actions.</p>
-              <div style="margin-top:12px;"><button class="uba-btn-primary">New automation</button></div>
+              <div style="margin-top:12px;"><button class="uba-btn-primary" data-automation-new>New automation</button></div>
             </div>
           </section>
         </div>
       </main>
+    </div>
     </div>
   </section>
 
   <script src="assets/js/i18n.js"></script>
   <script src="assets/js/store.js"></script>
   <script src="assets/js/app.js"></script>
-  <script>
-    (function(){
-      const lang = localStorage.getItem('uba-lang') || 'en';
-      if (window.ubaI18n && typeof window.ubaI18n.applyTranslations === 'function') {
-        window.ubaI18n.applyTranslations(lang);
-      }
-      if (lang === 'ar') document.documentElement.dir = 'rtl';
-    })();
-  </script>
-  <script>
-    const pageId = document.getElementById("page-id") ? document.getElementById("page-id").dataset.page : 'automations-page';
-    if (typeof loadPageScripts === 'function') loadPageScripts(pageId);
-  </script>
+  <script src="assets/js/page-loader.js"></script>
+  <script src="assets/js/automations.js"></script>
 </body>
 </html>
