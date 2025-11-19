@@ -38,7 +38,8 @@
   };
 
   const generateId = (prefix = "id") => {
-    if (window.crypto && crypto.randomUUID) return `${prefix}-${crypto.randomUUID()}`;
+    if (window.crypto && crypto.randomUUID)
+      return `${prefix}-${crypto.randomUUID()}`;
     return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
   };
 
@@ -148,11 +149,18 @@
 
   const auth = {
     createUser({ name, email, password, language } = {}) {
-      if (!email) throw new Error('Email required');
+      if (!email) throw new Error("Email required");
       const users = getAllUsers();
-      if (users.find(u => u.email === email)) throw new Error('User exists');
-      const id = generateId('user');
-      const user = { id, name: name || '', email, password: password || '', language: language || 'en', createdAt: nowISO() };
+      if (users.find((u) => u.email === email)) throw new Error("User exists");
+      const id = generateId("user");
+      const user = {
+        id,
+        name: name || "",
+        email,
+        password: password || "",
+        language: language || "en",
+        createdAt: nowISO(),
+      };
       users.push(user);
       saveAllUsers(users);
       return user;
@@ -160,17 +168,23 @@
     getUserByEmail(email) {
       if (!email) return null;
       const users = getAllUsers();
-      return users.find(u => u.email === email) || null;
+      return users.find((u) => u.email === email) || null;
     },
     login(email, password) {
       const user = auth.getUserByEmail(email);
-      if (!user) throw new Error('No such user');
-      if (user.password !== password) throw new Error('Invalid credentials');
+      if (!user) throw new Error("No such user");
+      if (user.password !== password) throw new Error("Invalid credentials");
       // choose a workspace for the user or create a default one
       const workspaces = getAllWorkspaces();
-      let ws = workspaces.find(w => w.ownerId === user.id);
+      let ws = workspaces.find((w) => w.ownerId === user.id);
       if (!ws) {
-        ws = { id: generateId('ws'), ownerId: user.id, name: `${user.name || 'Workspace'}`, meta: { timezone: 'UTC', industry: '' }, createdAt: nowISO() };
+        ws = {
+          id: generateId("ws"),
+          ownerId: user.id,
+          name: `${user.name || "Workspace"}`,
+          meta: { timezone: "UTC", industry: "" },
+          createdAt: nowISO(),
+        };
         workspaces.push(ws);
         saveAllWorkspaces(workspaces);
       }
@@ -185,18 +199,17 @@
       const s = getSession();
       if (!s || !s.userId) return null;
       const users = getAllUsers();
-      return users.find(u => u.id === s.userId) || null;
+      return users.find((u) => u.id === s.userId) || null;
     },
     setCurrentUserById(userId) {
       const s = getSession() || {};
       s.userId = userId;
       setSession(s);
-    }
-    ,
+    },
     updateUser(userId, patch = {}) {
       const users = getAllUsers();
       let found = false;
-      const next = users.map(u => {
+      const next = users.map((u) => {
         if (u.id === userId) {
           found = true;
           return { ...u, ...patch, updatedAt: nowISO() };
@@ -205,15 +218,21 @@
       });
       if (found) {
         saveAllUsers(next);
-        return next.find(u => u.id === userId) || null;
+        return next.find((u) => u.id === userId) || null;
       }
       return null;
-    }
+    },
   };
 
   const workspace = {
     createWorkspace({ name, ownerId, meta } = {}) {
-      const w = { id: generateId('ws'), ownerId: ownerId || null, name: name || 'Workspace', meta: meta || { timezone: 'UTC' }, createdAt: nowISO() };
+      const w = {
+        id: generateId("ws"),
+        ownerId: ownerId || null,
+        name: name || "Workspace",
+        meta: meta || { timezone: "UTC" },
+        createdAt: nowISO(),
+      };
       const all = getAllWorkspaces();
       all.push(w);
       saveAllWorkspaces(all);
@@ -221,23 +240,22 @@
     },
     listForUser(userId) {
       const all = getAllWorkspaces();
-      return all.filter(w => w.ownerId === userId);
+      return all.filter((w) => w.ownerId === userId);
     },
     getCurrentWorkspace() {
       const s = getSession();
       if (!s || !s.workspaceId) return null;
-      return getAllWorkspaces().find(w => w.id === s.workspaceId) || null;
+      return getAllWorkspaces().find((w) => w.id === s.workspaceId) || null;
     },
     setCurrentWorkspace(workspaceId) {
       const s = getSession() || {};
       s.workspaceId = workspaceId;
       setSession(s);
-    }
-    ,
+    },
     updateWorkspace(workspaceId, patch = {}) {
       const all = getAllWorkspaces();
       let found = false;
-      const next = all.map(w => {
+      const next = all.map((w) => {
         if (w.id === workspaceId) {
           found = true;
           // merge meta object carefully
@@ -248,10 +266,10 @@
       });
       if (found) {
         saveAllWorkspaces(next);
-        return next.find(w => w.id === workspaceId) || null;
+        return next.find((w) => w.id === workspaceId) || null;
       }
       return null;
-    }
+    },
   };
 
   const store = {

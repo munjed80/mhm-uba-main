@@ -1,111 +1,218 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>UBA Reports</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
-</head>
-<body>
-  <section id="uba-dashboard">
-    <div id="page-id" data-page="reports-page">
-    <div class="uba-shell">
-      <aside class="uba-sidebar">
-        <div>
-          <div class="uba-logo">MHM <span>UBA</span></div>
-          <p class="uba-tagline" data-i18n="app.tagline">Universal Business Automator — one workspace for clients, tasks, invoices and smart tools.</p>
-          <div class="uba-badge"><span class="uba-badge-dot"></span><span data-i18n="app.badge">Private beta · Built in the Netherlands</span></div>
-        </div>
-
-        <div class="uba-language">
-          <label for="language-select" data-i18n="language.label">Language</label>
-          <select id="language-select">
-            <option value="en" data-i18n="language.en">English</option>
-            <option value="ar" data-i18n="language.ar">Arabic</option>
-            <option value="nl" data-i18n="language.nl">Dutch</option>
-            <option value="fr" data-i18n="language.fr">French</option>
-            <option value="es" data-i18n="language.es">Spanish</option>
-            <option value="de" data-i18n="language.de">German</option>
-          </select>
-        </div>
-
-        <div>
-          <div class="uba-nav-label" data-i18n="nav.workspaceLabel">Workspace</div>
-          <nav class="uba-nav">
-            <a class="uba-nav-btn" href="index.html"><span class="icon">📈</span><span data-i18n="nav.dashboard">Dashboard</span><small data-i18n="nav.dashboardSub">Overview</small></a>
-            <a class="uba-nav-btn" href="clients.html"><span class="icon">🧑‍💻</span><span data-i18n="nav.clients">Clients</span><small data-i18n="nav.clientsSub">CRM</small></a>
-            <a class="uba-nav-btn" href="projects.html"><span class="icon">💼</span><span data-i18n="nav.projects">Projects</span><small data-i18n="nav.projectsSub">Pipeline</small></a>
-            <a class="uba-nav-btn" href="tasks.html"><span class="icon">✅</span><span data-i18n="nav.tasks">Tasks</span><small data-i18n="nav.tasksSub">Today</small></a>
-            <a class="uba-nav-btn" href="invoices.html"><span class="icon">💵</span><span data-i18n="nav.invoices">Invoices</span><small data-i18n="nav.invoicesSub">Billing</small></a>
-            <a class="uba-nav-btn" href="automations.html"><span class="icon">🤖</span><span data-i18n="nav.automations">Automations</span><small data-i18n="nav.automationsSub">Flows</small></a>
-            <a class="uba-nav-btn" href="calendar.html"><span class="icon">📅</span><span>Calendar</span></a>
-            <a class="uba-nav-btn" href="leads.html"><span class="icon">🧲</span><span data-i18n="nav.leads">Leads</span><small data-i18n="nav.leadsSub">Pipeline</small></a>
-            <a class="uba-nav-btn" href="expenses.html"><span class="icon">📤</span><span>Expenses</span></a>
-            <a class="uba-nav-btn" href="files.html"><span class="icon">📁</span><span>Files</span></a>
-            <a class="uba-nav-btn active" href="reports.html"><span class="icon">📑</span><span data-i18n="nav.reports">Reports</span><small>Reports</small></a>
-            <a class="uba-nav-btn" href="smart-tools.html"><span class="icon">🧠</span><span data-i18n="nav.smartTools">UBA Smart Tools</span><small data-i18n="nav.smartToolsSub">AI ops</small></a>
-            <a class="uba-nav-btn" href="insights.html"><span class="icon">📊</span><span data-i18n="nav.insights">Insights Lab</span><small data-i18n="nav.insightsSub">Reports</small></a>
-            <a class="uba-nav-btn" href="help.html"><span class="icon">💬</span><span data-i18n="nav.support">Success Desk</span><small data-i18n="nav.supportSub">Guidance</small></a>
-            <a class="uba-nav-btn" href="settings.html"><span class="icon">🛠️</span><span data-i18n="nav.settings">Settings</span><small data-i18n="nav.settingsSub">Workspace</small></a>
-          </nav>
-        </div>
-        <div class="uba-sidebar-footer" data-i18n="sidebar.footer">Designed for small teams and solo founders who are tired of 7 different tools just to run one business.</div>
-      </aside>
-
-      <main class="uba-main">
-        <header class="uba-topbar">
-          <div class="uba-top-left">
-            <p class="uba-top-kicker">Reports</p>
-            <h1 id="uba-view-title">Business reports</h1>
-            <p id="uba-view-desc">Quick KPIs and summaries for this workspace.</p>
-          </div>
-          <div class="uba-top-right">
-            <div class="uba-pill">Snapshot</div>
-          </div>
-        </header>
-
-        <div class="uba-views">
-          <section class="uba-view" data-view="reports">
-            <div class="uba-grid">
-              <div class="uba-grid-col">
-                <section class="uba-card">
-                  <div class="uba-card-header"><div><div class="uba-card-title">Revenue & invoices</div><p class="uba-card-sub">Mini table of invoices</p></div></div>
-                  <div style="padding:12px;">
-                    <div id="revenue-kpi" class="uba-kpi-strip" style="margin-bottom:12px;"></div>
-                    <div class="uba-table-wrap"><table class="uba-table"><thead><tr><th>Metric</th><th>Value</th></tr></thead><tbody id="revenue-table"></tbody></table></div>
-                  </div>
-                </section>
-
-                <section class="uba-card" style="margin-top:12px;">
-                  <div class="uba-card-header"><div><div class="uba-card-title">Active clients</div><p class="uba-card-sub">Current active clients</p></div></div>
-                  <div style="padding:12px;"><div id="active-clients">0</div></div>
-                </section>
-              </div>
-
-              <div class="uba-grid-col">
-                <section class="uba-card">
-                  <div class="uba-card-header"><div><div class="uba-card-title">Projects summary</div><p class="uba-card-sub">Quick status</p></div></div>
-                  <div style="padding:12px;" id="projects-summary"></div>
-                </section>
-
-                <section class="uba-card" style="margin-top:12px;">
-                  <div class="uba-card-header"><div><div class="uba-card-title">Tasks overview</div><p class="uba-card-sub">Open vs done</p></div></div>
-                  <div style="padding:12px;" id="tasks-overview"></div>
-                </section>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UBA Reports</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <section id="uba-dashboard">
+      <div id="page-id" data-page="reports-page">
+        <div class="uba-shell">
+          <aside class="uba-sidebar">
+            <div>
+              <div class="uba-logo">MHM <span>UBA</span></div>
+              <p class="uba-tagline" data-i18n="app.tagline">
+                Universal Business Automator — one workspace for clients, tasks,
+                invoices and smart tools.
+              </p>
+              <div class="uba-badge">
+                <span class="uba-badge-dot"></span
+                ><span data-i18n="app.badge"
+                  >Private beta · Built in the Netherlands</span
+                >
               </div>
             </div>
-          </section>
-        </div>
-      </main>
-    </div>
-    </div>
-  </section>
 
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/store.js"></script>
-  <script src="assets/js/app.js"></script>
-  <script src="assets/js/page-loader.js"></script>
-  <script src="assets/js/uba-pages-data.js"></script>
-  <script src="assets/js/reports.js"></script>
-</body>
+            <div class="uba-language">
+              <label for="language-select" data-i18n="language.label"
+                >Language</label
+              >
+              <select id="language-select">
+                <option value="en" data-i18n="language.en">English</option>
+                <option value="ar" data-i18n="language.ar">Arabic</option>
+                <option value="nl" data-i18n="language.nl">Dutch</option>
+                <option value="fr" data-i18n="language.fr">French</option>
+                <option value="es" data-i18n="language.es">Spanish</option>
+                <option value="de" data-i18n="language.de">German</option>
+              </select>
+            </div>
+
+            <div>
+              <div class="uba-nav-label" data-i18n="nav.workspaceLabel">
+                Workspace
+              </div>
+              <nav class="uba-nav">
+                <a class="uba-nav-btn" href="index.html"
+                  ><span class="icon">📈</span
+                  ><span data-i18n="nav.dashboard">Dashboard</span
+                  ><small data-i18n="nav.dashboardSub">Overview</small></a
+                >
+                <a class="uba-nav-btn" href="clients.html"
+                  ><span class="icon">🧑‍💻</span
+                  ><span data-i18n="nav.clients">Clients</span
+                  ><small data-i18n="nav.clientsSub">CRM</small></a
+                >
+                <a class="uba-nav-btn" href="projects.html"
+                  ><span class="icon">💼</span
+                  ><span data-i18n="nav.projects">Projects</span
+                  ><small data-i18n="nav.projectsSub">Pipeline</small></a
+                >
+                <a class="uba-nav-btn" href="tasks.html"
+                  ><span class="icon">✅</span
+                  ><span data-i18n="nav.tasks">Tasks</span
+                  ><small data-i18n="nav.tasksSub">Today</small></a
+                >
+                <a class="uba-nav-btn" href="invoices.html"
+                  ><span class="icon">💵</span
+                  ><span data-i18n="nav.invoices">Invoices</span
+                  ><small data-i18n="nav.invoicesSub">Billing</small></a
+                >
+                <a class="uba-nav-btn" href="automations.html"
+                  ><span class="icon">🤖</span
+                  ><span data-i18n="nav.automations">Automations</span
+                  ><small data-i18n="nav.automationsSub">Flows</small></a
+                >
+                <a class="uba-nav-btn" href="calendar.html"
+                  ><span class="icon">📅</span><span>Calendar</span></a
+                >
+                <a class="uba-nav-btn" href="leads.html"
+                  ><span class="icon">🧲</span
+                  ><span data-i18n="nav.leads">Leads</span
+                  ><small data-i18n="nav.leadsSub">Pipeline</small></a
+                >
+                <a class="uba-nav-btn" href="expenses.html"
+                  ><span class="icon">📤</span><span>Expenses</span></a
+                >
+                <a class="uba-nav-btn" href="files.html"
+                  ><span class="icon">📁</span><span>Files</span></a
+                >
+                <a class="uba-nav-btn active" href="reports.html"
+                  ><span class="icon">📑</span
+                  ><span data-i18n="nav.reports">Reports</span
+                  ><small>Reports</small></a
+                >
+                <a class="uba-nav-btn" href="smart-tools.html"
+                  ><span class="icon">🧠</span
+                  ><span data-i18n="nav.smartTools">UBA Smart Tools</span
+                  ><small data-i18n="nav.smartToolsSub">AI ops</small></a
+                >
+                <a class="uba-nav-btn" href="insights.html"
+                  ><span class="icon">📊</span
+                  ><span data-i18n="nav.insights">Insights Lab</span
+                  ><small data-i18n="nav.insightsSub">Reports</small></a
+                >
+                <a class="uba-nav-btn" href="help.html"
+                  ><span class="icon">💬</span
+                  ><span data-i18n="nav.support">Success Desk</span
+                  ><small data-i18n="nav.supportSub">Guidance</small></a
+                >
+                <a class="uba-nav-btn" href="settings.html"
+                  ><span class="icon">🛠️</span
+                  ><span data-i18n="nav.settings">Settings</span
+                  ><small data-i18n="nav.settingsSub">Workspace</small></a
+                >
+              </nav>
+            </div>
+            <div class="uba-sidebar-footer" data-i18n="sidebar.footer">
+              Designed for small teams and solo founders who are tired of 7
+              different tools just to run one business.
+            </div>
+          </aside>
+
+          <main class="uba-main">
+            <header class="uba-topbar">
+              <div class="uba-top-left">
+                <p class="uba-top-kicker">Reports</p>
+                <h1 id="uba-view-title">Business reports</h1>
+                <p id="uba-view-desc">
+                  Quick KPIs and summaries for this workspace.
+                </p>
+              </div>
+              <div class="uba-top-right">
+                <div class="uba-pill">Snapshot</div>
+              </div>
+            </header>
+
+            <div class="uba-views">
+              <section class="uba-view" data-view="reports">
+                <div class="uba-grid">
+                  <div class="uba-grid-col">
+                    <section class="uba-card">
+                      <div class="uba-card-header">
+                        <div>
+                          <div class="uba-card-title">Revenue & invoices</div>
+                          <p class="uba-card-sub">Mini table of invoices</p>
+                        </div>
+                      </div>
+                      <div style="padding: 12px">
+                        <div
+                          id="revenue-kpi"
+                          class="uba-kpi-strip"
+                          style="margin-bottom: 12px"
+                        ></div>
+                        <div class="uba-table-wrap">
+                          <table class="uba-table">
+                            <thead>
+                              <tr>
+                                <th>Metric</th>
+                                <th>Value</th>
+                              </tr>
+                            </thead>
+                            <tbody id="revenue-table"></tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </section>
+
+                    <section class="uba-card" style="margin-top: 12px">
+                      <div class="uba-card-header">
+                        <div>
+                          <div class="uba-card-title">Active clients</div>
+                          <p class="uba-card-sub">Current active clients</p>
+                        </div>
+                      </div>
+                      <div style="padding: 12px">
+                        <div id="active-clients">0</div>
+                      </div>
+                    </section>
+                  </div>
+
+                  <div class="uba-grid-col">
+                    <section class="uba-card">
+                      <div class="uba-card-header">
+                        <div>
+                          <div class="uba-card-title">Projects summary</div>
+                          <p class="uba-card-sub">Quick status</p>
+                        </div>
+                      </div>
+                      <div style="padding: 12px" id="projects-summary"></div>
+                    </section>
+
+                    <section class="uba-card" style="margin-top: 12px">
+                      <div class="uba-card-header">
+                        <div>
+                          <div class="uba-card-title">Tasks overview</div>
+                          <p class="uba-card-sub">Open vs done</p>
+                        </div>
+                      </div>
+                      <div style="padding: 12px" id="tasks-overview"></div>
+                    </section>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </main>
+        </div>
+      </div>
+    </section>
+
+    <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/store.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/page-loader.js"></script>
+    <script src="assets/js/uba-pages-data.js"></script>
+    <script src="assets/js/reports.js"></script>
+  </body>
 </html>

@@ -5,128 +5,150 @@
       return fn();
     } catch (err) {
       if (label) {
-        console.warn(label + ' error', err);
+        console.warn(label + " error", err);
       } else {
-        console.warn('page-loader callback error', err);
+        console.warn("page-loader callback error", err);
       }
     }
   }
 
   function runStandaloneRenderers() {
     safeCall(() => {
-      if (typeof initSmartToolsStandalone === 'function') {
+      if (typeof initSmartToolsStandalone === "function") {
         initSmartToolsStandalone();
       }
-    }, 'initSmartToolsStandalone');
-
-    safeCall(() => {
-      if (typeof renderSmartToolsGrid === 'function' && document.getElementById('smart-tools-grid')) {
-        renderSmartToolsGrid();
-      }
-    }, 'renderSmartToolsGrid');
+    }, "initSmartToolsStandalone");
 
     safeCall(() => {
       if (
-        typeof window.renderProjectsStandalone === 'function' &&
-        (document.getElementById('projects-leads') || document.getElementById('projects-inprogress'))
+        typeof renderSmartToolsGrid === "function" &&
+        document.getElementById("smart-tools-grid")
+      ) {
+        renderSmartToolsGrid();
+      }
+    }, "renderSmartToolsGrid");
+
+    safeCall(() => {
+      if (
+        typeof window.renderProjectsStandalone === "function" &&
+        (document.getElementById("projects-leads") ||
+          document.getElementById("projects-inprogress"))
       ) {
         window.renderProjectsStandalone();
       }
-    }, 'renderProjectsStandalone');
+    }, "renderProjectsStandalone");
 
     safeCall(() => {
       if (
-        typeof window.renderTasksStandalone === 'function' &&
-        (document.getElementById('tasks-backlog') || document.getElementById('tasks-inprogress'))
+        typeof window.renderTasksStandalone === "function" &&
+        (document.getElementById("tasks-backlog") ||
+          document.getElementById("tasks-inprogress"))
       ) {
         window.renderTasksStandalone();
       }
-    }, 'renderTasksStandalone');
+    }, "renderTasksStandalone");
 
     safeCall(() => {
-      if (typeof renderProjectsBoard === 'function' && document.getElementById('projects-columns')) {
+      if (
+        typeof renderProjectsBoard === "function" &&
+        document.getElementById("projects-columns")
+      ) {
         renderProjectsBoard();
       }
-    }, 'renderProjectsBoard');
+    }, "renderProjectsBoard");
 
     safeCall(() => {
-      if (typeof renderTasksBoard === 'function' && document.getElementById('tasks-columns')) {
+      if (
+        typeof renderTasksBoard === "function" &&
+        document.getElementById("tasks-columns")
+      ) {
         renderTasksBoard();
       }
-    }, 'renderTasksBoard');
+    }, "renderTasksBoard");
   }
 
   function applyTranslations(pageId) {
     try {
-      if (window.ubaI18n && typeof window.ubaI18n.applyTranslations === 'function') {
+      if (
+        window.ubaI18n &&
+        typeof window.ubaI18n.applyTranslations === "function"
+      ) {
         if (pageId) {
-          const viewKey = (pageId || '').replace(/-page$/, '');
-          if (typeof window.ubaI18n.setCurrentView === 'function') {
+          const viewKey = (pageId || "").replace(/-page$/, "");
+          if (typeof window.ubaI18n.setCurrentView === "function") {
             window.ubaI18n.setCurrentView(viewKey);
           }
         }
         window.ubaI18n.applyTranslations();
       }
     } catch (err) {
-      console.warn('i18n apply after init failed', err);
+      console.warn("i18n apply after init failed", err);
     }
   }
 
   function loadPageScripts(pageId) {
-    console.log('page-loader: initialize', pageId);
+    console.log("page-loader: initialize", pageId);
     try {
       switch (pageId) {
-        case 'index-page':
-          if (typeof initIndexPage === 'function') initIndexPage();
+        case "index-page":
+          if (typeof initIndexPage === "function") initIndexPage();
           break;
-        case 'clients-page':
-          if (typeof initClientsPage === 'function') initClientsPage();
+        case "clients-page":
+          if (typeof initClientsPage === "function") initClientsPage();
           break;
-        case 'projects-page':
-          if (typeof initProjectsPage === 'function') initProjectsPage();
+        case "projects-page":
+          if (typeof initProjectsPage === "function") initProjectsPage();
           break;
-        case 'tasks-page':
-          if (typeof initTasksPage === 'function') initTasksPage();
+        case "tasks-page":
+          if (typeof initTasksPage === "function") initTasksPage();
           break;
-        case 'invoices-page':
-          if (typeof initInvoicesPage === 'function') {
+        case "invoices-page":
+          if (typeof initInvoicesPage === "function") {
             initInvoicesPage();
-          } else if (typeof renderInvoicePage === 'function') {
+          } else if (typeof renderInvoicePage === "function") {
             renderInvoicePage();
           }
           break;
-        case 'automations-page':
-          if (typeof initAutomationsPage === 'function') initAutomationsPage();
+        case "automations-page":
+          if (typeof initAutomationsPage === "function") initAutomationsPage();
           break;
-        case 'files-page':
-          if (typeof initFilesPage === 'function') initFilesPage();
+        case "files-page":
+          if (typeof initFilesPage === "function") initFilesPage();
           break;
-        case 'reports-page':
-          if (typeof initReportsPage === 'function') initReportsPage();
+        case "reports-page":
+          if (typeof initReportsPage === "function") initReportsPage();
           break;
-        case 'smarttools-page':
-          if (typeof initSmartTools === 'function') initSmartTools();
+        case "smarttools-page":
+          if (typeof initSmartTools === "function") initSmartTools();
           break;
-        case 'insights-page':
-          if (typeof initInsightsPage === 'function') initInsightsPage();
+        case "insights-page":
+          if (typeof initInsightsPage === "function") initInsightsPage();
           break;
-        case 'calendar-page':
-          if (typeof initCalendarPage === 'function') initCalendarPage();
+        case "calendar-page":
+          if (typeof initCalendarPage === "function") initCalendarPage();
           break;
-        case 'assistant-page':
-          if (typeof initAssistantPage === 'function') initAssistantPage();
+        case "assistant-page":
+          if (typeof initAssistantPage === "function") initAssistantPage();
           break;
         default:
-          if (pageId && pageId.indexOf('projects') !== -1 && typeof initProjectsPage === 'function') {
+          if (
+            pageId &&
+            pageId.indexOf("projects") !== -1 &&
+            typeof initProjectsPage === "function"
+          ) {
             initProjectsPage();
           }
-          if (pageId && pageId.indexOf('tasks') !== -1 && typeof initTasksPage === 'function') {
+          if (
+            pageId &&
+            pageId.indexOf("tasks") !== -1 &&
+            typeof initTasksPage === "function"
+          ) {
             initTasksPage();
           }
           break;
       }
     } catch (err) {
-      console.warn('loadPageScripts error', err);
+      console.warn("loadPageScripts error", err);
     }
 
     applyTranslations(pageId);
@@ -135,19 +157,19 @@
   function init() {
     try {
       runStandaloneRenderers();
-      const pageId = document.getElementById('page-id')?.dataset?.page;
+      const pageId = document.getElementById("page-id")?.dataset?.page;
       if (pageId) {
         loadPageScripts(pageId);
       } else {
         applyTranslations();
       }
     } catch (err) {
-      console.warn('ubaPageLoader init error', err);
+      console.warn("ubaPageLoader init error", err);
     }
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
   } else {
     init();
   }

@@ -2,11 +2,11 @@
 (function () {
   function initReportsPage() {
     const reports = window.ubaReports || {};
-    const revenueKpi = document.getElementById('revenue-kpi');
-    const revenueTable = document.getElementById('revenue-table');
-    const activeClients = document.getElementById('active-clients');
-    const projectsSummary = document.getElementById('projects-summary');
-    const tasksOverview = document.getElementById('tasks-overview');
+    const revenueKpi = document.getElementById("revenue-kpi");
+    const revenueTable = document.getElementById("revenue-table");
+    const activeClients = document.getElementById("active-clients");
+    const projectsSummary = document.getElementById("projects-summary");
+    const tasksOverview = document.getElementById("tasks-overview");
 
     if (revenueKpi) {
       revenueKpi.innerHTML = `<div class="uba-kpi"><div class="uba-kpi-label">This month</div><div class="uba-kpi-value">€ ${

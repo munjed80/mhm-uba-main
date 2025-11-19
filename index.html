@@ -1,143 +1,42 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MHM UBA – Dashboard</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MHM UBA – Dashboard</title>
 
-  <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
 
-  <meta
-    name="description"
-    content="MHM Universal Business Automator – one workspace for clients, tasks, invoices and smart tools."
-  />
-</head>
-<body>
+    <meta
+      name="description"
+      content="MHM Universal Business Automator – one workspace for clients, tasks, invoices and smart tools."
+    />
+  </head>
+  <body>
+    <section id="uba-dashboard">
+      <div id="page-id" data-page="index-page">
+        <div class="uba-shell">
+          <!-- Sidebar -->
+          <aside class="uba-sidebar">
+            <div>
+              <div class="uba-logo">MHM <span>UBA</span></div>
+              <p class="uba-tagline" data-i18n="app.tagline">
+                Universal Business Automator — one workspace for clients, tasks,
+                invoices and smart tools.
+              </p>
+              <div class="uba-badge">
+                <span class="uba-badge-dot"></span>
+                <span data-i18n="app.badge"
+                  >Private beta · Built in the Netherlands</span
+                >
+              </div>
+            </div>
 
-  <section id="uba-dashboard">
-    <div id="page-id" data-page="index-page">
-    <div class="uba-shell">
-      <!-- Sidebar -->
-      <aside class="uba-sidebar">
-        <div>
-          <div class="uba-logo">
-            MHM <span>UBA</span>
-          </div>
-          <p class="uba-tagline" data-i18n="app.tagline">
-            Universal Business Automator — one workspace for clients, tasks, invoices and smart tools.
-          </p>
-          <div class="uba-badge">
-            <span class="uba-badge-dot"></span>
-            <span data-i18n="app.badge">Private beta · Built in the Netherlands</span>
-          </div>
-        </div>
-
-        <div class="uba-language">
-          <label for="language-select" data-i18n="language.label">Language</label>
-          <select id="language-select">
-            <option value="en" data-i18n="language.en">English</option>
-            <option value="ar" data-i18n="language.ar">Arabic</option>
-            <option value="nl" data-i18n="language.nl">Dutch</option>
-            <option value="fr" data-i18n="language.fr">French</option>
-            <option value="es" data-i18n="language.es">Spanish</option>
-            <option value="de" data-i18n="language.de">German</option>
-          </select>
-        </div>
-
-        <div>
-          <div class="uba-nav-label" data-i18n="nav.workspaceLabel">Workspace</div>
-          <nav class="uba-nav" role="navigation" aria-label="Workspace navigation">
-            <button class="uba-nav-btn active" data-section="dashboard">
-              <span class="icon">📈</span>
-              <span data-i18n="nav.dashboard">Dashboard</span>
-              <small data-i18n="nav.dashboardSub">Overview</small>
-            </button>
-            <button class="uba-nav-btn" data-section="clients">
-              <span class="icon">🧑‍💻</span>
-              <span data-i18n="nav.clients">Clients</span>
-              <small data-i18n="nav.clientsSub">CRM</small>
-            </button>
-            <button class="uba-nav-btn" data-section="projects">
-              <span class="icon">💼</span>
-              <span data-i18n="nav.projects">Projects</span>
-              <small data-i18n="nav.projectsSub">Pipeline</small>
-            </button>
-            <button class="uba-nav-btn" data-section="tasks">
-              <span class="icon">✅</span>
-              <span data-i18n="nav.tasks">Tasks</span>
-              <small data-i18n="nav.tasksSub">Today</small>
-            </button>
-            <button class="uba-nav-btn" data-section="invoices">
-              <span class="icon">💵</span>
-              <span data-i18n="nav.invoices">Invoices</span>
-              <small data-i18n="nav.invoicesSub">Billing</small>
-            </button>
-            <button class="uba-nav-btn" data-section="automations">
-              <span class="icon">🤖</span>
-              <span data-i18n="nav.automations">Automations</span>
-              <small data-i18n="nav.automationsSub">Flows</small>
-            </button>
-            <a class="uba-nav-btn" href="calendar.html">
-              <span class="icon">📅</span>
-              <span>Calendar</span>
-            </a>
-            <a class="uba-nav-btn" href="leads.html">
-              <span class="icon">🧲</span>
-              <span>Leads</span>
-            </a>
-            <a class="uba-nav-btn" href="expenses.html">
-              <span class="icon">📤</span>
-              <span>Expenses</span>
-            </a>
-            <a class="uba-nav-btn" href="files.html">
-              <span class="icon">📁</span>
-              <span>Files</span>
-            </a>
-            <a class="uba-nav-btn" href="reports.html">
-              <span class="icon">📑</span>
-              <span>Reports</span>
-            </a>
-            <a class="uba-nav-btn" href="smart-tools.html">
-              <span class="icon">🧠</span>
-              <span data-i18n="nav.smartTools">UBA Smart Tools</span>
-              <small data-i18n="nav.smartToolsSub">AI ops</small>
-            </a>
-            <a class="uba-nav-btn" href="insights.html">
-              <span class="icon">📊</span>
-              <span data-i18n="nav.insights">Insights Lab</span>
-              <small data-i18n="nav.insightsSub">Reports</small>
-            </a>
-            <a class="uba-nav-btn" href="help.html">
-              <span class="icon">💬</span>
-              <span data-i18n="nav.support">Success Desk</span>
-              <small data-i18n="nav.supportSub">Guidance</small>
-            </a>
-            <button class="uba-nav-btn" data-section="settings">
-              <span class="icon">🛠️</span>
-              <span data-i18n="nav.settings">Settings</span>
-              <small data-i18n="nav.settingsSub">Workspace</small>
-            </button>
-          </nav>
-        </div>
-
-        <div class="uba-sidebar-footer" data-i18n="sidebar.footer">
-          Designed for small teams and solo founders who are tired of 7 different tools just to run one business.
-        </div>
-      </aside>
-
-      <!-- Main -->
-      <main class="uba-main">
-        <!-- Top bar -->
-        <header class="uba-topbar">
-          <div class="uba-top-left">
-            <p class="uba-top-kicker" data-i18n="top.kicker">Workspace</p>
-            <h1 id="uba-view-title" data-i18n="view.dashboard.title">Business overview</h1>
-            <p id="uba-view-desc" data-i18n="view.dashboard.desc">Today’s snapshot across your clients, invoices, tasks and automations.</p>
-          </div>
-          <div class="uba-top-right">
-            <div class="uba-language" aria-label="Language switcher">
-              <label for="language-select-top" data-i18n="language.label">Language</label>
-              <select id="language-select-top" class="uba-select">
+            <div class="uba-language">
+              <label for="language-select" data-i18n="language.label"
+                >Language</label
+              >
+              <select id="language-select">
                 <option value="en" data-i18n="language.en">English</option>
                 <option value="ar" data-i18n="language.ar">Arabic</option>
                 <option value="nl" data-i18n="language.nl">Dutch</option>
@@ -146,870 +45,1540 @@
                 <option value="de" data-i18n="language.de">German</option>
               </select>
             </div>
-            <select class="uba-select" id="workspace-select">
-              <option>Main workspace</option>
-              <option>Client projects</option>
-              <option>Internal tools</option>
-            </select>
-            <div class="uba-user-pill">
-              <span class="uba-avatar"></span>
-              <span id="uba-user-label">Admin</span>
-              <button
-                onclick="logout()"
-                class="uba-logout-btn"
-                title="Logout"
-                style="all:unset; cursor:pointer; font-size:16px;"
-              >
-                🚪
-              </button>
-            </div>
-          </div>
-        </header>
 
-        <div class="uba-views">
-          <!-- DASHBOARD VIEW -->
-          <section class="uba-view" data-view="dashboard">
-            <div class="uba-demo-banner" id="demo-banner" hidden>
-              <div>
-                <p class="uba-banner-label" data-i18n="demo.label">Live preview</p>
-                <h2 data-i18n="demo.title">Board ready for handoff</h2>
-                <p data-i18n="demo.desc">
-                  Explore a pre-filled workspace with KPIs, pipeline, and mini-invoices. Connect your Supabase keys later to sync real data.
+            <div>
+              <div class="uba-nav-label" data-i18n="nav.workspaceLabel">
+                Workspace
+              </div>
+              <nav
+                class="uba-nav"
+                role="navigation"
+                aria-label="Workspace navigation"
+              >
+                <button class="uba-nav-btn active" data-section="dashboard">
+                  <span class="icon">📈</span>
+                  <span data-i18n="nav.dashboard">Dashboard</span>
+                  <small data-i18n="nav.dashboardSub">Overview</small>
+                </button>
+                <button class="uba-nav-btn" data-section="clients">
+                  <span class="icon">🧑‍💻</span>
+                  <span data-i18n="nav.clients">Clients</span>
+                  <small data-i18n="nav.clientsSub">CRM</small>
+                </button>
+                <button class="uba-nav-btn" data-section="projects">
+                  <span class="icon">💼</span>
+                  <span data-i18n="nav.projects">Projects</span>
+                  <small data-i18n="nav.projectsSub">Pipeline</small>
+                </button>
+                <button class="uba-nav-btn" data-section="tasks">
+                  <span class="icon">✅</span>
+                  <span data-i18n="nav.tasks">Tasks</span>
+                  <small data-i18n="nav.tasksSub">Today</small>
+                </button>
+                <button class="uba-nav-btn" data-section="invoices">
+                  <span class="icon">💵</span>
+                  <span data-i18n="nav.invoices">Invoices</span>
+                  <small data-i18n="nav.invoicesSub">Billing</small>
+                </button>
+                <button class="uba-nav-btn" data-section="automations">
+                  <span class="icon">🤖</span>
+                  <span data-i18n="nav.automations">Automations</span>
+                  <small data-i18n="nav.automationsSub">Flows</small>
+                </button>
+                <a class="uba-nav-btn" href="calendar.html">
+                  <span class="icon">📅</span>
+                  <span>Calendar</span>
+                </a>
+                <a class="uba-nav-btn" href="leads.html">
+                  <span class="icon">🧲</span>
+                  <span>Leads</span>
+                </a>
+                <a class="uba-nav-btn" href="expenses.html">
+                  <span class="icon">📤</span>
+                  <span>Expenses</span>
+                </a>
+                <a class="uba-nav-btn" href="files.html">
+                  <span class="icon">📁</span>
+                  <span>Files</span>
+                </a>
+                <a class="uba-nav-btn" href="reports.html">
+                  <span class="icon">📑</span>
+                  <span>Reports</span>
+                </a>
+                <a class="uba-nav-btn" href="smart-tools.html">
+                  <span class="icon">🧠</span>
+                  <span data-i18n="nav.smartTools">UBA Smart Tools</span>
+                  <small data-i18n="nav.smartToolsSub">AI ops</small>
+                </a>
+                <a class="uba-nav-btn" href="insights.html">
+                  <span class="icon">📊</span>
+                  <span data-i18n="nav.insights">Insights Lab</span>
+                  <small data-i18n="nav.insightsSub">Reports</small>
+                </a>
+                <a class="uba-nav-btn" href="help.html">
+                  <span class="icon">💬</span>
+                  <span data-i18n="nav.support">Success Desk</span>
+                  <small data-i18n="nav.supportSub">Guidance</small>
+                </a>
+                <button class="uba-nav-btn" data-section="settings">
+                  <span class="icon">🛠️</span>
+                  <span data-i18n="nav.settings">Settings</span>
+                  <small data-i18n="nav.settingsSub">Workspace</small>
+                </button>
+              </nav>
+            </div>
+
+            <div class="uba-sidebar-footer" data-i18n="sidebar.footer">
+              Designed for small teams and solo founders who are tired of 7
+              different tools just to run one business.
+            </div>
+          </aside>
+
+          <!-- Main -->
+          <main class="uba-main">
+            <!-- Top bar -->
+            <header class="uba-topbar">
+              <div class="uba-top-left">
+                <p class="uba-top-kicker" data-i18n="top.kicker">Workspace</p>
+                <h1 id="uba-view-title" data-i18n="view.dashboard.title">
+                  Business overview
+                </h1>
+                <p id="uba-view-desc" data-i18n="view.dashboard.desc">
+                  Today’s snapshot across your clients, invoices, tasks and
+                  automations.
                 </p>
               </div>
-              <div class="uba-banner-actions">
-                <button class="uba-btn-primary" onclick="window.location.href='login.html'" data-i18n="demo.ctaPrimary">Connect account</button>
-                <button class="uba-btn-ghost" onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })" data-i18n="demo.ctaSecondary">
-                  Explore layout
-                </button>
+              <div class="uba-top-right">
+                <div class="uba-language" aria-label="Language switcher">
+                  <label for="language-select-top" data-i18n="language.label"
+                    >Language</label
+                  >
+                  <select id="language-select-top" class="uba-select">
+                    <option value="en" data-i18n="language.en">English</option>
+                    <option value="ar" data-i18n="language.ar">Arabic</option>
+                    <option value="nl" data-i18n="language.nl">Dutch</option>
+                    <option value="fr" data-i18n="language.fr">French</option>
+                    <option value="es" data-i18n="language.es">Spanish</option>
+                    <option value="de" data-i18n="language.de">German</option>
+                  </select>
+                </div>
+                <select class="uba-select" id="workspace-select">
+                  <option>Main workspace</option>
+                  <option>Client projects</option>
+                  <option>Internal tools</option>
+                </select>
+                <div class="uba-user-pill">
+                  <span class="uba-avatar"></span>
+                  <span id="uba-user-label">Admin</span>
+                  <button
+                    onclick="logout()"
+                    class="uba-logout-btn"
+                    title="Logout"
+                    style="all: unset; cursor: pointer; font-size: 16px"
+                  >
+                    🚪
+                  </button>
+                </div>
               </div>
-            </div>
+            </header>
 
-            <div class="uba-grid">
-              <div class="uba-grid-col">
-                <!-- Key metrics -->
-                <section class="uba-card" id="card-metrics">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="card.metrics.title">Key metrics</div>
-                      <p class="uba-card-sub" data-i18n="card.metrics.desc">
-                        Quick view of revenue, open invoices and current workload.
-                      </p>
-                    </div>
-                    <span class="uba-pill" data-i18n="card.metrics.range">Last 30 days</span>
+            <div class="uba-views">
+              <!-- DASHBOARD VIEW -->
+              <section class="uba-view" data-view="dashboard">
+                <div class="uba-demo-banner" id="demo-banner" hidden>
+                  <div>
+                    <p class="uba-banner-label" data-i18n="demo.label">
+                      Live preview
+                    </p>
+                    <h2 data-i18n="demo.title">Board ready for handoff</h2>
+                    <p data-i18n="demo.desc">
+                      Explore a pre-filled workspace with KPIs, pipeline, and
+                      mini-invoices. Connect your Supabase keys later to sync
+                      real data.
+                    </p>
                   </div>
+                  <div class="uba-banner-actions">
+                    <button
+                      class="uba-btn-primary"
+                      onclick="window.location.href='login.html'"
+                      data-i18n="demo.ctaPrimary"
+                    >
+                      Connect account
+                    </button>
+                    <button
+                      class="uba-btn-ghost"
+                      onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })"
+                      data-i18n="demo.ctaSecondary"
+                    >
+                      Explore layout
+                    </button>
+                  </div>
+                </div>
 
-                  <div class="uba-kpi-strip">
-                    <div class="uba-kpi">
-                      <div class="uba-kpi-label" data-i18n="kpi.billed.label">Billed (30d)</div>
-                      <div class="uba-kpi-value" id="kpi-billed">€ 0</div>
-                      <div class="uba-kpi-trend" id="kpi-billed-trend" data-i18n="kpi.billed.trend">
-                        Based on paid invoices
+                <div class="uba-grid">
+                  <div class="uba-grid-col">
+                    <!-- Key metrics -->
+                    <section class="uba-card" id="card-metrics">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="card.metrics.title"
+                          >
+                            Key metrics
+                          </div>
+                          <p class="uba-card-sub" data-i18n="card.metrics.desc">
+                            Quick view of revenue, open invoices and current
+                            workload.
+                          </p>
+                        </div>
+                        <span class="uba-pill" data-i18n="card.metrics.range"
+                          >Last 30 days</span
+                        >
                       </div>
-                    </div>
 
-                    <div class="uba-kpi">
-                      <div class="uba-kpi-label" data-i18n="kpi.openInvoices.label">Open invoices</div>
-                      <div class="uba-kpi-value" id="kpi-open-invoices">€ 0</div>
-                      <div class="uba-kpi-trend" id="kpi-open-invoices-trend" data-i18n="kpi.openInvoices.trend">
-                        Sent & overdue
+                      <div class="uba-kpi-strip">
+                        <div class="uba-kpi">
+                          <div
+                            class="uba-kpi-label"
+                            data-i18n="kpi.billed.label"
+                          >
+                            Billed (30d)
+                          </div>
+                          <div class="uba-kpi-value" id="kpi-billed">€ 0</div>
+                          <div
+                            class="uba-kpi-trend"
+                            id="kpi-billed-trend"
+                            data-i18n="kpi.billed.trend"
+                          >
+                            Based on paid invoices
+                          </div>
+                        </div>
+
+                        <div class="uba-kpi">
+                          <div
+                            class="uba-kpi-label"
+                            data-i18n="kpi.openInvoices.label"
+                          >
+                            Open invoices
+                          </div>
+                          <div class="uba-kpi-value" id="kpi-open-invoices">
+                            € 0
+                          </div>
+                          <div
+                            class="uba-kpi-trend"
+                            id="kpi-open-invoices-trend"
+                            data-i18n="kpi.openInvoices.trend"
+                          >
+                            Sent & overdue
+                          </div>
+                        </div>
+
+                        <div class="uba-kpi">
+                          <div
+                            class="uba-kpi-label"
+                            data-i18n="kpi.clients.label"
+                          >
+                            Active clients
+                          </div>
+                          <div class="uba-kpi-value" id="kpi-active-clients">
+                            0
+                          </div>
+                          <div
+                            class="uba-kpi-trend"
+                            id="kpi-active-clients-trend"
+                            data-i18n="kpi.clients.trend"
+                          >
+                            From Supabase CRM
+                          </div>
+                        </div>
+
+                        <div class="uba-kpi">
+                          <div
+                            class="uba-kpi-label"
+                            data-i18n="kpi.tasks.label"
+                          >
+                            Tasks today
+                          </div>
+                          <div class="uba-kpi-value" id="kpi-tasks-today">
+                            —
+                          </div>
+                          <div
+                            class="uba-kpi-trend"
+                            id="kpi-tasks-today-trend"
+                            data-i18n="kpi.tasks.trend"
+                          >
+                            Linked to projects
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    </section>
 
-                    <div class="uba-kpi">
-                      <div class="uba-kpi-label" data-i18n="kpi.clients.label">Active clients</div>
-                      <div class="uba-kpi-value" id="kpi-active-clients">0</div>
-                      <div class="uba-kpi-trend" id="kpi-active-clients-trend" data-i18n="kpi.clients.trend">
-                        From Supabase CRM
+                    <!-- Tasks -->
+                    <section class="uba-card" id="card-tasks">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="card.tasks.title"
+                          >
+                            Tasks & follow-ups
+                          </div>
+                          <p class="uba-card-sub" data-i18n="card.tasks.desc">
+                            What needs your attention today across projects and
+                            clients.
+                          </p>
+                        </div>
+                        <span class="uba-pill" data-i18n="card.tasks.source"
+                          >From Supabase</span
+                        >
                       </div>
-                    </div>
 
-                    <div class="uba-kpi">
-                      <div class="uba-kpi-label" data-i18n="kpi.tasks.label">Tasks today</div>
-                      <div class="uba-kpi-value" id="kpi-tasks-today">—</div>
-                      <div class="uba-kpi-trend" id="kpi-tasks-today-trend" data-i18n="kpi.tasks.trend">
-                        Linked to projects
+                      <ul class="uba-task-list" id="task-list">
+                        <!-- Filled dynamically by loadTasks -->
+                      </ul>
+                    </section>
+
+                    <!-- Pipeline -->
+                    <section class="uba-card" id="card-pipeline">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="card.pipeline.title"
+                          >
+                            Client & project pipeline
+                          </div>
+                          <p
+                            class="uba-card-sub"
+                            data-i18n="card.pipeline.desc"
+                          >
+                            From new leads to active builds and maintenance.
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                </section>
 
-                <!-- Tasks -->
-                <section class="uba-card" id="card-tasks">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="card.tasks.title">Tasks & follow-ups</div>
-                      <p class="uba-card-sub" data-i18n="card.tasks.desc">
-                        What needs your attention today across projects and clients.
-                      </p>
-                    </div>
-                    <span class="uba-pill" data-i18n="card.tasks.source">From Supabase</span>
-                  </div>
-
-                  <ul class="uba-task-list" id="task-list">
-                    <!-- Filled dynamically by loadTasks -->
-                  </ul>
-                </section>
-
-                <!-- Pipeline -->
-                <section class="uba-card" id="card-pipeline">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="card.pipeline.title">Client & project pipeline</div>
-                      <p class="uba-card-sub" data-i18n="card.pipeline.desc">
-                        From new leads to active builds and maintenance.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div class="uba-pipeline" id="pipeline-columns">
-                    <!-- Filled dynamically by loadPipeline -->
-                  </div>
-                </section>
-
-                <!-- Mini invoices -->
-                <section class="uba-card" id="card-mini-invoices">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="card.miniInvoices.title">Mini invoices</div>
-                      <p class="uba-card-sub" data-i18n="card.miniInvoices.desc">
-                        Simple quick invoices — integration pending.
-                      </p>
-                    </div>
-                    <span class="uba-pill" id="mini-mode-badge" data-i18n="card.miniInvoices.badge">Integration required</span>
-                  </div>
-
-                  <form id="mini-invoice-form" class="mini-invoices-form">
-                    <div class="mini-invoices-row">
-                      <input
-                        type="text"
-                        id="mini-client-name"
-                        name="client_name"
-                        placeholder="Client name"
-                        autocomplete="off"
-                        data-i18n-placeholder="form.clientName"
-                      />
-                      <input
-                        type="number"
-                        id="mini-amount"
-                        name="amount"
-                        step="0.01"
-                        min="0"
-                        placeholder="Amount (€)"
-                        data-i18n-placeholder="form.amount"
-                      />
-                    </div>
-                    <div class="mini-invoices-row">
-                      <input
-                        type="text"
-                        id="mini-label"
-                        name="label"
-                        placeholder="Short description"
-                        autocomplete="off"
-                        data-i18n-placeholder="form.shortDescription"
-                      />
-                      <select id="mini-status" name="status">
-                        <option value="draft" data-i18n="form.draft">Draft</option>
-                        <option value="sent" data-i18n="form.sent">Sent</option>
-                        <option value="paid" data-i18n="form.paid">Paid</option>
-                      </select>
-                      <button type="submit" class="uba-pill mini-invoices-submit" data-i18n="form.addInvoice">
-                        Add invoice
-                      </button>
-                    </div>
-                  </form>
-
-                  <div
-                    id="mini-invoice-feedback"
-                    class="mini-feedback"
-                    aria-live="polite"
-                  ></div>
-
-                  <div class="mini-invoices-meta">
-                    <div>
-                      <p class="label" data-i18n="mini.meta.count">Invoices in view</p>
-                      <strong id="mini-count">0</strong>
-                    </div>
-                    <div>
-                      <p class="label" data-i18n="mini.meta.total">Total amount</p>
-                      <strong id="mini-total">€ 0</strong>
-                    </div>
-                    <div class="mini-chip" data-i18n="mini.meta.local">Local only</div>
-                  </div>
-
-                  <div class="mini-invoices-list">
-                    <table id="mini-invoice-table">
-                      <thead>
-                        <tr>
-                          <th data-i18n="table.client">Client</th>
-                          <th data-i18n="table.label">Label</th>
-                          <th data-i18n="table.amount">Amount</th>
-                          <th data-i18n="table.status">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <!-- not used yet -->
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
-              </div>
-
-              <div class="uba-grid-col">
-                <!-- Automations -->
-                <section class="uba-card" id="card-automations">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="card.automations.title">Automations</div>
-                      <p class="uba-card-sub" data-i18n="card.automations.desc">
-                        Light rules that keep your admin moving in the background.
-                      </p>
-                    </div>
-                    <span class="uba-pill" data-i18n="card.automations.badge">Preview</span>
-                  </div>
-
-                  <div id="automations-list">
-                    <div class="uba-automation">
-                      <div class="uba-automation-name" data-i18n="auto.followUp">Follow up on unpaid invoices</div>
-                      <p class="uba-automation-meta" data-i18n="auto.followUpDesc">Send a reminder 7 days after due date.</p>
-                    </div>
-                    <div class="uba-automation">
-                      <div class="uba-automation-name" data-i18n="auto.clientAlert">Flag silent clients</div>
-                      <p class="uba-automation-meta" data-i18n="auto.clientAlertDesc">Notify when there is no activity for 14 days.</p>
-                    </div>
-                    <div class="uba-automation">
-                      <div class="uba-automation-name" data-i18n="auto.taskBalance">Balance workload</div>
-                      <p class="uba-automation-meta" data-i18n="auto.taskBalanceDesc">Reassign tasks when one person is overloaded.</p>
-                    </div>
-                  </div>
-                </section>
-
-                <!-- Clients -->
-                <section class="uba-card" id="card-clients">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="card.clients.title">Clients</div>
-                      <p class="uba-card-sub" data-i18n="card.clients.desc">
-                        Manage the contacts that power your projects and invoices.
-                      </p>
-                    </div>
-                    <span class="uba-pill" data-i18n="card.clients.badge">Live CRM</span>
-                  </div>
-
-                  <form id="client-form" class="uba-form">
-                    <div class="uba-form-row">
-                      <input
-                        type="text"
-                        id="client-name"
-                        placeholder="Client name"
-                        data-i18n-placeholder="form.clientName"
-                        required
-                      />
-                      <input
-                        type="email"
-                        id="client-email"
-                        placeholder="Email"
-                        data-i18n-placeholder="form.email"
-                      />
-                    </div>
-
-                    <div class="uba-form-row">
-                      <input
-                        type="text"
-                        id="client-company"
-                        placeholder="Company"
-                        data-i18n-placeholder="form.company"
-                      />
-                      <input
-                        type="text"
-                        id="client-phone"
-                        placeholder="Phone"
-                        data-i18n-placeholder="form.phone"
-                      />
-                    </div>
-
-                    <div class="uba-form-row">
-                      <input
-                        type="text"
-                        id="client-notes"
-                        placeholder="Notes"
-                        data-i18n-placeholder="form.notes"
-                      />
-                      <button type="submit" class="uba-btn-primary" data-i18n="form.addClient">
-                        Add client
-                      </button>
-                    </div>
-
-                    <div
-                      id="client-error"
-                      class="uba-text-danger"
-                      style="min-height:18px;font-size:13px;"
-                    ></div>
-                  </form>
-
-                  <div class="uba-table-wrapper" style="margin-top:16px;">
-                    <table class="uba-table">
-                      <thead>
-                        <tr>
-                          <th data-i18n="table.name">Name</th>
-                          <th data-i18n="table.company">Company</th>
-                          <th data-i18n="table.email">Email</th>
-                          <th data-i18n="table.phone">Phone</th>
-                          <th style="width:80px;" data-i18n="table.actions">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody id="clients-table-body">
-                        <!-- filled from JS -->
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
-              </div>
-            </div>
-          </section>
-
-          <!-- CLIENTS VIEW -->
-          <section class="uba-view is-hidden" data-view="clients">
-            <div class="uba-grid">
-              <div class="uba-grid-col">
-                <section class="uba-card" id="clients-page">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="view.clients.title">Clients</div>
-                      <p class="uba-card-sub" data-i18n="view.clients.desc">Local CRM board with quick add, edit, and delete.</p>
-                    </div>
-                    <span class="uba-pill" data-i18n="view.clients.badge">Local CRM</span>
-                  </div>
-
-                  <form id="clients-page-form" class="uba-form">
-                    <input type="hidden" id="clients-edit-id" />
-                    <div class="uba-form-row">
-                      <input
-                        type="text"
-                        id="clients-name"
-                        placeholder="Client name"
-                        data-i18n-placeholder="form.clientName"
-                        required
-                      />
-                      <input
-                        type="email"
-                        id="clients-email"
-                        placeholder="Email"
-                        data-i18n-placeholder="form.email"
-                      />
-                    </div>
-
-                    <div class="uba-form-row">
-                      <input
-                        type="text"
-                        id="clients-company"
-                        placeholder="Company"
-                        data-i18n-placeholder="form.company"
-                      />
-                      <input
-                        type="text"
-                        id="clients-phone"
-                        placeholder="Phone"
-                        data-i18n-placeholder="form.phone"
-                      />
-                    </div>
-
-                    <div class="uba-form-row">
-                      <input
-                        type="text"
-                        id="clients-notes"
-                        placeholder="Notes"
-                        data-i18n-placeholder="form.notes"
-                      />
-                      <button type="submit" class="uba-btn-primary" data-i18n="form.saveClient">
-                        Save client
-                      </button>
-                    </div>
-                    <p id="clients-page-error" class="uba-text-danger" aria-live="polite"></p>
-                  </form>
-
-                  <div class="uba-table-wrap">
-                    <table class="uba-table">
-                      <thead>
-                        <tr>
-                          <th data-i18n="table.name">Name</th>
-                          <th data-i18n="table.company">Company</th>
-                          <th data-i18n="table.email">Email</th>
-                          <th data-i18n="table.phone">Phone</th>
-                          <th style="width:120px;" data-i18n="table.actions">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody id="clients-page-table">
-                        <tr>
-                          <td colspan="5" data-i18n="clients.loading">Loading…</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
-              </div>
-
-              <div class="uba-grid-col">
-                <section class="uba-card">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="view.clients.summary">Client snapshot</div>
-                      <p class="uba-card-sub" data-i18n="view.clients.summaryDesc">Quick health of your local CRM list.</p>
-                    </div>
-                    <span class="uba-pill" data-i18n="view.clients.local">Local only</span>
-                  </div>
-
-                  <div class="uba-kpi-strip">
-                    <div class="uba-kpi">
-                      <div class="uba-kpi-label" data-i18n="view.clients.total">Total clients</div>
-                      <div class="uba-kpi-value" id="clients-total">0</div>
-                      <div class="uba-kpi-trend" id="clients-highlight" data-i18n="view.clients.tip">Add a client to get started.</div>
-                    </div>
-                    <div class="uba-kpi">
-                      <div class="uba-kpi-label" data-i18n="view.clients.recent">Recent note</div>
-                      <div class="uba-kpi-value" id="clients-recent">–</div>
-                      <div class="uba-kpi-trend" data-i18n="view.clients.recentTip">Pulled from latest saved contact.</div>
-                    </div>
-                  </div>
-
-                  <div class="uba-support-grid">
-                    <div class="uba-support-card">
-                      <div class="uba-support-icon">🧭</div>
-                      <div>
-                        <h4 data-i18n="view.clients.hintTitle">Keep records tidy</h4>
-                        <p data-i18n="view.clients.hintDesc">Use the notes field for renewal dates, goals, or active projects.</p>
+                      <div class="uba-pipeline" id="pipeline-columns">
+                        <!-- Filled dynamically by loadPipeline -->
                       </div>
-                    </div>
-                    <div class="uba-support-card">
-                      <div class="uba-support-icon">🔄</div>
-                      <div>
-                        <h4 data-i18n="view.clients.localTitle">Local-first</h4>
-                        <p data-i18n="view.clients.localDesc">Data is stored in your browser. Export or sync later.</p>
+                    </section>
+
+                    <!-- Mini invoices -->
+                    <section class="uba-card" id="card-mini-invoices">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="card.miniInvoices.title"
+                          >
+                            Mini invoices
+                          </div>
+                          <p
+                            class="uba-card-sub"
+                            data-i18n="card.miniInvoices.desc"
+                          >
+                            Simple quick invoices — integration pending.
+                          </p>
+                        </div>
+                        <span
+                          class="uba-pill"
+                          id="mini-mode-badge"
+                          data-i18n="card.miniInvoices.badge"
+                          >Integration required</span
+                        >
                       </div>
-                    </div>
+
+                      <form id="mini-invoice-form" class="mini-invoices-form">
+                        <div class="mini-invoices-row">
+                          <input
+                            type="text"
+                            id="mini-client-name"
+                            name="client_name"
+                            placeholder="Client name"
+                            autocomplete="off"
+                            data-i18n-placeholder="form.clientName"
+                          />
+                          <input
+                            type="number"
+                            id="mini-amount"
+                            name="amount"
+                            step="0.01"
+                            min="0"
+                            placeholder="Amount (€)"
+                            data-i18n-placeholder="form.amount"
+                          />
+                        </div>
+                        <div class="mini-invoices-row">
+                          <input
+                            type="text"
+                            id="mini-label"
+                            name="label"
+                            placeholder="Short description"
+                            autocomplete="off"
+                            data-i18n-placeholder="form.shortDescription"
+                          />
+                          <select id="mini-status" name="status">
+                            <option value="draft" data-i18n="form.draft">
+                              Draft
+                            </option>
+                            <option value="sent" data-i18n="form.sent">
+                              Sent
+                            </option>
+                            <option value="paid" data-i18n="form.paid">
+                              Paid
+                            </option>
+                          </select>
+                          <button
+                            type="submit"
+                            class="uba-pill mini-invoices-submit"
+                            data-i18n="form.addInvoice"
+                          >
+                            Add invoice
+                          </button>
+                        </div>
+                      </form>
+
+                      <div
+                        id="mini-invoice-feedback"
+                        class="mini-feedback"
+                        aria-live="polite"
+                      ></div>
+
+                      <div class="mini-invoices-meta">
+                        <div>
+                          <p class="label" data-i18n="mini.meta.count">
+                            Invoices in view
+                          </p>
+                          <strong id="mini-count">0</strong>
+                        </div>
+                        <div>
+                          <p class="label" data-i18n="mini.meta.total">
+                            Total amount
+                          </p>
+                          <strong id="mini-total">€ 0</strong>
+                        </div>
+                        <div class="mini-chip" data-i18n="mini.meta.local">
+                          Local only
+                        </div>
+                      </div>
+
+                      <div class="mini-invoices-list">
+                        <table id="mini-invoice-table">
+                          <thead>
+                            <tr>
+                              <th data-i18n="table.client">Client</th>
+                              <th data-i18n="table.label">Label</th>
+                              <th data-i18n="table.amount">Amount</th>
+                              <th data-i18n="table.status">Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <!-- not used yet -->
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
                   </div>
-                </section>
-              </div>
+
+                  <div class="uba-grid-col">
+                    <!-- Automations -->
+                    <section class="uba-card" id="card-automations">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="card.automations.title"
+                          >
+                            Automations
+                          </div>
+                          <p
+                            class="uba-card-sub"
+                            data-i18n="card.automations.desc"
+                          >
+                            Light rules that keep your admin moving in the
+                            background.
+                          </p>
+                        </div>
+                        <span
+                          class="uba-pill"
+                          data-i18n="card.automations.badge"
+                          >Preview</span
+                        >
+                      </div>
+
+                      <div id="automations-list">
+                        <div class="uba-automation">
+                          <div
+                            class="uba-automation-name"
+                            data-i18n="auto.followUp"
+                          >
+                            Follow up on unpaid invoices
+                          </div>
+                          <p
+                            class="uba-automation-meta"
+                            data-i18n="auto.followUpDesc"
+                          >
+                            Send a reminder 7 days after due date.
+                          </p>
+                        </div>
+                        <div class="uba-automation">
+                          <div
+                            class="uba-automation-name"
+                            data-i18n="auto.clientAlert"
+                          >
+                            Flag silent clients
+                          </div>
+                          <p
+                            class="uba-automation-meta"
+                            data-i18n="auto.clientAlertDesc"
+                          >
+                            Notify when there is no activity for 14 days.
+                          </p>
+                        </div>
+                        <div class="uba-automation">
+                          <div
+                            class="uba-automation-name"
+                            data-i18n="auto.taskBalance"
+                          >
+                            Balance workload
+                          </div>
+                          <p
+                            class="uba-automation-meta"
+                            data-i18n="auto.taskBalanceDesc"
+                          >
+                            Reassign tasks when one person is overloaded.
+                          </p>
+                        </div>
+                      </div>
+                    </section>
+
+                    <!-- Clients -->
+                    <section class="uba-card" id="card-clients">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="card.clients.title"
+                          >
+                            Clients
+                          </div>
+                          <p class="uba-card-sub" data-i18n="card.clients.desc">
+                            Manage the contacts that power your projects and
+                            invoices.
+                          </p>
+                        </div>
+                        <span class="uba-pill" data-i18n="card.clients.badge"
+                          >Live CRM</span
+                        >
+                      </div>
+
+                      <form id="client-form" class="uba-form">
+                        <div class="uba-form-row">
+                          <input
+                            type="text"
+                            id="client-name"
+                            placeholder="Client name"
+                            data-i18n-placeholder="form.clientName"
+                            required
+                          />
+                          <input
+                            type="email"
+                            id="client-email"
+                            placeholder="Email"
+                            data-i18n-placeholder="form.email"
+                          />
+                        </div>
+
+                        <div class="uba-form-row">
+                          <input
+                            type="text"
+                            id="client-company"
+                            placeholder="Company"
+                            data-i18n-placeholder="form.company"
+                          />
+                          <input
+                            type="text"
+                            id="client-phone"
+                            placeholder="Phone"
+                            data-i18n-placeholder="form.phone"
+                          />
+                        </div>
+
+                        <div class="uba-form-row">
+                          <input
+                            type="text"
+                            id="client-notes"
+                            placeholder="Notes"
+                            data-i18n-placeholder="form.notes"
+                          />
+                          <button
+                            type="submit"
+                            class="uba-btn-primary"
+                            data-i18n="form.addClient"
+                          >
+                            Add client
+                          </button>
+                        </div>
+
+                        <div
+                          id="client-error"
+                          class="uba-text-danger"
+                          style="min-height: 18px; font-size: 13px"
+                        ></div>
+                      </form>
+
+                      <div class="uba-table-wrapper" style="margin-top: 16px">
+                        <table class="uba-table">
+                          <thead>
+                            <tr>
+                              <th data-i18n="table.name">Name</th>
+                              <th data-i18n="table.company">Company</th>
+                              <th data-i18n="table.email">Email</th>
+                              <th data-i18n="table.phone">Phone</th>
+                              <th style="width: 80px" data-i18n="table.actions">
+                                Actions
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody id="clients-table-body">
+                            <!-- filled from JS -->
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              </section>
+
+              <!-- CLIENTS VIEW -->
+              <section class="uba-view is-hidden" data-view="clients">
+                <div class="uba-grid">
+                  <div class="uba-grid-col">
+                    <section class="uba-card" id="clients-page">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="view.clients.title"
+                          >
+                            Clients
+                          </div>
+                          <p class="uba-card-sub" data-i18n="view.clients.desc">
+                            Local CRM board with quick add, edit, and delete.
+                          </p>
+                        </div>
+                        <span class="uba-pill" data-i18n="view.clients.badge"
+                          >Local CRM</span
+                        >
+                      </div>
+
+                      <form id="clients-page-form" class="uba-form">
+                        <input type="hidden" id="clients-edit-id" />
+                        <div class="uba-form-row">
+                          <input
+                            type="text"
+                            id="clients-name"
+                            placeholder="Client name"
+                            data-i18n-placeholder="form.clientName"
+                            required
+                          />
+                          <input
+                            type="email"
+                            id="clients-email"
+                            placeholder="Email"
+                            data-i18n-placeholder="form.email"
+                          />
+                        </div>
+
+                        <div class="uba-form-row">
+                          <input
+                            type="text"
+                            id="clients-company"
+                            placeholder="Company"
+                            data-i18n-placeholder="form.company"
+                          />
+                          <input
+                            type="text"
+                            id="clients-phone"
+                            placeholder="Phone"
+                            data-i18n-placeholder="form.phone"
+                          />
+                        </div>
+
+                        <div class="uba-form-row">
+                          <input
+                            type="text"
+                            id="clients-notes"
+                            placeholder="Notes"
+                            data-i18n-placeholder="form.notes"
+                          />
+                          <button
+                            type="submit"
+                            class="uba-btn-primary"
+                            data-i18n="form.saveClient"
+                          >
+                            Save client
+                          </button>
+                        </div>
+                        <p
+                          id="clients-page-error"
+                          class="uba-text-danger"
+                          aria-live="polite"
+                        ></p>
+                      </form>
+
+                      <div class="uba-table-wrap">
+                        <table class="uba-table">
+                          <thead>
+                            <tr>
+                              <th data-i18n="table.name">Name</th>
+                              <th data-i18n="table.company">Company</th>
+                              <th data-i18n="table.email">Email</th>
+                              <th data-i18n="table.phone">Phone</th>
+                              <th
+                                style="width: 120px"
+                                data-i18n="table.actions"
+                              >
+                                Actions
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody id="clients-page-table">
+                            <tr>
+                              <td colspan="5" data-i18n="clients.loading">
+                                Loading…
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+
+                  <div class="uba-grid-col">
+                    <section class="uba-card">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="view.clients.summary"
+                          >
+                            Client snapshot
+                          </div>
+                          <p
+                            class="uba-card-sub"
+                            data-i18n="view.clients.summaryDesc"
+                          >
+                            Quick health of your local CRM list.
+                          </p>
+                        </div>
+                        <span class="uba-pill" data-i18n="view.clients.local"
+                          >Local only</span
+                        >
+                      </div>
+
+                      <div class="uba-kpi-strip">
+                        <div class="uba-kpi">
+                          <div
+                            class="uba-kpi-label"
+                            data-i18n="view.clients.total"
+                          >
+                            Total clients
+                          </div>
+                          <div class="uba-kpi-value" id="clients-total">0</div>
+                          <div
+                            class="uba-kpi-trend"
+                            id="clients-highlight"
+                            data-i18n="view.clients.tip"
+                          >
+                            Add a client to get started.
+                          </div>
+                        </div>
+                        <div class="uba-kpi">
+                          <div
+                            class="uba-kpi-label"
+                            data-i18n="view.clients.recent"
+                          >
+                            Recent note
+                          </div>
+                          <div class="uba-kpi-value" id="clients-recent">–</div>
+                          <div
+                            class="uba-kpi-trend"
+                            data-i18n="view.clients.recentTip"
+                          >
+                            Pulled from latest saved contact.
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="uba-support-grid">
+                        <div class="uba-support-card">
+                          <div class="uba-support-icon">🧭</div>
+                          <div>
+                            <h4 data-i18n="view.clients.hintTitle">
+                              Keep records tidy
+                            </h4>
+                            <p data-i18n="view.clients.hintDesc">
+                              Use the notes field for renewal dates, goals, or
+                              active projects.
+                            </p>
+                          </div>
+                        </div>
+                        <div class="uba-support-card">
+                          <div class="uba-support-icon">🔄</div>
+                          <div>
+                            <h4 data-i18n="view.clients.localTitle">
+                              Local-first
+                            </h4>
+                            <p data-i18n="view.clients.localDesc">
+                              Data is stored in your browser. Export or sync
+                              later.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              </section>
+
+              <!-- PROJECTS VIEW -->
+              <section class="uba-view is-hidden" data-view="projects">
+                <div class="uba-grid">
+                  <div class="uba-grid-col">
+                    <section class="uba-card" id="projects-board">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="view.projects.title"
+                          >
+                            Projects
+                          </div>
+                          <p
+                            class="uba-card-sub"
+                            data-i18n="view.projects.desc"
+                          >
+                            Pipeline view of active work, staged locally.
+                          </p>
+                        </div>
+                        <span class="uba-pill" data-i18n="view.projects.badge"
+                          >Pipeline</span
+                        >
+                      </div>
+
+                      <div class="uba-section-hero">
+                        <div>
+                          <p
+                            class="uba-banner-label"
+                            data-i18n="view.projects.kicker"
+                          >
+                            Pipeline flow
+                          </p>
+                          <h3 data-i18n="view.projects.titleInline">
+                            Progress projects by stage
+                          </h3>
+                          <p data-i18n="view.projects.subtitle">
+                            Drag-style layout with cards organized by phase.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div
+                        class="uba-grid"
+                        style="
+                          grid-template-columns: repeat(
+                            auto-fit,
+                            minmax(220px, 1fr)
+                          );
+                          gap: 12px;
+                        "
+                        id="projects-columns"
+                      >
+                        <!-- filled by JS -->
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              </section>
+
+              <!-- TASKS VIEW -->
+              <section class="uba-view is-hidden" data-view="tasks">
+                <div class="uba-grid">
+                  <div class="uba-grid-col">
+                    <section class="uba-card" id="tasks-board">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="view.tasks.title"
+                          >
+                            Tasks
+                          </div>
+                          <p class="uba-card-sub" data-i18n="view.tasks.desc">
+                            Kanban-style board with local tasks and quick
+                            actions.
+                          </p>
+                        </div>
+                        <span class="uba-pill" data-i18n="view.tasks.badge"
+                          >Local board</span
+                        >
+                      </div>
+
+                      <div
+                        class="uba-grid"
+                        style="
+                          grid-template-columns: repeat(
+                            auto-fit,
+                            minmax(220px, 1fr)
+                          );
+                          gap: 12px;
+                        "
+                        id="tasks-columns"
+                      >
+                        <!-- populated via JS -->
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              </section>
+
+              <!-- INVOICES VIEW -->
+              <section class="uba-view is-hidden" data-view="invoices">
+                <div class="uba-grid">
+                  <div class="uba-grid-col">
+                    <section class="uba-card" id="invoices-page">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="view.invoices.title"
+                          >
+                            Invoices
+                          </div>
+                          <p
+                            class="uba-card-sub"
+                            data-i18n="view.invoices.desc"
+                          >
+                            Full CRUD with local storage, matching the dashboard
+                            style.
+                          </p>
+                        </div>
+                        <span class="uba-pill" data-i18n="view.invoices.badge"
+                          >Local billing</span
+                        >
+                      </div>
+
+                      <form id="invoice-form" class="uba-form">
+                        <input type="hidden" id="invoice-edit-id" />
+                        <div class="uba-form-row">
+                          <input
+                            type="text"
+                            id="invoice-client"
+                            placeholder="Client"
+                            data-i18n-placeholder="table.client"
+                            required
+                          />
+                          <input
+                            type="text"
+                            id="invoice-label"
+                            placeholder="Label"
+                            data-i18n-placeholder="table.label"
+                          />
+                        </div>
+
+                        <div class="uba-form-row">
+                          <input
+                            type="number"
+                            id="invoice-amount"
+                            placeholder="Amount (€)"
+                            step="0.01"
+                            min="0"
+                            data-i18n-placeholder="form.amount"
+                            required
+                          />
+                          <select id="invoice-status">
+                            <option value="draft" data-i18n="form.draft">
+                              Draft
+                            </option>
+                            <option value="sent" data-i18n="form.sent">
+                              Sent
+                            </option>
+                            <option value="paid" data-i18n="form.paid">
+                              Paid
+                            </option>
+                          </select>
+                          <input type="date" id="invoice-due" />
+                        </div>
+
+                        <div class="uba-form-row">
+                          <input
+                            type="text"
+                            id="invoice-notes"
+                            placeholder="Notes"
+                            data-i18n-placeholder="form.notes"
+                          />
+                          <button
+                            type="submit"
+                            class="uba-btn-primary"
+                            data-i18n="form.saveInvoice"
+                          >
+                            Save invoice
+                          </button>
+                        </div>
+                        <p
+                          id="invoice-error"
+                          class="uba-text-danger"
+                          aria-live="polite"
+                        ></p>
+                      </form>
+
+                      <div class="mini-invoices-meta">
+                        <div>
+                          <p class="label" data-i18n="mini.meta.count">
+                            Invoices in view
+                          </p>
+                          <strong id="invoice-count">0</strong>
+                        </div>
+                        <div>
+                          <p class="label" data-i18n="mini.meta.total">
+                            Total amount
+                          </p>
+                          <strong id="invoice-total">€ 0</strong>
+                        </div>
+                        <div class="mini-chip" data-i18n="view.invoices.local">
+                          Local only
+                        </div>
+                      </div>
+
+                      <div class="uba-table-wrap">
+                        <table class="uba-table">
+                          <thead>
+                            <tr>
+                              <th data-i18n="table.client">Client</th>
+                              <th data-i18n="table.label">Label</th>
+                              <th data-i18n="table.amount">Amount</th>
+                              <th data-i18n="table.status">Status</th>
+                              <th data-i18n="view.invoices.due">Due</th>
+                              <th
+                                style="width: 120px"
+                                data-i18n="table.actions"
+                              >
+                                Actions
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody id="invoice-table-body">
+                            <tr>
+                              <td colspan="6" data-i18n="mini.none">
+                                No invoices yet. Add your first one.
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              </section>
+
+              <!-- AUTOMATIONS VIEW -->
+              <section class="uba-view is-hidden" data-view="automations">
+                <div class="uba-grid">
+                  <div class="uba-grid-col">
+                    <section class="uba-card" id="automations-page">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="view.automations.title"
+                          >
+                            Automations
+                          </div>
+                          <p
+                            class="uba-card-sub"
+                            data-i18n="view.automations.desc"
+                          >
+                            Overview of flows with sample activity logs.
+                          </p>
+                        </div>
+                        <span
+                          class="uba-pill"
+                          data-i18n="view.automations.badge"
+                          >Preview</span
+                        >
+                      </div>
+
+                      <div class="uba-support-grid" id="automation-tiles">
+                        <!-- tiles from JS -->
+                      </div>
+
+                      <div class="uba-section-hero">
+                        <div>
+                          <p
+                            class="uba-banner-label"
+                            data-i18n="view.automations.logTitle"
+                          >
+                            Recent runs
+                          </p>
+                          <h3 data-i18n="view.automations.logDesc">
+                            Lightweight history of automation activity
+                          </h3>
+                          <p data-i18n="view.automations.logHint">
+                            Static sample data for now.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div class="uba-table-wrap">
+                        <table class="uba-table">
+                          <thead>
+                            <tr>
+                              <th data-i18n="view.automations.logAutomation">
+                                Automation
+                              </th>
+                              <th data-i18n="view.automations.logStatus">
+                                Status
+                              </th>
+                              <th data-i18n="view.automations.logTime">When</th>
+                            </tr>
+                          </thead>
+                          <tbody id="automation-log-body"></tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              </section>
+
+              <!-- UBA SMART TOOLS VIEW -->
+              <section class="uba-view is-hidden" data-view="smart-tools">
+                <div class="uba-grid">
+                  <div class="uba-grid-col">
+                    <section class="uba-card" id="smart-tools">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="view.smartTools.title"
+                          >
+                            UBA Smart Tools
+                          </div>
+                          <p
+                            class="uba-card-sub"
+                            data-i18n="view.smartTools.desc"
+                          >
+                            Cards for available assistants, matching the
+                            dashboard style.
+                          </p>
+                        </div>
+                        <span class="uba-pill" data-i18n="view.smartTools.badge"
+                          >Live concepts</span
+                        >
+                      </div>
+
+                      <div
+                        class="uba-grid"
+                        style="
+                          grid-template-columns: repeat(
+                            auto-fit,
+                            minmax(240px, 1fr)
+                          );
+                          gap: 12px;
+                        "
+                        id="smart-tools-grid"
+                      >
+                        <!-- filled via JS -->
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              </section>
+
+              <!-- INSIGHTS LAB VIEW -->
+              <section class="uba-view is-hidden" data-view="insights">
+                <div class="uba-grid">
+                  <div class="uba-grid-col">
+                    <section class="uba-card">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="view.insights.title"
+                          >
+                            Insights Lab
+                          </div>
+                          <p
+                            class="uba-card-sub"
+                            data-i18n="view.insights.desc"
+                          >
+                            Narrative dashboards for founders: trends, risks,
+                            and quick wins in one glance.
+                          </p>
+                        </div>
+                        <span class="uba-pill" data-i18n="view.insights.badge"
+                          >Preview</span
+                        >
+                      </div>
+
+                      <div class="uba-section-hero">
+                        <div>
+                          <p
+                            class="uba-banner-label"
+                            data-i18n="insights.hero.kicker"
+                          >
+                            Decision cockpit
+                          </p>
+                          <h3 data-i18n="insights.hero.title">
+                            See the signals behind your KPIs
+                          </h3>
+                          <p data-i18n="insights.hero.desc">
+                            Track revenue momentum, deal velocity, and workload
+                            saturation with annotated insights.
+                          </p>
+                        </div>
+                        <div class="uba-hero-cta">
+                          <button
+                            class="uba-btn-primary"
+                            data-i18n="insights.hero.primary"
+                          >
+                            Export snapshot
+                          </button>
+                          <button
+                            class="uba-btn-ghost"
+                            data-i18n="insights.hero.secondary"
+                          >
+                            Schedule email
+                          </button>
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+
+                  <div class="uba-grid-col">
+                    <section class="uba-card">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="insights.panels.title"
+                          >
+                            Analytics panels
+                          </div>
+                          <p
+                            class="uba-card-sub"
+                            data-i18n="insights.panels.desc"
+                          >
+                            Placeholder UBA cards ready for your metrics,
+                            annotations, and exports.
+                          </p>
+                        </div>
+                        <span class="uba-pill" data-i18n="insights.panels.badge"
+                          >Local only</span
+                        >
+                      </div>
+
+                      <div
+                        class="uba-analytic-grid"
+                        id="insights-panel-grid"
+                      ></div>
+                    </section>
+
+                    <section class="uba-card">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="insights.brief.title"
+                          >
+                            Narrative brief
+                          </div>
+                          <p
+                            class="uba-card-sub"
+                            data-i18n="insights.brief.desc"
+                          >
+                            Simple story blocks to keep stakeholders aligned.
+                          </p>
+                        </div>
+                        <span class="uba-pill" data-i18n="insights.brief.badge"
+                          >Placeholder</span
+                        >
+                      </div>
+
+                      <ul class="uba-brief-list" id="insights-brief-list"></ul>
+                    </section>
+                  </div>
+                </div>
+              </section>
+
+              <!-- SUCCESS DESK VIEW -->
+              <section class="uba-view is-hidden" data-view="support">
+                <div class="uba-grid">
+                  <div class="uba-grid-col">
+                    <section class="uba-card" id="success-desk">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="view.support.title"
+                          >
+                            Success Desk
+                          </div>
+                          <p class="uba-card-sub" data-i18n="view.support.desc">
+                            Quick help topics and links with the familiar
+                            dashboard styling.
+                          </p>
+                        </div>
+                        <span class="uba-pill" data-i18n="view.support.badge"
+                          >Ready</span
+                        >
+                      </div>
+
+                      <div class="uba-support-grid" id="support-topics">
+                        <!-- topics populated via JS -->
+                      </div>
+                    </section>
+                  </div>
+                </div>
+              </section>
+
+              <!-- SETTINGS VIEW (placeholder) -->
+              <section class="uba-view is-hidden" data-view="settings">
+                <div class="uba-grid">
+                  <div class="uba-grid-col">
+                    <section class="uba-card" id="settings-workspace-card">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="settings.workspace.title"
+                          >
+                            Workspace settings
+                          </div>
+                          <p
+                            class="uba-card-sub"
+                            data-i18n="settings.workspace.desc"
+                          >
+                            Store local preferences for this workspace.
+                          </p>
+                        </div>
+                        <span
+                          class="uba-pill"
+                          data-i18n="settings.workspace.badge"
+                          >Local only</span
+                        >
+                      </div>
+
+                      <form class="uba-form" id="settings-form">
+                        <div class="uba-form-row">
+                          <label
+                            class="uba-form-label"
+                            for="setting-workspace-name"
+                            data-i18n="settings.workspace.name"
+                            >Workspace name</label
+                          >
+                          <input
+                            type="text"
+                            id="setting-workspace-name"
+                            data-i18n-placeholder="settings.workspace.placeholder"
+                            autocomplete="off"
+                          />
+                        </div>
+
+                        <div class="uba-form-row">
+                          <label
+                            class="uba-form-label"
+                            for="setting-timezone"
+                            data-i18n="settings.workspace.timezone"
+                            >Timezone</label
+                          >
+                          <select id="setting-timezone" class="uba-select">
+                            <option value="UTC">UTC</option>
+                            <option value="CET">CET</option>
+                            <option value="EST">EST</option>
+                            <option value="PST">PST</option>
+                          </select>
+                        </div>
+
+                        <div class="uba-form-row">
+                          <label
+                            class="uba-form-label"
+                            for="language-select-settings"
+                            data-i18n="settings.workspace.language"
+                            >Default language</label
+                          >
+                          <select
+                            id="language-select-settings"
+                            class="uba-select"
+                          >
+                            <option value="en" data-i18n="language.en">
+                              English
+                            </option>
+                            <option value="ar" data-i18n="language.ar">
+                              Arabic
+                            </option>
+                            <option value="nl" data-i18n="language.nl">
+                              Dutch
+                            </option>
+                            <option value="fr" data-i18n="language.fr">
+                              French
+                            </option>
+                            <option value="es" data-i18n="language.es">
+                              Spanish
+                            </option>
+                            <option value="de" data-i18n="language.de">
+                              German
+                            </option>
+                          </select>
+                        </div>
+
+                        <div class="uba-form-row">
+                          <button
+                            type="submit"
+                            class="uba-btn-primary"
+                            data-i18n="settings.workspace.save"
+                          >
+                            Save preferences
+                          </button>
+                          <span
+                            id="settings-status"
+                            class="uba-chip soft"
+                            aria-live="polite"
+                            data-i18n="settings.workspace.status"
+                            >Unsaved</span
+                          >
+                          <button
+                            id="reset-demo-data"
+                            type="button"
+                            class="uba-btn-ghost"
+                            style="margin-left: 8px"
+                          >
+                            <span data-i18n="settings.resetDemo"
+                              >Reset demo data</span
+                            >
+                          </button>
+                        </div>
+                      </form>
+                    </section>
+                  </div>
+
+                  <div class="uba-grid-col">
+                    <section class="uba-card" id="settings-preferences-card">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="settings.preferences.title"
+                          >
+                            Preferences
+                          </div>
+                          <p
+                            class="uba-card-sub"
+                            data-i18n="settings.preferences.desc"
+                          >
+                            Toggle single-page view mode and notifications.
+                          </p>
+                        </div>
+                        <span
+                          class="uba-pill"
+                          data-i18n="settings.preferences.badge"
+                          >Instant</span
+                        >
+                      </div>
+
+                      <div class="uba-preference" aria-live="polite">
+                        <div>
+                          <p
+                            class="uba-preference-title"
+                            data-i18n="settings.preferences.singlePage"
+                          >
+                            Single-page navigation
+                          </p>
+                          <p
+                            class="uba-preference-sub"
+                            data-i18n="settings.preferences.singlePageHint"
+                          >
+                            Show only the selected page and hide other views.
+                          </p>
+                        </div>
+                        <label class="uba-switch">
+                          <input type="checkbox" id="setting-single-page" />
+                          <span class="uba-slider"></span>
+                        </label>
+                      </div>
+
+                      <div class="uba-preference">
+                        <div>
+                          <p
+                            class="uba-preference-title"
+                            data-i18n="settings.preferences.notifications"
+                          >
+                            Notifications
+                          </p>
+                          <p
+                            class="uba-preference-sub"
+                            data-i18n="settings.preferences.notificationsHint"
+                          >
+                            Quick reminder banners for workspace events.
+                          </p>
+                        </div>
+                        <label class="uba-switch">
+                          <input type="checkbox" id="setting-notifications" />
+                          <span class="uba-slider"></span>
+                        </label>
+                      </div>
+                    </section>
+
+                    <section class="uba-card" id="settings-summary-card">
+                      <div class="uba-card-header">
+                        <div>
+                          <div
+                            class="uba-card-title"
+                            data-i18n="settings.summary.title"
+                          >
+                            Workspace summary
+                          </div>
+                          <p
+                            class="uba-card-sub"
+                            data-i18n="settings.summary.desc"
+                          >
+                            Local key/value mapping saved in your browser.
+                          </p>
+                        </div>
+                        <span
+                          class="uba-pill"
+                          data-i18n="settings.summary.badge"
+                          >Local</span
+                        >
+                      </div>
+
+                      <div class="uba-summary-grid" id="settings-summary"></div>
+                    </section>
+                  </div>
+                </div>
+              </section>
             </div>
-          </section>
-
-          <!-- PROJECTS VIEW -->
-          <section class="uba-view is-hidden" data-view="projects">
-            <div class="uba-grid">
-              <div class="uba-grid-col">
-                <section class="uba-card" id="projects-board">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="view.projects.title">Projects</div>
-                      <p class="uba-card-sub" data-i18n="view.projects.desc">Pipeline view of active work, staged locally.</p>
-                    </div>
-                    <span class="uba-pill" data-i18n="view.projects.badge">Pipeline</span>
-                  </div>
-
-                  <div class="uba-section-hero">
-                    <div>
-                      <p class="uba-banner-label" data-i18n="view.projects.kicker">Pipeline flow</p>
-                      <h3 data-i18n="view.projects.titleInline">Progress projects by stage</h3>
-                      <p data-i18n="view.projects.subtitle">Drag-style layout with cards organized by phase.</p>
-                    </div>
-                  </div>
-
-                  <div class="uba-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;" id="projects-columns">
-                    <!-- filled by JS -->
-                  </div>
-                </section>
-              </div>
-            </div>
-          </section>
-
-          <!-- TASKS VIEW -->
-          <section class="uba-view is-hidden" data-view="tasks">
-            <div class="uba-grid">
-              <div class="uba-grid-col">
-                <section class="uba-card" id="tasks-board">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="view.tasks.title">Tasks</div>
-                      <p class="uba-card-sub" data-i18n="view.tasks.desc">Kanban-style board with local tasks and quick actions.</p>
-                    </div>
-                    <span class="uba-pill" data-i18n="view.tasks.badge">Local board</span>
-                  </div>
-
-                  <div class="uba-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px;" id="tasks-columns">
-                    <!-- populated via JS -->
-                  </div>
-                </section>
-              </div>
-            </div>
-          </section>
-
-          <!-- INVOICES VIEW -->
-          <section class="uba-view is-hidden" data-view="invoices">
-            <div class="uba-grid">
-              <div class="uba-grid-col">
-                <section class="uba-card" id="invoices-page">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="view.invoices.title">Invoices</div>
-                      <p class="uba-card-sub" data-i18n="view.invoices.desc">Full CRUD with local storage, matching the dashboard style.</p>
-                    </div>
-                    <span class="uba-pill" data-i18n="view.invoices.badge">Local billing</span>
-                  </div>
-
-                  <form id="invoice-form" class="uba-form">
-                    <input type="hidden" id="invoice-edit-id" />
-                    <div class="uba-form-row">
-                      <input
-                        type="text"
-                        id="invoice-client"
-                        placeholder="Client"
-                        data-i18n-placeholder="table.client"
-                        required
-                      />
-                      <input
-                        type="text"
-                        id="invoice-label"
-                        placeholder="Label"
-                        data-i18n-placeholder="table.label"
-                      />
-                    </div>
-
-                    <div class="uba-form-row">
-                      <input
-                        type="number"
-                        id="invoice-amount"
-                        placeholder="Amount (€)"
-                        step="0.01"
-                        min="0"
-                        data-i18n-placeholder="form.amount"
-                        required
-                      />
-                      <select id="invoice-status">
-                        <option value="draft" data-i18n="form.draft">Draft</option>
-                        <option value="sent" data-i18n="form.sent">Sent</option>
-                        <option value="paid" data-i18n="form.paid">Paid</option>
-                      </select>
-                      <input type="date" id="invoice-due" />
-                    </div>
-
-                    <div class="uba-form-row">
-                      <input
-                        type="text"
-                        id="invoice-notes"
-                        placeholder="Notes"
-                        data-i18n-placeholder="form.notes"
-                      />
-                      <button type="submit" class="uba-btn-primary" data-i18n="form.saveInvoice">Save invoice</button>
-                    </div>
-                    <p id="invoice-error" class="uba-text-danger" aria-live="polite"></p>
-                  </form>
-
-                  <div class="mini-invoices-meta">
-                    <div>
-                      <p class="label" data-i18n="mini.meta.count">Invoices in view</p>
-                      <strong id="invoice-count">0</strong>
-                    </div>
-                    <div>
-                      <p class="label" data-i18n="mini.meta.total">Total amount</p>
-                      <strong id="invoice-total">€ 0</strong>
-                    </div>
-                    <div class="mini-chip" data-i18n="view.invoices.local">Local only</div>
-                  </div>
-
-                  <div class="uba-table-wrap">
-                    <table class="uba-table">
-                      <thead>
-                        <tr>
-                          <th data-i18n="table.client">Client</th>
-                          <th data-i18n="table.label">Label</th>
-                          <th data-i18n="table.amount">Amount</th>
-                          <th data-i18n="table.status">Status</th>
-                          <th data-i18n="view.invoices.due">Due</th>
-                          <th style="width:120px;" data-i18n="table.actions">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody id="invoice-table-body">
-                        <tr>
-                          <td colspan="6" data-i18n="mini.none">No invoices yet. Add your first one.</td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
-              </div>
-            </div>
-          </section>
-
-          <!-- AUTOMATIONS VIEW -->
-          <section class="uba-view is-hidden" data-view="automations">
-            <div class="uba-grid">
-              <div class="uba-grid-col">
-                <section class="uba-card" id="automations-page">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="view.automations.title">Automations</div>
-                      <p class="uba-card-sub" data-i18n="view.automations.desc">Overview of flows with sample activity logs.</p>
-                    </div>
-                    <span class="uba-pill" data-i18n="view.automations.badge">Preview</span>
-                  </div>
-
-                  <div class="uba-support-grid" id="automation-tiles">
-                    <!-- tiles from JS -->
-                  </div>
-
-                  <div class="uba-section-hero">
-                    <div>
-                      <p class="uba-banner-label" data-i18n="view.automations.logTitle">Recent runs</p>
-                      <h3 data-i18n="view.automations.logDesc">Lightweight history of automation activity</h3>
-                      <p data-i18n="view.automations.logHint">Static sample data for now.</p>
-                    </div>
-                  </div>
-
-                  <div class="uba-table-wrap">
-                    <table class="uba-table">
-                      <thead>
-                        <tr>
-                          <th data-i18n="view.automations.logAutomation">Automation</th>
-                          <th data-i18n="view.automations.logStatus">Status</th>
-                          <th data-i18n="view.automations.logTime">When</th>
-                        </tr>
-                      </thead>
-                      <tbody id="automation-log-body"></tbody>
-                    </table>
-                  </div>
-                </section>
-              </div>
-            </div>
-          </section>
-
-          <!-- UBA SMART TOOLS VIEW -->
-          <section class="uba-view is-hidden" data-view="smart-tools">
-            <div class="uba-grid">
-              <div class="uba-grid-col">
-                <section class="uba-card" id="smart-tools">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="view.smartTools.title">UBA Smart Tools</div>
-                      <p class="uba-card-sub" data-i18n="view.smartTools.desc">Cards for available assistants, matching the dashboard style.</p>
-                    </div>
-                    <span class="uba-pill" data-i18n="view.smartTools.badge">Live concepts</span>
-                  </div>
-
-                  <div class="uba-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;" id="smart-tools-grid">
-                    <!-- filled via JS -->
-                  </div>
-                </section>
-              </div>
-            </div>
-          </section>
-
-          <!-- INSIGHTS LAB VIEW -->
-          <section class="uba-view is-hidden" data-view="insights">
-            <div class="uba-grid">
-              <div class="uba-grid-col">
-                <section class="uba-card">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="view.insights.title">Insights Lab</div>
-                      <p class="uba-card-sub" data-i18n="view.insights.desc">
-                        Narrative dashboards for founders: trends, risks, and quick wins in one glance.
-                      </p>
-                    </div>
-                    <span class="uba-pill" data-i18n="view.insights.badge">Preview</span>
-                  </div>
-
-                  <div class="uba-section-hero">
-                    <div>
-                      <p class="uba-banner-label" data-i18n="insights.hero.kicker">Decision cockpit</p>
-                      <h3 data-i18n="insights.hero.title">See the signals behind your KPIs</h3>
-                      <p data-i18n="insights.hero.desc">
-                        Track revenue momentum, deal velocity, and workload saturation with annotated insights.
-                      </p>
-                    </div>
-                    <div class="uba-hero-cta">
-                      <button class="uba-btn-primary" data-i18n="insights.hero.primary">Export snapshot</button>
-                      <button class="uba-btn-ghost" data-i18n="insights.hero.secondary">Schedule email</button>
-                    </div>
-                  </div>
-                </section>
-              </div>
-
-              <div class="uba-grid-col">
-                <section class="uba-card">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="insights.panels.title">Analytics panels</div>
-                      <p class="uba-card-sub" data-i18n="insights.panels.desc">
-                        Placeholder UBA cards ready for your metrics, annotations, and exports.
-                      </p>
-                    </div>
-                    <span class="uba-pill" data-i18n="insights.panels.badge">Local only</span>
-                  </div>
-
-                  <div class="uba-analytic-grid" id="insights-panel-grid"></div>
-                </section>
-
-                <section class="uba-card">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="insights.brief.title">Narrative brief</div>
-                      <p class="uba-card-sub" data-i18n="insights.brief.desc">Simple story blocks to keep stakeholders aligned.</p>
-                    </div>
-                    <span class="uba-pill" data-i18n="insights.brief.badge">Placeholder</span>
-                  </div>
-
-                  <ul class="uba-brief-list" id="insights-brief-list"></ul>
-                </section>
-              </div>
-            </div>
-          </section>
-
-          <!-- SUCCESS DESK VIEW -->
-          <section class="uba-view is-hidden" data-view="support">
-            <div class="uba-grid">
-              <div class="uba-grid-col">
-                <section class="uba-card" id="success-desk">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="view.support.title">Success Desk</div>
-                      <p class="uba-card-sub" data-i18n="view.support.desc">Quick help topics and links with the familiar dashboard styling.</p>
-                    </div>
-                    <span class="uba-pill" data-i18n="view.support.badge">Ready</span>
-                  </div>
-
-                  <div class="uba-support-grid" id="support-topics">
-                    <!-- topics populated via JS -->
-                  </div>
-                </section>
-              </div>
-            </div>
-          </section>
-
-          <!-- SETTINGS VIEW (placeholder) -->
-          <section class="uba-view is-hidden" data-view="settings">
-            <div class="uba-grid">
-              <div class="uba-grid-col">
-                <section class="uba-card" id="settings-workspace-card">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="settings.workspace.title">Workspace settings</div>
-                      <p class="uba-card-sub" data-i18n="settings.workspace.desc">Store local preferences for this workspace.</p>
-                    </div>
-                    <span class="uba-pill" data-i18n="settings.workspace.badge">Local only</span>
-                  </div>
-
-                  <form class="uba-form" id="settings-form">
-                    <div class="uba-form-row">
-                      <label class="uba-form-label" for="setting-workspace-name" data-i18n="settings.workspace.name">Workspace name</label>
-                      <input
-                        type="text"
-                        id="setting-workspace-name"
-                        data-i18n-placeholder="settings.workspace.placeholder"
-                        autocomplete="off"
-                      />
-                    </div>
-
-                    <div class="uba-form-row">
-                      <label class="uba-form-label" for="setting-timezone" data-i18n="settings.workspace.timezone">Timezone</label>
-                      <select id="setting-timezone" class="uba-select">
-                        <option value="UTC">UTC</option>
-                        <option value="CET">CET</option>
-                        <option value="EST">EST</option>
-                        <option value="PST">PST</option>
-                      </select>
-                    </div>
-
-                    <div class="uba-form-row">
-                      <label class="uba-form-label" for="language-select-settings" data-i18n="settings.workspace.language">Default language</label>
-                      <select id="language-select-settings" class="uba-select">
-                        <option value="en" data-i18n="language.en">English</option>
-                        <option value="ar" data-i18n="language.ar">Arabic</option>
-                        <option value="nl" data-i18n="language.nl">Dutch</option>
-                        <option value="fr" data-i18n="language.fr">French</option>
-                        <option value="es" data-i18n="language.es">Spanish</option>
-                        <option value="de" data-i18n="language.de">German</option>
-                      </select>
-                    </div>
-
-                    <div class="uba-form-row">
-                      <button type="submit" class="uba-btn-primary" data-i18n="settings.workspace.save">Save preferences</button>
-                        <span id="settings-status" class="uba-chip soft" aria-live="polite" data-i18n="settings.workspace.status">Unsaved</span>
-                        <button id="reset-demo-data" type="button" class="uba-btn-ghost" style="margin-left:8px;">
-                          <span data-i18n="settings.resetDemo">Reset demo data</span>
-                        </button>
-                    </div>
-                  </form>
-                </section>
-              </div>
-
-              <div class="uba-grid-col">
-                <section class="uba-card" id="settings-preferences-card">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="settings.preferences.title">Preferences</div>
-                      <p class="uba-card-sub" data-i18n="settings.preferences.desc">Toggle single-page view mode and notifications.</p>
-                    </div>
-                    <span class="uba-pill" data-i18n="settings.preferences.badge">Instant</span>
-                  </div>
-
-                  <div class="uba-preference" aria-live="polite">
-                    <div>
-                      <p class="uba-preference-title" data-i18n="settings.preferences.singlePage">Single-page navigation</p>
-                      <p class="uba-preference-sub" data-i18n="settings.preferences.singlePageHint">Show only the selected page and hide other views.</p>
-                    </div>
-                    <label class="uba-switch">
-                      <input type="checkbox" id="setting-single-page" />
-                      <span class="uba-slider"></span>
-                    </label>
-                  </div>
-
-                  <div class="uba-preference">
-                    <div>
-                      <p class="uba-preference-title" data-i18n="settings.preferences.notifications">Notifications</p>
-                      <p class="uba-preference-sub" data-i18n="settings.preferences.notificationsHint">Quick reminder banners for workspace events.</p>
-                    </div>
-                    <label class="uba-switch">
-                      <input type="checkbox" id="setting-notifications" />
-                      <span class="uba-slider"></span>
-                    </label>
-                  </div>
-                </section>
-
-                <section class="uba-card" id="settings-summary-card">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title" data-i18n="settings.summary.title">Workspace summary</div>
-                      <p class="uba-card-sub" data-i18n="settings.summary.desc">Local key/value mapping saved in your browser.</p>
-                    </div>
-                    <span class="uba-pill" data-i18n="settings.summary.badge">Local</span>
-                  </div>
-
-                  <div class="uba-summary-grid" id="settings-summary"></div>
-                </section>
-              </div>
-            </div>
-          </section>
+          </main>
         </div>
-      </main>
-    </div>
-    </div>
-  </section>
+      </div>
+    </section>
 
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/store.js"></script>
-  <script src="assets/js/app.js"></script>
-  <script src="assets/js/page-loader.js"></script>
-  <script src="assets/js/assistant.js"></script>
-  <script src="assets/js/clients.js"></script>
-  <script src="assets/js/tasks.js"></script>
-  <script src="assets/js/smarttools.js"></script>
-  <script>
-    try {
-      const pageId = document.getElementById("page-id")?.dataset?.page;
-      if (pageId && typeof loadPageScripts === 'function') loadPageScripts(pageId);
-    } catch (err) {
-      console.warn('page-loader: failed to run loadPageScripts', err);
-    }
-  </script>
-</body>
+    <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/store.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/page-loader.js"></script>
+    <script src="assets/js/assistant.js"></script>
+    <script src="assets/js/clients.js"></script>
+    <script src="assets/js/tasks.js"></script>
+    <script src="assets/js/smarttools.js"></script>
+    <script>
+      try {
+        const pageId = document.getElementById("page-id")?.dataset?.page;
+        if (pageId && typeof loadPageScripts === "function")
+          loadPageScripts(pageId);
+      } catch (err) {
+        console.warn("page-loader: failed to run loadPageScripts", err);
+      }
+    </script>
+  </body>
 </html>

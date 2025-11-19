@@ -21,57 +21,77 @@ const fallbackI18n = {
 // Per-page init stubs used by page-loader's `loadPageScripts` dispatcher.
 function initClientsPage() {
   try {
-    if (typeof renderClientsPage === 'function') renderClientsPage();
-  } catch (e) { console.warn('initClientsPage error', e); }
+    if (typeof renderClientsPage === "function") renderClientsPage();
+  } catch (e) {
+    console.warn("initClientsPage error", e);
+  }
 }
 
 function initProjectsPage() {
   try {
     const hasStandalonePipeline =
-      document.getElementById('projects-leads') ||
-      document.getElementById('projects-inprogress') ||
-      document.getElementById('projects-ongoing') ||
-      document.getElementById('projects-completed');
-    if (hasStandalonePipeline && typeof window.renderProjectsStandalone === 'function') {
+      document.getElementById("projects-leads") ||
+      document.getElementById("projects-inprogress") ||
+      document.getElementById("projects-ongoing") ||
+      document.getElementById("projects-completed");
+    if (
+      hasStandalonePipeline &&
+      typeof window.renderProjectsStandalone === "function"
+    ) {
       return window.renderProjectsStandalone();
     }
-    if (typeof renderProjectsBoard === 'function') return renderProjectsBoard();
-  } catch (e) { console.warn('initProjectsPage error', e); }
+    if (typeof renderProjectsBoard === "function") return renderProjectsBoard();
+  } catch (e) {
+    console.warn("initProjectsPage error", e);
+  }
 }
 
 function initTasksPage() {
   try {
     const hasStandaloneBoard =
-      document.getElementById('tasks-backlog') ||
-      document.getElementById('tasks-today') ||
-      document.getElementById('tasks-inprogress') ||
-      document.getElementById('tasks-done');
-    if (hasStandaloneBoard && typeof window.renderTasksStandalone === 'function') {
+      document.getElementById("tasks-backlog") ||
+      document.getElementById("tasks-today") ||
+      document.getElementById("tasks-inprogress") ||
+      document.getElementById("tasks-done");
+    if (
+      hasStandaloneBoard &&
+      typeof window.renderTasksStandalone === "function"
+    ) {
       return window.renderTasksStandalone();
     }
-    if (typeof renderTasksBoard === 'function') return renderTasksBoard();
-  } catch (e) { console.warn('initTasksPage error', e); }
+    if (typeof renderTasksBoard === "function") return renderTasksBoard();
+  } catch (e) {
+    console.warn("initTasksPage error", e);
+  }
 }
 
 function initSmartTools() {
   try {
-    if (typeof initSmartToolsStandalone === 'function') return initSmartToolsStandalone();
-    if (typeof renderSmartToolsGrid === 'function') return renderSmartToolsGrid();
-  } catch (e) { console.warn('initSmartTools error', e); }
+    if (typeof initSmartToolsStandalone === "function")
+      return initSmartToolsStandalone();
+    if (typeof renderSmartToolsGrid === "function")
+      return renderSmartToolsGrid();
+  } catch (e) {
+    console.warn("initSmartTools error", e);
+  }
 }
 
 function initAssistant() {
   try {
-    if (window.ubaAssistant && typeof window.ubaAssistant.initAssistant === 'function') {
+    if (
+      window.ubaAssistant &&
+      typeof window.ubaAssistant.initAssistant === "function"
+    ) {
       window.ubaAssistant.initAssistant();
       return;
     }
-    if (typeof window.initAssistant === 'function') {
+    if (typeof window.initAssistant === "function") {
       window.initAssistant();
     }
-  } catch (e) { console.warn('initAssistant error', e); }
+  } catch (e) {
+    console.warn("initAssistant error", e);
+  }
 }
-
 
 const i18n = window.ubaI18n || fallbackI18n;
 const t = i18n.t || fallbackI18n.t;
@@ -79,58 +99,66 @@ const t = i18n.t || fallbackI18n.t;
 // ---------------------
 // Shared utilities
 // ---------------------
-function genId(prefix = '') {
+function genId(prefix = "") {
   if (window.crypto && crypto.randomUUID) return prefix + crypto.randomUUID();
-  return prefix + Date.now() + '-' + Math.floor(Math.random() * 9999);
+  return prefix + Date.now() + "-" + Math.floor(Math.random() * 9999);
 }
 
 function formatDateISO(d) {
   try {
     return new Date(d).toISOString().slice(0, 10);
   } catch (e) {
-    return '';
+    return "";
   }
 }
 
 function showToast(message, opts = {}) {
   // simple non-blocking toast (aria-live)
-  let container = document.getElementById('uba-toast-container');
+  let container = document.getElementById("uba-toast-container");
   if (!container) {
-    container = document.createElement('div');
-    container.id = 'uba-toast-container';
-    container.setAttribute('aria-live', 'polite');
-    container.style.position = 'fixed';
-    container.style.right = '20px';
-    container.style.bottom = '20px';
-    container.style.zIndex = '1400';
+    container = document.createElement("div");
+    container.id = "uba-toast-container";
+    container.setAttribute("aria-live", "polite");
+    container.style.position = "fixed";
+    container.style.right = "20px";
+    container.style.bottom = "20px";
+    container.style.zIndex = "1400";
     document.body.appendChild(container);
   }
 
-  const el = document.createElement('div');
-  el.className = 'uba-toast';
+  const el = document.createElement("div");
+  el.className = "uba-toast";
   el.textContent = message;
-  if (opts.type === 'error') el.style.background = 'linear-gradient(120deg,#ef4444,#f97316)';
+  if (opts.type === "error")
+    el.style.background = "linear-gradient(120deg,#ef4444,#f97316)";
   container.appendChild(el);
-  setTimeout(() => { el.style.opacity = '0'; setTimeout(()=>el.remove(), 300); }, opts.duration || 3000);
+  setTimeout(() => {
+    el.style.opacity = "0";
+    setTimeout(() => el.remove(), 300);
+  }, opts.duration || 3000);
 }
 
 function setFieldError(input, message) {
   if (!input) return;
-  input.classList.add('uba-field-error-input');
-  let err = input.parentElement && input.parentElement.querySelector('.uba-field-error');
+  input.classList.add("uba-field-error-input");
+  let err =
+    input.parentElement &&
+    input.parentElement.querySelector(".uba-field-error");
   if (!err) {
-    err = document.createElement('div');
-    err.className = 'uba-field-error';
+    err = document.createElement("div");
+    err.className = "uba-field-error";
     input.parentElement.appendChild(err);
   }
-  err.textContent = message || '';
+  err.textContent = message || "";
 }
 
 function clearFieldError(input) {
   if (!input) return;
-  input.classList.remove('uba-field-error-input');
-  const err = input.parentElement && input.parentElement.querySelector('.uba-field-error');
-  if (err) err.textContent = '';
+  input.classList.remove("uba-field-error-input");
+  const err =
+    input.parentElement &&
+    input.parentElement.querySelector(".uba-field-error");
+  if (err) err.textContent = "";
 }
 
 function isValidEmail(val) {
@@ -140,7 +168,7 @@ function isValidEmail(val) {
 
 function escapeHtml(unsafe) {
   return (unsafe || "").toString().replace(/[&<>\"]/g, function (c) {
-    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] || c;
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] || c;
   });
 }
 
@@ -148,13 +176,13 @@ function setButtonLoading(btn, loading, label) {
   if (!btn) return;
   if (loading) {
     btn.dataset._orig = btn.textContent;
-    btn.textContent = label || t('action.saving','Saving...');
+    btn.textContent = label || t("action.saving", "Saving...");
     btn.disabled = true;
-    btn.classList.add('is-loading');
+    btn.classList.add("is-loading");
   } else {
-    btn.textContent = btn.dataset._orig || label || t('action.save','Save');
+    btn.textContent = btn.dataset._orig || label || t("action.save", "Save");
     btn.disabled = false;
-    btn.classList.remove('is-loading');
+    btn.classList.remove("is-loading");
   }
 }
 
@@ -163,7 +191,8 @@ function setButtonLoading(btn, loading, label) {
 // ---------------------
 function _getStoreCollection(name, fallback) {
   const store = window.ubaStore;
-  if (store && store[name] && typeof store[name].getAll === 'function') return store[name].getAll() || [];
+  if (store && store[name] && typeof store[name].getAll === "function")
+    return store[name].getAll() || [];
   // fallback to localStorage keys
   const key = LOCAL_KEYS[name] || null;
   if (key) return ensureSeedData(key, fallback || []) || [];
@@ -171,33 +200,56 @@ function _getStoreCollection(name, fallback) {
 }
 
 function getClientById(id) {
-  const clients = _getStoreCollection('clients', clientSeed);
-  return clients.find(c => c.id === id) || null;
+  const clients = _getStoreCollection("clients", clientSeed);
+  return clients.find((c) => c.id === id) || null;
 }
 
 function getInvoicesByClient(clientName) {
-  const invoices = _getStoreCollection('invoices', invoiceSeed);
-  return invoices.filter(i => (i.client || '').toLowerCase() === (clientName || '').toLowerCase());
+  const invoices = _getStoreCollection("invoices", invoiceSeed);
+  return invoices.filter(
+    (i) => (i.client || "").toLowerCase() === (clientName || "").toLowerCase(),
+  );
 }
 
 function getProjectsByClient(clientName) {
-  const projects = _getStoreCollection('projects', projectStagesSeed);
+  const projects = _getStoreCollection("projects", projectStagesSeed);
   const items = [];
   if (Array.isArray(projects)) {
-    projects.forEach(stage => {
-      (stage.items || []).forEach(it => { if ((it.client||'').toLowerCase() === (clientName||'').toLowerCase()) items.push(it); });
+    projects.forEach((stage) => {
+      (stage.items || []).forEach((it) => {
+        if (
+          (it.client || "").toLowerCase() === (clientName || "").toLowerCase()
+        )
+          items.push(it);
+      });
     });
   }
   return items;
 }
 
 function getTasksByClient(clientName) {
-  const tasksRaw = _getStoreCollection('tasks', taskBoardSeed);
+  const tasksRaw = _getStoreCollection("tasks", taskBoardSeed);
   const out = [];
   if (Array.isArray(tasksRaw) && tasksRaw.length && tasksRaw[0].tasks) {
-    tasksRaw.forEach(col => (col.tasks || []).forEach(t => { if ((t.client||t.owner||'').toLowerCase().includes((clientName||'').toLowerCase())) out.push(t); }));
+    tasksRaw.forEach((col) =>
+      (col.tasks || []).forEach((t) => {
+        if (
+          (t.client || t.owner || "")
+            .toLowerCase()
+            .includes((clientName || "").toLowerCase())
+        )
+          out.push(t);
+      }),
+    );
   } else if (Array.isArray(tasksRaw)) {
-    tasksRaw.forEach(t => { if ((t.client||t.owner||'').toLowerCase().includes((clientName||'').toLowerCase())) out.push(t); });
+    tasksRaw.forEach((t) => {
+      if (
+        (t.client || t.owner || "")
+          .toLowerCase()
+          .includes((clientName || "").toLowerCase())
+      )
+        out.push(t);
+    });
   }
   return out;
 }
@@ -206,26 +258,36 @@ function daysSince(dateStr) {
   try {
     const then = new Date(dateStr).getTime();
     if (!then) return Infinity;
-    return Math.floor((Date.now() - then) / (24*60*60*1000));
-  } catch (e) { return Infinity; }
+    return Math.floor((Date.now() - then) / (24 * 60 * 60 * 1000));
+  } catch (e) {
+    return Infinity;
+  }
 }
 
 function getTopClientsByRevenue(limit = 3) {
-  const invoices = _getStoreCollection('invoices', invoiceSeed);
+  const invoices = _getStoreCollection("invoices", invoiceSeed);
   const map = {};
-  invoices.forEach(i => {
-    const name = i.client || 'Unknown';
-    map[name] = (map[name]||0) + Number(i.amount || 0);
+  invoices.forEach((i) => {
+    const name = i.client || "Unknown";
+    map[name] = (map[name] || 0) + Number(i.amount || 0);
   });
-  return Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0, limit).map(([name, amount]) => ({ name, amount }));
+  return Object.entries(map)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([name, amount]) => ({ name, amount }));
 }
 
 function getOverdueTasks() {
-  const tasksRaw = _getStoreCollection('tasks', taskBoardSeed);
+  const tasksRaw = _getStoreCollection("tasks", taskBoardSeed);
   const out = [];
-  const pushIf = (t) => { if (t && t.due && /^\d{4}-\d{2}-\d{2}/.test(t.due)) { const then = new Date(t.due).getTime(); if (then < Date.now()) out.push(t); } };
+  const pushIf = (t) => {
+    if (t && t.due && /^\d{4}-\d{2}-\d{2}/.test(t.due)) {
+      const then = new Date(t.due).getTime();
+      if (then < Date.now()) out.push(t);
+    }
+  };
   if (Array.isArray(tasksRaw) && tasksRaw.length && tasksRaw[0].tasks) {
-    tasksRaw.forEach(col => (col.tasks || []).forEach(pushIf));
+    tasksRaw.forEach((col) => (col.tasks || []).forEach(pushIf));
   } else if (Array.isArray(tasksRaw)) {
     tasksRaw.forEach(pushIf);
   }
@@ -233,47 +295,111 @@ function getOverdueTasks() {
 }
 
 function getInactiveClients(days = 30) {
-  const clients = _getStoreCollection('clients', clientSeed);
-  const invoices = _getStoreCollection('invoices', invoiceSeed);
-  return clients.filter(c => {
-    const clientName = (c.name || '').toLowerCase();
-    const recent = invoices.find(i => (i.client||'').toLowerCase() === clientName && daysSince(i.createdAt || i.created_at || i.due || Date.now()) <= days);
+  const clients = _getStoreCollection("clients", clientSeed);
+  const invoices = _getStoreCollection("invoices", invoiceSeed);
+  return clients.filter((c) => {
+    const clientName = (c.name || "").toLowerCase();
+    const recent = invoices.find(
+      (i) =>
+        (i.client || "").toLowerCase() === clientName &&
+        daysSince(i.createdAt || i.created_at || i.due || Date.now()) <= days,
+    );
     return !recent;
   });
 }
 
 function suggestOutreachTemplates(client) {
   const invs = getInvoicesByClient(client.name);
-  const overdue = invs.filter(i => { try { return ['overdue'].includes(i.status) || (i.due && new Date(i.due).getTime() < Date.now() && i.status !== 'paid'); } catch(e){return false;} });
-  const lastInvoiceDays = invs.length ? daysSince(invs[0].createdAt || invs[0].created_at || invs[0].due || new Date()) : Infinity;
+  const overdue = invs.filter((i) => {
+    try {
+      return (
+        ["overdue"].includes(i.status) ||
+        (i.due && new Date(i.due).getTime() < Date.now() && i.status !== "paid")
+      );
+    } catch (e) {
+      return false;
+    }
+  });
+  const lastInvoiceDays = invs.length
+    ? daysSince(
+        invs[0].createdAt || invs[0].created_at || invs[0].due || new Date(),
+      )
+    : Infinity;
   const templates = [];
   if (overdue.length) {
-    templates.push({ title: t('smart.outreach.reminder','Invoice reminder'), text: `Hi ${client.name},\n\nWe noticed invoice ${overdue[0].id || ''} for €${Number(overdue[0].amount||0)} is still outstanding. Could you confirm payment date? Thanks!` });
-    templates.push({ title: t('smart.outreach.nudge','Friendly nudge'), text: `Hi ${client.name},\n\nQuick check-in — just following up on the outstanding invoice and next steps for the project.` });
+    templates.push({
+      title: t("smart.outreach.reminder", "Invoice reminder"),
+      text: `Hi ${client.name},\n\nWe noticed invoice ${overdue[0].id || ""} for €${Number(overdue[0].amount || 0)} is still outstanding. Could you confirm payment date? Thanks!`,
+    });
+    templates.push({
+      title: t("smart.outreach.nudge", "Friendly nudge"),
+      text: `Hi ${client.name},\n\nQuick check-in — just following up on the outstanding invoice and next steps for the project.`,
+    });
   } else if (lastInvoiceDays > 90) {
-    templates.push({ title: t('smart.outreach.reengage','Re-engagement'), text: `Hi ${client.name},\n\nIt's been a while since we last worked together. Would you like to schedule a short catch-up to explore next opportunities?` });
-    templates.push({ title: t('smart.outreach.share','Share update'), text: `Hi ${client.name},\n\nWe have some updates and ideas that may help your project — would you be open to a 20-min call?` });
+    templates.push({
+      title: t("smart.outreach.reengage", "Re-engagement"),
+      text: `Hi ${client.name},\n\nIt's been a while since we last worked together. Would you like to schedule a short catch-up to explore next opportunities?`,
+    });
+    templates.push({
+      title: t("smart.outreach.share", "Share update"),
+      text: `Hi ${client.name},\n\nWe have some updates and ideas that may help your project — would you be open to a 20-min call?`,
+    });
   } else {
-    templates.push({ title: t('smart.outreach.thanks','Quick thanks'), text: `Hi ${client.name},\n\nThanks for the recent work together. Let us know if there's anything else we can help with.` });
+    templates.push({
+      title: t("smart.outreach.thanks", "Quick thanks"),
+      text: `Hi ${client.name},\n\nThanks for the recent work together. Let us know if there's anything else we can help with.`,
+    });
   }
-  return templates.slice(0,3);
+  return templates.slice(0, 3);
 }
 
 function nextBestActions(limit = 5) {
   const actions = [];
   // overdue invoices
-  const invoices = _getStoreCollection('invoices', invoiceSeed);
-  invoices.forEach(i => { try { if (i.due && new Date(i.due).getTime() < Date.now() && i.status !== 'paid') actions.push({ type: 'invoice_followup', title: `Follow up invoice ${i.id||''}`, meta: i }); } catch(e){} });
+  const invoices = _getStoreCollection("invoices", invoiceSeed);
+  invoices.forEach((i) => {
+    try {
+      if (
+        i.due &&
+        new Date(i.due).getTime() < Date.now() &&
+        i.status !== "paid"
+      )
+        actions.push({
+          type: "invoice_followup",
+          title: `Follow up invoice ${i.id || ""}`,
+          meta: i,
+        });
+    } catch (e) {}
+  });
   // overdue tasks
   const overdueTasks = getOverdueTasks();
-  overdueTasks.forEach(t=> actions.push({ type: 'task', title: `Complete task: ${t.title}`, meta: t }));
+  overdueTasks.forEach((t) =>
+    actions.push({ type: "task", title: `Complete task: ${t.title}`, meta: t }),
+  );
   // leads with no recent activity
-  const leads = _getStoreCollection('leads', leadsSeed);
-  leads.forEach(l => { const inactiveDays = daysSince(l.updatedAt || l.lastContact || new Date()); if (inactiveDays > 30) actions.push({ type: 'lead', title: `Reconnect lead: ${l.name}`, meta: l }); });
+  const leads = _getStoreCollection("leads", leadsSeed);
+  leads.forEach((l) => {
+    const inactiveDays = daysSince(l.updatedAt || l.lastContact || new Date());
+    if (inactiveDays > 30)
+      actions.push({
+        type: "lead",
+        title: `Reconnect lead: ${l.name}`,
+        meta: l,
+      });
+  });
   // projects in proposal
-  const projects = _getStoreCollection('projects', projectStagesSeed);
+  const projects = _getStoreCollection("projects", projectStagesSeed);
   if (Array.isArray(projects)) {
-    projects.forEach(stage => { (stage.items||[]).forEach(it=>{ if ((stage.id||stage.title||'').toLowerCase().includes('proposal')) actions.push({ type: 'project', title: `Advance proposal: ${it.name||it.title}`, meta: it }); }); });
+    projects.forEach((stage) => {
+      (stage.items || []).forEach((it) => {
+        if ((stage.id || stage.title || "").toLowerCase().includes("proposal"))
+          actions.push({
+            type: "project",
+            title: `Advance proposal: ${it.name || it.title}`,
+            meta: it,
+          });
+      });
+    });
   }
   // dedupe and return top N
   return actions.slice(0, limit);
@@ -282,11 +408,19 @@ function nextBestActions(limit = 5) {
 function quickInsights() {
   const top = getTopClientsByRevenue(3);
   const overdueTasks = getOverdueTasks();
-  const expenses = _getStoreCollection('expenses', expensesSeed);
+  const expenses = _getStoreCollection("expenses", expensesSeed);
   const cats = {};
-  expenses.forEach(e=> cats[e.category] = (cats[e.category]||0) + Number(e.amount||0));
-  const topCat = Object.entries(cats).sort((a,b)=>b[1]-a[1])[0];
-  return { topClients: top, overdueTasksCount: overdueTasks.length, topExpenseCategory: topCat ? { category: topCat[0], amount: topCat[1] } : null };
+  expenses.forEach(
+    (e) => (cats[e.category] = (cats[e.category] || 0) + Number(e.amount || 0)),
+  );
+  const topCat = Object.entries(cats).sort((a, b) => b[1] - a[1])[0];
+  return {
+    topClients: top,
+    overdueTasksCount: overdueTasks.length,
+    topExpenseCategory: topCat
+      ? { category: topCat[0], amount: topCat[1] }
+      : null,
+  };
 }
 
 // ------------------------------------------------------
@@ -295,12 +429,12 @@ function quickInsights() {
 async function getCurrentUserId() {
   try {
     const store = window.ubaStore;
-    if (store && store.auth && typeof store.auth.currentUser === 'function') {
+    if (store && store.auth && typeof store.auth.currentUser === "function") {
       const u = store.auth.currentUser();
       if (u && u.id) return u.id;
     }
   } catch (e) {
-    console.warn('getCurrentUserId error', e);
+    console.warn("getCurrentUserId error", e);
   }
   return "local-user";
 }
@@ -312,9 +446,13 @@ async function getCurrentUserId() {
   const path = rawPath.toLowerCase();
 
   const isLoginPage =
-    path.endsWith("/login.html") || path === "/login" || path.endsWith("/login");
+    path.endsWith("/login.html") ||
+    path === "/login" ||
+    path.endsWith("/login");
   const isSignupPage =
-    path.endsWith("/signup.html") || path === "/signup" || path.endsWith("/signup");
+    path.endsWith("/signup.html") ||
+    path === "/signup" ||
+    path.endsWith("/signup");
   const isPublicPage = isLoginPage || isSignupPage;
 
   const isDashboardPage =
@@ -328,9 +466,13 @@ async function getCurrentUserId() {
     const label = document.getElementById("uba-user-label");
     try {
       const store = window.ubaStore;
-      const current = store && store.auth && typeof store.auth.currentUser === 'function' ? store.auth.currentUser() : null;
+      const current =
+        store && store.auth && typeof store.auth.currentUser === "function"
+          ? store.auth.currentUser()
+          : null;
       if (label) {
-        label.textContent = (current && current.name) ? current.name : "Demo user";
+        label.textContent =
+          current && current.name ? current.name : "Demo user";
       }
     } catch (e) {
       if (label) label.textContent = "Demo user";
@@ -374,18 +516,19 @@ window.login = async function () {
 
   try {
     const store = window.ubaStore;
-    if (store && store.auth && typeof store.auth.login === 'function') {
+    if (store && store.auth && typeof store.auth.login === "function") {
       const result = store.auth.login(email, password);
       // set label if present
       const label = document.getElementById("uba-user-label");
-      if (label && result && result.user) label.textContent = result.user.name || result.user.email || 'User';
+      if (label && result && result.user)
+        label.textContent = result.user.name || result.user.email || "User";
       window.location.href = "index.html";
       return;
     }
     // fallback: redirect
     window.location.href = "index.html";
   } catch (e) {
-    console.error('login error', e);
+    console.error("login error", e);
     if (errorBox) errorBox.textContent = e.message || t("auth.login.network");
   }
 };
@@ -395,11 +538,11 @@ window.login = async function () {
 window.logout = async function () {
   try {
     const store = window.ubaStore;
-    if (store && store.auth && typeof store.auth.logout === 'function') {
+    if (store && store.auth && typeof store.auth.logout === "function") {
       store.auth.logout();
     }
   } catch (e) {
-    console.warn('logout error', e);
+    console.warn("logout error", e);
   }
   window.location.href = "login.html";
 };
@@ -469,7 +612,8 @@ async function loadDemoDashboard() {
   const kpiTasks = document.getElementById("kpi-tasks-today");
   const kpiTasksTrend = document.getElementById("kpi-tasks-today-trend");
 
-  if (kpiBilled) kpiBilled.textContent = `€ ${demoKPIs.billed.toLocaleString()}`;
+  if (kpiBilled)
+    kpiBilled.textContent = `€ ${demoKPIs.billed.toLocaleString()}`;
   if (kpiOpen) kpiOpen.textContent = `€ ${demoKPIs.open.toLocaleString()}`;
   if (kpiClients) kpiClients.textContent = `${demoKPIs.clients}`;
   if (kpiTasks) kpiTasks.textContent = `${demoKPIs.tasksToday}`;
@@ -522,7 +666,12 @@ async function loadKPIs(userId) {
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
 
     const totalBilled = invoices
-      .filter((inv) => inv.status === "paid" && new Date(inv.createdAt || inv.created_at || 0).getTime() >= thirtyDaysAgo)
+      .filter(
+        (inv) =>
+          inv.status === "paid" &&
+          new Date(inv.createdAt || inv.created_at || 0).getTime() >=
+            thirtyDaysAgo,
+      )
       .reduce((sum, inv) => sum + Number(inv.amount || 0), 0);
 
     const totalOpen = invoices
@@ -554,8 +703,7 @@ async function loadTasks(userId) {
   const taskList = document.getElementById("task-list");
   if (!taskList) return;
 
-  taskList.innerHTML =
-    `<li><div class="uba-task-main"><span>Loading tasks...</span></div></li>`;
+  taskList.innerHTML = `<li><div class="uba-task-main"><span>Loading tasks...</span></div></li>`;
 
   try {
     const store = window.ubaStore;
@@ -576,8 +724,8 @@ async function loadTasks(userId) {
         task.status === "in_progress"
           ? "In progress"
           : task.status === "done"
-          ? "Done"
-          : "Todo";
+            ? "Done"
+            : "Todo";
 
       li.innerHTML = `
         <div class="uba-task-main">
@@ -634,12 +782,11 @@ function renderPipelineColumns(grouped, labels) {
   const pipelineColumns = document.getElementById("pipeline-columns");
   if (!pipelineColumns) return;
 
-  const LABELS =
-    labels || {
-      lead: "Leads",
-      in_progress: "In progress",
-      ongoing: "Ongoing",
-    };
+  const LABELS = labels || {
+    lead: "Leads",
+    in_progress: "In progress",
+    ongoing: "Ongoing",
+  };
 
   const STAGES = Object.keys(LABELS);
   pipelineColumns.innerHTML = "";
@@ -654,7 +801,8 @@ function renderPipelineColumns(grouped, labels) {
       col.innerHTML += `<div class="uba-pipe-item">No projects in this stage.</div>`;
     } else {
       inStage.forEach((project) => {
-        const budgetText = project.budget != null ? `Budget: €${project.budget}` : "";
+        const budgetText =
+          project.budget != null ? `Budget: €${project.budget}` : "";
         col.innerHTML += `
           <div class="uba-pipe-item">
             <p class="uba-pipe-title">${project.name}</p>
@@ -671,8 +819,20 @@ function renderPipelineColumns(grouped, labels) {
 // 6) DOM CONTENT LOADED – UI wiring
 // ======================================================
 const localMiniInvoices = [
-  { id: "seed-1", client: "Atlas Labs", label: "AI consulting", amount: 1850, status: "sent" },
-  { id: "seed-2", client: "Northwind", label: "Maintenance retainer", amount: 1200, status: "paid" },
+  {
+    id: "seed-1",
+    client: "Atlas Labs",
+    label: "AI consulting",
+    amount: 1850,
+    status: "sent",
+  },
+  {
+    id: "seed-2",
+    client: "Northwind",
+    label: "Maintenance retainer",
+    amount: 1200,
+    status: "paid",
+  },
 ];
 
 function renderMiniInvoices() {
@@ -684,12 +844,16 @@ function renderMiniInvoices() {
   tbody.innerHTML = "";
 
   const store = window.ubaStore;
-  const invoicesSource = (store && store.invoices.getAll && store.invoices.getAll()) || localMiniInvoices || [];
+  const invoicesSource =
+    (store && store.invoices.getAll && store.invoices.getAll()) ||
+    localMiniInvoices ||
+    [];
   const total = invoicesSource.reduce(
     (sum, inv) => sum + (Number.isFinite(inv.amount) ? Number(inv.amount) : 0),
-    0
+    0,
   );
-  if (totalLabel) totalLabel.textContent = `€ ${total.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+  if (totalLabel)
+    totalLabel.textContent = `€ ${total.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
   if (countLabel) countLabel.textContent = `${invoicesSource.length}`;
 
   if (!invoicesSource.length) {
@@ -699,11 +863,15 @@ function renderMiniInvoices() {
 
   invoicesSource.slice(0, 8).forEach((invoice) => {
     const statusLabel = invoice.status
-      ? t(`form.${invoice.status}`, invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1))
+      ? t(
+          `form.${invoice.status}`,
+          invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1),
+        )
       : t("form.draft", "Draft");
-    const amountText = invoice.amount != null
-      ? `€ ${Number(invoice.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}`
-      : "—";
+    const amountText =
+      invoice.amount != null
+        ? `€ ${Number(invoice.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}`
+        : "—";
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
@@ -722,11 +890,17 @@ function addMiniInvoice(payload) {
     if (store && store.invoices) {
       store.invoices.create(payload);
     } else {
-      localMiniInvoices.unshift({ ...payload, id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString() });
+      localMiniInvoices.unshift({
+        ...payload,
+        id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+      });
     }
   } catch (e) {
-    console.warn('addMiniInvoice fallback', e);
-    localMiniInvoices.unshift({ ...payload, id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString() });
+    console.warn("addMiniInvoice fallback", e);
+    localMiniInvoices.unshift({
+      ...payload,
+      id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+    });
   }
   renderMiniInvoices();
 }
@@ -736,14 +910,14 @@ function addMiniInvoice(payload) {
 // =====================
 function downloadCSV(filename, rows) {
   if (!rows || !rows.length) return;
-  const esc = (v) => (`"${String(v || "").replace(/"/g, '""')}"`);
+  const esc = (v) => `"${String(v || "").replace(/"/g, '""')}"`;
   const headers = Object.keys(rows[0]);
   const csv = [headers.join(",")]
-    .concat(rows.map(r => headers.map(h => esc(r[h])).join(",")))
+    .concat(rows.map((r) => headers.map((h) => esc(r[h])).join(",")))
     .join("\n");
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  const a = document.createElement("a");
   a.href = url;
   a.download = filename;
   document.body.appendChild(a);
@@ -754,12 +928,21 @@ function downloadCSV(filename, rows) {
 
 function printInvoiceById(id) {
   const store = window.ubaStore;
-  const invoices = (store && store.invoices.getAll && store.invoices.getAll()) || ensureSeedData(LOCAL_KEYS.invoices, invoiceSeed) || [];
-  const inv = invoices.find(i => i.id === id);
-  if (!inv) { alert(t('errors.notFound') || 'Invoice not found'); return; }
-  const html = `<!doctype html><html><head><meta charset="utf-8"><title>Invoice ${inv.id}</title><style>body{font-family:system-ui,Segoe UI,Roboto,Arial;background:#fff;color:#000;padding:28px} .header{display:flex;justify-content:space-between;align-items:center} .brand{font-weight:800} .box{border:1px solid #ddd;padding:16px;margin-top:18px}</style></head><body><div class="header"><div class="brand">MHM UBA</div><div>Invoice: ${inv.id}</div></div><div class="box"><h2>${inv.label||''}</h2><p><strong>Client:</strong> ${inv.client||''}</p><p><strong>Amount:</strong> € ${Number(inv.amount||0).toLocaleString()}</p><p><strong>Status:</strong> ${inv.status||''}</p><p><strong>Due:</strong> ${inv.due||''}</p><div style="margin-top:18px">${inv.notes||''}</div></div><script>window.print();</script></body></html>`;
-  const w = window.open('', '_blank');
-  if (!w) { alert(t('errors.popupBlocked') || 'Unable to open print window'); return; }
+  const invoices =
+    (store && store.invoices.getAll && store.invoices.getAll()) ||
+    ensureSeedData(LOCAL_KEYS.invoices, invoiceSeed) ||
+    [];
+  const inv = invoices.find((i) => i.id === id);
+  if (!inv) {
+    alert(t("errors.notFound") || "Invoice not found");
+    return;
+  }
+  const html = `<!doctype html><html><head><meta charset="utf-8"><title>Invoice ${inv.id}</title><style>body{font-family:system-ui,Segoe UI,Roboto,Arial;background:#fff;color:#000;padding:28px} .header{display:flex;justify-content:space-between;align-items:center} .brand{font-weight:800} .box{border:1px solid #ddd;padding:16px;margin-top:18px}</style></head><body><div class="header"><div class="brand">MHM UBA</div><div>Invoice: ${inv.id}</div></div><div class="box"><h2>${inv.label || ""}</h2><p><strong>Client:</strong> ${inv.client || ""}</p><p><strong>Amount:</strong> € ${Number(inv.amount || 0).toLocaleString()}</p><p><strong>Status:</strong> ${inv.status || ""}</p><p><strong>Due:</strong> ${inv.due || ""}</p><div style="margin-top:18px">${inv.notes || ""}</div></div><script>window.print();</script></body></html>`;
+  const w = window.open("", "_blank");
+  if (!w) {
+    alert(t("errors.popupBlocked") || "Unable to open print window");
+    return;
+  }
   w.document.write(html);
   w.document.close();
 }
@@ -768,38 +951,47 @@ document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM fully loaded, wiring UI…");
 
   if (i18n.applyTranslations) {
-    i18n.applyTranslations(localStorage.getItem("uba-lang") || i18n.currentLanguage || "en");
+    i18n.applyTranslations(
+      localStorage.getItem("uba-lang") || i18n.currentLanguage || "en",
+    );
   }
 
   // Initialize local store seeds on first run so demo data is available
   try {
     const store = window.ubaStore;
     if (store && store.ensureSeed) {
-      store.ensureSeed('clients', clientSeed || []);
-      store.ensureSeed('invoices', invoiceSeed || []);
-      store.ensureSeed('projects', projectStagesSeed || []);
-      store.ensureSeed('tasks', taskBoardSeed || []);
-      store.ensureSeed('leads', leadsSeed || []);
-      store.ensureSeed('expenses', expensesSeed || []);
-      store.ensureSeed('files', filesSeed || []);
-      store.ensureSeed('reports', reportsSeed || {});
+      store.ensureSeed("clients", clientSeed || []);
+      store.ensureSeed("invoices", invoiceSeed || []);
+      store.ensureSeed("projects", projectStagesSeed || []);
+      store.ensureSeed("tasks", taskBoardSeed || []);
+      store.ensureSeed("leads", leadsSeed || []);
+      store.ensureSeed("expenses", expensesSeed || []);
+      store.ensureSeed("files", filesSeed || []);
+      store.ensureSeed("reports", reportsSeed || {});
     }
   } catch (e) {
-    console.warn('Failed to seed local store', e);
+    console.warn("Failed to seed local store", e);
   }
 
   // Show current user name in standalone pages if present
   try {
     const store = window.ubaStore;
-    const label = document.getElementById('uba-user-label');
-    const current = store && store.auth && typeof store.auth.currentUser === 'function' ? store.auth.currentUser() : null;
-    if (label) label.textContent = (current && (current.name || current.email)) ? (current.name || current.email) : label.textContent;
+    const label = document.getElementById("uba-user-label");
+    const current =
+      store && store.auth && typeof store.auth.currentUser === "function"
+        ? store.auth.currentUser()
+        : null;
+    if (label)
+      label.textContent =
+        current && (current.name || current.email)
+          ? current.name || current.email
+          : label.textContent;
   } catch (e) {
     // ignore
   }
 
   const languageSwitchers = document.querySelectorAll(
-    "#language-select, #language-select-top, #language-select-settings"
+    "#language-select, #language-select-top, #language-select-settings",
   );
   languageSwitchers.forEach((select) => {
     select.addEventListener("change", (event) => {
@@ -855,21 +1047,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         const store = window.ubaStore;
-        if (store && store.auth && typeof store.auth.createUser === 'function') {
+        if (
+          store &&
+          store.auth &&
+          typeof store.auth.createUser === "function"
+        ) {
           // create account and auto-login
-          const user = store.auth.createUser({ name: '', email, password, language: (loadSettingsState()||{}).language });
-          if (store.auth && typeof store.auth.login === 'function') {
+          const user = store.auth.createUser({
+            name: "",
+            email,
+            password,
+            language: (loadSettingsState() || {}).language,
+          });
+          if (store.auth && typeof store.auth.login === "function") {
             store.auth.login(email, password);
           }
-          if (successBox) successBox.textContent = t("auth.signup.successRedirect") || "Account created";
-          setTimeout(() => { window.location.href = "index.html"; }, 600);
+          if (successBox)
+            successBox.textContent =
+              t("auth.signup.successRedirect") || "Account created";
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 600);
           return;
         }
         // fallback behavior
-        if (successBox) successBox.textContent = t("auth.signup.successRedirect") || "Account created";
-        setTimeout(() => { window.location.href = "index.html"; }, 800);
+        if (successBox)
+          successBox.textContent =
+            t("auth.signup.successRedirect") || "Account created";
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 800);
       } catch (e) {
-        console.error('signup error', e);
+        console.error("signup error", e);
         if (errorBox) errorBox.textContent = e.message || t("errors.network");
       }
     });
@@ -903,7 +1112,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (store.tasks.saveAll) store.tasks.saveAll(cols);
           } else {
             const task = all.find((t) => t.id === taskId);
-            if (task && store.tasks.update) store.tasks.update(task.id, { status: newStatus });
+            if (task && store.tasks.update)
+              store.tasks.update(task.id, { status: newStatus });
           }
         }
       } catch (e) {
@@ -923,7 +1133,9 @@ document.addEventListener("DOMContentLoaded", () => {
     miniFeedback.textContent = message || "";
     miniFeedback.classList.remove("uba-text-danger", "uba-text-success");
     if (message) {
-      miniFeedback.classList.add(isError ? "uba-text-danger" : "uba-text-success");
+      miniFeedback.classList.add(
+        isError ? "uba-text-danger" : "uba-text-success",
+      );
     }
   };
 
@@ -996,7 +1208,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     navButtons.forEach((btn) => {
-      btn.classList.toggle("active", btn.getAttribute("data-section") === selected);
+      btn.classList.toggle(
+        "active",
+        btn.getAttribute("data-section") === selected,
+      );
     });
 
     document.body.dataset.activeView = selected;
@@ -1011,17 +1226,17 @@ document.addEventListener("DOMContentLoaded", () => {
       renderer();
       // Ensure page-specific init runs for SPA navigation (projects/tasks etc.)
       try {
-        if (typeof window.loadPageScripts === 'function') {
+        if (typeof window.loadPageScripts === "function") {
           // call with -page suffix (matches page-id dataset values)
-          window.loadPageScripts(selected + '-page');
+          window.loadPageScripts(selected + "-page");
         }
       } catch (e) {
-        console.warn('spa: loadPageScripts call failed', e);
+        console.warn("spa: loadPageScripts call failed", e);
       }
     }
   };
 
-    if (navButtons.length && viewSections.length) {
+  if (navButtons.length && viewSections.length) {
     console.log("Navigation wiring active.");
 
     navButtons.forEach((btn) => {
@@ -1035,9 +1250,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         // If we're on a standalone page (not index.html), navigate to the page instead
         try {
-          const path = (window.location.pathname || '').toLowerCase();
-          const isIndex = path.endsWith('/') || path.endsWith('/index.html') || path.endsWith('/index');
-          if (!isIndex && target && target !== 'dashboard') {
+          const path = (window.location.pathname || "").toLowerCase();
+          const isIndex =
+            path.endsWith("/") ||
+            path.endsWith("/index.html") ||
+            path.endsWith("/index");
+          if (!isIndex && target && target !== "dashboard") {
             // redirect to the standalone page for this section
             window.location.href = `${target}.html`;
             return;
@@ -1051,7 +1269,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // If the URL contains a hash (e.g. index.html#clients) use it to select a view
     const hash = (window.location.hash || "").replace(/^#/, "").toLowerCase();
-    const initialView = hash || (i18n.getCurrentView ? i18n.getCurrentView() : "dashboard");
+    const initialView =
+      hash || (i18n.getCurrentView ? i18n.getCurrentView() : "dashboard");
     showView(initialView);
   }
 
@@ -1123,7 +1342,10 @@ async function loadClients() {
 
   try {
     const store = window.ubaStore;
-    const data = (store && store.clients.getAll()) || ensureSeedData(LOCAL_KEYS.clients, clientSeed) || [];
+    const data =
+      (store && store.clients.getAll()) ||
+      ensureSeedData(LOCAL_KEYS.clients, clientSeed) ||
+      [];
 
     if (!data || data.length === 0) {
       tbody.innerHTML = `<tr><td colspan="5">${t("clients.none")}</td></tr>`;
@@ -1142,20 +1364,23 @@ async function loadClients() {
           <button type="button" class="uba-btn-link" data-client-id="${client.id}">${t("action.delete")}</button>
         </td>
       `;
-      const btn = tr.querySelector('button[data-client-id]');
+      const btn = tr.querySelector("button[data-client-id]");
       if (btn) {
-        btn.addEventListener('click', () => {
-          if (!confirm(t('clients.deleteConfirm'))) return;
+        btn.addEventListener("click", () => {
+          if (!confirm(t("clients.deleteConfirm"))) return;
           try {
             if (store && store.clients) store.clients.delete(client.id);
             else {
-              const next = (readLocalData(LOCAL_KEYS.clients, []) || []).filter(c => c.id !== client.id);
+              const next = (readLocalData(LOCAL_KEYS.clients, []) || []).filter(
+                (c) => c.id !== client.id,
+              );
               writeLocalData(LOCAL_KEYS.clients, next);
             }
             loadClients();
           } catch (err) {
-            console.error('delete client error', err);
-            if (errorBox) errorBox.textContent = err.message || t('errors.deleteClient');
+            console.error("delete client error", err);
+            if (errorBox)
+              errorBox.textContent = err.message || t("errors.deleteClient");
           }
         });
       }
@@ -1174,7 +1399,12 @@ async function createClient(payload) {
   const store = window.ubaStore;
   if (store && store.clients) return store.clients.create(payload);
   const clients = ensureSeedData(LOCAL_KEYS.clients, clientSeed) || [];
-  const item = { id: `client-${Date.now()}`, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), ...payload };
+  const item = {
+    id: `client-${Date.now()}`,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    ...payload,
+  };
   writeLocalData(LOCAL_KEYS.clients, [item, ...clients]);
   return item;
 }
@@ -1189,7 +1419,9 @@ window.deleteClient = async function (id) {
     const store = window.ubaStore;
     if (store && store.clients) store.clients.delete(id);
     else {
-      const next = (readLocalData(LOCAL_KEYS.clients, []) || []).filter((c) => c.id !== id);
+      const next = (readLocalData(LOCAL_KEYS.clients, []) || []).filter(
+        (c) => c.id !== id,
+      );
       writeLocalData(LOCAL_KEYS.clients, next);
     }
     await loadClients();
@@ -1362,56 +1594,141 @@ const taskBoardSeed = [
     id: "todo",
     title: "To do",
     tasks: [
-      { id: "task-1", title: "Prep onboarding doc", owner: "Mara", due: "Today" },
-      { id: "task-2", title: "Collect invoice proof", owner: "Jules", due: "Tomorrow" },
+      {
+        id: "task-1",
+        title: "Prep onboarding doc",
+        owner: "Mara",
+        due: "Today",
+      },
+      {
+        id: "task-2",
+        title: "Collect invoice proof",
+        owner: "Jules",
+        due: "Tomorrow",
+      },
     ],
   },
   {
     id: "progress",
     title: "In progress",
     tasks: [
-      { id: "task-3", title: "Pipeline review", owner: "Sam", due: "This week" },
+      {
+        id: "task-3",
+        title: "Pipeline review",
+        owner: "Sam",
+        due: "This week",
+      },
     ],
   },
   {
     id: "review",
     title: "Review",
-    tasks: [{ id: "task-4", title: "QA sprint 12", owner: "Lena", due: "Friday" }],
+    tasks: [
+      { id: "task-4", title: "QA sprint 12", owner: "Lena", due: "Friday" },
+    ],
   },
   {
     id: "done",
     title: "Done",
-    tasks: [{ id: "task-5", title: "Send follow-up deck", owner: "Mara", due: "Yesterday" }],
+    tasks: [
+      {
+        id: "task-5",
+        title: "Send follow-up deck",
+        owner: "Mara",
+        due: "Yesterday",
+      },
+    ],
   },
 ];
 
 // Additional demo seeds: leads, expenses, files, reports
 const leadsSeed = [
-  { id: genId('lead-'), name: 'Umbrella Corp', company: 'Umbrella', value: 12000, status: 'new' },
-  { id: genId('lead-'), name: 'Wayne Enterprises', company: 'Wayne Ent.', value: 8000, status: 'contacted' },
-  { id: genId('lead-'), name: 'Stark Solutions', company: 'Stark', value: 22000, status: 'qualified' },
+  {
+    id: genId("lead-"),
+    name: "Umbrella Corp",
+    company: "Umbrella",
+    value: 12000,
+    status: "new",
+  },
+  {
+    id: genId("lead-"),
+    name: "Wayne Enterprises",
+    company: "Wayne Ent.",
+    value: 8000,
+    status: "contacted",
+  },
+  {
+    id: genId("lead-"),
+    name: "Stark Solutions",
+    company: "Stark",
+    value: 22000,
+    status: "qualified",
+  },
 ];
 
 const expensesSeed = [
-  { id: genId('exp-'), date: formatDateISO(new Date()), category: 'Software', desc: 'Project management tool', amount: 49.99, status: 'paid' },
-  { id: genId('exp-'), date: formatDateISO(new Date()), category: 'Travel', desc: 'Client visit', amount: 320.0, status: 'pending' },
+  {
+    id: genId("exp-"),
+    date: formatDateISO(new Date()),
+    category: "Software",
+    desc: "Project management tool",
+    amount: 49.99,
+    status: "paid",
+  },
+  {
+    id: genId("exp-"),
+    date: formatDateISO(new Date()),
+    category: "Travel",
+    desc: "Client visit",
+    amount: 320.0,
+    status: "pending",
+  },
 ];
 
 const filesSeed = [
-  { id: genId('file-'), name: 'Proposal_ACME.pdf', type: 'PDF', linked: 'Umbrella Corp', updated: formatDateISO(new Date()) },
+  {
+    id: genId("file-"),
+    name: "Proposal_ACME.pdf",
+    type: "PDF",
+    linked: "Umbrella Corp",
+    updated: formatDateISO(new Date()),
+  },
 ];
 
-const reportsSeed = { revenue: { thisMonth: 45230, invoices: 27 }, activeClients: 42 };
+const reportsSeed = {
+  revenue: { thisMonth: 45230, invoices: 27 },
+  activeClients: 42,
+};
 
 const automationTiles = [
-  { id: "auto-1", name: "Invoice nudges", desc: "Ping clients 3 days after due date.", badge: "Live" },
-  { id: "auto-2", name: "Client silence alert", desc: "Flag CRM records with 14 days inactivity.", badge: "Preview" },
-  { id: "auto-3", name: "Task balance", desc: "Reassign when workload crosses 80%", badge: "Rule" },
+  {
+    id: "auto-1",
+    name: "Invoice nudges",
+    desc: "Ping clients 3 days after due date.",
+    badge: "Live",
+  },
+  {
+    id: "auto-2",
+    name: "Client silence alert",
+    desc: "Flag CRM records with 14 days inactivity.",
+    badge: "Preview",
+  },
+  {
+    id: "auto-3",
+    name: "Task balance",
+    desc: "Reassign when workload crosses 80%",
+    badge: "Rule",
+  },
 ];
 
 const automationLogSeed = [
   { id: "log-1", name: "Invoice nudges", status: "Sent", when: "3m ago" },
-  { id: "log-2", name: "Client silence alert", status: "Queued", when: "1h ago" },
+  {
+    id: "log-2",
+    name: "Client silence alert",
+    status: "Queued",
+    when: "1h ago",
+  },
   { id: "log-3", name: "Task balance", status: "Completed", when: "Today" },
 ];
 
@@ -1477,9 +1794,13 @@ const supportTopicsSeed = [
 
 const mapKeyToCollection = (key) => {
   try {
-    if (!key || typeof key !== 'string') return null;
+    if (!key || typeof key !== "string") return null;
     for (const k in LOCAL_KEYS) {
-      if (Object.prototype.hasOwnProperty.call(LOCAL_KEYS, k) && LOCAL_KEYS[k] === key) return k;
+      if (
+        Object.prototype.hasOwnProperty.call(LOCAL_KEYS, k) &&
+        LOCAL_KEYS[k] === key
+      )
+        return k;
     }
     return null;
   } catch (e) {
@@ -1494,9 +1815,11 @@ const readLocalData = (key, fallback) => {
     if (store && coll) {
       // prefer store collection getter
       const helper = store[coll];
-      if (helper && typeof helper.getAll === 'function') return helper.getAll() || fallback;
+      if (helper && typeof helper.getAll === "function")
+        return helper.getAll() || fallback;
       // fallback to generic loader
-      if (typeof store.loadCollection === 'function') return store.loadCollection(coll) || fallback;
+      if (typeof store.loadCollection === "function")
+        return store.loadCollection(coll) || fallback;
     }
     const raw = localStorage.getItem(key);
     if (!raw) return fallback;
@@ -1514,8 +1837,10 @@ const writeLocalData = (key, value) => {
     if (store && coll) {
       // use store save if available
       const helper = store[coll];
-      if (helper && typeof helper.saveAll === 'function') return helper.saveAll(Array.isArray(value) ? value : [value]);
-      if (typeof store.saveCollection === 'function') return store.saveCollection(coll, value);
+      if (helper && typeof helper.saveAll === "function")
+        return helper.saveAll(Array.isArray(value) ? value : [value]);
+      if (typeof store.saveCollection === "function")
+        return store.saveCollection(coll, value);
     }
     localStorage.setItem(key, JSON.stringify(value));
   } catch (e) {
@@ -1527,7 +1852,7 @@ const ensureSeedData = (key, seed) => {
   try {
     const store = window.ubaStore;
     const coll = mapKeyToCollection(key);
-    if (store && coll && typeof store.ensureSeed === 'function') {
+    if (store && coll && typeof store.ensureSeed === "function") {
       return store.ensureSeed(coll, seed || []);
     }
     const stored = readLocalData(key, null);
@@ -1537,7 +1862,7 @@ const ensureSeedData = (key, seed) => {
     }
     return stored;
   } catch (e) {
-    console.warn('ensureSeedData error', e);
+    console.warn("ensureSeedData error", e);
     const stored = readLocalData(key, null);
     if (stored === null || stored === undefined) {
       writeLocalData(key, seed);
@@ -1579,7 +1904,10 @@ const renderClientsPage = () => {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       const store = window.ubaStore;
-      const clients = (store && store.clients.getAll()) || ensureSeedData(LOCAL_KEYS.clients, clientSeed) || [];
+      const clients =
+        (store && store.clients.getAll()) ||
+        ensureSeedData(LOCAL_KEYS.clients, clientSeed) ||
+        [];
       const nameInput = document.getElementById("clients-name");
       const emailInput = document.getElementById("clients-email");
       const companyInput = document.getElementById("clients-company");
@@ -1608,7 +1936,11 @@ const renderClientsPage = () => {
         if (store && store.clients) {
           store.clients.update(clientsEditingId, payload);
         } else {
-          const next = clients.map((c) => (c.id === clientsEditingId ? { ...c, ...payload, updatedAt: new Date().toISOString() } : c));
+          const next = clients.map((c) =>
+            c.id === clientsEditingId
+              ? { ...c, ...payload, updatedAt: new Date().toISOString() }
+              : c,
+          );
           writeLocalData(LOCAL_KEYS.clients, next);
         }
       } else {
@@ -1632,40 +1964,65 @@ const renderClientsPage = () => {
   table.innerHTML = "";
 
   // Toolbar: search, sort, export
-  const toolbarId = 'clients-toolbar';
+  const toolbarId = "clients-toolbar";
   let toolbar = document.getElementById(toolbarId);
   if (!toolbar) {
-    toolbar = document.createElement('div');
+    toolbar = document.createElement("div");
     toolbar.id = toolbarId;
-    toolbar.style.display = 'flex'; toolbar.style.gap = '8px'; toolbar.style.marginBottom = '10px';
-    toolbar.innerHTML = `<input id="clients-search" placeholder="${t('table.search','Search')}" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(55,65,81,.7);" /><select id="clients-sort" style="width:160px;padding:8px;border-radius:8px;border:1px solid rgba(55,65,81,.7);"><option value="name_asc">${t('sort.nameAsc','Name ↑')}</option><option value="name_desc">${t('sort.nameDesc','Name ↓')}</option></select><button id="clients-export" class="uba-btn-ghost">${t('action.export','Export')}</button>`;
+    toolbar.style.display = "flex";
+    toolbar.style.gap = "8px";
+    toolbar.style.marginBottom = "10px";
+    toolbar.innerHTML = `<input id="clients-search" placeholder="${t("table.search", "Search")}" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(55,65,81,.7);" /><select id="clients-sort" style="width:160px;padding:8px;border-radius:8px;border:1px solid rgba(55,65,81,.7);"><option value="name_asc">${t("sort.nameAsc", "Name ↑")}</option><option value="name_desc">${t("sort.nameDesc", "Name ↓")}</option></select><button id="clients-export" class="uba-btn-ghost">${t("action.export", "Export")}</button>`;
     table.parentElement.insertBefore(toolbar, table);
 
-    toolbar.querySelector('#clients-search').addEventListener('input', () => renderClientsPage());
-    toolbar.querySelector('#clients-sort').addEventListener('change', () => renderClientsPage());
-    toolbar.querySelector('#clients-export').addEventListener('click', () => {
+    toolbar
+      .querySelector("#clients-search")
+      .addEventListener("input", () => renderClientsPage());
+    toolbar
+      .querySelector("#clients-sort")
+      .addEventListener("change", () => renderClientsPage());
+    toolbar.querySelector("#clients-export").addEventListener("click", () => {
       const store = window.ubaStore;
-      const clientsList = (store && store.clients.getAll()) || ensureSeedData(LOCAL_KEYS.clients, clientSeed) || [];
-      if (!clientsList.length) return alert(t('export.noData','No data to export'));
-      const rows = clientsList.map(c => ({ id: c.id, name: c.name, company: c.company, email: c.email, phone: c.phone }));
-      downloadCSV('clients.csv', rows);
+      const clientsList =
+        (store && store.clients.getAll()) ||
+        ensureSeedData(LOCAL_KEYS.clients, clientSeed) ||
+        [];
+      if (!clientsList.length)
+        return alert(t("export.noData", "No data to export"));
+      const rows = clientsList.map((c) => ({
+        id: c.id,
+        name: c.name,
+        company: c.company,
+        email: c.email,
+        phone: c.phone,
+      }));
+      downloadCSV("clients.csv", rows);
     });
   }
 
   const store = window.ubaStore;
-  const clients = (store && store.clients.getAll()) || ensureSeedData(LOCAL_KEYS.clients, clientSeed) || [];
+  const clients =
+    (store && store.clients.getAll()) ||
+    ensureSeedData(LOCAL_KEYS.clients, clientSeed) ||
+    [];
 
-  const searchInput = document.getElementById('clients-search');
-  const sortSelect = document.getElementById('clients-sort');
-  const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
-  let filtered = clients.filter(c => {
+  const searchInput = document.getElementById("clients-search");
+  const sortSelect = document.getElementById("clients-sort");
+  const q = searchInput ? searchInput.value.trim().toLowerCase() : "";
+  let filtered = clients.filter((c) => {
     if (!q) return true;
-    return (c.name||'').toLowerCase().includes(q) || (c.company||'').toLowerCase().includes(q) || (c.email||'').toLowerCase().includes(q) || (c.phone||'').toLowerCase().includes(q);
+    return (
+      (c.name || "").toLowerCase().includes(q) ||
+      (c.company || "").toLowerCase().includes(q) ||
+      (c.email || "").toLowerCase().includes(q) ||
+      (c.phone || "").toLowerCase().includes(q)
+    );
   });
-  const sortVal = sortSelect ? sortSelect.value : 'name_asc';
-  filtered.sort((a,b)=> {
-    if (sortVal === 'name_desc') return (b.name||'').localeCompare(a.name||'');
-    return (a.name||'').localeCompare(b.name||'');
+  const sortVal = sortSelect ? sortSelect.value : "name_asc";
+  filtered.sort((a, b) => {
+    if (sortVal === "name_desc")
+      return (b.name || "").localeCompare(a.name || "");
+    return (a.name || "").localeCompare(b.name || "");
   });
 
   if (!filtered.length) {
@@ -1706,7 +2063,8 @@ const renderClientsPage = () => {
           if (companyInput) companyInput.value = client.company || "";
           if (phoneInput) phoneInput.value = client.phone || "";
           if (notesInput) notesInput.value = client.notes || "";
-          if (submitBtn) submitBtn.textContent = t("form.updateClient", "Update client");
+          if (submitBtn)
+            submitBtn.textContent = t("form.updateClient", "Update client");
         });
 
         const deleteBtn = document.createElement("button");
@@ -1756,7 +2114,10 @@ const renderInvoicePage = () => {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       const store = window.ubaStore;
-      const invoices = (store && store.invoices.getAll()) || ensureSeedData(LOCAL_KEYS.invoices, invoiceSeed) || [];
+      const invoices =
+        (store && store.invoices.getAll()) ||
+        ensureSeedData(LOCAL_KEYS.invoices, invoiceSeed) ||
+        [];
       const clientInput = document.getElementById("invoice-client");
       const labelInput = document.getElementById("invoice-label");
       const amountInput = document.getElementById("invoice-amount");
@@ -1768,18 +2129,19 @@ const renderInvoicePage = () => {
       if (errorBox) errorBox.textContent = "";
 
       // clear per-field errors
-      clearFieldError(clientInput); clearFieldError(amountInput);
+      clearFieldError(clientInput);
+      clearFieldError(amountInput);
 
       const client = clientInput?.value.trim();
       const amount = amountInput ? Number(amountInput.value) : NaN;
 
       if (!client) {
-        setFieldError(clientInput, t('form.clientName'));
-        if (errorBox) errorBox.textContent = t('errors.form');
+        setFieldError(clientInput, t("form.clientName"));
+        if (errorBox) errorBox.textContent = t("errors.form");
         return;
       }
       if (Number.isNaN(amount) || amount < 0) {
-        setFieldError(amountInput, t('errors.invalidAmount','Invalid amount'));
+        setFieldError(amountInput, t("errors.invalidAmount", "Invalid amount"));
         return;
       }
 
@@ -1793,27 +2155,41 @@ const renderInvoicePage = () => {
       };
 
       try {
-        setButtonLoading(form.querySelector('button[type=submit]'), true, t('action.saving','Saving...'));
+        setButtonLoading(
+          form.querySelector("button[type=submit]"),
+          true,
+          t("action.saving", "Saving..."),
+        );
         if (invoiceEditingId) {
           if (store && store.invoices) {
             store.invoices.update(invoiceEditingId, payload);
           } else {
-            const next = invoices.map((inv) => (inv.id === invoiceEditingId ? { ...inv, ...payload, updatedAt: new Date().toISOString() } : inv));
+            const next = invoices.map((inv) =>
+              inv.id === invoiceEditingId
+                ? { ...inv, ...payload, updatedAt: new Date().toISOString() }
+                : inv,
+            );
             writeLocalData(LOCAL_KEYS.invoices, next);
           }
         } else {
           if (store && store.invoices) store.invoices.create(payload);
           else {
-            const item = { id: `inv-${Date.now()}`, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), ...payload };
+            const item = {
+              id: `inv-${Date.now()}`,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              ...payload,
+            };
             writeLocalData(LOCAL_KEYS.invoices, [item, ...invoices]);
           }
         }
-        setButtonLoading(form.querySelector('button[type=submit]'), false);
-        if (window.showToast) window.showToast(t('invoices.saved','Invoice saved'));
+        setButtonLoading(form.querySelector("button[type=submit]"), false);
+        if (window.showToast)
+          window.showToast(t("invoices.saved", "Invoice saved"));
       } catch (err) {
-        setButtonLoading(form.querySelector('button[type=submit]'), false);
-        console.error('invoice save error', err);
-        if (errorBox) errorBox.textContent = err.message || t('errors.save');
+        setButtonLoading(form.querySelector("button[type=submit]"), false);
+        console.error("invoice save error", err);
+        if (errorBox) errorBox.textContent = err.message || t("errors.save");
       }
       invoiceEditingId = null;
 
@@ -1832,45 +2208,77 @@ const renderInvoicePage = () => {
   table.innerHTML = "";
 
   // toolbar: search / status filter / sort / export
-  const toolbarId = 'invoices-toolbar';
+  const toolbarId = "invoices-toolbar";
   let toolbar = document.getElementById(toolbarId);
   if (!toolbar) {
-    toolbar = document.createElement('div');
+    toolbar = document.createElement("div");
     toolbar.id = toolbarId;
-    toolbar.style.display = 'flex'; toolbar.style.gap = '8px'; toolbar.style.marginBottom = '10px';
-    toolbar.innerHTML = `<input id="invoices-search" placeholder="${t('table.search','Search')}" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(55,65,81,.7);" /><select id="invoices-filter" style="width:140px;padding:8px;border-radius:8px;border:1px solid rgba(55,65,81,.7);"><option value="all">${t('filter.all','All')}</option><option value="draft">${t('form.draft','Draft')}</option><option value="sent">${t('form.sent','Sent')}</option><option value="paid">${t('form.paid','Paid')}</option></select><select id="invoices-sort" style="width:160px;padding:8px;border-radius:8px;border:1px solid rgba(55,65,81,.7);"><option value="date_desc">${t('sort.dateDesc','Date ↓')}</option><option value="date_asc">${t('sort.dateAsc','Date ↑')}</option><option value="amount_desc">${t('sort.amountDesc','Amount ↓')}</option><option value="amount_asc">${t('sort.amountAsc','Amount ↑')}</option></select><button id="invoices-export" class="uba-btn-ghost">${t('action.export','Export')}</button>`;
+    toolbar.style.display = "flex";
+    toolbar.style.gap = "8px";
+    toolbar.style.marginBottom = "10px";
+    toolbar.innerHTML = `<input id="invoices-search" placeholder="${t("table.search", "Search")}" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(55,65,81,.7);" /><select id="invoices-filter" style="width:140px;padding:8px;border-radius:8px;border:1px solid rgba(55,65,81,.7);"><option value="all">${t("filter.all", "All")}</option><option value="draft">${t("form.draft", "Draft")}</option><option value="sent">${t("form.sent", "Sent")}</option><option value="paid">${t("form.paid", "Paid")}</option></select><select id="invoices-sort" style="width:160px;padding:8px;border-radius:8px;border:1px solid rgba(55,65,81,.7);"><option value="date_desc">${t("sort.dateDesc", "Date ↓")}</option><option value="date_asc">${t("sort.dateAsc", "Date ↑")}</option><option value="amount_desc">${t("sort.amountDesc", "Amount ↓")}</option><option value="amount_asc">${t("sort.amountAsc", "Amount ↑")}</option></select><button id="invoices-export" class="uba-btn-ghost">${t("action.export", "Export")}</button>`;
     table.parentElement.insertBefore(toolbar, table);
-    toolbar.querySelector('#invoices-search').addEventListener('input', ()=> renderInvoicePage());
-    toolbar.querySelector('#invoices-filter').addEventListener('change', ()=> renderInvoicePage());
-    toolbar.querySelector('#invoices-sort').addEventListener('change', ()=> renderInvoicePage());
-    toolbar.querySelector('#invoices-export').addEventListener('click', ()=>{
+    toolbar
+      .querySelector("#invoices-search")
+      .addEventListener("input", () => renderInvoicePage());
+    toolbar
+      .querySelector("#invoices-filter")
+      .addEventListener("change", () => renderInvoicePage());
+    toolbar
+      .querySelector("#invoices-sort")
+      .addEventListener("change", () => renderInvoicePage());
+    toolbar.querySelector("#invoices-export").addEventListener("click", () => {
       const store = window.ubaStore;
-      const invoicesList = (store && store.invoices.getAll()) || ensureSeedData(LOCAL_KEYS.invoices, invoiceSeed) || [];
-      if (!invoicesList.length) return alert(t('export.noData','No data to export'));
-      const rows = invoicesList.map(i => ({ id: i.id, client: i.client, label:i.label, amount: i.amount, status:i.status, due:i.due }));
-      downloadCSV('invoices.csv', rows);
+      const invoicesList =
+        (store && store.invoices.getAll()) ||
+        ensureSeedData(LOCAL_KEYS.invoices, invoiceSeed) ||
+        [];
+      if (!invoicesList.length)
+        return alert(t("export.noData", "No data to export"));
+      const rows = invoicesList.map((i) => ({
+        id: i.id,
+        client: i.client,
+        label: i.label,
+        amount: i.amount,
+        status: i.status,
+        due: i.due,
+      }));
+      downloadCSV("invoices.csv", rows);
     });
   }
 
   const store = window.ubaStore;
-  const invoices = (store && store.invoices.getAll()) || ensureSeedData(LOCAL_KEYS.invoices, invoiceSeed) || [];
+  const invoices =
+    (store && store.invoices.getAll()) ||
+    ensureSeedData(LOCAL_KEYS.invoices, invoiceSeed) ||
+    [];
 
-  const q = (document.getElementById('invoices-search')?.value || '').trim().toLowerCase();
-  const statusFilter = document.getElementById('invoices-filter')?.value || 'all';
-  const sortVal = document.getElementById('invoices-sort')?.value || 'date_desc';
+  const q = (document.getElementById("invoices-search")?.value || "")
+    .trim()
+    .toLowerCase();
+  const statusFilter =
+    document.getElementById("invoices-filter")?.value || "all";
+  const sortVal =
+    document.getElementById("invoices-sort")?.value || "date_desc";
 
-  let filtered = invoices.filter(inv => {
-    if (statusFilter !== 'all' && inv.status !== statusFilter) return false;
+  let filtered = invoices.filter((inv) => {
+    if (statusFilter !== "all" && inv.status !== statusFilter) return false;
     if (!q) return true;
-    return (inv.client||'').toLowerCase().includes(q) || (inv.label||'').toLowerCase().includes(q) || (inv.id||'').toLowerCase().includes(q);
+    return (
+      (inv.client || "").toLowerCase().includes(q) ||
+      (inv.label || "").toLowerCase().includes(q) ||
+      (inv.id || "").toLowerCase().includes(q)
+    );
   });
 
-  filtered.sort((a,b)=>{
-    if (sortVal === 'amount_desc') return Number(b.amount||0)-Number(a.amount||0);
-    if (sortVal === 'amount_asc') return Number(a.amount||0)-Number(b.amount||0);
-    const da = new Date(a.due||a.createdAt||0).getTime();
-    const db = new Date(b.due||b.createdAt||0).getTime();
-    if (sortVal === 'date_asc') return da - db;
+  filtered.sort((a, b) => {
+    if (sortVal === "amount_desc")
+      return Number(b.amount || 0) - Number(a.amount || 0);
+    if (sortVal === "amount_asc")
+      return Number(a.amount || 0) - Number(b.amount || 0);
+    const da = new Date(a.due || a.createdAt || 0).getTime();
+    const db = new Date(b.due || b.createdAt || 0).getTime();
+    if (sortVal === "date_asc") return da - db;
     return db - da;
   });
 
@@ -1915,7 +2323,8 @@ const renderInvoicePage = () => {
           if (statusSelect) statusSelect.value = inv.status;
           if (dueInput) dueInput.value = inv.due || "";
           if (notesInput) notesInput.value = inv.notes || "";
-          if (submitBtn) submitBtn.textContent = t("form.updateInvoice", "Update invoice");
+          if (submitBtn)
+            submitBtn.textContent = t("form.updateInvoice", "Update invoice");
         });
 
         const deleteBtn = document.createElement("button");
@@ -1933,8 +2342,13 @@ const renderInvoicePage = () => {
         });
 
         // view/print button
-        const viewBtn = document.createElement('button'); viewBtn.type='button'; viewBtn.className='uba-btn-link'; viewBtn.textContent = t('action.view','View');
-        viewBtn.addEventListener('click', ()=> { printInvoiceById(inv.id); });
+        const viewBtn = document.createElement("button");
+        viewBtn.type = "button";
+        viewBtn.className = "uba-btn-link";
+        viewBtn.textContent = t("action.view", "View");
+        viewBtn.addEventListener("click", () => {
+          printInvoiceById(inv.id);
+        });
 
         actionsCell.appendChild(viewBtn);
         actionsCell.appendChild(editBtn);
@@ -1945,7 +2359,10 @@ const renderInvoicePage = () => {
     });
   }
 
-  const totalAmount = invoices.reduce((sum, inv) => sum + Number(inv.amount || 0), 0);
+  const totalAmount = invoices.reduce(
+    (sum, inv) => sum + Number(inv.amount || 0),
+    0,
+  );
   if (countEl) countEl.textContent = invoices.length;
   if (totalEl) totalEl.textContent = `€ ${totalAmount.toLocaleString()}`;
 };
@@ -1955,31 +2372,52 @@ const renderProjectsBoard = () => {
   const container = document.getElementById("projects-columns");
   if (!container) return;
   const store = window.ubaStore;
-  const stages = (store && store.projects.getAll()) || ensureSeedData(LOCAL_KEYS.projects, projectStagesSeed) || [];
+  const stages =
+    (store && store.projects.getAll()) ||
+    ensureSeedData(LOCAL_KEYS.projects, projectStagesSeed) ||
+    [];
 
   container.innerHTML = "";
 
   // Add simple create form at top of container
-  const formBar = document.createElement('div');
-  formBar.style.display = 'flex'; formBar.style.gap = '8px'; formBar.style.marginBottom = '10px';
+  const formBar = document.createElement("div");
+  formBar.style.display = "flex";
+  formBar.style.gap = "8px";
+  formBar.style.marginBottom = "10px";
   formBar.innerHTML = `<input id="proj-name" placeholder="Project name" style="flex:1;"/><input id="proj-client" placeholder="Client" style="width:180px;"/><input id="proj-budget" placeholder="Budget" style="width:120px;"/><select id="proj-stage"><option value="discovery">Discovery</option><option value="proposal">Proposal</option><option value="delivery">Delivery</option><option value="maintenance">Maintenance</option></select><button id="proj-add" class="uba-btn-primary">Add project</button>`;
   container.appendChild(formBar);
 
-  const addBtn = formBar.querySelector('#proj-add');
-  addBtn.addEventListener('click', () => {
-    const nameEl = document.getElementById('proj-name');
-    const clientEl = document.getElementById('proj-client');
-    const budgetEl = document.getElementById('proj-budget');
+  const addBtn = formBar.querySelector("#proj-add");
+  addBtn.addEventListener("click", () => {
+    const nameEl = document.getElementById("proj-name");
+    const clientEl = document.getElementById("proj-client");
+    const budgetEl = document.getElementById("proj-budget");
     const name = nameEl.value.trim();
-    if (!name) { setFieldError(nameEl, t('form.projectName','Project name required')); nameEl.focus(); return; }
+    if (!name) {
+      setFieldError(nameEl, t("form.projectName", "Project name required"));
+      nameEl.focus();
+      return;
+    }
     const client = clientEl.value.trim();
     const budget = budgetEl.value.trim();
-    const stageKey = document.getElementById('proj-stage').value;
+    const stageKey = document.getElementById("proj-stage").value;
 
     // If store holds an array of stages, insert into matching stage.items
-    if (Array.isArray(stages) && stages.length && (stages[0].items || stages[0].title)) {
-      const targetStage = stages.find(s => (s.id === stageKey || s.title === stageKey || s.id === stageKey));
-      const newItem = { id: `proj-${Date.now()}`, name, client, budget, note: '' };
+    if (
+      Array.isArray(stages) &&
+      stages.length &&
+      (stages[0].items || stages[0].title)
+    ) {
+      const targetStage = stages.find(
+        (s) => s.id === stageKey || s.title === stageKey || s.id === stageKey,
+      );
+      const newItem = {
+        id: `proj-${Date.now()}`,
+        name,
+        client,
+        budget,
+        note: "",
+      };
       if (targetStage) {
         targetStage.items = targetStage.items || [];
         targetStage.items.push(newItem);
@@ -1991,11 +2429,20 @@ const renderProjectsBoard = () => {
       if (store && store.projects) store.projects.saveAll(stages);
     } else if (store && store.projects) {
       // fallback: create as flat project
-        store.projects.create({ id: genId('proj-'), name, client, budget, stage: stageKey });
-        if (window.showToast) window.showToast(t('projects.added','Project added'));
+      store.projects.create({
+        id: genId("proj-"),
+        name,
+        client,
+        budget,
+        stage: stageKey,
+      });
+      if (window.showToast)
+        window.showToast(t("projects.added", "Project added"));
     }
 
-    document.getElementById('proj-name').value=''; document.getElementById('proj-client').value=''; document.getElementById('proj-budget').value='';
+    document.getElementById("proj-name").value = "";
+    document.getElementById("proj-client").value = "";
+    document.getElementById("proj-budget").value = "";
     renderProjectsBoard();
   });
 
@@ -2016,65 +2463,100 @@ const renderProjectsBoard = () => {
 
     const items = stage.items || stage.projects || [];
     if (items.length === 0) {
-      const empty = document.createElement('div'); empty.className='uba-pipe-item'; empty.textContent = 'No projects in this stage.'; column.appendChild(empty);
+      const empty = document.createElement("div");
+      empty.className = "uba-pipe-item";
+      empty.textContent = "No projects in this stage.";
+      column.appendChild(empty);
     }
 
     items.forEach((item) => {
       const card = document.createElement("div");
       card.className = "uba-support-card";
-      const valueLine = item.budget || item.value ? `<span class="uba-chip">${item.budget||item.value}</span>` : "";
+      const valueLine =
+        item.budget || item.value
+          ? `<span class="uba-chip">${item.budget || item.value}</span>`
+          : "";
       card.innerHTML = `
         <div class="uba-support-icon">📌</div>
         <div>
           <h4>${item.name}</h4>
-          <p>${item.client || ''}</p>
+          <p>${item.client || ""}</p>
           <div class="uba-chip-row">
             ${valueLine}
-            <span class="uba-chip soft">${item.note || ''}</span>
+            <span class="uba-chip soft">${item.note || ""}</span>
           </div>
         </div>
       `;
 
-      const actions = document.createElement('div'); actions.className='uba-chip-row';
-      const editBtn = document.createElement('button'); editBtn.type='button'; editBtn.className='uba-btn-link'; editBtn.textContent='Edit';
-      editBtn.addEventListener('click', ()=>{
-        const nameNew = prompt('Project name', item.name) || item.name;
-        const clientNew = prompt('Client', item.client) || item.client;
-        const budgetNew = prompt('Budget', item.budget||item.value) || item.budget||item.value;
+      const actions = document.createElement("div");
+      actions.className = "uba-chip-row";
+      const editBtn = document.createElement("button");
+      editBtn.type = "button";
+      editBtn.className = "uba-btn-link";
+      editBtn.textContent = "Edit";
+      editBtn.addEventListener("click", () => {
+        const nameNew = prompt("Project name", item.name) || item.name;
+        const clientNew = prompt("Client", item.client) || item.client;
+        const budgetNew =
+          prompt("Budget", item.budget || item.value) ||
+          item.budget ||
+          item.value;
         // Support both shapes: grouped stages with nested items, or flat project list
         try {
-          if (Array.isArray(stages) && stages.length && (stages[0].items || stages[0].title)) {
+          if (
+            Array.isArray(stages) &&
+            stages.length &&
+            (stages[0].items || stages[0].title)
+          ) {
             // update nested item inside stages
             let updated = false;
             for (const s of stages) {
               s.items = s.items || [];
               for (let i = 0; i < s.items.length; i++) {
                 if (s.items[i].id === item.id) {
-                  s.items[i] = { ...s.items[i], name: nameNew, client: clientNew, budget: budgetNew, updatedAt: new Date().toISOString() };
+                  s.items[i] = {
+                    ...s.items[i],
+                    name: nameNew,
+                    client: clientNew,
+                    budget: budgetNew,
+                    updatedAt: new Date().toISOString(),
+                  };
                   updated = true;
                   break;
                 }
               }
               if (updated) break;
             }
-            if (updated && store && store.projects) store.projects.saveAll(stages);
+            if (updated && store && store.projects)
+              store.projects.saveAll(stages);
           } else if (store && store.projects) {
-            store.projects.update(item.id, { name: nameNew, client: clientNew, budget: budgetNew });
+            store.projects.update(item.id, {
+              name: nameNew,
+              client: clientNew,
+              budget: budgetNew,
+            });
           }
         } catch (e) {
-          console.error('Project edit error', e);
+          console.error("Project edit error", e);
         }
         renderProjectsBoard();
       });
-      const delBtn = document.createElement('button'); delBtn.type='button'; delBtn.className='uba-btn-link'; delBtn.textContent='Delete';
-      delBtn.addEventListener('click', ()=>{
-        if (!confirm(t('projects.deleteConfirm','Delete project?'))) return;
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "uba-btn-link";
+      delBtn.textContent = "Delete";
+      delBtn.addEventListener("click", () => {
+        if (!confirm(t("projects.deleteConfirm", "Delete project?"))) return;
         try {
-          if (Array.isArray(stages) && stages.length && (stages[0].items || stages[0].title)) {
+          if (
+            Array.isArray(stages) &&
+            stages.length &&
+            (stages[0].items || stages[0].title)
+          ) {
             for (const s of stages) {
               s.items = s.items || [];
               const before = s.items.length;
-              s.items = s.items.filter(it => it.id !== item.id);
+              s.items = s.items.filter((it) => it.id !== item.id);
               if (s.items.length !== before) {
                 if (store && store.projects) store.projects.saveAll(stages);
                 break;
@@ -2084,11 +2566,12 @@ const renderProjectsBoard = () => {
             store.projects.delete(item.id);
           }
         } catch (e) {
-          console.error('Project delete error', e);
+          console.error("Project delete error", e);
         }
         renderProjectsBoard();
       });
-      actions.appendChild(editBtn); actions.appendChild(delBtn);
+      actions.appendChild(editBtn);
+      actions.appendChild(delBtn);
       card.appendChild(actions);
 
       column.appendChild(card);
@@ -2103,37 +2586,53 @@ const renderTasksBoard = () => {
   const container = document.getElementById("tasks-columns");
   if (!container) return;
   const store = window.ubaStore;
-  const columns = (store && store.tasks.getAll()) || ensureSeedData(LOCAL_KEYS.tasks, taskBoardSeed) || [];
+  const columns =
+    (store && store.tasks.getAll()) ||
+    ensureSeedData(LOCAL_KEYS.tasks, taskBoardSeed) ||
+    [];
 
   container.innerHTML = "";
 
   // add quick task form
-  const formBar = document.createElement('div'); formBar.style.display='flex'; formBar.style.gap='8px'; formBar.style.marginBottom='10px';
+  const formBar = document.createElement("div");
+  formBar.style.display = "flex";
+  formBar.style.gap = "8px";
+  formBar.style.marginBottom = "10px";
   formBar.innerHTML = `<input id="task-title" placeholder="Task title" style="flex:1;"/><input id="task-owner" placeholder="Owner" style="width:140px;"/><input id="task-due" placeholder="Due" style="width:120px;"/><select id="task-col"><option value="todo">To do</option><option value="progress">In progress</option><option value="review">Review</option><option value="done">Done</option></select><button id="task-add" class="uba-btn-primary">Add task</button>`;
   container.appendChild(formBar);
   // If there are no columns, show a friendly empty state
   if (!Array.isArray(columns) || columns.length === 0) {
-    const empty = document.createElement('div');
-    empty.className = 'uba-pipe-item';
-    empty.textContent = t('tasks.empty','No tasks yet. Add a task to get started.');
+    const empty = document.createElement("div");
+    empty.className = "uba-pipe-item";
+    empty.textContent = t(
+      "tasks.empty",
+      "No tasks yet. Add a task to get started.",
+    );
     container.appendChild(empty);
     return;
   }
-  document.getElementById('task-add').addEventListener('click', ()=>{
-    const titleEl = document.getElementById('task-title');
-    const ownerEl = document.getElementById('task-owner');
-    const dueEl = document.getElementById('task-due');
-    const title = titleEl.value.trim(); if(!title){ setFieldError(titleEl, t('form.taskTitle','Title required')); titleEl.focus(); return; }
-    const owner = ownerEl.value.trim(); const due = dueEl.value.trim(); const colId = document.getElementById('task-col').value;
+  document.getElementById("task-add").addEventListener("click", () => {
+    const titleEl = document.getElementById("task-title");
+    const ownerEl = document.getElementById("task-owner");
+    const dueEl = document.getElementById("task-due");
+    const title = titleEl.value.trim();
+    if (!title) {
+      setFieldError(titleEl, t("form.taskTitle", "Title required"));
+      titleEl.focus();
+      return;
+    }
+    const owner = ownerEl.value.trim();
+    const due = dueEl.value.trim();
+    const colId = document.getElementById("task-col").value;
     // find column
     const cols = columns;
-    const target = cols.find(c=>c.id===colId) || cols[0];
+    const target = cols.find((c) => c.id === colId) || cols[0];
     const newTask = { id: `task-${Date.now()}`, title, owner, due };
     if (!target.tasks) target.tasks = [];
     target.tasks.push(newTask);
     if (store && store.tasks) store.tasks.saveAll(cols);
     renderTasksBoard();
-    if (window.showToast) window.showToast(t('tasks.added','Task added'));
+    if (window.showToast) window.showToast(t("tasks.added", "Task added"));
   });
 
   const moveTask = (taskId, fromId, direction) => {
@@ -2148,7 +2647,7 @@ const renderTasksBoard = () => {
     if (!task) return;
 
     sourceColumn.tasks = sourceColumn.tasks.filter((t) => t.id !== taskId);
-    targetColumn.tasks = [...(targetColumn.tasks||[]), task];
+    targetColumn.tasks = [...(targetColumn.tasks || []), task];
     if (store && store.tasks) store.tasks.saveAll(columns);
     renderTasksBoard();
   };
@@ -2168,14 +2667,14 @@ const renderTasksBoard = () => {
     title.textContent = col.title || col.id;
     column.appendChild(title);
 
-    (col.tasks||[]).forEach((task) => {
+    (col.tasks || []).forEach((task) => {
       const card = document.createElement("div");
       card.className = "uba-support-card";
       card.innerHTML = `
         <div class="uba-support-icon">✅</div>
         <div>
           <h4>${task.title}</h4>
-          <p>${t("view.tasks.owner", "Owner")}: ${task.owner || ''} · ${task.due || ''}</p>
+          <p>${t("view.tasks.owner", "Owner")}: ${task.owner || ""} · ${task.due || ""}</p>
         </div>
       `;
 
@@ -2200,18 +2699,35 @@ const renderTasksBoard = () => {
         actions.appendChild(nextBtn);
       }
 
-      const editBtn = document.createElement('button'); editBtn.type='button'; editBtn.className='uba-btn-link'; editBtn.textContent='Edit';
-      editBtn.addEventListener('click', ()=>{
-        const title = prompt('Title', task.title)||task.title; const owner = prompt('Owner', task.owner)||task.owner; const due = prompt('Due', task.due)||task.due;
-        task.title = title; task.owner = owner; task.due = due;
+      const editBtn = document.createElement("button");
+      editBtn.type = "button";
+      editBtn.className = "uba-btn-link";
+      editBtn.textContent = "Edit";
+      editBtn.addEventListener("click", () => {
+        const title = prompt("Title", task.title) || task.title;
+        const owner = prompt("Owner", task.owner) || task.owner;
+        const due = prompt("Due", task.due) || task.due;
+        task.title = title;
+        task.owner = owner;
+        task.due = due;
         if (store && store.tasks) store.tasks.saveAll(columns);
         renderTasksBoard();
       });
 
-      const delBtn = document.createElement('button'); delBtn.type='button'; delBtn.className='uba-btn-link'; delBtn.textContent='Delete';
-      delBtn.addEventListener('click', ()=>{ if(!confirm(t('tasks.deleteConfirm','Delete task?'))) return; const colTasks = col.tasks || []; col.tasks = colTasks.filter(t=>t.id!==task.id); if(store && store.tasks) store.tasks.saveAll(columns); renderTasksBoard(); });
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "uba-btn-link";
+      delBtn.textContent = "Delete";
+      delBtn.addEventListener("click", () => {
+        if (!confirm(t("tasks.deleteConfirm", "Delete task?"))) return;
+        const colTasks = col.tasks || [];
+        col.tasks = colTasks.filter((t) => t.id !== task.id);
+        if (store && store.tasks) store.tasks.saveAll(columns);
+        renderTasksBoard();
+      });
 
-      actions.appendChild(editBtn); actions.appendChild(delBtn);
+      actions.appendChild(editBtn);
+      actions.appendChild(delBtn);
       card.appendChild(actions);
       column.appendChild(card);
     });
@@ -2269,51 +2785,110 @@ const renderSmartToolsGrid = () => {
     const cards = [];
 
     // Quick insights card
-    cards.push({ title: t('tool.insights.title','Quick insights'), desc: t('tool.insights.desc','Snapshot of revenue, overdue tasks and expenses.'), badge: 'Insights', body: (() => {
-      const lines = [];
-      if (insights.topClients && insights.topClients.length) lines.push(t('tool.insights.topClients','Top clients:') + ' ' + insights.topClients.map(c=>`${c.name} (€${Number(c.amount||0).toLocaleString()})`).join(', '));
-      lines.push(t('tool.insights.overdue','Overdue tasks:') + ' ' + (insights.overdueTasksCount || 0));
-      if (insights.topExpenseCategory) lines.push(t('tool.insights.topExpense','Top expense:') + ` ${insights.topExpenseCategory.category} (€${Number(insights.topExpenseCategory.amount||0).toLocaleString()})`);
-      return lines.join('\n');
-    })() });
+    cards.push({
+      title: t("tool.insights.title", "Quick insights"),
+      desc: t(
+        "tool.insights.desc",
+        "Snapshot of revenue, overdue tasks and expenses.",
+      ),
+      badge: "Insights",
+      body: (() => {
+        const lines = [];
+        if (insights.topClients && insights.topClients.length)
+          lines.push(
+            t("tool.insights.topClients", "Top clients:") +
+              " " +
+              insights.topClients
+                .map(
+                  (c) =>
+                    `${c.name} (€${Number(c.amount || 0).toLocaleString()})`,
+                )
+                .join(", "),
+          );
+        lines.push(
+          t("tool.insights.overdue", "Overdue tasks:") +
+            " " +
+            (insights.overdueTasksCount || 0),
+        );
+        if (insights.topExpenseCategory)
+          lines.push(
+            t("tool.insights.topExpense", "Top expense:") +
+              ` ${insights.topExpenseCategory.category} (€${Number(insights.topExpenseCategory.amount || 0).toLocaleString()})`,
+          );
+        return lines.join("\n");
+      })(),
+    });
 
     // Next-best actions card
-    cards.push({ title: t('tool.actions.title','Next-best actions'), desc: t('tool.actions.desc','Short list of suggested actions.'), badge: `${actions.length}`, body: (actions.length ? actions.slice(0,4).map(a=>`• ${a.title}`).join('\n') : t('tool.actions.empty','No immediate actions')) });
+    cards.push({
+      title: t("tool.actions.title", "Next-best actions"),
+      desc: t("tool.actions.desc", "Short list of suggested actions."),
+      badge: `${actions.length}`,
+      body: actions.length
+        ? actions
+            .slice(0, 4)
+            .map((a) => `• ${a.title}`)
+            .join("\n")
+        : t("tool.actions.empty", "No immediate actions"),
+    });
 
     // Top clients
     if (topClients.length) {
-      cards.push({ title: t('tool.topClients.title','Top clients'), desc: t('tool.topClients.desc','Clients by revenue'), badge: 'CRM', body: topClients.map(c => `• ${c.name}: €${Number(c.amount||0).toLocaleString()}`).join('\n') });
+      cards.push({
+        title: t("tool.topClients.title", "Top clients"),
+        desc: t("tool.topClients.desc", "Clients by revenue"),
+        badge: "CRM",
+        body: topClients
+          .map((c) => `• ${c.name}: €${Number(c.amount || 0).toLocaleString()}`)
+          .join("\n"),
+      });
     }
 
     // Re-engage inactive
     if (inactive.length) {
-      cards.push({ title: t('tool.reengage.title','Re-engage clients'), desc: t('tool.reengage.desc','Clients without recent invoices'), badge: 'CRM', body: inactive.slice(0,4).map(c=>`• ${c.name}`).join('\n') });
+      cards.push({
+        title: t("tool.reengage.title", "Re-engage clients"),
+        desc: t("tool.reengage.desc", "Clients without recent invoices"),
+        badge: "CRM",
+        body: inactive
+          .slice(0, 4)
+          .map((c) => `• ${c.name}`)
+          .join("\n"),
+      });
     }
 
     // UBA Assistant card (always present)
-    cards.push({ title: t('tool.assistant.title','UBA Assistant'), desc: t('tool.assistant.desc','Ask UBA Assistant for help and quick tips.'), badge: 'Assistant', body: t('tool.assistant.hint','Click to open the assistant') });
+    cards.push({
+      title: t("tool.assistant.title", "UBA Assistant"),
+      desc: t(
+        "tool.assistant.desc",
+        "Ask UBA Assistant for help and quick tips.",
+      ),
+      badge: "Assistant",
+      body: t("tool.assistant.hint", "Click to open the assistant"),
+    });
 
     // Render cards
     cards.forEach((tool) => {
-      const card = document.createElement('div');
-      card.className = 'uba-support-card';
+      const card = document.createElement("div");
+      card.className = "uba-support-card";
       card.innerHTML = `
         <div class="uba-support-icon">🧠</div>
         <div>
           <h4>${tool.title}</h4>
           <p>${tool.desc}</p>
-          <div style="white-space:pre-wrap;margin-top:8px;color:var(--muted, #6b7280);">${escapeHtml(tool.body || '')}</div>
-          <div class="uba-chip-row"><span class="uba-chip">${tool.badge || ''}</span></div>
+          <div style="white-space:pre-wrap;margin-top:8px;color:var(--muted, #6b7280);">${escapeHtml(tool.body || "")}</div>
+          <div class="uba-chip-row"><span class="uba-chip">${tool.badge || ""}</span></div>
         </div>
       `;
       grid.appendChild(card);
     });
   } catch (e) {
-    console.error('renderSmartToolsGrid error', e);
+    console.error("renderSmartToolsGrid error", e);
     // fallback to static seed so UI never breaks
     smartToolsSeed.forEach((tool) => {
-      const card = document.createElement('div');
-      card.className = 'uba-support-card';
+      const card = document.createElement("div");
+      card.className = "uba-support-card";
       card.innerHTML = `
         <div class="uba-support-icon">🧠</div>
         <div>
@@ -2333,149 +2908,185 @@ const renderSmartToolsGrid = () => {
 function populateClientSelect(selectEl, searchEl) {
   try {
     const store = window.ubaStore;
-    const clients = (store && store.clients.getAll()) || ensureSeedData(LOCAL_KEYS.clients, clientSeed) || [];
-    selectEl.innerHTML = '';
-    const emptyOpt = document.createElement('option'); emptyOpt.value = ''; emptyOpt.textContent = t('table.client','Client'); selectEl.appendChild(emptyOpt);
-    clients.forEach(c => {
-      const opt = document.createElement('option'); opt.value = c.id; opt.textContent = c.name || c.company || c.email || c.id; selectEl.appendChild(opt);
+    const clients =
+      (store && store.clients.getAll()) ||
+      ensureSeedData(LOCAL_KEYS.clients, clientSeed) ||
+      [];
+    selectEl.innerHTML = "";
+    const emptyOpt = document.createElement("option");
+    emptyOpt.value = "";
+    emptyOpt.textContent = t("table.client", "Client");
+    selectEl.appendChild(emptyOpt);
+    clients.forEach((c) => {
+      const opt = document.createElement("option");
+      opt.value = c.id;
+      opt.textContent = c.name || c.company || c.email || c.id;
+      selectEl.appendChild(opt);
     });
 
     if (searchEl) {
-      searchEl.addEventListener('input', (e) => {
-        const q = (e.target.value || '').toLowerCase().trim();
-        Array.from(selectEl.options).forEach(opt => {
-          if (!opt.value) return opt.hidden = false;
-          const text = (opt.textContent||'').toLowerCase();
+      searchEl.addEventListener("input", (e) => {
+        const q = (e.target.value || "").toLowerCase().trim();
+        Array.from(selectEl.options).forEach((opt) => {
+          if (!opt.value) return (opt.hidden = false);
+          const text = (opt.textContent || "").toLowerCase();
           opt.hidden = q ? !text.includes(q) : false;
         });
       });
     }
-  } catch (e) { console.error('populateClientSelect', e); }
+  } catch (e) {
+    console.error("populateClientSelect", e);
+  }
 }
 
 function renderSmartClientBrief(clientId) {
-  const container = document.getElementById('smart-client-brief');
+  const container = document.getElementById("smart-client-brief");
   if (!container) return;
-  container.innerHTML = '';
+  container.innerHTML = "";
   try {
     const client = getClientById(clientId);
     if (!client) {
-      container.innerHTML = `<div class="uba-support-card">${t('smart.client.selectPrompt','Select a client to view a brief.')}</div>`;
+      container.innerHTML = `<div class="uba-support-card">${t("smart.client.selectPrompt", "Select a client to view a brief.")}</div>`;
       return;
     }
 
-    const invoices = getInvoicesByClient(client.name || client.company || '');
-    const openInvoices = invoices.filter(i => !i.status || i.status !== 'paid');
-    const projects = getProjectsByClient(client.name || client.company || '');
-    const tasks = getTasksByClient(client.name || client.company || '');
+    const invoices = getInvoicesByClient(client.name || client.company || "");
+    const openInvoices = invoices.filter(
+      (i) => !i.status || i.status !== "paid",
+    );
+    const projects = getProjectsByClient(client.name || client.company || "");
+    const tasks = getTasksByClient(client.name || client.company || "");
 
     const lastActivityDate = (() => {
       const dates = [];
-      invoices.forEach(i => i.updatedAt && dates.push(new Date(i.updatedAt).getTime()));
-      projects.forEach(p => p.updatedAt && dates.push(new Date(p.updatedAt).getTime()));
-      tasks.forEach(t => t.updatedAt && dates.push(new Date(t.updatedAt).getTime()));
-      if (dates.length === 0) return t('smart.client.noActivity','No recent activity');
+      invoices.forEach(
+        (i) => i.updatedAt && dates.push(new Date(i.updatedAt).getTime()),
+      );
+      projects.forEach(
+        (p) => p.updatedAt && dates.push(new Date(p.updatedAt).getTime()),
+      );
+      tasks.forEach(
+        (t) => t.updatedAt && dates.push(new Date(t.updatedAt).getTime()),
+      );
+      if (dates.length === 0)
+        return t("smart.client.noActivity", "No recent activity");
       const max = Math.max(...dates);
       return formatDateISO(new Date(max));
     })();
 
-    const card = document.createElement('div');
-    card.className = 'uba-support-card';
+    const card = document.createElement("div");
+    card.className = "uba-support-card";
     card.innerHTML = `
       <div class="uba-support-icon">👤</div>
       <div>
-        <h4>${escapeHtml(client.name || client.company || client.email || '')}</h4>
-        <p>${escapeHtml(client.email || '')} ${client.phone ? '· ' + escapeHtml(client.phone) : ''}</p>
-        <p style="margin-top:8px;color:var(--muted,#6b7280);">${t('smart.client.lastActivity','Last activity')}: ${escapeHtml(lastActivityDate)}</p>
+        <h4>${escapeHtml(client.name || client.company || client.email || "")}</h4>
+        <p>${escapeHtml(client.email || "")} ${client.phone ? "· " + escapeHtml(client.phone) : ""}</p>
+        <p style="margin-top:8px;color:var(--muted,#6b7280);">${t("smart.client.lastActivity", "Last activity")}: ${escapeHtml(lastActivityDate)}</p>
         <div class="uba-chip-row" style="margin-top:8px;">
-          <span class="uba-chip soft">${t('smart.client.openInvoices','Open invoices')}: ${openInvoices.length}</span>
-          <span class="uba-chip soft">${t('smart.client.activeProjects','Active projects')}: ${projects.length}</span>
-          <span class="uba-chip soft">${t('smart.client.recentTasks','Recent tasks')}: ${tasks.length}</span>
+          <span class="uba-chip soft">${t("smart.client.openInvoices", "Open invoices")}: ${openInvoices.length}</span>
+          <span class="uba-chip soft">${t("smart.client.activeProjects", "Active projects")}: ${projects.length}</span>
+          <span class="uba-chip soft">${t("smart.client.recentTasks", "Recent tasks")}: ${tasks.length}</span>
         </div>
-        <p style="white-space:pre-wrap;margin-top:8px;color:var(--muted,#6b7280);">${escapeHtml(client.notes || '')}</p>
+        <p style="white-space:pre-wrap;margin-top:8px;color:var(--muted,#6b7280);">${escapeHtml(client.notes || "")}</p>
       </div>
     `;
     container.appendChild(card);
-  } catch (e) { console.error('renderSmartClientBrief', e); }
+  } catch (e) {
+    console.error("renderSmartClientBrief", e);
+  }
 }
 
 function renderSmartOutreach(clientId) {
-  const container = document.getElementById('smart-outreach');
+  const container = document.getElementById("smart-outreach");
   if (!container) return;
-  container.innerHTML = '';
+  container.innerHTML = "";
   try {
     const client = getClientById(clientId);
     if (!client) {
-      container.innerHTML = `<div class="uba-support-card">${t('tool.outreach.hint','Select a client to see outreach suggestions.')}</div>`;
+      container.innerHTML = `<div class="uba-support-card">${t("tool.outreach.hint", "Select a client to see outreach suggestions.")}</div>`;
       return;
     }
     const templates = suggestOutreachTemplates(client) || [];
     if (!templates.length) {
-      container.innerHTML = `<div class="uba-support-card">${t('tool.outreach.empty','No suggestions at the moment.')}</div>`;
+      container.innerHTML = `<div class="uba-support-card">${t("tool.outreach.empty", "No suggestions at the moment.")}</div>`;
       return;
     }
-    templates.slice(0,3).forEach(tpl => {
-      const c = document.createElement('div'); c.className='uba-support-card';
+    templates.slice(0, 3).forEach((tpl) => {
+      const c = document.createElement("div");
+      c.className = "uba-support-card";
       c.innerHTML = `<div class="uba-support-icon">✉️</div><div><h4>${escapeHtml(tpl.title)}</h4><p style="white-space:pre-wrap;color:var(--muted,#6b7280);">${escapeHtml(tpl.text)}</p></div>`;
       container.appendChild(c);
     });
-  } catch (e) { console.error('renderSmartOutreach', e); }
+  } catch (e) {
+    console.error("renderSmartOutreach", e);
+  }
 }
 
 function renderNextBestActionsPanel() {
-  const container = document.getElementById('smart-actions');
+  const container = document.getElementById("smart-actions");
   if (!container) return;
-  container.innerHTML = '';
+  container.innerHTML = "";
   try {
     const actions = nextBestActions(6) || [];
     if (!actions.length) {
-      container.innerHTML = `<div class="uba-support-card">${t('tool.actions.empty','No immediate actions')}</div>`;
+      container.innerHTML = `<div class="uba-support-card">${t("tool.actions.empty", "No immediate actions")}</div>`;
       return;
     }
-    actions.slice(0,5).forEach(a => {
-      const c = document.createElement('div'); c.className='uba-support-card';
-      const body = a.meta && (a.meta.client || a.meta.name || a.meta.title) ? (a.meta.client || a.meta.name || a.meta.title) : '';
+    actions.slice(0, 5).forEach((a) => {
+      const c = document.createElement("div");
+      c.className = "uba-support-card";
+      const body =
+        a.meta && (a.meta.client || a.meta.name || a.meta.title)
+          ? a.meta.client || a.meta.name || a.meta.title
+          : "";
       c.innerHTML = `<div class="uba-support-icon">⚡</div><div><h4>${escapeHtml(a.title)}</h4><p style="color:var(--muted,#6b7280);">${escapeHtml(body)}</p></div>`;
       container.appendChild(c);
     });
-  } catch (e) { console.error('renderNextBestActionsPanel', e); }
+  } catch (e) {
+    console.error("renderNextBestActionsPanel", e);
+  }
 }
 
 function renderQuickInsightsPanel() {
-  const container = document.getElementById('smart-insights');
+  const container = document.getElementById("smart-insights");
   if (!container) return;
-  container.innerHTML = '';
+  container.innerHTML = "";
   try {
     const insights = quickInsights() || {};
     // top clients
-    const topClients = (insights.topClients || []).slice(0,3);
+    const topClients = (insights.topClients || []).slice(0, 3);
     if (topClients.length) {
-      const c = document.createElement('div'); c.className='uba-support-card';
-      c.innerHTML = `<div class="uba-support-icon">💰</div><div><h4>${t('tool.insights.topClients','Top clients')}</h4><p style="color:var(--muted,#6b7280);">${topClients.map(x=>`${escapeHtml(x.name)}: €${Number(x.amount||0).toLocaleString()}`).join('\n')}</p></div>`;
+      const c = document.createElement("div");
+      c.className = "uba-support-card";
+      c.innerHTML = `<div class="uba-support-icon">💰</div><div><h4>${t("tool.insights.topClients", "Top clients")}</h4><p style="color:var(--muted,#6b7280);">${topClients.map((x) => `${escapeHtml(x.name)}: €${Number(x.amount || 0).toLocaleString()}`).join("\n")}</p></div>`;
       container.appendChild(c);
     }
     // overdue tasks
     const overdueCount = insights.overdueTasksCount || 0;
-    const c2 = document.createElement('div'); c2.className='uba-support-card';
-    c2.innerHTML = `<div class="uba-support-icon">⏰</div><div><h4>${t('tool.insights.overdueTasks','Overdue tasks')}</h4><p style="color:var(--muted,#6b7280);">${escapeHtml(String(overdueCount))} ${t('tool.insights.overdueLabel','overdue')}</p></div>`;
+    const c2 = document.createElement("div");
+    c2.className = "uba-support-card";
+    c2.innerHTML = `<div class="uba-support-icon">⏰</div><div><h4>${t("tool.insights.overdueTasks", "Overdue tasks")}</h4><p style="color:var(--muted,#6b7280);">${escapeHtml(String(overdueCount))} ${t("tool.insights.overdueLabel", "overdue")}</p></div>`;
     container.appendChild(c2);
     // top expense category
     if (insights.topExpenseCategory) {
-      const c3 = document.createElement('div'); c3.className='uba-support-card';
-      c3.innerHTML = `<div class="uba-support-icon">📤</div><div><h4>${t('tool.insights.topExpense','Top expense')}</h4><p style="color:var(--muted,#6b7280);">${escapeHtml(insights.topExpenseCategory.category)} — €${Number(insights.topExpenseCategory.amount||0).toLocaleString()}</p></div>`;
+      const c3 = document.createElement("div");
+      c3.className = "uba-support-card";
+      c3.innerHTML = `<div class="uba-support-icon">📤</div><div><h4>${t("tool.insights.topExpense", "Top expense")}</h4><p style="color:var(--muted,#6b7280);">${escapeHtml(insights.topExpenseCategory.category)} — €${Number(insights.topExpenseCategory.amount || 0).toLocaleString()}</p></div>`;
       container.appendChild(c3);
     }
-  } catch (e) { console.error('renderQuickInsightsPanel', e); }
+  } catch (e) {
+    console.error("renderQuickInsightsPanel", e);
+  }
 }
 
 // Initialize Smart Tools standalone page wiring if present
 function initSmartToolsStandalone() {
   try {
-    const select = document.getElementById('smart-client-select');
-    const search = document.getElementById('smart-client-search');
+    const select = document.getElementById("smart-client-select");
+    const search = document.getElementById("smart-client-search");
     if (!select) return;
     populateClientSelect(select, search);
-    select.addEventListener('change', () => {
+    select.addEventListener("change", () => {
       const id = select.value;
       renderSmartClientBrief(id);
       renderSmartOutreach(id);
@@ -2487,12 +3098,15 @@ function initSmartToolsStandalone() {
       renderSmartClientBrief(id);
       renderSmartOutreach(id);
     } else {
-      renderSmartClientBrief(''); renderSmartOutreach('');
+      renderSmartClientBrief("");
+      renderSmartOutreach("");
     }
 
     renderNextBestActionsPanel();
     renderQuickInsightsPanel();
-  } catch (e) { console.error('initSmartToolsStandalone', e); }
+  } catch (e) {
+    console.error("initSmartToolsStandalone", e);
+  }
 }
 
 // Success desk topics
@@ -2568,13 +3182,27 @@ const renderSettingsSummary = (settings) => {
 
   try {
     const store = window.ubaStore;
-    const currentUser = store && store.auth && typeof store.auth.currentUser === 'function' ? store.auth.currentUser() : null;
-    const currentWorkspace = store && store.workspace && typeof store.workspace.getCurrentWorkspace === 'function' ? store.workspace.getCurrentWorkspace() : null;
+    const currentUser =
+      store && store.auth && typeof store.auth.currentUser === "function"
+        ? store.auth.currentUser()
+        : null;
+    const currentWorkspace =
+      store &&
+      store.workspace &&
+      typeof store.workspace.getCurrentWorkspace === "function"
+        ? store.workspace.getCurrentWorkspace()
+        : null;
     if (currentUser) {
-      summaryItems.unshift({ label: t('settings.summary.userLabel','User'), value: `${currentUser.name || currentUser.email || ''}` });
+      summaryItems.unshift({
+        label: t("settings.summary.userLabel", "User"),
+        value: `${currentUser.name || currentUser.email || ""}`,
+      });
     }
     if (currentWorkspace) {
-      summaryItems.splice(currentUser ? 1 : 0, 0, { label: t('settings.summary.currentWorkspace','Workspace'), value: `${currentWorkspace.name || ''}` });
+      summaryItems.splice(currentUser ? 1 : 0, 0, {
+        label: t("settings.summary.currentWorkspace", "Workspace"),
+        value: `${currentWorkspace.name || ""}`,
+      });
     }
   } catch (e) {
     // ignore
@@ -2590,7 +3218,10 @@ const renderSettingsSummary = (settings) => {
     },
     {
       label: t("settings.summary.languageLabel", "Language"),
-      value: t(`language.${settings.language}`, settings.language?.toUpperCase() || "EN"),
+      value: t(
+        `language.${settings.language}`,
+        settings.language?.toUpperCase() || "EN",
+      ),
     },
     {
       label: t("settings.summary.timezoneLabel", "Timezone"),
@@ -2598,11 +3229,15 @@ const renderSettingsSummary = (settings) => {
     },
     {
       label: t("settings.summary.singlePageLabel", "Single-page view"),
-      value: settings.singlePage ? t("settings.summary.enabled", "Enabled") : t("settings.summary.disabled", "Disabled"),
+      value: settings.singlePage
+        ? t("settings.summary.enabled", "Enabled")
+        : t("settings.summary.disabled", "Disabled"),
     },
     {
       label: t("settings.summary.notificationsLabel", "Notifications"),
-      value: settings.notifications ? t("settings.summary.enabled", "Enabled") : t("settings.summary.disabled", "Disabled"),
+      value: settings.notifications
+        ? t("settings.summary.enabled", "Enabled")
+        : t("settings.summary.disabled", "Disabled"),
     },
   ];
 
@@ -2626,7 +3261,9 @@ const renderSettingsPage = () => {
   const userEmailInput = document.getElementById("setting-user-email");
   const timezoneSelect = document.getElementById("setting-timezone");
   const languageSelect = document.getElementById("language-select-settings");
-  const workspaceIndustry = document.getElementById("setting-workspace-industry");
+  const workspaceIndustry = document.getElementById(
+    "setting-workspace-industry",
+  );
   const singlePageToggle = document.getElementById("setting-single-page");
   const notificationsToggle = document.getElementById("setting-notifications");
   const statusEl = document.getElementById("settings-status");
@@ -2636,18 +3273,33 @@ const renderSettingsPage = () => {
   if (workspaceInput) workspaceInput.value = settings.workspaceName || "";
   try {
     const store = window.ubaStore;
-    const currentUser = store && store.auth && typeof store.auth.currentUser === 'function' ? store.auth.currentUser() : null;
-    const currentWorkspace = store && store.workspace && typeof store.workspace.getCurrentWorkspace === 'function' ? store.workspace.getCurrentWorkspace() : null;
-    if (userNameInput && currentUser) userNameInput.value = currentUser.name || '';
-    if (userEmailInput && currentUser) userEmailInput.value = currentUser.email || '';
-    if (workspaceIndustry && currentWorkspace) workspaceIndustry.value = (currentWorkspace.meta && currentWorkspace.meta.industry) || '';
+    const currentUser =
+      store && store.auth && typeof store.auth.currentUser === "function"
+        ? store.auth.currentUser()
+        : null;
+    const currentWorkspace =
+      store &&
+      store.workspace &&
+      typeof store.workspace.getCurrentWorkspace === "function"
+        ? store.workspace.getCurrentWorkspace()
+        : null;
+    if (userNameInput && currentUser)
+      userNameInput.value = currentUser.name || "";
+    if (userEmailInput && currentUser)
+      userEmailInput.value = currentUser.email || "";
+    if (workspaceIndustry && currentWorkspace)
+      workspaceIndustry.value =
+        (currentWorkspace.meta && currentWorkspace.meta.industry) || "";
   } catch (e) {
     // ignore
   }
-  if (timezoneSelect) timezoneSelect.value = settings.timezone || defaultSettings.timezone;
-  if (languageSelect) languageSelect.value = settings.language || defaultSettings.language;
+  if (timezoneSelect)
+    timezoneSelect.value = settings.timezone || defaultSettings.timezone;
+  if (languageSelect)
+    languageSelect.value = settings.language || defaultSettings.language;
   if (singlePageToggle) singlePageToggle.checked = !!settings.singlePage;
-  if (notificationsToggle) notificationsToggle.checked = !!settings.notifications;
+  if (notificationsToggle)
+    notificationsToggle.checked = !!settings.notifications;
   if (statusEl) statusEl.textContent = t("settings.workspace.saved", "Saved");
 
   renderSettingsSummary(settings);
@@ -2658,38 +3310,70 @@ const renderSettingsPage = () => {
   if (form) {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      const workspaceNameVal = workspaceInput?.value.trim() || defaultSettings.workspaceName;
+      const workspaceNameVal =
+        workspaceInput?.value.trim() || defaultSettings.workspaceName;
       const timezoneVal = timezoneSelect?.value || defaultSettings.timezone;
       const languageVal = languageSelect?.value || defaultSettings.language;
 
       // Save basic settingsState
-      const saved = saveSettingsState({ workspaceName: workspaceNameVal, timezone: timezoneVal, language: languageVal });
+      const saved = saveSettingsState({
+        workspaceName: workspaceNameVal,
+        timezone: timezoneVal,
+        language: languageVal,
+      });
 
       // Update user profile and workspace metadata when store is available
       try {
         const store = window.ubaStore;
-        const currentUser = store && store.auth && typeof store.auth.currentUser === 'function' ? store.auth.currentUser() : null;
-        const currentWorkspace = store && store.workspace && typeof store.workspace.getCurrentWorkspace === 'function' ? store.workspace.getCurrentWorkspace() : null;
+        const currentUser =
+          store && store.auth && typeof store.auth.currentUser === "function"
+            ? store.auth.currentUser()
+            : null;
+        const currentWorkspace =
+          store &&
+          store.workspace &&
+          typeof store.workspace.getCurrentWorkspace === "function"
+            ? store.workspace.getCurrentWorkspace()
+            : null;
 
         // Update user profile: name + (email optional) + language
-        if (currentUser && store && store.auth && typeof store.auth.updateUser === 'function') {
-          const newName = userNameInput?.value.trim() || currentUser.name || '';
-          const newEmail = userEmailInput?.value.trim() || currentUser.email || '';
-          store.auth.updateUser(currentUser.id, { name: newName, email: newEmail, language: languageVal });
+        if (
+          currentUser &&
+          store &&
+          store.auth &&
+          typeof store.auth.updateUser === "function"
+        ) {
+          const newName = userNameInput?.value.trim() || currentUser.name || "";
+          const newEmail =
+            userEmailInput?.value.trim() || currentUser.email || "";
+          store.auth.updateUser(currentUser.id, {
+            name: newName,
+            email: newEmail,
+            language: languageVal,
+          });
         }
 
         // Update workspace metadata
-        if (currentWorkspace && store && store.workspace && typeof store.workspace.updateWorkspace === 'function') {
-          const industry = workspaceIndustry?.value?.trim() || '';
+        if (
+          currentWorkspace &&
+          store &&
+          store.workspace &&
+          typeof store.workspace.updateWorkspace === "function"
+        ) {
+          const industry = workspaceIndustry?.value?.trim() || "";
           const metaPatch = { ...(currentWorkspace.meta || {}), industry };
-          store.workspace.updateWorkspace(currentWorkspace.id, { name: workspaceNameVal, meta: metaPatch });
+          store.workspace.updateWorkspace(currentWorkspace.id, {
+            name: workspaceNameVal,
+            meta: metaPatch,
+          });
         }
       } catch (e) {
-        console.warn('Failed to persist profile/workspace via store:', e);
+        console.warn("Failed to persist profile/workspace via store:", e);
       }
 
       renderSettingsSummary(saved);
-      if (statusEl) statusEl.textContent = t("settings.workspace.saved", "Saved");
+      if (statusEl)
+        statusEl.textContent = t("settings.workspace.saved", "Saved");
       if (i18n.applyTranslations) {
         i18n.applyTranslations(saved.language);
       }
@@ -2706,7 +3390,9 @@ const renderSettingsPage = () => {
 
   if (notificationsToggle) {
     notificationsToggle.addEventListener("change", () => {
-      const saved = saveSettingsState({ notifications: notificationsToggle.checked });
+      const saved = saveSettingsState({
+        notifications: notificationsToggle.checked,
+      });
       renderSettingsSummary(saved);
     });
   }
@@ -2725,30 +3411,42 @@ const renderSettingsPage = () => {
   settingsEventsBound = true;
 
   // Reset demo data button (clears local keys and reseeds)
-  const resetBtn = document.getElementById('reset-demo-data');
+  const resetBtn = document.getElementById("reset-demo-data");
   if (resetBtn) {
-    resetBtn.addEventListener('click', () => {
-      if (!confirm(t('settings.resetConfirm','Reset demo data? This will clear local changes.'))) return;
+    resetBtn.addEventListener("click", () => {
+      if (
+        !confirm(
+          t(
+            "settings.resetConfirm",
+            "Reset demo data? This will clear local changes.",
+          ),
+        )
+      )
+        return;
       try {
         const store = window.ubaStore;
         // clear known keys
-        Object.values(LOCAL_KEYS).forEach(k => localStorage.removeItem(k));
+        Object.values(LOCAL_KEYS).forEach((k) => localStorage.removeItem(k));
         // re-seed
         if (store && store.ensureSeed) {
-          store.ensureSeed('clients', clientSeed || []);
-          store.ensureSeed('invoices', invoiceSeed || []);
-          store.ensureSeed('projects', projectStagesSeed || []);
-          store.ensureSeed('tasks', taskBoardSeed || []);
-          store.ensureSeed('leads', leadsSeed || []);
-          store.ensureSeed('expenses', expensesSeed || []);
-          store.ensureSeed('files', filesSeed || []);
-          store.ensureSeed('reports', reportsSeed || {});
+          store.ensureSeed("clients", clientSeed || []);
+          store.ensureSeed("invoices", invoiceSeed || []);
+          store.ensureSeed("projects", projectStagesSeed || []);
+          store.ensureSeed("tasks", taskBoardSeed || []);
+          store.ensureSeed("leads", leadsSeed || []);
+          store.ensureSeed("expenses", expensesSeed || []);
+          store.ensureSeed("files", filesSeed || []);
+          store.ensureSeed("reports", reportsSeed || {});
         }
-        showToast(t('settings.resetDone','Demo data reset'), { duration: 2500 });
-        setTimeout(()=> window.location.reload(), 700);
+        showToast(t("settings.resetDone", "Demo data reset"), {
+          duration: 2500,
+        });
+        setTimeout(() => window.location.reload(), 700);
       } catch (e) {
-        console.error('reset demo error', e);
-        showToast(t('errors.generic','Failed to reset demo data'), { type: 'error' });
+        console.error("reset demo error", e);
+        showToast(t("errors.generic", "Failed to reset demo data"), {
+          type: "error",
+        });
       }
     });
   }
