@@ -476,6 +476,8 @@
     const panel = document.getElementById('uba-assistant-panel');
     if (!panel) return;
     panel.classList.remove('is-hidden');
+    panel.classList.remove('assistant-hidden');
+    panel.classList.add('open');
     panel.setAttribute('aria-hidden', 'false');
     const input = panel.querySelector('#uba-assistant-input');
     if (input) input.focus();
@@ -485,6 +487,8 @@
     const panel = document.getElementById('uba-assistant-panel');
     if (!panel) return;
     panel.classList.add('is-hidden');
+    panel.classList.add('assistant-hidden');
+    panel.classList.remove('open');
     panel.setAttribute('aria-hidden', 'true');
   }
 
@@ -502,27 +506,25 @@
   }
 
   // Assistant initialization (for static button)
+  let triggerBound = false;
   function initAssistant() {
-    const openButton = document.getElementById('uba-assistant-open');
+    if (triggerBound) return;
     const panel = document.getElementById('uba-assistant-panel');
-    const closeButton = document.getElementById('uba-assistant-close');
-
-    if (!openButton || !panel || !closeButton) {
-      console.log('initAssistant: Missing elements for assistant initialization');
+    const openButton = document.getElementById('uba-assistant-open');
+    const cardTrigger = document.querySelector('[data-assistant-card]');
+    if (!panel || (!openButton && !cardTrigger)) {
       return;
     }
 
-    openButton.addEventListener('click', () => {
-      panel.classList.remove('assistant-hidden');
-      panel.setAttribute('aria-hidden', 'false');
+    createAssistantUI();
+    const triggers = [openButton, cardTrigger].filter(Boolean);
+    triggers.forEach((btn) => {
+      btn.addEventListener('click', (event) => {
+        event.preventDefault();
+        openAssistant();
+      });
     });
-
-    closeButton.addEventListener('click', () => {
-      panel.classList.add('assistant-hidden');
-      panel.setAttribute('aria-hidden', 'true');
-    });
-
-    console.log('initAssistant: Assistant initialized successfully');
+    triggerBound = true;
   }
 
   // Load initial conversation history if available

@@ -27,14 +27,28 @@ function initClientsPage() {
 
 function initProjectsPage() {
   try {
-    if (typeof window.renderProjectsStandalone === 'function') return window.renderProjectsStandalone();
+    const hasStandalonePipeline =
+      document.getElementById('projects-leads') ||
+      document.getElementById('projects-inprogress') ||
+      document.getElementById('projects-ongoing') ||
+      document.getElementById('projects-completed');
+    if (hasStandalonePipeline && typeof window.renderProjectsStandalone === 'function') {
+      return window.renderProjectsStandalone();
+    }
     if (typeof renderProjectsBoard === 'function') return renderProjectsBoard();
   } catch (e) { console.warn('initProjectsPage error', e); }
 }
 
 function initTasksPage() {
   try {
-    if (typeof window.renderTasksStandalone === 'function') return window.renderTasksStandalone();
+    const hasStandaloneBoard =
+      document.getElementById('tasks-backlog') ||
+      document.getElementById('tasks-today') ||
+      document.getElementById('tasks-inprogress') ||
+      document.getElementById('tasks-done');
+    if (hasStandaloneBoard && typeof window.renderTasksStandalone === 'function') {
+      return window.renderTasksStandalone();
+    }
     if (typeof renderTasksBoard === 'function') return renderTasksBoard();
   } catch (e) { console.warn('initTasksPage error', e); }
 }
@@ -48,8 +62,13 @@ function initSmartTools() {
 
 function initAssistant() {
   try {
-    // Ensure assistant API is available; do not auto-open.
-    if (window.ubaAssistant) return; // assistant script will initialize itself
+    if (window.ubaAssistant && typeof window.ubaAssistant.initAssistant === 'function') {
+      window.ubaAssistant.initAssistant();
+      return;
+    }
+    if (typeof window.initAssistant === 'function') {
+      window.initAssistant();
+    }
   } catch (e) { console.warn('initAssistant error', e); }
 }
 
