@@ -19,9 +19,9 @@
               </p>
               <div class="uba-badge">
                 <span class="uba-badge-dot"></span>
-                <span data-i18n="app.badge"
-                  >Private beta · Built in the Netherlands</span
-                >
+                <span data-i18n="app.badge">
+                  Private beta · Built in the Netherlands
+                </span>
               </div>
             </div>
 
@@ -126,9 +126,7 @@
           <main class="uba-main">
             <header class="uba-topbar">
               <div class="uba-top-left">
-                <p class="uba-top-kicker" data-i18n="view.clients.title">
-                  Clients
-                </p>
+                <p class="uba-top-kicker">CRM</p>
                 <h1 id="uba-view-title" data-i18n="view.clients.title">
                   Clients
                 </h1>
@@ -137,9 +135,6 @@
                 </p>
               </div>
               <div class="uba-top-right">
-                <div class="uba-language">
-                  <label for="language-select-top">Lang</label>
-                </div>
                 <select id="workspace-select" class="uba-select">
                   <option>Main workspace</option>
                 </select>
@@ -154,7 +149,7 @@
               <section class="uba-view" data-view="clients">
                 <div class="uba-grid">
                   <div class="uba-grid-col">
-                    <section class="uba-card">
+                    <section class="uba-card" id="clients-page">
                       <div class="uba-card-header">
                         <div>
                           <div
@@ -164,7 +159,7 @@
                             Clients
                           </div>
                           <p class="uba-card-sub" data-i18n="view.clients.desc">
-                            Manage contacts and CRM data.
+                            Local CRM board with quick add, edit, and delete.
                           </p>
                         </div>
                         <span class="uba-pill" data-i18n="view.clients.badge"
@@ -172,42 +167,85 @@
                         >
                       </div>
 
-                      <div style="padding: 12px">
-                        <div
-                          style="
-                            display: flex;
-                            gap: 8px;
-                            margin-bottom: 12px;
-                            align-items: center;
-                          "
-                        >
+                      <form id="clients-page-form" class="uba-form">
+                        <input type="hidden" id="clients-edit-id" />
+                        <div class="uba-form-row">
                           <input
-                            type="search"
-                            id="clients-search"
-                            placeholder="Search clients"
-                            style="flex: 1"
+                            type="text"
+                            id="clients-name"
+                            placeholder="Client name"
+                            data-i18n-placeholder="form.clientName"
+                            required
                           />
-                          <button class="uba-btn-primary">New client</button>
+                          <input
+                            type="email"
+                            id="clients-email"
+                            placeholder="Email"
+                            data-i18n-placeholder="form.email"
+                          />
                         </div>
 
-                        <div class="uba-table-wrap">
-                          <table class="uba-table">
-                            <thead>
-                              <tr>
-                                <th data-i18n="table.name">Name</th>
-                                <th data-i18n="table.company">Company</th>
-                                <th data-i18n="table.email">Email</th>
-                                <th>Last activity</th>
-                                <th data-i18n="table.actions">Actions</th>
-                              </tr>
-                            </thead>
-                            <tbody id="clients-body">
-                              <tr>
-                                <td colspan="5">Loading…</td>
-                              </tr>
-                            </tbody>
-                          </table>
+                        <div class="uba-form-row">
+                          <input
+                            type="text"
+                            id="clients-company"
+                            placeholder="Company"
+                            data-i18n-placeholder="form.company"
+                          />
+                          <input
+                            type="text"
+                            id="clients-phone"
+                            placeholder="Phone"
+                            data-i18n-placeholder="form.phone"
+                          />
                         </div>
+
+                        <div class="uba-form-row">
+                          <input
+                            type="text"
+                            id="clients-notes"
+                            placeholder="Notes"
+                            data-i18n-placeholder="form.notes"
+                          />
+                          <button
+                            type="submit"
+                            class="uba-btn-primary"
+                            data-i18n="form.saveClient"
+                          >
+                            Save client
+                          </button>
+                        </div>
+                        <p
+                          id="clients-page-error"
+                          class="uba-text-danger"
+                          aria-live="polite"
+                        ></p>
+                      </form>
+
+                      <div class="uba-table-wrap">
+                        <table class="uba-table">
+                          <thead>
+                            <tr>
+                              <th data-i18n="table.name">Name</th>
+                              <th data-i18n="table.company">Company</th>
+                              <th data-i18n="table.email">Email</th>
+                              <th data-i18n="table.phone">Phone</th>
+                              <th
+                                style="width: 120px"
+                                data-i18n="table.actions"
+                              >
+                                Actions
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody id="clients-page-table">
+                            <tr>
+                              <td colspan="5" data-i18n="clients.loading">
+                                Loading…
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </section>
                   </div>
@@ -216,15 +254,83 @@
                     <section class="uba-card">
                       <div class="uba-card-header">
                         <div>
-                          <div class="uba-card-title">Client details</div>
-                          <p class="uba-card-sub">
-                            Select a client to view details or create a new
-                            client.
+                          <div
+                            class="uba-card-title"
+                            data-i18n="view.clients.summary"
+                          >
+                            Client snapshot
+                          </div>
+                          <p
+                            class="uba-card-sub"
+                            data-i18n="view.clients.summaryDesc"
+                          >
+                            Quick health of your local CRM list.
                           </p>
                         </div>
+                        <span class="uba-pill" data-i18n="view.clients.local"
+                          >Local only</span
+                        >
                       </div>
-                      <div style="padding: 12px">
-                        Placeholder for client details and edit form.
+
+                      <div class="uba-kpi-strip">
+                        <div class="uba-kpi">
+                          <div
+                            class="uba-kpi-label"
+                            data-i18n="view.clients.total"
+                          >
+                            Total clients
+                          </div>
+                          <div class="uba-kpi-value" id="clients-total">0</div>
+                          <div
+                            class="uba-kpi-trend"
+                            id="clients-highlight"
+                            data-i18n="view.clients.tip"
+                          >
+                            Add a client to get started.
+                          </div>
+                        </div>
+                        <div class="uba-kpi">
+                          <div
+                            class="uba-kpi-label"
+                            data-i18n="view.clients.recent"
+                          >
+                            Recent note
+                          </div>
+                          <div class="uba-kpi-value" id="clients-recent">–</div>
+                          <div
+                            class="uba-kpi-trend"
+                            data-i18n="view.clients.recentTip"
+                          >
+                            Pulled from latest saved contact.
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="uba-support-grid">
+                        <div class="uba-support-card">
+                          <div class="uba-support-icon">🧭</div>
+                          <div>
+                            <h4 data-i18n="view.clients.hintTitle">
+                              Keep records tidy
+                            </h4>
+                            <p data-i18n="view.clients.hintDesc">
+                              Use the notes field for renewal dates, goals, or
+                              active projects.
+                            </p>
+                          </div>
+                        </div>
+                        <div class="uba-support-card">
+                          <div class="uba-support-icon">🔄</div>
+                          <div>
+                            <h4 data-i18n="view.clients.localTitle">
+                              Local-first
+                            </h4>
+                            <p data-i18n="view.clients.localDesc">
+                              Data is stored in your browser. Export or sync
+                              later.
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -242,5 +348,26 @@
     <script src="assets/js/page-loader.js"></script>
     <script src="assets/js/assistant.js"></script>
     <script src="assets/js/clients.js"></script>
+    <script>
+      (function () {
+        const lang = localStorage.getItem("uba-lang") || "en";
+        if (
+          window.ubaI18n &&
+          typeof window.ubaI18n.applyTranslations === "function"
+        ) {
+          window.ubaI18n.applyTranslations(lang);
+        }
+        if (lang === "ar") document.documentElement.dir = "rtl";
+      })();
+    </script>
+    <script>
+      try {
+        const pageId = document.getElementById("page-id")?.dataset?.page;
+        if (pageId && typeof loadPageScripts === "function")
+          loadPageScripts(pageId);
+      } catch (err) {
+        console.warn("page-loader: failed to run loadPageScripts", err);
+      }
+    </script>
   </body>
 </html>
