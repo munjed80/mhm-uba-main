@@ -2,14 +2,15 @@
 (function () {
   function initClientsPage() {
     try {
-      if (typeof renderClientsPage === 'function') {
+      if (typeof renderClientsPage === "function") {
         renderClientsPage();
         return;
       }
       // fallback: try to render clients table if present
-      if (typeof window.renderClients === 'function') return window.renderClients();
+      if (typeof window.renderClients === "function")
+        return window.renderClients();
     } catch (e) {
-      console.warn('initClientsPage error', e);
+      console.warn("initClientsPage error", e);
     }
   }
 

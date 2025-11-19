@@ -1,292 +1,472 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>UBA Help Center</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
-  <meta name="description" content="UBA Help Center — FAQs, guides and support." />
-</head>
-<body>
-  <section id="uba-dashboard">
-    <div id="page-id" data-page="help-page">
-    <div class="uba-shell">
-      <aside class="uba-sidebar">
-        <div>
-          <div class="uba-logo">
-            MHM <span>UBA</span>
-          </div>
-          <p class="uba-tagline" data-i18n="app.tagline">
-            Universal Business Automator — one workspace for clients, tasks, invoices and smart tools.
-          </p>
-          <div class="uba-badge">
-            <span class="uba-badge-dot"></span>
-            <span data-i18n="app.badge">Private beta · Built in the Netherlands</span>
-          </div>
-        </div>
-
-        <div class="uba-language">
-          <label for="language-select" data-i18n="language.label">Language</label>
-          <select id="language-select">
-            <option value="en" data-i18n="language.en">English</option>
-            <option value="ar" data-i18n="language.ar">Arabic</option>
-            <option value="nl" data-i18n="language.nl">Dutch</option>
-            <option value="fr" data-i18n="language.fr">French</option>
-            <option value="es" data-i18n="language.es">Spanish</option>
-            <option value="de" data-i18n="language.de">German</option>
-          </select>
-        </div>
-
-        <div>
-          <div class="uba-nav-label" data-i18n="nav.workspaceLabel">Workspace</div>
-          <nav class="uba-nav">
-            <a class="uba-nav-btn" href="index.html">
-              <span class="icon">📈</span>
-              <span data-i18n="nav.dashboard">Dashboard</span>
-              <small data-i18n="nav.dashboardSub">Overview</small>
-            </a>
-            <a class="uba-nav-btn" href="clients.html">
-              <span class="icon">🧑‍💻</span>
-              <span data-i18n="nav.clients">Clients</span>
-              <small data-i18n="nav.clientsSub">CRM</small>
-            </a>
-            <a class="uba-nav-btn" href="projects.html">
-              <span class="icon">💼</span>
-              <span data-i18n="nav.projects">Projects</span>
-              <small data-i18n="nav.projectsSub">Pipeline</small>
-            </a>
-            <a class="uba-nav-btn" href="tasks.html">
-              <span class="icon">✅</span>
-              <span data-i18n="nav.tasks">Tasks</span>
-              <small data-i18n="nav.tasksSub">Today</small>
-            </a>
-            <a class="uba-nav-btn" href="invoices.html">
-              <span class="icon">💵</span>
-              <span data-i18n="nav.invoices">Invoices</span>
-              <small data-i18n="nav.invoicesSub">Billing</small>
-            </a>
-            <a class="uba-nav-btn" href="automations.html"><span class="icon">🤖</span><span data-i18n="nav.automations">Automations</span><small data-i18n="nav.automationsSub">Flows</small></a>
-            <a class="uba-nav-btn" href="calendar.html"><span class="icon">📅</span><span>Calendar</span></a>
-            <a class="uba-nav-btn" href="leads.html"><span class="icon">🧲</span><span>Leads</span></a>
-            <a class="uba-nav-btn" href="expenses.html"><span class="icon">📤</span><span>Expenses</span></a>
-            <a class="uba-nav-btn" href="files.html"><span class="icon">📁</span><span>Files</span></a>
-            <a class="uba-nav-btn" href="reports.html"><span class="icon">📑</span><span>Reports</span></a>
-            <a class="uba-nav-btn" href="smart-tools.html"><span class="icon">🧠</span><span data-i18n="nav.smartTools">UBA Smart Tools</span><small data-i18n="nav.smartToolsSub">AI ops</small></a>
-            <a class="uba-nav-btn" href="insights.html"><span class="icon">📊</span><span data-i18n="nav.insights">Insights Lab</span><small data-i18n="nav.insightsSub">Reports</small></a>
-            <a class="uba-nav-btn active" href="help.html"><span class="icon">💬</span><span data-i18n="nav.support">Success Desk</span><small data-i18n="nav.supportSub">Guidance</small></a>
-            <a class="uba-nav-btn" href="settings.html"><span class="icon">🛠️</span><span data-i18n="nav.settings">Settings</span><small data-i18n="nav.settingsSub">Workspace</small></a>
-          </nav>
-        </div>
-
-        <div class="uba-sidebar-footer" data-i18n="sidebar.footer">Designed for small teams and solo founders who are tired of 7 different tools just to run one business.</div>
-      </aside>
-
-      <!-- Main content -->
-      <main class="uba-main">
-        <header class="uba-topbar">
-          <div class="uba-top-left">
-            <p class="uba-top-kicker">Help Center</p>
-            <h1 id="uba-view-title">Help & support</h1>
-            <p id="uba-view-desc">Search docs, browse categories, or contact our support team.</p>
-          </div>
-          <div class="uba-top-right">
-            <div class="uba-search">
-              <input id="help-search" type="search" placeholder="Search help articles and FAQs" />
-            </div>
-            <div class="uba-user-pill"><span class="uba-avatar"></span><span id="uba-user-label">Help</span></div>
-          </div>
-        </header>
-
-        <div class="uba-views">
-          <section class="uba-view" data-view="help">
-            <div class="uba-grid" style="grid-template-columns: 260px 1fr; gap:16px; align-items:start;">
-              <!-- Left: categories -->
-              <div>
-                <section class="uba-card">
-                  <div class="uba-card-header">
-                    <div><div class="uba-card-title">Categories</div><p class="uba-card-sub">Jump to a topic</p></div>
-                  </div>
-                  <nav id="help-categories" style="display:flex;flex-direction:column;gap:8px;padding:12px;">
-                    <button class="uba-btn-ghost" data-cat="all">All</button>
-                    <button class="uba-btn-ghost" data-cat="getting-started">Getting started</button>
-                    <button class="uba-btn-ghost" data-cat="accounts">Accounts</button>
-                    <button class="uba-btn-ghost" data-cat="billing">Billing</button>
-                    <button class="uba-btn-ghost" data-cat="projects">Projects</button>
-                    <button class="uba-btn-ghost" data-cat="integrations">Integrations</button>
-                    <button class="uba-btn-ghost" data-cat="privacy">Privacy</button>
-                  </nav>
-                </section>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UBA Help Center</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <meta
+      name="description"
+      content="UBA Help Center — FAQs, guides and support."
+    />
+  </head>
+  <body>
+    <section id="uba-dashboard">
+      <div id="page-id" data-page="help-page">
+        <div class="uba-shell">
+          <aside class="uba-sidebar">
+            <div>
+              <div class="uba-logo">MHM <span>UBA</span></div>
+              <p class="uba-tagline" data-i18n="app.tagline">
+                Universal Business Automator — one workspace for clients, tasks,
+                invoices and smart tools.
+              </p>
+              <div class="uba-badge">
+                <span class="uba-badge-dot"></span>
+                <span data-i18n="app.badge"
+                  >Private beta · Built in the Netherlands</span
+                >
               </div>
+            </div>
 
-              <!-- Right: Q&A and side widgets stacked on mobile -->
-              <div>
-                <section class="uba-card">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title">Frequently Asked Questions</div>
-                      <p class="uba-card-sub">Search or browse to find quick answers.</p>
-                    </div>
-                  </div>
+            <div class="uba-language">
+              <label for="language-select" data-i18n="language.label"
+                >Language</label
+              >
+              <select id="language-select">
+                <option value="en" data-i18n="language.en">English</option>
+                <option value="ar" data-i18n="language.ar">Arabic</option>
+                <option value="nl" data-i18n="language.nl">Dutch</option>
+                <option value="fr" data-i18n="language.fr">French</option>
+                <option value="es" data-i18n="language.es">Spanish</option>
+                <option value="de" data-i18n="language.de">German</option>
+              </select>
+            </div>
 
-                  <div style="padding:12px;">
-                    <div id="faq-list">
-                      <details data-category="getting-started">
-                        <summary>How do I create my first workspace?</summary>
-                        <div class="faq-body">Go to Settings → Workspace and enter a workspace name. Use the demo mode if you are not signed in.</div>
-                      </details>
+            <div>
+              <div class="uba-nav-label" data-i18n="nav.workspaceLabel">
+                Workspace
+              </div>
+              <nav class="uba-nav">
+                <a class="uba-nav-btn" href="index.html">
+                  <span class="icon">📈</span>
+                  <span data-i18n="nav.dashboard">Dashboard</span>
+                  <small data-i18n="nav.dashboardSub">Overview</small>
+                </a>
+                <a class="uba-nav-btn" href="clients.html">
+                  <span class="icon">🧑‍💻</span>
+                  <span data-i18n="nav.clients">Clients</span>
+                  <small data-i18n="nav.clientsSub">CRM</small>
+                </a>
+                <a class="uba-nav-btn" href="projects.html">
+                  <span class="icon">💼</span>
+                  <span data-i18n="nav.projects">Projects</span>
+                  <small data-i18n="nav.projectsSub">Pipeline</small>
+                </a>
+                <a class="uba-nav-btn" href="tasks.html">
+                  <span class="icon">✅</span>
+                  <span data-i18n="nav.tasks">Tasks</span>
+                  <small data-i18n="nav.tasksSub">Today</small>
+                </a>
+                <a class="uba-nav-btn" href="invoices.html">
+                  <span class="icon">💵</span>
+                  <span data-i18n="nav.invoices">Invoices</span>
+                  <small data-i18n="nav.invoicesSub">Billing</small>
+                </a>
+                <a class="uba-nav-btn" href="automations.html"
+                  ><span class="icon">🤖</span
+                  ><span data-i18n="nav.automations">Automations</span
+                  ><small data-i18n="nav.automationsSub">Flows</small></a
+                >
+                <a class="uba-nav-btn" href="calendar.html"
+                  ><span class="icon">📅</span><span>Calendar</span></a
+                >
+                <a class="uba-nav-btn" href="leads.html"
+                  ><span class="icon">🧲</span><span>Leads</span></a
+                >
+                <a class="uba-nav-btn" href="expenses.html"
+                  ><span class="icon">📤</span><span>Expenses</span></a
+                >
+                <a class="uba-nav-btn" href="files.html"
+                  ><span class="icon">📁</span><span>Files</span></a
+                >
+                <a class="uba-nav-btn" href="reports.html"
+                  ><span class="icon">📑</span><span>Reports</span></a
+                >
+                <a class="uba-nav-btn" href="smart-tools.html"
+                  ><span class="icon">🧠</span
+                  ><span data-i18n="nav.smartTools">UBA Smart Tools</span
+                  ><small data-i18n="nav.smartToolsSub">AI ops</small></a
+                >
+                <a class="uba-nav-btn" href="insights.html"
+                  ><span class="icon">📊</span
+                  ><span data-i18n="nav.insights">Insights Lab</span
+                  ><small data-i18n="nav.insightsSub">Reports</small></a
+                >
+                <a class="uba-nav-btn active" href="help.html"
+                  ><span class="icon">💬</span
+                  ><span data-i18n="nav.support">Success Desk</span
+                  ><small data-i18n="nav.supportSub">Guidance</small></a
+                >
+                <a class="uba-nav-btn" href="settings.html"
+                  ><span class="icon">🛠️</span
+                  ><span data-i18n="nav.settings">Settings</span
+                  ><small data-i18n="nav.settingsSub">Workspace</small></a
+                >
+              </nav>
+            </div>
 
-                      <details data-category="accounts">
-                        <summary>How do I sign up and confirm my account?</summary>
-                        <div class="faq-body">Use the signup page. If the confirmation email isn't received check your spam folder or try re-sending from the signup form.</div>
-                      </details>
+            <div class="uba-sidebar-footer" data-i18n="sidebar.footer">
+              Designed for small teams and solo founders who are tired of 7
+              different tools just to run one business.
+            </div>
+          </aside>
 
-                      <details data-category="billing">
-                        <summary>Where are invoices stored?</summary>
-                        <div class="faq-body">Invoices are stored locally by default in demo mode. When connected to Supabase they will be stored in the `invoices` table.</div>
-                      </details>
-
-                      <details data-category="projects">
-                        <summary>How do I move a project between pipeline stages?</summary>
-                        <div class="faq-body">Open Projects view and use the move buttons on each card to advance or move back stages. In Supabase-backed mode projects come from the `projects` table.</div>
-                      </details>
-
-                      <details data-category="integrations">
-                        <summary>How do I connect Supabase?</summary>
-                        <div class="faq-body">Replace `SUPABASE_URL` and `SUPABASE_ANON_KEY` in `assets/js/app.js`, then reload the app. See file comments in `app.js` for context.</div>
-                      </details>
-
-                      <details data-category="privacy">
-                        <summary>Is my demo data stored on your servers?</summary>
-                        <div class="faq-body">No — demo and seeds are stored in your browser's `localStorage` unless you connect a Supabase account.</div>
-                      </details>
-                    </div>
-                  </div>
-                </section>
-
-                <!-- Contact support & quick links below FAQ -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
-                  <section class="uba-card">
-                    <div class="uba-card-header"><div><div class="uba-card-title">Contact Support</div><p class="uba-card-sub">Send us a message</p></div></div>
-                    <div style="padding:12px;">
-                      <form id="help-contact">
-                        <div class="uba-form-row">
-                          <input type="email" id="help-email" placeholder="Your email" required />
-                        </div>
-                        <div class="uba-form-row">
-                          <textarea id="help-message" placeholder="How can we help?" rows="4"></textarea>
-                        </div>
-                        <div class="uba-form-row">
-                          <button class="uba-btn-primary" type="submit">Send</button>
-                        </div>
-                        <p id="help-contact-status" aria-live="polite"></p>
-                      </form>
-                    </div>
-                  </section>
-
-                  <section class="uba-card">
-                    <div class="uba-card-header"><div><div class="uba-card-title">Quick Links</div><p class="uba-card-sub">Jump to common pages</p></div></div>
-                    <div style="padding:12px;display:flex;flex-direction:column;gap:8px;">
-                      <a class="uba-btn-ghost" href="index.html">Open dashboard</a>
-                      <a class="uba-btn-ghost" href="index.html#clients">Clients</a>
-                      <a class="uba-btn-ghost" href="index.html#projects">Projects</a>
-                      <a class="uba-btn-ghost" href="index.html#invoices">Invoices</a>
-                      <a class="uba-btn-ghost" href="index.html#settings">Settings</a>
-                    </div>
-                  </section>
+          <!-- Main content -->
+          <main class="uba-main">
+            <header class="uba-topbar">
+              <div class="uba-top-left">
+                <p class="uba-top-kicker">Help Center</p>
+                <h1 id="uba-view-title">Help & support</h1>
+                <p id="uba-view-desc">
+                  Search docs, browse categories, or contact our support team.
+                </p>
+              </div>
+              <div class="uba-top-right">
+                <div class="uba-search">
+                  <input
+                    id="help-search"
+                    type="search"
+                    placeholder="Search help articles and FAQs"
+                  />
+                </div>
+                <div class="uba-user-pill">
+                  <span class="uba-avatar"></span
+                  ><span id="uba-user-label">Help</span>
                 </div>
               </div>
+            </header>
+
+            <div class="uba-views">
+              <section class="uba-view" data-view="help">
+                <div
+                  class="uba-grid"
+                  style="
+                    grid-template-columns: 260px 1fr;
+                    gap: 16px;
+                    align-items: start;
+                  "
+                >
+                  <!-- Left: categories -->
+                  <div>
+                    <section class="uba-card">
+                      <div class="uba-card-header">
+                        <div>
+                          <div class="uba-card-title">Categories</div>
+                          <p class="uba-card-sub">Jump to a topic</p>
+                        </div>
+                      </div>
+                      <nav
+                        id="help-categories"
+                        style="
+                          display: flex;
+                          flex-direction: column;
+                          gap: 8px;
+                          padding: 12px;
+                        "
+                      >
+                        <button class="uba-btn-ghost" data-cat="all">
+                          All
+                        </button>
+                        <button
+                          class="uba-btn-ghost"
+                          data-cat="getting-started"
+                        >
+                          Getting started
+                        </button>
+                        <button class="uba-btn-ghost" data-cat="accounts">
+                          Accounts
+                        </button>
+                        <button class="uba-btn-ghost" data-cat="billing">
+                          Billing
+                        </button>
+                        <button class="uba-btn-ghost" data-cat="projects">
+                          Projects
+                        </button>
+                        <button class="uba-btn-ghost" data-cat="integrations">
+                          Integrations
+                        </button>
+                        <button class="uba-btn-ghost" data-cat="privacy">
+                          Privacy
+                        </button>
+                      </nav>
+                    </section>
+                  </div>
+
+                  <!-- Right: Q&A and side widgets stacked on mobile -->
+                  <div>
+                    <section class="uba-card">
+                      <div class="uba-card-header">
+                        <div>
+                          <div class="uba-card-title">
+                            Frequently Asked Questions
+                          </div>
+                          <p class="uba-card-sub">
+                            Search or browse to find quick answers.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div style="padding: 12px">
+                        <div id="faq-list">
+                          <details data-category="getting-started">
+                            <summary>
+                              How do I create my first workspace?
+                            </summary>
+                            <div class="faq-body">
+                              Go to Settings → Workspace and enter a workspace
+                              name. Use the demo mode if you are not signed in.
+                            </div>
+                          </details>
+
+                          <details data-category="accounts">
+                            <summary>
+                              How do I sign up and confirm my account?
+                            </summary>
+                            <div class="faq-body">
+                              Use the signup page. If the confirmation email
+                              isn't received check your spam folder or try
+                              re-sending from the signup form.
+                            </div>
+                          </details>
+
+                          <details data-category="billing">
+                            <summary>Where are invoices stored?</summary>
+                            <div class="faq-body">
+                              Invoices are stored locally by default in demo
+                              mode. When connected to Supabase they will be
+                              stored in the `invoices` table.
+                            </div>
+                          </details>
+
+                          <details data-category="projects">
+                            <summary>
+                              How do I move a project between pipeline stages?
+                            </summary>
+                            <div class="faq-body">
+                              Open Projects view and use the move buttons on
+                              each card to advance or move back stages. In
+                              Supabase-backed mode projects come from the
+                              `projects` table.
+                            </div>
+                          </details>
+
+                          <details data-category="integrations">
+                            <summary>How do I connect Supabase?</summary>
+                            <div class="faq-body">
+                              Replace `SUPABASE_URL` and `SUPABASE_ANON_KEY` in
+                              `assets/js/app.js`, then reload the app. See file
+                              comments in `app.js` for context.
+                            </div>
+                          </details>
+
+                          <details data-category="privacy">
+                            <summary>
+                              Is my demo data stored on your servers?
+                            </summary>
+                            <div class="faq-body">
+                              No — demo and seeds are stored in your browser's
+                              `localStorage` unless you connect a Supabase
+                              account.
+                            </div>
+                          </details>
+                        </div>
+                      </div>
+                    </section>
+
+                    <!-- Contact support & quick links below FAQ -->
+                    <div
+                      style="
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 12px;
+                        margin-top: 12px;
+                      "
+                    >
+                      <section class="uba-card">
+                        <div class="uba-card-header">
+                          <div>
+                            <div class="uba-card-title">Contact Support</div>
+                            <p class="uba-card-sub">Send us a message</p>
+                          </div>
+                        </div>
+                        <div style="padding: 12px">
+                          <form id="help-contact">
+                            <div class="uba-form-row">
+                              <input
+                                type="email"
+                                id="help-email"
+                                placeholder="Your email"
+                                required
+                              />
+                            </div>
+                            <div class="uba-form-row">
+                              <textarea
+                                id="help-message"
+                                placeholder="How can we help?"
+                                rows="4"
+                              ></textarea>
+                            </div>
+                            <div class="uba-form-row">
+                              <button class="uba-btn-primary" type="submit">
+                                Send
+                              </button>
+                            </div>
+                            <p id="help-contact-status" aria-live="polite"></p>
+                          </form>
+                        </div>
+                      </section>
+
+                      <section class="uba-card">
+                        <div class="uba-card-header">
+                          <div>
+                            <div class="uba-card-title">Quick Links</div>
+                            <p class="uba-card-sub">Jump to common pages</p>
+                          </div>
+                        </div>
+                        <div
+                          style="
+                            padding: 12px;
+                            display: flex;
+                            flex-direction: column;
+                            gap: 8px;
+                          "
+                        >
+                          <a class="uba-btn-ghost" href="index.html"
+                            >Open dashboard</a
+                          >
+                          <a class="uba-btn-ghost" href="index.html#clients"
+                            >Clients</a
+                          >
+                          <a class="uba-btn-ghost" href="index.html#projects"
+                            >Projects</a
+                          >
+                          <a class="uba-btn-ghost" href="index.html#invoices"
+                            >Invoices</a
+                          >
+                          <a class="uba-btn-ghost" href="index.html#settings"
+                            >Settings</a
+                          >
+                        </div>
+                      </section>
+                    </div>
+                  </div>
+                </div>
+              </section>
             </div>
-          </section>
+          </main>
         </div>
-      </main>
-    </div>
-    </div>
-  </section>
+      </div>
+    </section>
 
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/store.js"></script>
-  <script src="assets/js/app.js"></script>
-  <script src="assets/js/assistant.js"></script>
-  <script src="assets/js/page-loader.js"></script>
-  <script src="assets/js/clients.js"></script>
-  <script src="assets/js/tasks.js"></script>
-  <script src="assets/js/smarttools.js"></script>
-  <script>
-    (function(){
-      const lang = localStorage.getItem('uba-lang') || 'en';
-      if (window.ubaI18n && typeof window.ubaI18n.applyTranslations === 'function') {
-        window.ubaI18n.applyTranslations(lang);
-      }
-      if (lang === 'ar') document.documentElement.dir = 'rtl';
-      try {
-        const pageId = document.getElementById("page-id")?.dataset?.page;
-        if (pageId && typeof loadPageScripts === 'function') {
-          loadPageScripts(pageId);
+    <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/store.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/assistant.js"></script>
+    <script src="assets/js/page-loader.js"></script>
+    <script src="assets/js/clients.js"></script>
+    <script src="assets/js/tasks.js"></script>
+    <script src="assets/js/smarttools.js"></script>
+    <script>
+      (function () {
+        const lang = localStorage.getItem("uba-lang") || "en";
+        if (
+          window.ubaI18n &&
+          typeof window.ubaI18n.applyTranslations === "function"
+        ) {
+          window.ubaI18n.applyTranslations(lang);
         }
-      } catch (err) {
-        console.warn('page-loader: failed to run loadPageScripts', err);
-      }
-    })();
-  </script>
-  <script>
-    // Basic interactivity: search + category filter + contact form
-    (function () {
-      const searchInput = document.getElementById('help-search');
-      const faqList = document.getElementById('faq-list');
-      const categoryNav = document.getElementById('help-categories');
-      const contactForm = document.getElementById('help-contact');
-      const statusEl = document.getElementById('help-contact-status');
-
-      const details = Array.from(faqList.querySelectorAll('details'));
-
-      const applyFilter = (text = '', category = 'all') => {
-        const q = text.trim().toLowerCase();
-        details.forEach(d => {
-          const cat = d.getAttribute('data-category') || 'other';
-          const content = (d.textContent || '').toLowerCase();
-          const matchesCat = category === 'all' || category === cat;
-          const matchesText = !q || content.indexOf(q) !== -1;
-          d.style.display = matchesCat && matchesText ? '' : 'none';
-        });
-      };
-
-      if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-          applyFilter(e.target.value, (categoryNav.querySelector('.active') || {}).dataset?.cat || 'all');
-        });
-      }
-
-      if (categoryNav) {
-        categoryNav.addEventListener('click', (e) => {
-          const btn = e.target.closest('button[data-cat]');
-          if (!btn) return;
-          Array.from(categoryNav.querySelectorAll('button')).forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          const cat = btn.getAttribute('data-cat');
-          applyFilter(searchInput ? searchInput.value : '', cat);
-        });
-      }
-
-      if (contactForm) {
-        contactForm.addEventListener('submit', (e) => {
-          e.preventDefault();
-          const email = document.getElementById('help-email').value.trim();
-          const message = document.getElementById('help-message').value.trim();
-          if (!email || !message) {
-            statusEl.textContent = 'Please include an email and message.';
-            return;
+        if (lang === "ar") document.documentElement.dir = "rtl";
+        try {
+          const pageId = document.getElementById("page-id")?.dataset?.page;
+          if (pageId && typeof loadPageScripts === "function") {
+            loadPageScripts(pageId);
           }
-          // In this static app we can't send messages — show a placeholder response.
-          statusEl.textContent = 'Thanks — your message has been recorded locally.';
-          contactForm.reset();
-        });
-      }
+        } catch (err) {
+          console.warn("page-loader: failed to run loadPageScripts", err);
+        }
+      })();
+    </script>
+    <script>
+      // Basic interactivity: search + category filter + contact form
+      (function () {
+        const searchInput = document.getElementById("help-search");
+        const faqList = document.getElementById("faq-list");
+        const categoryNav = document.getElementById("help-categories");
+        const contactForm = document.getElementById("help-contact");
+        const statusEl = document.getElementById("help-contact-status");
 
-      // Apply translations if i18n present
-      if (window.ubaI18n && window.ubaI18n.applyTranslations) {
-        window.ubaI18n.applyTranslations(localStorage.getItem('uba-lang') || 'en');
-      }
-    })();
-  </script>
-</body>
+        const details = Array.from(faqList.querySelectorAll("details"));
+
+        const applyFilter = (text = "", category = "all") => {
+          const q = text.trim().toLowerCase();
+          details.forEach((d) => {
+            const cat = d.getAttribute("data-category") || "other";
+            const content = (d.textContent || "").toLowerCase();
+            const matchesCat = category === "all" || category === cat;
+            const matchesText = !q || content.indexOf(q) !== -1;
+            d.style.display = matchesCat && matchesText ? "" : "none";
+          });
+        };
+
+        if (searchInput) {
+          searchInput.addEventListener("input", (e) => {
+            applyFilter(
+              e.target.value,
+              (categoryNav.querySelector(".active") || {}).dataset?.cat ||
+                "all",
+            );
+          });
+        }
+
+        if (categoryNav) {
+          categoryNav.addEventListener("click", (e) => {
+            const btn = e.target.closest("button[data-cat]");
+            if (!btn) return;
+            Array.from(categoryNav.querySelectorAll("button")).forEach((b) =>
+              b.classList.remove("active"),
+            );
+            btn.classList.add("active");
+            const cat = btn.getAttribute("data-cat");
+            applyFilter(searchInput ? searchInput.value : "", cat);
+          });
+        }
+
+        if (contactForm) {
+          contactForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const email = document.getElementById("help-email").value.trim();
+            const message = document
+              .getElementById("help-message")
+              .value.trim();
+            if (!email || !message) {
+              statusEl.textContent = "Please include an email and message.";
+              return;
+            }
+            // In this static app we can't send messages — show a placeholder response.
+            statusEl.textContent =
+              "Thanks — your message has been recorded locally.";
+            contactForm.reset();
+          });
+        }
+
+        // Apply translations if i18n present
+        if (window.ubaI18n && window.ubaI18n.applyTranslations) {
+          window.ubaI18n.applyTranslations(
+            localStorage.getItem("uba-lang") || "en",
+          );
+        }
+      })();
+    </script>
+  </body>
 </html>

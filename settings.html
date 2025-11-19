@@ -1,162 +1,365 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>UBA Settings</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
-</head>
-<body>
-  <section id="uba-dashboard">
-    <div id="page-id" data-page="settings-page">
-    <div class="uba-shell">
-      <aside class="uba-sidebar">
-        <div>
-          <div class="uba-logo">MHM <span>UBA</span></div>
-          <p class="uba-tagline" data-i18n="app.tagline">Universal Business Automator — one workspace for clients, tasks, invoices and smart tools.</p>
-          <div class="uba-badge"><span class="uba-badge-dot"></span><span data-i18n="app.badge">Private beta · Built in the Netherlands</span></div>
-        </div>
-
-        <div class="uba-language">
-          <label for="language-select" data-i18n="language.label">Language</label>
-          <select id="language-select">
-            <option value="en" data-i18n="language.en">English</option>
-            <option value="ar" data-i18n="language.ar">Arabic</option>
-            <option value="nl" data-i18n="language.nl">Dutch</option>
-            <option value="fr" data-i18n="language.fr">French</option>
-            <option value="es" data-i18n="language.es">Spanish</option>
-            <option value="de" data-i18n="language.de">German</option>
-          </select>
-        </div>
-
-        <div>
-          <div class="uba-nav-label" data-i18n="nav.workspaceLabel">Workspace</div>
-          <nav class="uba-nav">
-            <a class="uba-nav-btn" href="index.html"><span class="icon">📈</span><span data-i18n="nav.dashboard">Dashboard</span><small data-i18n="nav.dashboardSub">Overview</small></a>
-            <a class="uba-nav-btn" href="clients.html"><span class="icon">🧑‍💻</span><span data-i18n="nav.clients">Clients</span><small data-i18n="nav.clientsSub">CRM</small></a>
-            <a class="uba-nav-btn" href="projects.html"><span class="icon">💼</span><span data-i18n="nav.projects">Projects</span><small data-i18n="nav.projectsSub">Pipeline</small></a>
-            <a class="uba-nav-btn" href="tasks.html"><span class="icon">✅</span><span data-i18n="nav.tasks">Tasks</span><small data-i18n="nav.tasksSub">Today</small></a>
-            <a class="uba-nav-btn" href="invoices.html"><span class="icon">💵</span><span data-i18n="nav.invoices">Invoices</span><small data-i18n="nav.invoicesSub">Billing</small></a>
-            <a class="uba-nav-btn" href="automations.html"><span class="icon">🤖</span><span data-i18n="nav.automations">Automations</span><small data-i18n="nav.automationsSub">Flows</small></a>
-            <a class="uba-nav-btn" href="calendar.html"><span class="icon">📅</span><span>Calendar</span></a>
-            <a class="uba-nav-btn" href="leads.html"><span class="icon">🧲</span><span>Leads</span></a>
-            <a class="uba-nav-btn" href="expenses.html"><span class="icon">📤</span><span>Expenses</span></a>
-            <a class="uba-nav-btn" href="files.html"><span class="icon">📁</span><span>Files</span></a>
-            <a class="uba-nav-btn" href="reports.html"><span class="icon">📑</span><span>Reports</span></a>
-            <a class="uba-nav-btn" href="smart-tools.html"><span class="icon">🧠</span><span data-i18n="nav.smartTools">UBA Smart Tools</span><small data-i18n="nav.smartToolsSub">AI ops</small></a>
-            <a class="uba-nav-btn" href="insights.html"><span class="icon">📊</span><span data-i18n="nav.insights">Insights Lab</span><small data-i18n="nav.insightsSub">Reports</small></a>
-            <a class="uba-nav-btn" href="help.html"><span class="icon">💬</span><span data-i18n="nav.support">Success Desk</span><small data-i18n="nav.supportSub">Guidance</small></a>
-            <a class="uba-nav-btn active" href="settings.html"><span class="icon">🛠️</span><span data-i18n="nav.settings">Settings</span><small data-i18n="nav.settingsSub">Workspace</small></a>
-          </nav>
-        </div>
-        <div class="uba-sidebar-footer" data-i18n="sidebar.footer">Designed for small teams and solo founders who are tired of 7 different tools just to run one business.</div>
-      </aside>
-
-      <main class="uba-main">
-        <header class="uba-topbar">
-          <div class="uba-top-left"><p class="uba-top-kicker">Settings</p><h1 id="uba-view-title" data-i18n="view.settings.title">Settings</h1><p id="uba-view-desc" data-i18n="view.settings.desc">Account and workspace configuration.</p></div>
-          <div class="uba-top-right"><select id="workspace-select" class="uba-select"><option>Main workspace</option></select><div class="uba-user-pill"><span class="uba-avatar"></span><span id="uba-user-label">Admin</span></div></div>
-        </header>
-
-        <div class="uba-views">
-          <section class="uba-view" data-view="settings">
-            <div class="uba-card" style="padding:12px;">
-              <form id="settings-form">
-                <h3 data-i18n="settings.profile.title">Profile</h3>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
-                  <div style="flex:1;min-width:160px;">
-                    <label for="setting-user-name" data-i18n="settings.profile.name">Name</label>
-                    <input id="setting-user-name" type="text" placeholder="Your name" />
-                  </div>
-                  <div style="flex:1;min-width:160px;">
-                    <label for="setting-user-email" data-i18n="settings.profile.email">Email</label>
-                    <input id="setting-user-email" type="email" placeholder="you@example.com" />
-                  </div>
-                </div>
-
-                <h3 data-i18n="settings.workspace.title">Workspace</h3>
-                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
-                  <div style="flex:1;min-width:220px;">
-                    <label for="setting-workspace-name" data-i18n="settings.workspace.name">Workspace name</label>
-                    <input id="setting-workspace-name" type="text" placeholder="Main workspace" />
-                  </div>
-                  <div style="flex:1;min-width:160px;">
-                    <label for="setting-workspace-industry" data-i18n="settings.workspace.industry">Industry</label>
-                    <input id="setting-workspace-industry" type="text" placeholder="Industry (optional)" />
-                  </div>
-                </div>
-
-                <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-                  <div style="flex:1;min-width:160px;">
-                    <label for="language-select-settings" data-i18n="language.label">Language</label>
-                    <select id="language-select-settings">
-                      <option value="en" data-i18n="language.en">English</option>
-                      <option value="ar" data-i18n="language.ar">Arabic</option>
-                      <option value="nl" data-i18n="language.nl">Dutch</option>
-                      <option value="fr" data-i18n="language.fr">French</option>
-                      <option value="es" data-i18n="language.es">Spanish</option>
-                      <option value="de" data-i18n="language.de">German</option>
-                    </select>
-                  </div>
-                  <div style="width:160px;">
-                    <label for="setting-timezone" data-i18n="settings.workspace.timezone">Timezone</label>
-                    <select id="setting-timezone"><option>UTC</option></select>
-                  </div>
-                </div>
-
-                <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
-                  <label style="display:flex;align-items:center;gap:8px;">
-                    <input id="setting-single-page" type="checkbox" /> <span data-i18n="settings.preferences.singlePage">Single-page navigation</span>
-                  </label>
-                  <label style="display:flex;align-items:center;gap:8px;">
-                    <input id="setting-notifications" type="checkbox" /> <span data-i18n="settings.preferences.notifications">Notifications</span>
-                  </label>
-                  <label style="display:flex;align-items:center;gap:8px;">
-                    <input id="setting-dark-mode" type="checkbox" /> <span>Dark mode</span>
-                  </label>
-                  <label style="display:flex;align-items:center;gap:8px;">
-                    <input id="setting-compact-view" type="checkbox" /> <span>Compact view</span>
-                  </label>
-                  <label style="display:flex;align-items:center;gap:8px;">
-                    <input id="setting-show-archived" type="checkbox" /> <span>Show archived items</span>
-                  </label>
-                </div>
-
-                <div style="display:flex;gap:8px;align-items:center;">
-                  <button type="submit" class="uba-btn-primary">Save</button>
-                  <button type="button" id="reset-demo-data" class="uba-btn-ghost" style="margin-left:8px;">Reset demo data</button>
-                  <button type="button" class="uba-logout-btn uba-btn-ghost" style="margin-left:auto;">Logout</button>
-                </div>
-
-                <div id="settings-status" style="margin-top:8px;color:var(--muted,#6b7280)"> </div>
-              </form>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UBA Settings</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <section id="uba-dashboard">
+      <div id="page-id" data-page="settings-page">
+        <div class="uba-shell">
+          <aside class="uba-sidebar">
+            <div>
+              <div class="uba-logo">MHM <span>UBA</span></div>
+              <p class="uba-tagline" data-i18n="app.tagline">
+                Universal Business Automator — one workspace for clients, tasks,
+                invoices and smart tools.
+              </p>
+              <div class="uba-badge">
+                <span class="uba-badge-dot"></span
+                ><span data-i18n="app.badge"
+                  >Private beta · Built in the Netherlands</span
+                >
+              </div>
             </div>
-            <div class="uba-card" style="margin-top:12px;padding:12px;">
-              <div id="settings-summary"></div>
-            </div>
-          </section>
-        </div>
-      </main>
-    </div>
-    </div>
-  </section>
 
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/store.js"></script>
-  <script src="assets/js/app.js"></script>
-  <script src="assets/js/page-loader.js"></script>
-  <script>
-    (function(){
-      const lang = localStorage.getItem('uba-lang') || 'en';
-      if (window.ubaI18n && typeof window.ubaI18n.applyTranslations === 'function') {
-        window.ubaI18n.applyTranslations(lang);
-      }
-      if (lang === 'ar') document.documentElement.dir = 'rtl';
-    })();
-  </script>
+            <div class="uba-language">
+              <label for="language-select" data-i18n="language.label"
+                >Language</label
+              >
+              <select id="language-select">
+                <option value="en" data-i18n="language.en">English</option>
+                <option value="ar" data-i18n="language.ar">Arabic</option>
+                <option value="nl" data-i18n="language.nl">Dutch</option>
+                <option value="fr" data-i18n="language.fr">French</option>
+                <option value="es" data-i18n="language.es">Spanish</option>
+                <option value="de" data-i18n="language.de">German</option>
+              </select>
+            </div>
+
+            <div>
+              <div class="uba-nav-label" data-i18n="nav.workspaceLabel">
+                Workspace
+              </div>
+              <nav class="uba-nav">
+                <a class="uba-nav-btn" href="index.html"
+                  ><span class="icon">📈</span
+                  ><span data-i18n="nav.dashboard">Dashboard</span
+                  ><small data-i18n="nav.dashboardSub">Overview</small></a
+                >
+                <a class="uba-nav-btn" href="clients.html"
+                  ><span class="icon">🧑‍💻</span
+                  ><span data-i18n="nav.clients">Clients</span
+                  ><small data-i18n="nav.clientsSub">CRM</small></a
+                >
+                <a class="uba-nav-btn" href="projects.html"
+                  ><span class="icon">💼</span
+                  ><span data-i18n="nav.projects">Projects</span
+                  ><small data-i18n="nav.projectsSub">Pipeline</small></a
+                >
+                <a class="uba-nav-btn" href="tasks.html"
+                  ><span class="icon">✅</span
+                  ><span data-i18n="nav.tasks">Tasks</span
+                  ><small data-i18n="nav.tasksSub">Today</small></a
+                >
+                <a class="uba-nav-btn" href="invoices.html"
+                  ><span class="icon">💵</span
+                  ><span data-i18n="nav.invoices">Invoices</span
+                  ><small data-i18n="nav.invoicesSub">Billing</small></a
+                >
+                <a class="uba-nav-btn" href="automations.html"
+                  ><span class="icon">🤖</span
+                  ><span data-i18n="nav.automations">Automations</span
+                  ><small data-i18n="nav.automationsSub">Flows</small></a
+                >
+                <a class="uba-nav-btn" href="calendar.html"
+                  ><span class="icon">📅</span><span>Calendar</span></a
+                >
+                <a class="uba-nav-btn" href="leads.html"
+                  ><span class="icon">🧲</span><span>Leads</span></a
+                >
+                <a class="uba-nav-btn" href="expenses.html"
+                  ><span class="icon">📤</span><span>Expenses</span></a
+                >
+                <a class="uba-nav-btn" href="files.html"
+                  ><span class="icon">📁</span><span>Files</span></a
+                >
+                <a class="uba-nav-btn" href="reports.html"
+                  ><span class="icon">📑</span><span>Reports</span></a
+                >
+                <a class="uba-nav-btn" href="smart-tools.html"
+                  ><span class="icon">🧠</span
+                  ><span data-i18n="nav.smartTools">UBA Smart Tools</span
+                  ><small data-i18n="nav.smartToolsSub">AI ops</small></a
+                >
+                <a class="uba-nav-btn" href="insights.html"
+                  ><span class="icon">📊</span
+                  ><span data-i18n="nav.insights">Insights Lab</span
+                  ><small data-i18n="nav.insightsSub">Reports</small></a
+                >
+                <a class="uba-nav-btn" href="help.html"
+                  ><span class="icon">💬</span
+                  ><span data-i18n="nav.support">Success Desk</span
+                  ><small data-i18n="nav.supportSub">Guidance</small></a
+                >
+                <a class="uba-nav-btn active" href="settings.html"
+                  ><span class="icon">🛠️</span
+                  ><span data-i18n="nav.settings">Settings</span
+                  ><small data-i18n="nav.settingsSub">Workspace</small></a
+                >
+              </nav>
+            </div>
+            <div class="uba-sidebar-footer" data-i18n="sidebar.footer">
+              Designed for small teams and solo founders who are tired of 7
+              different tools just to run one business.
+            </div>
+          </aside>
+
+          <main class="uba-main">
+            <header class="uba-topbar">
+              <div class="uba-top-left">
+                <p class="uba-top-kicker">Settings</p>
+                <h1 id="uba-view-title" data-i18n="view.settings.title">
+                  Settings
+                </h1>
+                <p id="uba-view-desc" data-i18n="view.settings.desc">
+                  Account and workspace configuration.
+                </p>
+              </div>
+              <div class="uba-top-right">
+                <select id="workspace-select" class="uba-select">
+                  <option>Main workspace</option>
+                </select>
+                <div class="uba-user-pill">
+                  <span class="uba-avatar"></span
+                  ><span id="uba-user-label">Admin</span>
+                </div>
+              </div>
+            </header>
+
+            <div class="uba-views">
+              <section class="uba-view" data-view="settings">
+                <div class="uba-card" style="padding: 12px">
+                  <form id="settings-form">
+                    <h3 data-i18n="settings.profile.title">Profile</h3>
+                    <div
+                      style="
+                        display: flex;
+                        gap: 8px;
+                        flex-wrap: wrap;
+                        margin-bottom: 8px;
+                      "
+                    >
+                      <div style="flex: 1; min-width: 160px">
+                        <label
+                          for="setting-user-name"
+                          data-i18n="settings.profile.name"
+                          >Name</label
+                        >
+                        <input
+                          id="setting-user-name"
+                          type="text"
+                          placeholder="Your name"
+                        />
+                      </div>
+                      <div style="flex: 1; min-width: 160px">
+                        <label
+                          for="setting-user-email"
+                          data-i18n="settings.profile.email"
+                          >Email</label
+                        >
+                        <input
+                          id="setting-user-email"
+                          type="email"
+                          placeholder="you@example.com"
+                        />
+                      </div>
+                    </div>
+
+                    <h3 data-i18n="settings.workspace.title">Workspace</h3>
+                    <div
+                      style="
+                        display: flex;
+                        gap: 8px;
+                        flex-wrap: wrap;
+                        margin-bottom: 8px;
+                      "
+                    >
+                      <div style="flex: 1; min-width: 220px">
+                        <label
+                          for="setting-workspace-name"
+                          data-i18n="settings.workspace.name"
+                          >Workspace name</label
+                        >
+                        <input
+                          id="setting-workspace-name"
+                          type="text"
+                          placeholder="Main workspace"
+                        />
+                      </div>
+                      <div style="flex: 1; min-width: 160px">
+                        <label
+                          for="setting-workspace-industry"
+                          data-i18n="settings.workspace.industry"
+                          >Industry</label
+                        >
+                        <input
+                          id="setting-workspace-industry"
+                          type="text"
+                          placeholder="Industry (optional)"
+                        />
+                      </div>
+                    </div>
+
+                    <div
+                      style="
+                        display: flex;
+                        gap: 8px;
+                        align-items: center;
+                        margin-bottom: 8px;
+                      "
+                    >
+                      <div style="flex: 1; min-width: 160px">
+                        <label
+                          for="language-select-settings"
+                          data-i18n="language.label"
+                          >Language</label
+                        >
+                        <select id="language-select-settings">
+                          <option value="en" data-i18n="language.en">
+                            English
+                          </option>
+                          <option value="ar" data-i18n="language.ar">
+                            Arabic
+                          </option>
+                          <option value="nl" data-i18n="language.nl">
+                            Dutch
+                          </option>
+                          <option value="fr" data-i18n="language.fr">
+                            French
+                          </option>
+                          <option value="es" data-i18n="language.es">
+                            Spanish
+                          </option>
+                          <option value="de" data-i18n="language.de">
+                            German
+                          </option>
+                        </select>
+                      </div>
+                      <div style="width: 160px">
+                        <label
+                          for="setting-timezone"
+                          data-i18n="settings.workspace.timezone"
+                          >Timezone</label
+                        >
+                        <select id="setting-timezone">
+                          <option>UTC</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div
+                      style="
+                        display: flex;
+                        gap: 8px;
+                        align-items: center;
+                        margin-bottom: 12px;
+                      "
+                    >
+                      <label
+                        style="display: flex; align-items: center; gap: 8px"
+                      >
+                        <input id="setting-single-page" type="checkbox" />
+                        <span data-i18n="settings.preferences.singlePage"
+                          >Single-page navigation</span
+                        >
+                      </label>
+                      <label
+                        style="display: flex; align-items: center; gap: 8px"
+                      >
+                        <input id="setting-notifications" type="checkbox" />
+                        <span data-i18n="settings.preferences.notifications"
+                          >Notifications</span
+                        >
+                      </label>
+                      <label
+                        style="display: flex; align-items: center; gap: 8px"
+                      >
+                        <input id="setting-dark-mode" type="checkbox" />
+                        <span>Dark mode</span>
+                      </label>
+                      <label
+                        style="display: flex; align-items: center; gap: 8px"
+                      >
+                        <input id="setting-compact-view" type="checkbox" />
+                        <span>Compact view</span>
+                      </label>
+                      <label
+                        style="display: flex; align-items: center; gap: 8px"
+                      >
+                        <input id="setting-show-archived" type="checkbox" />
+                        <span>Show archived items</span>
+                      </label>
+                    </div>
+
+                    <div style="display: flex; gap: 8px; align-items: center">
+                      <button type="submit" class="uba-btn-primary">
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        id="reset-demo-data"
+                        class="uba-btn-ghost"
+                        style="margin-left: 8px"
+                      >
+                        Reset demo data
+                      </button>
+                      <button
+                        type="button"
+                        class="uba-logout-btn uba-btn-ghost"
+                        style="margin-left: auto"
+                      >
+                        Logout
+                      </button>
+                    </div>
+
+                    <div
+                      id="settings-status"
+                      style="margin-top: 8px; color: var(--muted, #6b7280)"
+                    ></div>
+                  </form>
+                </div>
+                <div class="uba-card" style="margin-top: 12px; padding: 12px">
+                  <div id="settings-summary"></div>
+                </div>
+              </section>
+            </div>
+          </main>
+        </div>
+      </div>
+    </section>
+
+    <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/store.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/page-loader.js"></script>
+    <script>
+      (function () {
+        const lang = localStorage.getItem("uba-lang") || "en";
+        if (
+          window.ubaI18n &&
+          typeof window.ubaI18n.applyTranslations === "function"
+        ) {
+          window.ubaI18n.applyTranslations(lang);
+        }
+        if (lang === "ar") document.documentElement.dir = "rtl";
+      })();
+    </script>
     <script>
       const pageId = document.getElementById("page-id").dataset.page;
       loadPageScripts(pageId);
     </script>
-</body>
+  </body>
 </html>

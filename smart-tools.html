@@ -1,134 +1,246 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>UBA Smart Tools</title>
-  <link rel="stylesheet" href="assets/css/style.css" />
-</head>
-<body>
-  <section id="uba-dashboard">
-    <div id="page-id" data-page="smarttools-page">
-    <div class="uba-shell">
-      <aside class="uba-sidebar">
-        <div>
-          <div class="uba-logo">MHM <span>UBA</span></div>
-          <p class="uba-tagline" data-i18n="app.tagline">Universal Business Automator — one workspace for clients, tasks, invoices and smart tools.</p>
-          <div class="uba-badge"><span class="uba-badge-dot"></span><span data-i18n="app.badge">Private beta · Built in the Netherlands</span></div>
-        </div>
-
-        <div class="uba-language">
-          <label for="language-select" data-i18n="language.label">Language</label>
-          <select id="language-select">
-            <option value="en" data-i18n="language.en">English</option>
-            <option value="ar" data-i18n="language.ar">Arabic</option>
-            <option value="nl" data-i18n="language.nl">Dutch</option>
-            <option value="fr" data-i18n="language.fr">French</option>
-            <option value="es" data-i18n="language.es">Spanish</option>
-            <option value="de" data-i18n="language.de">German</option>
-          </select>
-        </div>
-
-        <div>
-          <div class="uba-nav-label" data-i18n="nav.workspaceLabel">Workspace</div>
-          <nav class="uba-nav">
-            <a class="uba-nav-btn" href="index.html"><span class="icon">📈</span><span data-i18n="nav.dashboard">Dashboard</span><small data-i18n="nav.dashboardSub">Overview</small></a>
-            <a class="uba-nav-btn" href="clients.html"><span class="icon">🧑‍💻</span><span data-i18n="nav.clients">Clients</span><small data-i18n="nav.clientsSub">CRM</small></a>
-            <a class="uba-nav-btn" href="projects.html"><span class="icon">💼</span><span data-i18n="nav.projects">Projects</span><small data-i18n="nav.projectsSub">Pipeline</small></a>
-            <a class="uba-nav-btn" href="tasks.html"><span class="icon">✅</span><span data-i18n="nav.tasks">Tasks</span><small data-i18n="nav.tasksSub">Today</small></a>
-            <a class="uba-nav-btn" href="invoices.html"><span class="icon">💵</span><span data-i18n="nav.invoices">Invoices</span><small data-i18n="nav.invoicesSub">Billing</small></a>
-            <a class="uba-nav-btn" href="automations.html"><span class="icon">🤖</span><span data-i18n="nav.automations">Automations</span><small data-i18n="nav.automationsSub">Flows</small></a>
-            <a class="uba-nav-btn" href="calendar.html"><span class="icon">📅</span><span>Calendar</span></a>
-            <a class="uba-nav-btn" href="leads.html"><span class="icon">🧲</span><span>Leads</span></a>
-            <a class="uba-nav-btn" href="expenses.html"><span class="icon">📤</span><span>Expenses</span></a>
-            <a class="uba-nav-btn" href="files.html"><span class="icon">📁</span><span>Files</span></a>
-            <a class="uba-nav-btn" href="reports.html"><span class="icon">📑</span><span>Reports</span></a>
-            <a class="uba-nav-btn active" href="smart-tools.html"><span class="icon">🧠</span><span data-i18n="nav.smartTools">UBA Smart Tools</span><small data-i18n="nav.smartToolsSub">AI ops</small></a>
-            <a class="uba-nav-btn" href="insights.html"><span class="icon">📊</span><span data-i18n="nav.insights">Insights Lab</span><small data-i18n="nav.insightsSub">Reports</small></a>
-            <a class="uba-nav-btn" href="help.html"><span class="icon">💬</span><span data-i18n="nav.support">Success Desk</span><small data-i18n="nav.supportSub">Guidance</small></a>
-            <a class="uba-nav-btn" href="settings.html"><span class="icon">🛠️</span><span data-i18n="nav.settings">Settings</span><small data-i18n="nav.settingsSub">Workspace</small></a>
-          </nav>
-        </div>
-        <div class="uba-sidebar-footer" data-i18n="sidebar.footer">Designed for small teams and solo founders who are tired of 7 different tools just to run one business.</div>
-      </aside>
-
-      <main class="uba-main">
-          <header class="uba-topbar">
-          <div class="uba-top-left"><p class="uba-top-kicker">Tools</p><h1 id="uba-view-title" data-i18n="view.smartTools.title">Smart Tools</h1><p id="uba-view-desc" data-i18n="view.smartTools.desc">AI-assisted helpers and utilities for your workspace.</p></div>
-          <div class="uba-top-right"><select id="workspace-select" class="uba-select"><option>Main workspace</option></select><div class="uba-user-pill"><span class="uba-avatar"></span><span id="uba-user-label">Admin</span></div></div>
-        </header>
-
-        <div class="uba-views">
-          <section class="uba-view" data-view="smart-tools">
-            <div class="uba-card" style="padding:12px;">
-              <div id="smart-tools-grid" class="uba-feature-grid" style="margin-top:4px;">
-                <!-- Client brief -->
-                <div class="uba-support-card" style="min-width:220px;">
-                  <div class="uba-support-icon">👤</div>
-                  <h4 data-i18n="tool.clientBrief.title">Client brief</h4>
-                  <p data-i18n="tool.clientBrief.desc">Snapshot of selected client including recent invoices, open tasks and contact details.</p>
-                </div>
-
-                <!-- Smart outreach -->
-                <div class="uba-support-card" style="min-width:220px;">
-                  <div class="uba-support-icon">✉️</div>
-                  <h4 data-i18n="tool.outreach.title">Smart outreach</h4>
-                  <p data-i18n="tool.outreach.desc">Create personalised outreach sequences using templates and client data.</p>
-                </div>
-
-                <!-- Next-best action -->
-                <div class="uba-support-card" style="min-width:220px;">
-                  <div class="uba-support-icon">⚡</div>
-                  <h4 data-i18n="tool.actions.title">Next-best action</h4>
-                  <p data-i18n="tool.actions.desc">One-click suggestions for high-impact actions tailored to each client.</p>
-                </div>
-
-                <!-- Quick insights -->
-                <div class="uba-support-card" style="min-width:220px;">
-                  <div class="uba-support-icon">📊</div>
-                  <h4 data-i18n="tool.insights.title">Quick insights</h4>
-                  <p data-i18n="tool.insights.desc">Fast metrics and signals — revenue, overdue invoices, and engagement trends.</p>
-                </div>
-
-                <!-- UBA Assistant (opens assistant) -->
-                <div class="uba-support-card" data-assistant-card="true" style="min-width:220px;cursor:pointer;">
-                  <div class="uba-support-icon">🤖</div>
-                  <h4 data-i18n="tool.assistant.title">UBA Assistant</h4>
-                  <p data-i18n="tool.assistant.desc">Ask UBA for help with the workspace, create drafts, or get step-by-step guidance.</p>
-                  <div style="margin-top:8px;">
-                    <a href="assistant.html" class="uba-btn-primary" data-i18n="tool.assistant.open">Open UBA Assistant</a>
-                  </div>
-                </div>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UBA Smart Tools</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+  </head>
+  <body>
+    <section id="uba-dashboard">
+      <div id="page-id" data-page="smarttools-page">
+        <div class="uba-shell">
+          <aside class="uba-sidebar">
+            <div>
+              <div class="uba-logo">MHM <span>UBA</span></div>
+              <p class="uba-tagline" data-i18n="app.tagline">
+                Universal Business Automator — one workspace for clients, tasks,
+                invoices and smart tools.
+              </p>
+              <div class="uba-badge">
+                <span class="uba-badge-dot"></span
+                ><span data-i18n="app.badge"
+                  >Private beta · Built in the Netherlands</span
+                >
               </div>
             </div>
-          </section>
+
+            <div class="uba-language">
+              <label for="language-select" data-i18n="language.label"
+                >Language</label
+              >
+              <select id="language-select">
+                <option value="en" data-i18n="language.en">English</option>
+                <option value="ar" data-i18n="language.ar">Arabic</option>
+                <option value="nl" data-i18n="language.nl">Dutch</option>
+                <option value="fr" data-i18n="language.fr">French</option>
+                <option value="es" data-i18n="language.es">Spanish</option>
+                <option value="de" data-i18n="language.de">German</option>
+              </select>
+            </div>
+
+            <div>
+              <div class="uba-nav-label" data-i18n="nav.workspaceLabel">
+                Workspace
+              </div>
+              <nav class="uba-nav">
+                <a class="uba-nav-btn" href="index.html"
+                  ><span class="icon">📈</span
+                  ><span data-i18n="nav.dashboard">Dashboard</span
+                  ><small data-i18n="nav.dashboardSub">Overview</small></a
+                >
+                <a class="uba-nav-btn" href="clients.html"
+                  ><span class="icon">🧑‍💻</span
+                  ><span data-i18n="nav.clients">Clients</span
+                  ><small data-i18n="nav.clientsSub">CRM</small></a
+                >
+                <a class="uba-nav-btn" href="projects.html"
+                  ><span class="icon">💼</span
+                  ><span data-i18n="nav.projects">Projects</span
+                  ><small data-i18n="nav.projectsSub">Pipeline</small></a
+                >
+                <a class="uba-nav-btn" href="tasks.html"
+                  ><span class="icon">✅</span
+                  ><span data-i18n="nav.tasks">Tasks</span
+                  ><small data-i18n="nav.tasksSub">Today</small></a
+                >
+                <a class="uba-nav-btn" href="invoices.html"
+                  ><span class="icon">💵</span
+                  ><span data-i18n="nav.invoices">Invoices</span
+                  ><small data-i18n="nav.invoicesSub">Billing</small></a
+                >
+                <a class="uba-nav-btn" href="automations.html"
+                  ><span class="icon">🤖</span
+                  ><span data-i18n="nav.automations">Automations</span
+                  ><small data-i18n="nav.automationsSub">Flows</small></a
+                >
+                <a class="uba-nav-btn" href="calendar.html"
+                  ><span class="icon">📅</span><span>Calendar</span></a
+                >
+                <a class="uba-nav-btn" href="leads.html"
+                  ><span class="icon">🧲</span><span>Leads</span></a
+                >
+                <a class="uba-nav-btn" href="expenses.html"
+                  ><span class="icon">📤</span><span>Expenses</span></a
+                >
+                <a class="uba-nav-btn" href="files.html"
+                  ><span class="icon">📁</span><span>Files</span></a
+                >
+                <a class="uba-nav-btn" href="reports.html"
+                  ><span class="icon">📑</span><span>Reports</span></a
+                >
+                <a class="uba-nav-btn active" href="smart-tools.html"
+                  ><span class="icon">🧠</span
+                  ><span data-i18n="nav.smartTools">UBA Smart Tools</span
+                  ><small data-i18n="nav.smartToolsSub">AI ops</small></a
+                >
+                <a class="uba-nav-btn" href="insights.html"
+                  ><span class="icon">📊</span
+                  ><span data-i18n="nav.insights">Insights Lab</span
+                  ><small data-i18n="nav.insightsSub">Reports</small></a
+                >
+                <a class="uba-nav-btn" href="help.html"
+                  ><span class="icon">💬</span
+                  ><span data-i18n="nav.support">Success Desk</span
+                  ><small data-i18n="nav.supportSub">Guidance</small></a
+                >
+                <a class="uba-nav-btn" href="settings.html"
+                  ><span class="icon">🛠️</span
+                  ><span data-i18n="nav.settings">Settings</span
+                  ><small data-i18n="nav.settingsSub">Workspace</small></a
+                >
+              </nav>
+            </div>
+            <div class="uba-sidebar-footer" data-i18n="sidebar.footer">
+              Designed for small teams and solo founders who are tired of 7
+              different tools just to run one business.
+            </div>
+          </aside>
+
+          <main class="uba-main">
+            <header class="uba-topbar">
+              <div class="uba-top-left">
+                <p class="uba-top-kicker">Tools</p>
+                <h1 id="uba-view-title" data-i18n="view.smartTools.title">
+                  Smart Tools
+                </h1>
+                <p id="uba-view-desc" data-i18n="view.smartTools.desc">
+                  AI-assisted helpers and utilities for your workspace.
+                </p>
+              </div>
+              <div class="uba-top-right">
+                <select id="workspace-select" class="uba-select">
+                  <option>Main workspace</option>
+                </select>
+                <div class="uba-user-pill">
+                  <span class="uba-avatar"></span
+                  ><span id="uba-user-label">Admin</span>
+                </div>
+              </div>
+            </header>
+
+            <div class="uba-views">
+              <section class="uba-view" data-view="smart-tools">
+                <div class="uba-card" style="padding: 12px">
+                  <div
+                    id="smart-tools-grid"
+                    class="uba-feature-grid"
+                    style="margin-top: 4px"
+                  >
+                    <!-- Client brief -->
+                    <div class="uba-support-card" style="min-width: 220px">
+                      <div class="uba-support-icon">👤</div>
+                      <h4 data-i18n="tool.clientBrief.title">Client brief</h4>
+                      <p data-i18n="tool.clientBrief.desc">
+                        Snapshot of selected client including recent invoices,
+                        open tasks and contact details.
+                      </p>
+                    </div>
+
+                    <!-- Smart outreach -->
+                    <div class="uba-support-card" style="min-width: 220px">
+                      <div class="uba-support-icon">✉️</div>
+                      <h4 data-i18n="tool.outreach.title">Smart outreach</h4>
+                      <p data-i18n="tool.outreach.desc">
+                        Create personalised outreach sequences using templates
+                        and client data.
+                      </p>
+                    </div>
+
+                    <!-- Next-best action -->
+                    <div class="uba-support-card" style="min-width: 220px">
+                      <div class="uba-support-icon">⚡</div>
+                      <h4 data-i18n="tool.actions.title">Next-best action</h4>
+                      <p data-i18n="tool.actions.desc">
+                        One-click suggestions for high-impact actions tailored
+                        to each client.
+                      </p>
+                    </div>
+
+                    <!-- Quick insights -->
+                    <div class="uba-support-card" style="min-width: 220px">
+                      <div class="uba-support-icon">📊</div>
+                      <h4 data-i18n="tool.insights.title">Quick insights</h4>
+                      <p data-i18n="tool.insights.desc">
+                        Fast metrics and signals — revenue, overdue invoices,
+                        and engagement trends.
+                      </p>
+                    </div>
+
+                    <!-- UBA Assistant (opens assistant) -->
+                    <div
+                      class="uba-support-card"
+                      data-assistant-card="true"
+                      style="min-width: 220px; cursor: pointer"
+                    >
+                      <div class="uba-support-icon">🤖</div>
+                      <h4 data-i18n="tool.assistant.title">UBA Assistant</h4>
+                      <p data-i18n="tool.assistant.desc">
+                        Ask UBA for help with the workspace, create drafts, or
+                        get step-by-step guidance.
+                      </p>
+                      <div style="margin-top: 8px">
+                        <a
+                          href="assistant.html"
+                          class="uba-btn-primary"
+                          data-i18n="tool.assistant.open"
+                          >Open UBA Assistant</a
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- UBA Assistant panel removed: now available as a dedicated page -->
+          </main>
         </div>
+      </div>
+    </section>
 
-        <!-- UBA Assistant panel removed: now available as a dedicated page -->
-      </main>
-    </div>
-    </div>
-  </section>
-
-  <script src="assets/js/i18n.js"></script>
-  <script src="assets/js/store.js"></script>
-  <script src="assets/js/app.js"></script>
-  <script src="assets/js/assistant.js"></script>
-  <script src="assets/js/clients.js"></script>
-  <script src="assets/js/tasks.js"></script>
-  <script src="assets/js/smarttools.js"></script>
-  <script>
-    const pageId = document.getElementById("page-id").dataset.page;
-    loadPageScripts(pageId);
-  </script>
-  <script>
-    (function(){
-      const lang = localStorage.getItem('uba-lang') || 'en';
-      if (window.ubaI18n && typeof window.ubaI18n.applyTranslations === 'function') {
-        window.ubaI18n.applyTranslations(lang);
-      }
-      if (lang === 'ar') document.documentElement.dir = 'rtl';
-    })();
-  </script>
-</body>
+    <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/store.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/assistant.js"></script>
+    <script src="assets/js/clients.js"></script>
+    <script src="assets/js/tasks.js"></script>
+    <script src="assets/js/smarttools.js"></script>
+    <script>
+      const pageId = document.getElementById("page-id").dataset.page;
+      loadPageScripts(pageId);
+    </script>
+    <script>
+      (function () {
+        const lang = localStorage.getItem("uba-lang") || "en";
+        if (
+          window.ubaI18n &&
+          typeof window.ubaI18n.applyTranslations === "function"
+        ) {
+          window.ubaI18n.applyTranslations(lang);
+        }
+        if (lang === "ar") document.documentElement.dir = "rtl";
+      })();
+    </script>
+  </body>
 </html>
