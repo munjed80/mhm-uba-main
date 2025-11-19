@@ -144,6 +144,7 @@
 </head>
 
 <body>
+  <div id="page-id" data-page="login-page">
   <div class="auth-box">
     <div class="uba-language" style="margin-bottom:12px;">
       <label for="language-select" data-i18n="language.label">Language</label>
@@ -191,10 +192,12 @@
       <a href="signup.html" data-i18n="auth.login.link">Create one</a>
     </div>
   </div>
+  </div>
 
   <script src="assets/js/i18n.js"></script>
   <script src="assets/js/store.js"></script>
   <script src="assets/js/app.js"></script>
+  <script src="assets/js/page-loader.js"></script>
   <script>
     (function(){
       const lang = localStorage.getItem('uba-lang') || 'en';
@@ -204,5 +207,9 @@
       if (lang === 'ar') document.documentElement.dir = 'rtl';
     })();
   </script>
+    <script>
+      const pageId = document.getElementById("page-id").dataset.page;
+      loadPageScripts(pageId);
+    </script>
 </body>
 </html>

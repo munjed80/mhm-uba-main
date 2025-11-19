@@ -5,8 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Success Desk</title>
   <meta http-equiv="refresh" content="0; url=help.html" />
+  <script src="assets/js/page-loader.js"></script>
 </head>
 <body>
   <p>Redirecting to the Success Desk… If your browser doesn't redirect, <a href="help.html">click here</a>.</p>
+    <script>
+      const pageId = document.getElementById("page-id").dataset.page;
+      loadPageScripts(pageId);
+    </script>
 </body>
 </html>

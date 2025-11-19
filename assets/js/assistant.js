@@ -1,3 +1,85 @@
+// assistant.js — UBA Assistant (standalone script)
+// This file provides a lightweight client-side assistant UI and API.
+(function () {
+  if (window.ubaAssistant) return; // preserve existing instance
+
+  const knowledge = [
+    { section: 'dashboard', questionTags: ['kpi','revenue','invoices'], answer: 'The dashboard shows KPIs from invoices, tasks and clients.' },
+    { section: 'clients', questionTags: ['client','crm','contact'], answer: 'Clients live in the Clients view. Use it to add, edit and delete contacts.' },
+    { section: 'invoices', questionTags: ['invoice','billing'], answer: 'Invoices are managed in the Invoices view and mini-invoices on the dashboard.' },
+    { section: 'projects', questionTags: ['project','pipeline'], answer: 'Projects are shown in the Projects board; move cards between columns to update stage.' },
+    { section: 'tasks', questionTags: ['task','todo'], answer: 'Tasks live on the Tasks board and can be moved between columns.' },
+    { section: 'global', questionTags: ['help','how','what','where'], answer: 'Ask about Dashboard, Clients, Projects, Tasks or Invoices.' },
+  ];
+
+  function escapeHtml(s){ return (s||'').replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]||c)); }
+
+  function createAssistantUI(){
+    if (document.getElementById('uba-assistant-panel')) return;
+    const panel = document.createElement('div');
+    panel.id = 'uba-assistant-panel';
+    panel.className = 'uba-card uba-assistant-panel is-hidden';
+    panel.innerHTML = `
+      <div class="uba-card-header"><div><div class="uba-card-title">UBA Assistant</div><div class="uba-card-sub">Contextual help</div></div><button id="uba-assistant-close" class="uba-btn-ghost">✕</button></div>
+      <div class="uba-assistant-quick"><button class="uba-assistant-quick-btn uba-btn-ghost">How do I add a client?</button><button class="uba-assistant-quick-btn uba-btn-ghost">How do I create an invoice?</button></div>
+      <div class="uba-assistant-messages" aria-live="polite"></div>
+      <div class="uba-assistant-input-row"><input id="uba-assistant-input" class="uba-assistant-input" placeholder="Ask a question..." /><button id="uba-assistant-send" class="uba-btn-primary">Send</button></div>
+    `;
+    document.body.appendChild(panel);
+    const close = panel.querySelector('#uba-assistant-close'); if (close) close.addEventListener('click', closeAssistant);
+    const send = panel.querySelector('#uba-assistant-send'); const input = panel.querySelector('#uba-assistant-input');
+    if (send) send.addEventListener('click', handleSend);
+    if (input) input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); handleSend(); } });
+    Array.from(panel.querySelectorAll('.uba-assistant-quick-btn')).forEach(b => b.addEventListener('click', ()=> { const q = b.textContent.trim(); setInputAndSend(q); }));
+  }
+
+  function appendMessage(who, text){
+    try{
+      if (!window._uba_conversation) window._uba_conversation = [];
+      window._uba_conversation.push({ role: who==='user'?'user':'assistant', text });
+      renderAssistantMessage(who === 'user' ? 'user' : 'bot', text);
+    }catch(e){console.warn(e)}
+  }
+
+  function renderAssistantMessage(who, text){
+    const convo = document.querySelector('.uba-assistant-messages'); if (!convo) return;
+    const wrapper = document.createElement('div'); wrapper.className = `assistant-msg ${who}`;
+    const bubble = document.createElement('div'); bubble.className = `uba-assistant-bubble ${who==='user'?'user':'bot'}`;
+    bubble.innerHTML = escapeHtml(text).replace(/\n/g,'<br/>'); wrapper.appendChild(bubble); convo.appendChild(wrapper); convo.scrollTop = convo.scrollHeight;
+  }
+
+  function generateReply(text){
+    const q = (text||'').toLowerCase();
+    for (const item of knowledge){ for (const tag of item.questionTags){ if (q.indexOf(tag)!==-1) return item.answer; } }
+    return "I don't fully understand — try asking about clients, invoices, tasks or projects.";
+  }
+
+  function respondTo(question){
+    const convoArea = document.querySelector('.uba-assistant-messages'); if (!convoArea) return;
+    appendMessage('assistant', 'Thinking...');
+    setTimeout(()=>{
+      // remove last thinking
+      const msgs = Array.from(convoArea.querySelectorAll('.assistant-msg.bot'));
+      if (msgs.length){ const last = msgs[msgs.length-1]; if (last && last.textContent && last.textContent.trim() === 'Thinking...') last.remove(); }
+      const reply = generateReply(question); appendMessage('assistant', reply);
+    }, 300);
+  }
+
+  function handleSend(){ const input = document.getElementById('uba-assistant-input'); if (!input) return; const txt = input.value.trim(); if (!txt) return; appendMessage('user', txt); input.value=''; respondTo(txt); }
+  function openAssistant(){ createAssistantUI(); const panel = document.getElementById('uba-assistant-panel'); if (!panel) return; panel.classList.remove('is-hidden'); panel.setAttribute('aria-hidden','false'); const input = document.getElementById('uba-assistant-input'); if (input) input.focus(); }
+  function closeAssistant(){ const panel = document.getElementById('uba-assistant-panel'); if (!panel) return; panel.classList.add('is-hidden'); panel.setAttribute('aria-hidden','true'); }
+  function setInputAndSend(text){ const input = document.getElementById('uba-assistant-input'); if (!input) return; input.value = text; handleSend(); }
+
+  // auto-init on smart-tools pages only
+  function isSmartToolsPage(){ const p = window.location.pathname.toLowerCase(); if (p.endsWith('smart-tools.html') || p.includes('smart-tools')) return true; if (document.getElementById('smart-tools-grid')) return true; return false; }
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', ()=>{ if (isSmartToolsPage()) createAssistantUI(); }); } else { if (isSmartToolsPage()) createAssistantUI(); }
+
+  document.addEventListener('click', function(e){ if (!isSmartToolsPage()) return; if (e.target && e.target.matches('.uba-support-card[data-assistant-card] .uba-btn-ghost, .uba-support-card[data-assistant-card]')){ createAssistantUI(); openAssistant(); return; } const card = e.target.closest && e.target.closest('.uba-support-card[data-assistant-card]'); if (card){ createAssistantUI(); openAssistant(); } });
+
+  window.ubaAssistant = { open: openAssistant, close: closeAssistant, knowledge };
+  // also expose a simple init function for page-loader
+  window.initAssistant = function(){ if (!window.ubaAssistant) return; /* assistant lib will auto-init when needed */ };
+})();
 // UBA Assistant – local, client-side assistant (no external APIs)
 // Adds a slide-in panel and floating button; answers come from a local knowledge base.
 

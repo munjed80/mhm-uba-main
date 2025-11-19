@@ -8,6 +8,7 @@
 </head>
 <body>
   <section id="uba-dashboard">
+    <div id="page-id" data-page="tasks-page">
     <div class="uba-shell">
       <aside class="uba-sidebar">
         <div>
@@ -141,11 +142,17 @@
         </div>
       </main>
     </div>
+    </div>
   </section>
 
   <script src="assets/js/i18n.js"></script>
   <script src="assets/js/store.js"></script>
   <script src="assets/js/app.js"></script>
+  <script src="assets/js/page-loader.js"></script>
+  <script src="assets/js/assistant.js"></script>
+  <script src="assets/js/clients.js"></script>
+  <script src="assets/js/tasks.js"></script>
+  <script src="assets/js/smarttools.js"></script>
   <script>
     (function(){
       const lang = localStorage.getItem('uba-lang') || 'en';
@@ -155,5 +162,13 @@
       if (lang === 'ar') document.documentElement.dir = 'rtl';
     })();
   </script>
+    <script>
+      try {
+        const pageId = document.getElementById("page-id")?.dataset?.page;
+        if (pageId && typeof loadPageScripts === 'function') loadPageScripts(pageId);
+      } catch (err) {
+        console.warn('page-loader: failed to run loadPageScripts', err);
+      }
+    </script>
 </body>
 </html>

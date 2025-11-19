@@ -18,6 +18,42 @@ const fallbackI18n = {
   getCurrentView: () => "dashboard",
 };
 
+// Per-page init stubs used by page-loader's `loadPageScripts` dispatcher.
+function initClientsPage() {
+  try {
+    if (typeof renderClientsPage === 'function') renderClientsPage();
+  } catch (e) { console.warn('initClientsPage error', e); }
+}
+
+function initProjectsPage() {
+  try {
+    if (typeof window.renderProjectsStandalone === 'function') return window.renderProjectsStandalone();
+    if (typeof renderProjectsBoard === 'function') return renderProjectsBoard();
+  } catch (e) { console.warn('initProjectsPage error', e); }
+}
+
+function initTasksPage() {
+  try {
+    if (typeof window.renderTasksStandalone === 'function') return window.renderTasksStandalone();
+    if (typeof renderTasksBoard === 'function') return renderTasksBoard();
+  } catch (e) { console.warn('initTasksPage error', e); }
+}
+
+function initSmartTools() {
+  try {
+    if (typeof initSmartToolsStandalone === 'function') return initSmartToolsStandalone();
+    if (typeof renderSmartToolsGrid === 'function') return renderSmartToolsGrid();
+  } catch (e) { console.warn('initSmartTools error', e); }
+}
+
+function initAssistant() {
+  try {
+    // Ensure assistant API is available; do not auto-open.
+    if (window.ubaAssistant) return; // assistant script will initialize itself
+  } catch (e) { console.warn('initAssistant error', e); }
+}
+
+
 const i18n = window.ubaI18n || fallbackI18n;
 const t = i18n.t || fallbackI18n.t;
 
@@ -819,8 +855,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-
   // 6.3 Tasks click → toggle status done/todo
+  // NOTE: Task list toggling remains available for dashboard `#task-list` element.
+  // Standalone tasks page wiring is handled by `initTasksPage` / `renderTasksStandalone`.
   const taskList = document.getElementById("task-list");
   if (taskList) {
     taskList.addEventListener("click", (event) => {
@@ -835,9 +872,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const store = window.ubaStore;
         if (store && store.tasks) {
-          // tasks are stored as columns; find the task and update its status field if present
           const all = store.tasks.getAll();
-          // If tasks are board-style (array of columns), update accordingly
           if (Array.isArray(all) && all.length && all[0].tasks) {
             const cols = all;
             for (const col of cols) {
@@ -846,16 +881,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 task.status = newStatus;
               }
             }
-            store.tasks.saveAll(cols);
+            if (store.tasks.saveAll) store.tasks.saveAll(cols);
           } else {
-            // Flat tasks list
             const task = all.find((t) => t.id === taskId);
-            if (task) store.tasks.update(task.id, { status: newStatus });
+            if (task && store.tasks.update) store.tasks.update(task.id, { status: newStatus });
           }
         }
       } catch (e) {
         console.error("Failed to toggle task completion:", e);
-        li.classList.toggle("completed"); // revert on error
+        li.classList.toggle("completed");
       }
     });
   }
@@ -910,118 +944,8 @@ document.addEventListener("DOMContentLoaded", () => {
       setMiniFeedback(t("mini.saved"));
     });
   }
-
-  // Initialize standalone Smart Tools page if present
-  try {
-    if (document.getElementById('smart-client-select') || document.getElementById('smart-insights')) {
-      // run the smart tools standalone initializer
-      if (typeof initSmartToolsStandalone === 'function') initSmartToolsStandalone();
-    }
-  } catch (e) {
-    console.warn('Smart Tools init failed', e);
-  }
-
-  // Initialize standalone Projects page (columns with ids: projects-leads, projects-inprogress, projects-ongoing, projects-completed)
-  try {
-    if (document.getElementById('projects-leads') || document.getElementById('projects-inprogress')) {
-      if (typeof renderProjectsStandalone !== 'function') {
-        // lightweight renderer that adapts existing store shape into the four column layout
-        window.renderProjectsStandalone = function () {
-          try {
-            const store = window.ubaStore;
-            const cols = {
-              leads: document.getElementById('projects-leads'),
-              inprogress: document.getElementById('projects-inprogress'),
-              ongoing: document.getElementById('projects-ongoing'),
-              completed: document.getElementById('projects-completed'),
-            };
-            Object.values(cols).forEach(el => { if (el) el.innerHTML = ''; });
-
-            const stages = (store && store.projects.getAll && store.projects.getAll()) || ensureSeedData(LOCAL_KEYS.projects, projectStagesSeed) || [];
-
-            // flatten items from either grouped stages or flat project list
-            let items = [];
-            if (Array.isArray(stages) && stages.length && (stages[0].items || stages[0].title)) {
-              stages.forEach(stage => { (stage.items || []).forEach(it => items.push({ ...it, _fromStage: stage.id || stage.title })); });
-            } else if (Array.isArray(stages)) {
-              items = stages;
-            }
-
-            const mapToColumn = (it) => {
-              const key = ((it.status || it.stage || it._fromStage || '') + '').toLowerCase();
-              if (/discov|lead|proposal|pitch|prospect/.test(key)) return 'leads';
-              if (/progress|in_progress|delivery|inprogress|doing/.test(key)) return 'inprogress';
-              if (/ongoing|maintenance|live|active/.test(key)) return 'ongoing';
-              if (/done|complete|completed|closed/.test(key)) return 'completed';
-              return 'leads';
-            };
-
-            items.forEach(item => {
-              const colKey = mapToColumn(item);
-              const colEl = cols[colKey];
-              if (!colEl) return;
-              const card = document.createElement('div');
-              card.className = 'uba-support-card';
-              card.dataset.projectId = item.id || '';
-              card.innerHTML = `<div class="uba-support-icon">📌</div><div><h4>${escapeHtml(item.name||item.title||item.id||'Untitled')}</h4><p style="color:var(--muted,#6b7280);">${escapeHtml(item.client||item.company||'')}</p><div class="uba-chip-row"><span class="uba-chip">${escapeHtml(item.budget||item.value||'')}</span><span class="uba-chip soft">${escapeHtml(item.note||'')}</span></div></div>`;
-              card.addEventListener('click', () => {
-                const drawer = document.getElementById('project-detail-drawer');
-                if (!drawer) return;
-                drawer.innerHTML = `<h3>${escapeHtml(item.name||item.title||'Project')}</h3><p><strong>Client:</strong> ${escapeHtml(item.client||'')}</p><p><strong>Budget:</strong> ${escapeHtml(item.budget||item.value||'')}</p><p style="white-space:pre-wrap;margin-top:8px;color:var(--muted,#6b7280);">${escapeHtml(item.note||'No notes')}</p>`;
-              });
-              colEl.appendChild(card);
-            });
-
-          } catch (e) { console.error('renderProjectsStandalone error', e); }
-        };
-      }
-      // run it now
-      try { window.renderProjectsStandalone(); } catch (e) { console.warn('projects standalone render failed', e); }
-    }
-  } catch (e) { console.warn('Projects standalone init failed', e); }
-
-  // Initialize standalone Tasks page (columns: tasks-backlog, tasks-today, tasks-inprogress, tasks-done)
-  try {
-    if (document.getElementById('tasks-backlog') || document.getElementById('tasks-inprogress')) {
-      if (typeof renderTasksStandalone !== 'function') {
-        window.renderTasksStandalone = function () {
-          try {
-            const store = window.ubaStore;
-            const cols = {
-              backlog: document.getElementById('tasks-backlog'),
-              today: document.getElementById('tasks-today'),
-              inprogress: document.getElementById('tasks-inprogress'),
-              done: document.getElementById('tasks-done'),
-            };
-            Object.values(cols).forEach(el => { if (el) el.innerHTML = ''; });
-
-            const board = (store && store.tasks.getAll && store.tasks.getAll()) || ensureSeedData(LOCAL_KEYS.tasks, taskBoardSeed) || [];
-
-            // If tasks are grouped into columns
-            if (Array.isArray(board) && board.length && board[0].tasks) {
-              board.forEach(col => {
-                const key = (col.id||col.title||'').toLowerCase();
-                const target = (/todo|backlog/.test(key) ? cols.backlog : /progress|in_progress|doing/.test(key) ? cols.inprogress : /review|today/.test(key) ? cols.today : /done|complete/.test(key) ? cols.done : cols.backlog);
-                (col.tasks||[]).forEach(task => {
-                  const el = document.createElement('div'); el.className = 'uba-support-card'; el.innerHTML = `<div class="uba-support-icon">✅</div><div><h4>${escapeHtml(task.title||task.id||'Task')}</h4><p style="color:var(--muted,#6b7280);">${escapeHtml(task.owner||'')} · ${escapeHtml(task.due||'')}</p></div>`;
-                  if (target) target.appendChild(el);
-                });
-              });
-            } else if (Array.isArray(board)) {
-              // flat list — group by status/due
-              board.forEach(task => {
-                const key = (task.status||'').toLowerCase();
-                const target = (key === 'done' ? cols.done : key === 'in_progress' ? cols.inprogress : (task.due && /today/i.test(task.due)) ? cols.today : cols.backlog);
-                const el = document.createElement('div'); el.className = 'uba-support-card'; el.innerHTML = `<div class="uba-support-icon">✅</div><div><h4>${escapeHtml(task.title||task.id||'Task')}</h4><p style="color:var(--muted,#6b7280);">${escapeHtml(task.owner||'')} · ${escapeHtml(task.due||'')}</p></div>`;
-                if (target) target.appendChild(el);
-              });
-            }
-          } catch (e) { console.error('renderTasksStandalone error', e); }
-        };
-      }
-      try { window.renderTasksStandalone(); } catch (e) { console.warn('tasks standalone render failed', e); }
-    }
-  } catch (e) { console.warn('Tasks standalone init failed', e); }
+  // Standalone page initializers (Smart Tools / Projects / Tasks) are now invoked by the page-loader
+  // via `initSmartTools`, `initProjectsPage`, and `initTasksPage` so we do not auto-run them here.
 
   // 6.5 Sidebar navigation
   const navButtons = document.querySelectorAll(".uba-nav-btn[data-section]");

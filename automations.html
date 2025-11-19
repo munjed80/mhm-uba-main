@@ -62,5 +62,9 @@
       if (lang === 'ar') document.documentElement.dir = 'rtl';
     })();
   </script>
+  <script>
+    const pageId = document.getElementById("page-id") ? document.getElementById("page-id").dataset.page : 'automations-page';
+    if (typeof loadPageScripts === 'function') loadPageScripts(pageId);
+  </script>
 </body>
 </html>
