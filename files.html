@@ -101,55 +101,8 @@
   <script src="assets/js/i18n.js"></script>
   <script src="assets/js/store.js"></script>
   <script src="assets/js/app.js"></script>
+  <script src="assets/js/uba-pages-data.js"></script>
   <script src="assets/js/page-loader.js"></script>
-  <script>
-    (function(){
-      const store = window.ubaStore;
-      const render = () => {
-        const files = (store && store.files.getAll()) || window.ubaFiles || [];
-        const body = document.getElementById('files-body'); body.innerHTML = '';
-        files.forEach(f=>{
-          const tr = document.createElement('tr');
-          tr.innerHTML = `<td>${f.name}</td><td>${f.type}</td><td>${f.linked}</td><td>${f.updated}</td>`;
-          const edit = document.createElement('button'); edit.type='button'; edit.className='uba-btn-link'; edit.textContent='Edit';
-          edit.addEventListener('click', ()=>{
-            const name = prompt('File name', f.name)||f.name;
-            const type = prompt('Type', f.type)||f.type;
-            const linked = prompt('Linked to', f.linked)||f.linked;
-            const updated = prompt('Updated (YYYY-MM-DD)', f.updated)||f.updated;
-            if (store && store.files) store.files.update(f.id, { name, type, linked, updated }); render();
-          });
-          const del = document.createElement('button'); del.type='button'; del.className='uba-btn-link'; del.textContent='Delete';
-          del.addEventListener('click', ()=>{ if(!confirm('Delete file?')) return; if(store && store.files) store.files.delete(f.id); render(); });
-          const tdActions = document.createElement('td'); tdActions.appendChild(edit); tdActions.appendChild(del);
-          tr.appendChild(tdActions);
-          body.appendChild(tr);
-        });
-      };
-
-      // insert add row controls
-      const header = document.querySelector('.uba-card-header');
-      if (header) {
-        const bar = document.createElement('div'); bar.style.display='flex'; bar.style.gap='8px'; bar.style.marginTop='8px';
-        bar.innerHTML = `<input id="file-name" placeholder="File name" style="flex:1;"/><input id="file-type" placeholder="Type" style="width:120px;"/><input id="file-linked" placeholder="Linked to" style="width:160px;"/><input id="file-updated" type="date" style="width:140px;"/><button id="file-add" class="uba-btn-primary">Add</button>`;
-        header.appendChild(bar);
-        document.getElementById('file-add').addEventListener('click', ()=>{
-          const name = document.getElementById('file-name').value.trim(); if(!name){alert('Name required');return;}
-          const type = document.getElementById('file-type').value.trim()||'File';
-          const linked = document.getElementById('file-linked').value.trim()||'';
-          const updated = document.getElementById('file-updated').value || new Date().toISOString().slice(0,10);
-          if (store && store.files) store.files.create({ name, type, linked, updated }); render();
-          document.getElementById('file-name').value=''; document.getElementById('file-type').value=''; document.getElementById('file-linked').value=''; document.getElementById('file-updated').value='';
-        });
-      }
-
-      render();
-      if (window.ubaI18n && window.ubaI18n.applyTranslations) window.ubaI18n.applyTranslations(localStorage.getItem('uba-lang')||'en');
-    })();
-  </script>
-    <script>
-      const pageId = document.getElementById("page-id").dataset.page;
-      loadPageScripts(pageId);
-    </script>
+  <script src="assets/js/files.js"></script>
 </body>
 </html>

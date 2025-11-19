@@ -89,7 +89,20 @@
           if (typeof initTasksPage === 'function') initTasksPage();
           break;
         case 'invoices-page':
-          if (typeof renderInvoicePage === 'function') renderInvoicePage();
+          if (typeof initInvoicesPage === 'function') {
+            initInvoicesPage();
+          } else if (typeof renderInvoicePage === 'function') {
+            renderInvoicePage();
+          }
+          break;
+        case 'automations-page':
+          if (typeof initAutomationsPage === 'function') initAutomationsPage();
+          break;
+        case 'files-page':
+          if (typeof initFilesPage === 'function') initFilesPage();
+          break;
+        case 'reports-page':
+          if (typeof initReportsPage === 'function') initReportsPage();
           break;
         case 'smarttools-page':
           if (typeof initSmartTools === 'function') initSmartTools();
