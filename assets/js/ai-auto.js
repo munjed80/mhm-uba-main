@@ -10,8 +10,20 @@
   window.UBA = window.UBA || {};
   
   // Constants for time intervals
+  const HOURLY_CHECK_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
   const DAILY_RUN_INTERVAL_MS = 23 * 60 * 60 * 1000; // 23 hours
   const WEEKLY_RUN_INTERVAL_MS = 6.5 * 24 * 60 * 60 * 1000; // 6.5 days
+  
+  // Lead follow-up configuration
+  const COLD_LEAD_THRESHOLD_DAYS = 7;
+  
+  // Project health scoring constants
+  const OVERDUE_TASK_PENALTY_PER_TASK = 10;
+  const MAX_OVERDUE_TASK_PENALTY = 30;
+  const OVER_BUDGET_PENALTY = 20;
+  const MISSED_DEADLINE_PENALTY = 30;
+  const INACTIVE_PROJECT_THRESHOLD_DAYS = 14;
+  const INACTIVE_PROJECT_PENALTY = 15;
   
   const AIAuto = {
     // Configuration
@@ -39,7 +51,7 @@
       this._checkScheduledRuns();
       
       // Set up interval to check every hour
-      setInterval(() => this._checkScheduledRuns(), 60 * 60 * 1000);
+      setInterval(() => this._checkScheduledRuns(), HOURLY_CHECK_INTERVAL_MS);
       
       console.log('[UBA AI Auto] Auto-Actions initialized');
       return true;
@@ -176,13 +188,12 @@
       try {
         const leads = await UBA.data.list('leads');
         const now = new Date();
-        const daysSinceContact = 7; // Consider leads cold after 7 days
         
         const coldLeads = leads.filter(lead => {
           if (!lead.lastContactDate) return true;
           const lastContact = new Date(lead.lastContactDate);
           const daysDiff = (now - lastContact) / (1000 * 60 * 60 * 24);
-          return daysDiff > daysSinceContact && lead.status !== 'converted' && lead.status !== 'lost';
+          return daysDiff > COLD_LEAD_THRESHOLD_DAYS && lead.status !== 'converted' && lead.status !== 'lost';
         });
         
         if (coldLeads.length > 0) {
@@ -351,16 +362,16 @@
       });
       
       if (overdueTasks.length > 0) {
-        score -= Math.min(overdueTasks.length * 10, 30);
+        score -= Math.min(overdueTasks.length * OVERDUE_TASK_PENALTY_PER_TASK, MAX_OVERDUE_TASK_PENALTY);
       }
       
       // Check budget if available
       if (project.budget && project.spent) {
         const budgetUsage = (project.spent / project.budget) * 100;
         if (budgetUsage > 100) {
-          score -= 20;
+          score -= OVER_BUDGET_PENALTY;
         } else if (budgetUsage > 90) {
-          score -= 10;
+          score -= OVER_BUDGET_PENALTY / 2;
         }
       }
       
@@ -369,7 +380,7 @@
         const dueDate = new Date(project.dueDate);
         const now = new Date();
         if (dueDate < now && project.stage !== 'completed') {
-          score -= 30;
+          score -= MISSED_DEADLINE_PENALTY;
         }
       }
       
@@ -377,8 +388,8 @@
       if (project.updatedAt) {
         const lastUpdate = new Date(project.updatedAt);
         const daysSinceUpdate = (new Date() - lastUpdate) / (1000 * 60 * 60 * 24);
-        if (daysSinceUpdate > 14) {
-          score -= 15;
+        if (daysSinceUpdate > INACTIVE_PROJECT_THRESHOLD_DAYS) {
+          score -= INACTIVE_PROJECT_PENALTY;
         }
       }
       
