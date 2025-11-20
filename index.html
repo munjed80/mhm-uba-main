@@ -16,113 +16,119 @@
     <section id="uba-dashboard">
       <div id="page-id" data-page="index-page">
         <div class="uba-shell">
-          <!-- WordPress-style Fixed Sidebar -->
-          <aside class="uba-sidebar-wp">
-            <div class="uba-sidebar-wp-header">
-              <div class="uba-logo-wp">MHM <span>UBA</span></div>
-              <div class="uba-tagline-wp">Universal Business Automator — one workspace for clients, tasks, invoices and smart tools.</div>
+          <aside class="uba-sidebar">
+            <div>
+              <div class="uba-logo">MHM <span>UBA</span></div>
+              <p class="uba-tagline" data-i18n="app.tagline">
+                Universal Business Automator — one workspace for clients, tasks,
+                invoices and smart tools.
+              </p>
+              <div class="uba-badge">
+                <span class="uba-badge-dot"></span>
+                <span data-i18n="app.badge">
+                  Private beta · Built in the Netherlands
+                </span>
+              </div>
             </div>
-            
-            <nav>
-              <ul class="uba-nav-wp">
-                <li class="uba-nav-wp-item">
-                  <button class="uba-nav-wp-btn active" data-section="dashboard" data-title="Dashboard">
-                    <span class="uba-nav-wp-icon">📈</span>
-                    <span>Dashboard</span>
-                  </button>
-                </li>
-                <li class="uba-nav-wp-item">
-                  <button class="uba-nav-wp-btn" data-section="clients" data-title="Clients">
-                    <span class="uba-nav-wp-icon">🧑‍💻</span>
-                    <span>Clients</span>
-                  </button>
-                </li>
-                <li class="uba-nav-wp-item">
-                  <button class="uba-nav-wp-btn" data-section="projects" data-title="Projects">
-                    <span class="uba-nav-wp-icon">💼</span>
-                    <span>Projects</span>
-                  </button>
-                </li>
-                <li class="uba-nav-wp-item">
-                  <button class="uba-nav-wp-btn" data-section="tasks" data-title="Tasks">
-                    <span class="uba-nav-wp-icon">✅</span>
-                    <span>Tasks</span>
-                  </button>
-                </li>
-                <li class="uba-nav-wp-item">
-                  <button class="uba-nav-wp-btn" data-section="invoices" data-title="Invoices">
-                    <span class="uba-nav-wp-icon">💵</span>
-                    <span>Invoices</span>
-                  </button>
-                </li>
-                <li class="uba-nav-wp-item">
-                  <button class="uba-nav-wp-btn" data-section="automations" data-title="Automations">
-                    <span class="uba-nav-wp-icon">🤖</span>
-                    <span>Automations</span>
-                  </button>
-                </li>
-                <li class="uba-nav-wp-item">
-                  <a class="uba-nav-wp-btn" href="calendar.html" data-title="Calendar">
-                    <span class="uba-nav-wp-icon">📅</span>
-                    <span>Calendar</span>
-                  </a>
-                </li>
-                <li class="uba-nav-wp-item">
-                  <a class="uba-nav-wp-btn" href="leads.html" data-title="Leads">
-                    <span class="uba-nav-wp-icon">🧲</span>
-                    <span>Leads</span>
-                  </a>
-                </li>
-                <li class="uba-nav-wp-item">
-                  <a class="uba-nav-wp-btn" href="expenses.html" data-title="Expenses">
-                    <span class="uba-nav-wp-icon">📤</span>
-                    <span>Expenses</span>
-                  </a>
-                </li>
-                <li class="uba-nav-wp-item">
-                  <a class="uba-nav-wp-btn" href="files.html" data-title="Files">
-                    <span class="uba-nav-wp-icon">📁</span>
-                    <span>Files</span>
-                  </a>
-                </li>
-                <li class="uba-nav-wp-item">
-                  <a class="uba-nav-wp-btn" href="reports.html" data-title="Reports">
-                    <span class="uba-nav-wp-icon">📑</span>
-                    <span>Reports</span>
-                  </a>
-                </li>
-                <li class="uba-nav-wp-item">
-                  <a class="uba-nav-wp-btn" href="smart-tools.html" data-title="Smart Tools">
-                    <span class="uba-nav-wp-icon">🧠</span>
-                    <span>Smart Tools</span>
-                  </a>
-                </li>
-                <li class="uba-nav-wp-item">
-                  <a class="uba-nav-wp-btn" href="assistant.html" data-title="Assistant">
-                    <span class="uba-nav-wp-icon">🤖</span>
-                    <span>Assistant</span>
-                  </a>
-                </li>
-                <li class="uba-nav-wp-item">
-                  <a class="uba-nav-wp-btn" href="insights.html" data-title="Insights Lab">
-                    <span class="uba-nav-wp-icon">📊</span>
-                    <span>Insights Lab</span>
-                  </a>
-                </li>
-                <li class="uba-nav-wp-item">
-                  <a class="uba-nav-wp-btn" href="help.html" data-title="Success Desk">
-                    <span class="uba-nav-wp-icon">💬</span>
-                    <span>Success Desk</span>
-                  </a>
-                </li>
-                <li class="uba-nav-wp-item">
-                  <button class="uba-nav-wp-btn" data-section="settings" data-title="Settings">
-                    <span class="uba-nav-wp-icon">🛠️</span>
-                    <span>Settings</span>
-                  </button>
-                </li>
-              </ul>
-            </nav>
+
+            <div class="uba-language" aria-label="Language switcher">
+              <label for="language-select" data-i18n="language.label">Language</label>
+              <select id="language-select" class="uba-select">
+                <option value="en" data-i18n="language.en">English</option>
+                <option value="ar" data-i18n="language.ar">Arabic</option>
+                <option value="nl" data-i18n="language.nl">Dutch</option>
+                <option value="fr" data-i18n="language.fr">French</option>
+                <option value="es" data-i18n="language.es">Spanish</option>
+                <option value="de" data-i18n="language.de">German</option>
+              </select>
+            </div>
+
+            <div>
+              <div class="uba-nav-label" data-i18n="nav.workspaceLabel">
+                Workspace
+              </div>
+              <nav class="uba-nav">
+                <a class="uba-nav-btn active" href="index.html">
+                  <span class="icon">📈</span>
+                  <span data-i18n="nav.dashboard">Dashboard</span>
+                  <small data-i18n="nav.dashboardSub">Overview</small>
+                </a>
+                <a class="uba-nav-btn" href="clients.html">
+                  <span class="icon">🧑‍💻</span>
+                  <span data-i18n="nav.clients">Clients</span>
+                  <small data-i18n="nav.clientsSub">CRM</small>
+                </a>
+                <a class="uba-nav-btn" href="projects.html">
+                  <span class="icon">💼</span>
+                  <span data-i18n="nav.projects">Projects</span>
+                  <small data-i18n="nav.projectsSub">Pipeline</small>
+                </a>
+                <a class="uba-nav-btn" href="tasks.html">
+                  <span class="icon">✅</span>
+                  <span data-i18n="nav.tasks">Tasks</span>
+                  <small data-i18n="nav.tasksSub">Today</small>
+                </a>
+                <a class="uba-nav-btn" href="invoices.html">
+                  <span class="icon">💵</span>
+                  <span data-i18n="nav.invoices">Invoices</span>
+                  <small data-i18n="nav.invoicesSub">Billing</small>
+                </a>
+                <a class="uba-nav-btn" href="automations.html">
+                  <span class="icon">🤖</span>
+                  <span data-i18n="nav.automations">Automations</span>
+                  <small data-i18n="nav.automationsSub">Flows</small>
+                </a>
+                <a class="uba-nav-btn" href="calendar.html">
+                  <span class="icon">📅</span>
+                  <span>Calendar</span>
+                </a>
+                <a class="uba-nav-btn" href="leads.html">
+                  <span class="icon">🧲</span>
+                  <span>Leads</span>
+                </a>
+                <a class="uba-nav-btn" href="expenses.html">
+                  <span class="icon">📤</span>
+                  <span>Expenses</span>
+                </a>
+                <a class="uba-nav-btn" href="files.html">
+                  <span class="icon">📁</span>
+                  <span>Files</span>
+                </a>
+                <a class="uba-nav-btn" href="reports.html">
+                  <span class="icon">📑</span>
+                  <span>Reports</span>
+                </a>
+                <a class="uba-nav-btn" href="smart-tools.html">
+                  <span class="icon">🧠</span>
+                  <span data-i18n="nav.smartTools">Smart Tools</span>
+                  <small data-i18n="nav.smartToolsSub">AI ops</small>
+                </a>
+                <a class="uba-nav-btn" href="assistant.html">
+                  <span class="icon">🤖</span>
+                  <span>Assistant</span>
+                </a>
+                <a class="uba-nav-btn" href="insights.html">
+                  <span class="icon">📊</span>
+                  <span data-i18n="nav.insights">Insights Lab</span>
+                  <small data-i18n="nav.insightsSub">Reports</small>
+                </a>
+                <a class="uba-nav-btn" href="help.html">
+                  <span class="icon">💬</span>
+                  <span data-i18n="nav.support">Success Desk</span>
+                  <small data-i18n="nav.supportSub">Guidance</small>
+                </a>
+                <a class="uba-nav-btn" href="settings.html">
+                  <span class="icon">🛠️</span>
+                  <span data-i18n="nav.settings">Settings</span>
+                  <small data-i18n="nav.settingsSub">Workspace</small>
+                </a>
+              </nav>
+            </div>
+
+            <div class="uba-sidebar-footer" data-i18n="sidebar.footer">
+              Designed for small teams and solo founders who are tired of 7
+              different tools just to run one business.
+            </div>
           </aside>
 
           <!-- Main -->
@@ -140,19 +146,6 @@
                 </p>
               </div>
               <div class="uba-top-right">
-                <div class="uba-language" aria-label="Language switcher">
-                  <label for="language-select-top" data-i18n="language.label"
-                    >Language</label
-                  >
-                  <select id="language-select-top" class="uba-select">
-                    <option value="en" data-i18n="language.en">English</option>
-                    <option value="ar" data-i18n="language.ar">Arabic</option>
-                    <option value="nl" data-i18n="language.nl">Dutch</option>
-                    <option value="fr" data-i18n="language.fr">French</option>
-                    <option value="es" data-i18n="language.es">Spanish</option>
-                    <option value="de" data-i18n="language.de">German</option>
-                  </select>
-                </div>
                 <select class="uba-select" id="workspace-select">
                   <option>Main workspace</option>
                   <option>Client projects</option>
@@ -324,7 +317,7 @@
                         </div>
                         <button
                           class="uba-btn-ghost uba-btn-sm"
-                          onclick="window.showView('invoices')"
+                          onclick="window.location.href='invoices.html'"
                           data-i18n="card.miniInvoices.cta"
                         >
                           View all
@@ -358,7 +351,7 @@
                         </div>
                         <button
                           class="uba-btn-ghost uba-btn-sm"
-                          onclick="window.showView('projects')"
+                          onclick="window.location.href='projects.html'"
                           data-i18n="card.pipeline.cta"
                         >
                           Manage
@@ -386,7 +379,7 @@
                         </div>
                         <button
                           class="uba-btn-ghost uba-btn-sm"
-                          onclick="window.showView('tasks')"
+                          onclick="window.location.href='tasks.html'"
                           data-i18n="card.tasks.cta"
                         >
                           View all
@@ -397,122 +390,6 @@
                         <!-- Dynamic content loaded here -->
                       </div>
                     </section>
-                  </div>
-                </div>
-              </section>
-
-              <!-- CLIENTS VIEW -->
-              <section class="uba-view" data-view="clients" hidden>
-                <div class="uba-section-header">
-                  <h2 data-i18n="view.clients.title">Clients</h2>
-                  <p data-i18n="view.clients.desc">
-                    Manage your client relationships and contact information.
-                  </p>
-                </div>
-
-                <div class="uba-list" id="clients-list">
-                  <!-- Dynamic content loaded here -->
-                </div>
-              </section>
-
-              <!-- PROJECTS VIEW -->
-              <section class="uba-view" data-view="projects" hidden>
-                <div class="uba-section-header">
-                  <h2 data-i18n="view.projects.title">Projects</h2>
-                  <p data-i18n="view.projects.desc">
-                    Track project progress and manage deliverables.
-                  </p>
-                </div>
-
-                <div class="uba-kanban" id="projects-board">
-                  <!-- Dynamic content loaded here -->
-                </div>
-              </section>
-
-              <!-- TASKS VIEW -->
-              <section class="uba-view" data-view="tasks" hidden>
-                <div class="uba-section-header">
-                  <h2 data-i18n="view.tasks.title">Tasks</h2>
-                  <p data-i18n="view.tasks.desc">
-                    Organize and prioritize your daily tasks.
-                  </p>
-                </div>
-
-                <div class="uba-list" id="tasks-list">
-                  <!-- Dynamic content loaded here -->
-                </div>
-              </section>
-
-              <!-- INVOICES VIEW -->
-              <section class="uba-view" data-view="invoices" hidden>
-                <div class="uba-section-header">
-                  <h2 data-i18n="view.invoices.title">Invoices</h2>
-                  <p data-i18n="view.invoices.desc">
-                    Create and manage your invoices and payments.
-                  </p>
-                </div>
-
-                <div class="uba-list" id="invoices-list">
-                  <!-- Dynamic content loaded here -->
-                </div>
-              </section>
-
-              <!-- AUTOMATIONS VIEW -->
-              <section class="uba-view" data-view="automations" hidden>
-                <div class="uba-section-header">
-                  <h2 data-i18n="view.automations.title">Automations</h2>
-                  <p data-i18n="view.automations.desc">
-                    Set up automated workflows and business processes.
-                  </p>
-                </div>
-
-                <div class="uba-grid">
-                  <div class="uba-card">
-                    <h3 data-i18n="automations.emailReminders">
-                      Email Reminders
-                    </h3>
-                    <p data-i18n="automations.emailReminders.desc">
-                      Automatically send follow-up emails for overdue invoices.
-                    </p>
-                  </div>
-                  <div class="uba-card">
-                    <h3 data-i18n="automations.taskAssignment">
-                      Task Assignment
-                    </h3>
-                    <p data-i18n="automations.taskAssignment.desc">
-                      Auto-assign tasks based on project type and client.
-                    </p>
-                  </div>
-                </div>
-              </section>
-
-              <!-- SETTINGS VIEW -->
-              <section class="uba-view" data-view="settings" hidden>
-                <div class="uba-section-header">
-                  <h2 data-i18n="view.settings.title">Settings</h2>
-                  <p data-i18n="view.settings.desc">
-                    Configure your workspace and preferences.
-                  </p>
-                </div>
-
-                <div class="uba-settings">
-                  <div class="uba-card">
-                    <h3 data-i18n="settings.profile">Profile Settings</h3>
-                    <p data-i18n="settings.profile.desc">
-                      Update your personal information and preferences.
-                    </p>
-                  </div>
-                  <div class="uba-card">
-                    <h3 data-i18n="settings.billing">Billing & Payments</h3>
-                    <p data-i18n="settings.billing.desc">
-                      Manage your subscription and payment methods.
-                    </p>
-                  </div>
-                  <div class="uba-card">
-                    <h3 data-i18n="settings.integrations">Integrations</h3>
-                    <p data-i18n="settings.integrations.desc">
-                      Connect third-party services and APIs.
-                    </p>
                   </div>
                 </div>
               </section>
@@ -531,6 +408,18 @@
     <script src="assets/js/tasks.js"></script>
     <script src="assets/js/smarttools.js"></script>
     <script>
+      (function () {
+        const lang = localStorage.getItem("uba-lang") || "en";
+        if (
+          window.ubaI18n &&
+          typeof window.ubaI18n.applyTranslations === "function"
+        ) {
+          window.ubaI18n.applyTranslations(lang);
+        }
+        if (lang === "ar") document.documentElement.dir = "rtl";
+      })();
+    </script>
+    <script>
       try {
         const pageId = document.getElementById("page-id")?.dataset?.page;
         if (pageId && typeof loadPageScripts === "function")
@@ -538,33 +427,6 @@
       } catch (err) {
         console.warn("page-loader: failed to run loadPageScripts", err);
       }
-      
-      // WordPress-style sidebar navigation handler
-      document.addEventListener('DOMContentLoaded', function() {
-        const navButtons = document.querySelectorAll('.uba-nav-wp-btn');
-        
-        navButtons.forEach(button => {
-          button.addEventListener('click', function(e) {
-            // Only handle data-section buttons (SPA navigation)
-            if (this.hasAttribute('data-section')) {
-              e.preventDefault();
-              
-              // Remove active class from all buttons
-              navButtons.forEach(btn => btn.classList.remove('active'));
-              
-              // Add active class to clicked button
-              this.classList.add('active');
-              
-              // Trigger existing SPA navigation if available
-              const section = this.getAttribute('data-section');
-              if (typeof window.showView === 'function') {
-                window.showView(section);
-              }
-            }
-            // For anchor links, let them navigate naturally
-          });
-        });
-      });
     </script>
   </body>
 </html>

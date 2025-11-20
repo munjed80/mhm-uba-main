@@ -1179,7 +1179,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // via `initSmartTools`, `initProjectsPage`, and `initTasksPage` so we do not auto-run them here.
 
   // 6.5 Sidebar navigation
-  const navButtons = document.querySelectorAll(".uba-nav-btn[data-section]");
+  const navButtons = document.querySelectorAll(".uba-nav-wp-btn[data-section], .uba-nav-btn[data-section]");
   const viewSections = document.querySelectorAll(".uba-view[data-view]");
 
   const viewRenderers = {
@@ -1207,7 +1207,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    navButtons.forEach((btn) => {
+    // Update both old and new navigation buttons
+    document.querySelectorAll(".uba-nav-wp-btn[data-section], .uba-nav-btn[data-section]").forEach((btn) => {
       btn.classList.toggle(
         "active",
         btn.getAttribute("data-section") === selected,
@@ -1236,33 +1237,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  // Expose showView globally for external access
+  window.showView = showView;
+
   if (navButtons.length && viewSections.length) {
     console.log("Navigation wiring active.");
 
     navButtons.forEach((btn) => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", (event) => {
+        // For normal href links, let them navigate naturally
+        if (btn.getAttribute('href')) {
+          return; // Don't prevent default, allow normal navigation
+        }
+        
+        // Only handle SPA navigation for buttons without href
         const target = btn.getAttribute("data-section") || "dashboard";
         console.log("Switching view to:", target);
-        // Open the standalone help page for the Support / Success Desk menu
-        if (target === "support") {
-          window.location.href = "help.html";
-          return;
-        }
-        // If we're on a standalone page (not index.html), navigate to the page instead
-        try {
-          const path = (window.location.pathname || "").toLowerCase();
-          const isIndex =
-            path.endsWith("/") ||
-            path.endsWith("/index.html") ||
-            path.endsWith("/index");
-          if (!isIndex && target && target !== "dashboard") {
-            // redirect to the standalone page for this section
-            window.location.href = `${target}.html`;
-            return;
-          }
-        } catch (e) {
-          // ignore and fall back to SPA show
-        }
+        event.preventDefault();
         showView(target);
       });
     });
