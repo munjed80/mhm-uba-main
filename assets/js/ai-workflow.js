@@ -488,7 +488,7 @@
      * Generate unique ID
      */
     _generateId(prefix = 'id') {
-      return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
     }
   };
 

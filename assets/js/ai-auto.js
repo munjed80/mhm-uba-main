@@ -9,6 +9,10 @@
   // AI Auto namespace
   window.UBA = window.UBA || {};
   
+  // Constants for time intervals
+  const DAILY_RUN_INTERVAL_MS = 23 * 60 * 60 * 1000; // 23 hours
+  const WEEKLY_RUN_INTERVAL_MS = 6.5 * 24 * 60 * 60 * 1000; // 6.5 days
+  
   const AIAuto = {
     // Configuration
     config: {
@@ -402,7 +406,7 @@
       if (currentHour === this.config.dailyRunHour) {
         const lastDaily = this.config.lastDailyRun ? new Date(this.config.lastDailyRun) : null;
         const shouldRunDaily = !lastDaily || 
-          (now.getTime() - lastDaily.getTime()) > 23 * 60 * 60 * 1000;
+          (now.getTime() - lastDaily.getTime()) > DAILY_RUN_INTERVAL_MS;
         
         if (shouldRunDaily) {
           this.dailyRun();
@@ -413,7 +417,7 @@
       if (currentDay === this.config.weeklyRunDay && currentHour === this.config.dailyRunHour) {
         const lastWeekly = this.config.lastWeeklyRun ? new Date(this.config.lastWeeklyRun) : null;
         const shouldRunWeekly = !lastWeekly || 
-          (now.getTime() - lastWeekly.getTime()) > 6.5 * 24 * 60 * 60 * 1000;
+          (now.getTime() - lastWeekly.getTime()) > WEEKLY_RUN_INTERVAL_MS;
         
         if (shouldRunWeekly) {
           this.weeklyRun();

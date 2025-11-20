@@ -620,9 +620,11 @@
         
         Object.entries(reportData.summary).forEach(([key, value]) => {
           const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-          const formattedValue = typeof value === 'number' && key.includes('Revenue') || key.includes('Total') || key.includes('Amount')
+          const isMoneyField = key.includes('Revenue') || key.includes('Total') || key.includes('Amount');
+          const isPercentageField = key.includes('Rate') || key.includes('Margin');
+          const formattedValue = (typeof value === 'number' && isMoneyField)
             ? `€${value.toFixed(2)}`
-            : typeof value === 'number' && key.includes('Rate') || key.includes('Margin')
+            : (typeof value === 'number' && isPercentageField)
             ? `${value}%`
             : value;
           
@@ -667,7 +669,7 @@
      * Generate unique ID
      */
     _generateId(prefix = 'id') {
-      return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
     }
   };
 
