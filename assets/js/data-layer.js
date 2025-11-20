@@ -482,7 +482,7 @@
     },
 
     // Helper to add metadata to record
-    _addMetadata(record, isNew = true) {
+    _addMetadata(record, entityType, isNew = true) {
       const now = nowISO();
       const workspaceId = Session.currentWorkspaceId;
       
@@ -506,19 +506,35 @@
     async list(entityType, filters = {}) {
       return new Promise((resolve) => {
         try {
-          const key = this._getStorageKey(entityType);
-          let items = getJSON(key, []);
+          // Use ubaStore if available in local mode
+          if (CONFIG.storageMode === 'local' && window.ubaStore && window.ubaStore[entityType]) {
+            let items = window.ubaStore[entityType].getAll() || [];
 
-          // Apply filters
-          if (filters && Object.keys(filters).length > 0) {
-            items = items.filter(item => {
-              return Object.keys(filters).every(filterKey => {
-                return item[filterKey] === filters[filterKey];
+            // Apply filters
+            if (filters && Object.keys(filters).length > 0) {
+              items = items.filter(item => {
+                return Object.keys(filters).every(filterKey => {
+                  return item[filterKey] === filters[filterKey];
+                });
               });
-            });
-          }
+            }
 
-          resolve(items);
+            resolve(items);
+          } else {
+            // Direct storage access fallback
+            const key = this._getStorageKey(entityType);
+            let items = getJSON(key, []);
+
+            if (filters && Object.keys(filters).length > 0) {
+              items = items.filter(item => {
+                return Object.keys(filters).every(filterKey => {
+                  return item[filterKey] === filters[filterKey];
+                });
+              });
+            }
+
+            resolve(items);
+          }
         } catch (error) {
           warn('list error:', entityType, error);
           resolve([]);
@@ -529,10 +545,17 @@
     async get(entityType, id) {
       return new Promise((resolve) => {
         try {
-          const key = this._getStorageKey(entityType);
-          const items = getJSON(key, []);
-          const item = items.find(i => i.id === id);
-          resolve(item || null);
+          // Use ubaStore if available in local mode
+          if (CONFIG.storageMode === 'local' && window.ubaStore && window.ubaStore[entityType]) {
+            const item = window.ubaStore[entityType].get(id);
+            resolve(item || null);
+          } else {
+            // Direct storage access fallback
+            const key = this._getStorageKey(entityType);
+            const items = getJSON(key, []);
+            const item = items.find(i => i.id === id);
+            resolve(item || null);
+          }
         } catch (error) {
           warn('get error:', entityType, id, error);
           resolve(null);
@@ -543,15 +566,22 @@
     async create(entityType, data) {
       return new Promise((resolve, reject) => {
         try {
-          const key = this._getStorageKey(entityType);
-          const items = getJSON(key, []);
+          const newItem = this._addMetadata(data, entityType, true);
           
-          const newItem = this._addMetadata(data, true);
-          items.unshift(newItem);
-          
-          setJSON(key, items);
-          log('Created:', entityType, newItem.id);
-          resolve(newItem);
+          // Use ubaStore if available in local mode
+          if (CONFIG.storageMode === 'local' && window.ubaStore && window.ubaStore[entityType]) {
+            const created = window.ubaStore[entityType].create(newItem);
+            log('Created:', entityType, created.id);
+            resolve(created);
+          } else {
+            // Direct storage access fallback
+            const key = this._getStorageKey(entityType);
+            const items = getJSON(key, []);
+            items.unshift(newItem);
+            setJSON(key, items);
+            log('Created:', entityType, newItem.id);
+            resolve(newItem);
+          }
         } catch (error) {
           warn('create error:', entityType, error);
           reject(error);
@@ -562,23 +592,35 @@
     async update(entityType, id, updates) {
       return new Promise((resolve, reject) => {
         try {
-          const key = this._getStorageKey(entityType);
-          const items = getJSON(key, []);
-          const index = items.findIndex(i => i.id === id);
+          // Use ubaStore if available in local mode
+          if (CONFIG.storageMode === 'local' && window.ubaStore && window.ubaStore[entityType]) {
+            const updated = window.ubaStore[entityType].update(id, updates);
+            if (updated) {
+              log('Updated:', entityType, id);
+              resolve(updated);
+            } else {
+              reject(new Error(`${entityType} not found: ${id}`));
+            }
+          } else {
+            // Direct storage access fallback
+            const key = this._getStorageKey(entityType);
+            const items = getJSON(key, []);
+            const index = items.findIndex(i => i.id === id);
 
-          if (index === -1) {
-            reject(new Error(`${entityType} not found: ${id}`));
-            return;
+            if (index === -1) {
+              reject(new Error(`${entityType} not found: ${id}`));
+              return;
+            }
+
+            items[index] = this._addMetadata({
+              ...items[index],
+              ...updates
+            }, entityType, false);
+
+            setJSON(key, items);
+            log('Updated:', entityType, id);
+            resolve(items[index]);
           }
-
-          items[index] = this._addMetadata({
-            ...items[index],
-            ...updates
-          }, false);
-
-          setJSON(key, items);
-          log('Updated:', entityType, id);
-          resolve(items[index]);
         } catch (error) {
           warn('update error:', entityType, id, error);
           reject(error);
@@ -589,18 +631,26 @@
     async remove(entityType, id) {
       return new Promise((resolve, reject) => {
         try {
-          const key = this._getStorageKey(entityType);
-          const items = getJSON(key, []);
-          const filtered = items.filter(i => i.id !== id);
+          // Use ubaStore if available in local mode
+          if (CONFIG.storageMode === 'local' && window.ubaStore && window.ubaStore[entityType]) {
+            window.ubaStore[entityType].delete(id);
+            log('Removed:', entityType, id);
+            resolve(true);
+          } else {
+            // Direct storage access fallback
+            const key = this._getStorageKey(entityType);
+            const items = getJSON(key, []);
+            const filtered = items.filter(i => i.id !== id);
 
-          if (filtered.length === items.length) {
-            reject(new Error(`${entityType} not found: ${id}`));
-            return;
+            if (filtered.length === items.length) {
+              reject(new Error(`${entityType} not found: ${id}`));
+              return;
+            }
+
+            setJSON(key, filtered);
+            log('Removed:', entityType, id);
+            resolve(true);
           }
-
-          setJSON(key, filtered);
-          log('Removed:', entityType, id);
-          resolve(true);
         } catch (error) {
           warn('remove error:', entityType, id, error);
           reject(error);
@@ -611,10 +661,18 @@
     async saveAll(entityType, items) {
       return new Promise((resolve, reject) => {
         try {
-          const key = this._getStorageKey(entityType);
-          setJSON(key, items);
-          log('Saved all:', entityType, items.length, 'items');
-          resolve(items);
+          // Use ubaStore if available in local mode
+          if (CONFIG.storageMode === 'local' && window.ubaStore && window.ubaStore[entityType]) {
+            window.ubaStore[entityType].saveAll(items);
+            log('Saved all:', entityType, items.length, 'items');
+            resolve(items);
+          } else {
+            // Direct storage access fallback
+            const key = this._getStorageKey(entityType);
+            setJSON(key, items);
+            log('Saved all:', entityType, items.length, 'items');
+            resolve(items);
+          }
         } catch (error) {
           warn('saveAll error:', entityType, error);
           reject(error);
