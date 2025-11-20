@@ -21,7 +21,8 @@
     'files',
     'automations',
     'automationLogs',
-    'reports'
+    'reports',
+    'settings'
   ];
 
   // Session management
