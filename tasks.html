@@ -142,85 +142,100 @@
 
             <div class="uba-views">
               <section class="uba-view" data-view="tasks">
-                <div class="uba-grid">
-                  <div class="uba-grid-col">
-                    <!-- Task Filters -->
-                    <section class="uba-card" style="margin-bottom: 16px;">
-                      <div class="uba-card-header">
-                        <div class="uba-card-title">Filters</div>
+                <!-- Tasks Controls Bar -->
+                <div class="uba-card uba-tasks-controls">
+                  <div class="uba-controls-header">
+                    <div class="uba-controls-left">
+                      <span class="uba-control-icon">✅</span>
+                      <div>
+                        <div class="uba-control-title" data-i18n="view.tasks.title">Tasks</div>
+                        <div class="uba-control-subtitle">Task management • <span id="tasks-count">0</span> active</div>
                       </div>
-                      <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
-                        <div>
-                          <label for="filter-project" style="font-size: 13px; margin-right: 8px;">Project:</label>
-                          <select id="filter-project" class="uba-select" style="min-width: 150px;">
-                            <option value="">All Projects</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label for="filter-status" style="font-size: 13px; margin-right: 8px;">Status:</label>
-                          <select id="filter-status" class="uba-select" style="min-width: 120px;">
-                            <option value="">All Status</option>
-                            <option value="todo">To Do</option>
-                            <option value="in_progress">In Progress</option>
-                            <option value="done">Done</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label for="filter-priority" style="font-size: 13px; margin-right: 8px;">Priority:</label>
-                          <select id="filter-priority" class="uba-select" style="min-width: 100px;">
-                            <option value="">All</option>
-                            <option value="low">Low</option>
-                            <option value="medium">Medium</option>
-                            <option value="high">High</option>
-                          </select>
-                        </div>
-                        <button type="button" class="uba-btn" id="clear-filters">Clear</button>
-                      </div>
-                    </section>
+                    </div>
+                    <div class="uba-controls-right">
+                      <select class="uba-select uba-select-compact" id="task-filter-project">
+                        <option value="">All Projects</option>
+                      </select>
+                      <select class="uba-select uba-select-compact" id="task-filter-priority">
+                        <option value="">All Priority</option>
+                        <option value="high">High Priority</option>
+                        <option value="medium">Medium Priority</option>
+                        <option value="low">Low Priority</option>
+                      </select>
+                      <select class="uba-select uba-select-compact" id="task-sort">
+                        <option value="created">Sort: Newest</option>
+                        <option value="due">Sort: Due Date</option>
+                        <option value="priority">Sort: Priority</option>
+                        <option value="title">Sort: A-Z</option>
+                      </select>
+                      <button type="button" class="uba-btn uba-btn-primary uba-btn-compact" id="add-task-btn">
+                        <span class="icon">+</span> New Task
+                      </button>
+                    </div>
+                  </div>
+                </div>
 
-                    <section class="uba-card" id="tasks-board">
-                      <div class="uba-card-header">
-                        <div>
-                          <div
-                            class="uba-card-title"
-                            data-i18n="view.tasks.title"
-                          >
-                            Tasks
+                <!-- Tasks Kanban Board -->
+                <div class="uba-card uba-tasks-board">
+                  <div class="uba-kanban-container">
+                    <div class="uba-kanban-board" id="tasks-board">
+                      <div class="uba-kanban-column" data-status="todo">
+                        <div class="uba-column-header">
+                          <div class="uba-column-title">
+                            <span class="uba-column-icon">📋</span>
+                            <span>To Do</span>
+                            <span class="uba-column-count" id="todo-count">0</span>
                           </div>
-                          <p class="uba-card-sub" data-i18n="view.tasks.desc">
-                            Kanban-style board with local tasks and quick
-                            actions.
-                          </p>
-                        </div>
-                        <div>
-                          <button type="button" class="uba-btn uba-btn-primary" id="add-task-btn">
-                            Add Task
+                          <button class="uba-column-add" onclick="addTaskToStatus('todo')" title="Add to To Do">
+                            <span>+</span>
                           </button>
                         </div>
+                        <div class="uba-column-body uba-drop-zone" id="tasks-todo" data-status="todo">
+                          <div class="uba-column-empty" style="display: none;">
+                            <span class="uba-empty-icon">📝</span>
+                            <p>No tasks to do</p>
+                          </div>
+                        </div>
                       </div>
 
-                      <div
-                        class="uba-grid"
-                        style="
-                          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-                          gap: 12px;
-                        "
-                        id="tasks-columns"
-                      >
-                        <div class="uba-pipe-col" data-status="todo">
-                          <h4 class="uba-pipe-title">To Do</h4>
-                          <div class="uba-pipe-zone" id="tasks-todo"></div>
+                      <div class="uba-kanban-column" data-status="in_progress">
+                        <div class="uba-column-header">
+                          <div class="uba-column-title">
+                            <span class="uba-column-icon">🔄</span>
+                            <span>In Progress</span>
+                            <span class="uba-column-count" id="in_progress-count">0</span>
+                          </div>
+                          <button class="uba-column-add" onclick="addTaskToStatus('in_progress')" title="Add to In Progress">
+                            <span>+</span>
+                          </button>
                         </div>
-                        <div class="uba-pipe-col" data-status="in_progress">
-                          <h4 class="uba-pipe-title">In Progress</h4>
-                          <div class="uba-pipe-zone" id="tasks-in_progress"></div>
-                        </div>
-                        <div class="uba-pipe-col" data-status="done">
-                          <h4 class="uba-pipe-title">Done</h4>
-                          <div class="uba-pipe-zone" id="tasks-done"></div>
+                        <div class="uba-column-body uba-drop-zone" id="tasks-in_progress" data-status="in_progress">
+                          <div class="uba-column-empty" style="display: none;">
+                            <span class="uba-empty-icon">⚙️</span>
+                            <p>No tasks in progress</p>
+                          </div>
                         </div>
                       </div>
-                    </section>
+
+                      <div class="uba-kanban-column" data-status="done">
+                        <div class="uba-column-header">
+                          <div class="uba-column-title">
+                            <span class="uba-column-icon">✅</span>
+                            <span>Done</span>
+                            <span class="uba-column-count" id="done-count">0</span>
+                          </div>
+                          <button class="uba-column-add" onclick="addTaskToStatus('done')" title="Add to Done">
+                            <span>+</span>
+                          </button>
+                        </div>
+                        <div class="uba-column-body uba-drop-zone" id="tasks-done" data-status="done">
+                          <div class="uba-column-empty" style="display: none;">
+                            <span class="uba-empty-icon">🎉</span>
+                            <p>No completed tasks</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -233,53 +248,84 @@
     <!-- Task Form Modal -->
     <div class="uba-modal is-hidden" id="task-form-modal" aria-hidden="true">
       <div class="uba-modal-overlay"></div>
-      <div class="uba-modal-dialog">
+      <div class="uba-modal-dialog uba-modal-modern">
         <div class="uba-modal-header">
-          <h3>Task</h3>
+          <div class="uba-modal-title-group">
+            <span class="uba-modal-icon">✅</span>
+            <h3 id="task-form-title">New Task</h3>
+          </div>
           <button type="button" class="uba-modal-close" id="task-form-close">×</button>
         </div>
         <div class="uba-modal-body">
-          <form id="task-form">
+          <form id="task-form" class="uba-form-modern">
             <input type="hidden" id="task-id">
-            <div class="uba-form-group">
-              <label for="task-title">Title</label>
-              <input type="text" id="task-title" class="uba-input" required>
+            <div class="uba-form-row">
+              <div class="uba-form-group">
+                <label for="task-title" class="uba-form-label">Task Title *</label>
+                <input type="text" id="task-title" class="uba-input" required placeholder="Enter task description">
+              </div>
+              <div class="uba-form-group">
+                <label for="task-project" class="uba-form-label">Project</label>
+                <select id="task-project" class="uba-select">
+                  <option value="">No Project</option>
+                </select>
+              </div>
+            </div>
+            <div class="uba-form-row">
+              <div class="uba-form-group">
+                <label for="task-status" class="uba-form-label">Status</label>
+                <select id="task-status" class="uba-select">
+                  <option value="todo">📋 To Do</option>
+                  <option value="in_progress">🔄 In Progress</option>
+                  <option value="done">✅ Done</option>
+                </select>
+              </div>
+              <div class="uba-form-group">
+                <label for="task-priority" class="uba-form-label">Priority</label>
+                <select id="task-priority" class="uba-select">
+                  <option value="low">🟢 Low</option>
+                  <option value="medium">🟡 Medium</option>
+                  <option value="high">🔴 High</option>
+                </select>
+              </div>
+            </div>
+            <div class="uba-form-row">
+              <div class="uba-form-group">
+                <label for="task-due" class="uba-form-label">Due Date</label>
+                <input type="date" id="task-due" class="uba-input">
+              </div>
+              <div class="uba-form-group">
+                <label for="task-estimate" class="uba-form-label">Time Estimate (hours)</label>
+                <input type="number" id="task-estimate" class="uba-input" placeholder="0" min="0" step="0.5">
+              </div>
             </div>
             <div class="uba-form-group">
-              <label for="task-project">Project</label>
-              <select id="task-project" class="uba-select">
-                <option value="">No Project</option>
-              </select>
-            </div>
-            <div class="uba-form-group">
-              <label for="task-status">Status</label>
-              <select id="task-status" class="uba-select">
-                <option value="todo">To Do</option>
-                <option value="in_progress">In Progress</option>
-                <option value="done">Done</option>
-              </select>
-            </div>
-            <div class="uba-form-group">
-              <label for="task-priority">Priority</label>
-              <select id="task-priority" class="uba-select">
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
-            </div>
-            <div class="uba-form-group">
-              <label for="task-due">Due Date</label>
-              <input type="date" id="task-due" class="uba-input">
-            </div>
-            <div class="uba-form-group">
-              <label for="task-description">Description</label>
-              <textarea id="task-description" class="uba-input" rows="3"></textarea>
-            </div>
-            <div class="uba-modal-footer">
-              <button type="button" class="uba-btn" id="task-cancel">Cancel</button>
-              <button type="submit" class="uba-btn uba-btn-primary">Save</button>
+              <label for="task-description" class="uba-form-label">Description</label>
+              <textarea id="task-description" class="uba-input" rows="3" placeholder="Add task details, requirements, or notes..."></textarea>
             </div>
           </form>
+        </div>
+        <div class="uba-modal-footer">
+          <button type="button" class="uba-btn uba-btn-ghost" id="task-cancel">Cancel</button>
+          <button type="submit" class="uba-btn uba-btn-primary" form="task-form">
+            <span class="icon">💾</span> Save Task
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task Details Modal -->
+    <div class="uba-modal is-hidden" id="task-detail-modal" aria-hidden="true">
+      <div class="uba-modal-overlay"></div>
+      <div class="uba-modal-dialog">
+        <div class="uba-modal-header">
+          <h3 id="task-detail-title">Task Details</h3>
+          <button type="button" class="uba-modal-close" id="task-detail-close">×</button>
+        </div>
+        <div class="uba-modal-body">
+          <div id="task-detail-content">
+            <!-- Filled by JS -->
+          </div>
         </div>
       </div>
     </div>

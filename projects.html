@@ -144,74 +144,116 @@
 
             <div class="uba-views">
               <section class="uba-view" data-view="projects">
-                <div class="uba-grid">
-                  <div class="uba-grid-col">
-                    <section class="uba-card" id="projects-board">
-                      <div class="uba-card-header">
-                        <div>
-                          <div
-                            class="uba-card-title"
-                            data-i18n="view.projects.title"
-                          >
-                            Projects
+                <!-- Projects Controls Bar -->
+                <div class="uba-card uba-projects-controls">
+                  <div class="uba-controls-header">
+                    <div class="uba-controls-left">
+                      <span class="uba-control-icon">💼</span>
+                      <div>
+                        <div class="uba-control-title" data-i18n="view.projects.title">Projects</div>
+                        <div class="uba-control-subtitle">Kanban pipeline • <span id="projects-count">0</span> active</div>
+                      </div>
+                    </div>
+                    <div class="uba-controls-right">
+                      <select class="uba-select uba-select-compact" id="project-filter">
+                        <option value="all">All Projects</option>
+                        <option value="lead">Leads Only</option>
+                        <option value="active">Active Only</option>
+                        <option value="completed">Completed Only</option>
+                      </select>
+                      <select class="uba-select uba-select-compact" id="project-sort">
+                        <option value="created">Sort: Newest</option>
+                        <option value="title">Sort: A-Z</option>
+                        <option value="budget">Sort: Budget</option>
+                        <option value="client">Sort: Client</option>
+                      </select>
+                      <button type="button" class="uba-btn uba-btn-primary uba-btn-compact" id="add-project-btn">
+                        <span class="icon">+</span> New Project
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Projects Kanban Board -->
+                <div class="uba-card uba-projects-board">
+                  <div class="uba-kanban-container">
+                    <div class="uba-kanban-board" id="projects-board">
+                      <div class="uba-kanban-column" data-stage="lead">
+                        <div class="uba-column-header">
+                          <div class="uba-column-title">
+                            <span class="uba-column-icon">🔍</span>
+                            <span>Leads</span>
+                            <span class="uba-column-count" id="lead-count">0</span>
                           </div>
-                          <p class="uba-card-sub" data-i18n="view.projects.desc">
-                            Pipeline view of active work, staged locally.
-                          </p>
+                          <button class="uba-column-add" onclick="addProjectToStage('lead')" title="Add to Leads">
+                            <span>+</span>
+                          </button>
                         </div>
-                        <span class="uba-pill" data-i18n="view.projects.badge"
-                          >Pipeline</span
-                        >
-                      </div>
-
-                      <div class="uba-section-hero">
-                        <div>
-                          <p
-                            class="uba-banner-label"
-                            data-i18n="view.projects.kicker"
-                          >
-                            Pipeline flow
-                          </p>
-                          <h3 data-i18n="view.projects.titleInline">
-                            Progress projects by stage
-                          </h3>
-                          <p data-i18n="view.projects.subtitle">
-                            Drag-style layout with cards organized by phase.
-                          </p>
+                        <div class="uba-column-body uba-drop-zone" id="projects-lead" data-stage="lead">
+                          <div class="uba-column-empty" style="display: none;">
+                            <span class="uba-empty-icon">📋</span>
+                            <p>No leads yet</p>
+                          </div>
                         </div>
                       </div>
 
-                      <div
-                        class="uba-grid"
-                        style="
-                          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-                          gap: 12px;
-                        "
-                        id="projects-columns"
-                      >
-                        <div class="uba-pipe-col" data-stage="lead">
-                          <h4 class="uba-pipe-title">Lead</h4>
-                          <div class="uba-pipe-zone" id="projects-lead"></div>
+                      <div class="uba-kanban-column" data-stage="in_progress">
+                        <div class="uba-column-header">
+                          <div class="uba-column-title">
+                            <span class="uba-column-icon">🚀</span>
+                            <span>In Progress</span>
+                            <span class="uba-column-count" id="in_progress-count">0</span>
+                          </div>
+                          <button class="uba-column-add" onclick="addProjectToStage('in_progress')" title="Add to In Progress">
+                            <span>+</span>
+                          </button>
                         </div>
-                        <div class="uba-pipe-col" data-stage="in_progress">
-                          <h4 class="uba-pipe-title">In Progress</h4>
-                          <div class="uba-pipe-zone" id="projects-in_progress"></div>
-                        </div>
-                        <div class="uba-pipe-col" data-stage="ongoing">
-                          <h4 class="uba-pipe-title">Ongoing</h4>
-                          <div class="uba-pipe-zone" id="projects-ongoing"></div>
-                        </div>
-                        <div class="uba-pipe-col" data-stage="completed">
-                          <h4 class="uba-pipe-title">Completed</h4>
-                          <div class="uba-pipe-zone" id="projects-completed"></div>
+                        <div class="uba-column-body uba-drop-zone" id="projects-in_progress" data-stage="in_progress">
+                          <div class="uba-column-empty" style="display: none;">
+                            <span class="uba-empty-icon">🔨</span>
+                            <p>No active projects</p>
+                          </div>
                         </div>
                       </div>
-                      <div style="margin-top: 16px; text-align: center;">
-                        <button type="button" class="uba-btn uba-btn-primary" id="add-project-btn">
-                          Add Project
-                        </button>
+
+                      <div class="uba-kanban-column" data-stage="ongoing">
+                        <div class="uba-column-header">
+                          <div class="uba-column-title">
+                            <span class="uba-column-icon">⚡</span>
+                            <span>Ongoing</span>
+                            <span class="uba-column-count" id="ongoing-count">0</span>
+                          </div>
+                          <button class="uba-column-add" onclick="addProjectToStage('ongoing')" title="Add to Ongoing">
+                            <span>+</span>
+                          </button>
+                        </div>
+                        <div class="uba-column-body uba-drop-zone" id="projects-ongoing" data-stage="ongoing">
+                          <div class="uba-column-empty" style="display: none;">
+                            <span class="uba-empty-icon">⚙️</span>
+                            <p>No ongoing projects</p>
+                          </div>
+                        </div>
                       </div>
-                    </section>
+
+                      <div class="uba-kanban-column" data-stage="completed">
+                        <div class="uba-column-header">
+                          <div class="uba-column-title">
+                            <span class="uba-column-icon">✅</span>
+                            <span>Completed</span>
+                            <span class="uba-column-count" id="completed-count">0</span>
+                          </div>
+                          <button class="uba-column-add" onclick="addProjectToStage('completed')" title="Add to Completed">
+                            <span>+</span>
+                          </button>
+                        </div>
+                        <div class="uba-column-body uba-drop-zone" id="projects-completed" data-stage="completed">
+                          <div class="uba-column-empty" style="display: none;">
+                            <span class="uba-empty-icon">🎉</span>
+                            <p>No completed projects</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -224,44 +266,53 @@
     <!-- Project Form Modal -->
     <div class="uba-modal is-hidden" id="project-form-modal" aria-hidden="true">
       <div class="uba-modal-overlay"></div>
-      <div class="uba-modal-dialog">
+      <div class="uba-modal-dialog uba-modal-modern">
         <div class="uba-modal-header">
-          <h3>Project</h3>
+          <div class="uba-modal-title-group">
+            <span class="uba-modal-icon">💼</span>
+            <h3 id="project-form-title">New Project</h3>
+          </div>
           <button type="button" class="uba-modal-close" id="project-form-close">×</button>
         </div>
         <div class="uba-modal-body">
-          <form id="project-form">
+          <form id="project-form" class="uba-form-modern">
             <input type="hidden" id="project-id">
-            <div class="uba-form-group">
-              <label for="project-title">Title</label>
-              <input type="text" id="project-title" class="uba-input" required>
+            <div class="uba-form-row">
+              <div class="uba-form-group">
+                <label for="project-title" class="uba-form-label">Project Title *</label>
+                <input type="text" id="project-title" class="uba-input" required placeholder="Enter project name">
+              </div>
+              <div class="uba-form-group">
+                <label for="project-client" class="uba-form-label">Client</label>
+                <input type="text" id="project-client" class="uba-input" placeholder="Client or company name">
+              </div>
+            </div>
+            <div class="uba-form-row">
+              <div class="uba-form-group">
+                <label for="project-budget" class="uba-form-label">Budget (€)</label>
+                <input type="number" id="project-budget" class="uba-input" placeholder="0" min="0" step="100">
+              </div>
+              <div class="uba-form-group">
+                <label for="project-stage" class="uba-form-label">Stage</label>
+                <select id="project-stage" class="uba-select">
+                  <option value="lead">🔍 Lead</option>
+                  <option value="in_progress">🚀 In Progress</option>
+                  <option value="ongoing">⚡ Ongoing</option>
+                  <option value="completed">✅ Completed</option>
+                </select>
+              </div>
             </div>
             <div class="uba-form-group">
-              <label for="project-client">Client</label>
-              <input type="text" id="project-client" class="uba-input">
-            </div>
-            <div class="uba-form-group">
-              <label for="project-budget">Budget</label>
-              <input type="number" id="project-budget" class="uba-input">
-            </div>
-            <div class="uba-form-group">
-              <label for="project-stage">Stage</label>
-              <select id="project-stage" class="uba-select">
-                <option value="lead">Lead</option>
-                <option value="in_progress">In Progress</option>
-                <option value="ongoing">Ongoing</option>
-                <option value="completed">Completed</option>
-              </select>
-            </div>
-            <div class="uba-form-group">
-              <label for="project-notes">Notes</label>
-              <textarea id="project-notes" class="uba-input" rows="3"></textarea>
-            </div>
-            <div class="uba-modal-footer">
-              <button type="button" class="uba-btn" id="project-cancel">Cancel</button>
-              <button type="submit" class="uba-btn uba-btn-primary">Save</button>
+              <label for="project-notes" class="uba-form-label">Project Notes</label>
+              <textarea id="project-notes" class="uba-input" rows="3" placeholder="Add project description, goals, or notes..."></textarea>
             </div>
           </form>
+        </div>
+        <div class="uba-modal-footer">
+          <button type="button" class="uba-btn uba-btn-ghost" id="project-cancel">Cancel</button>
+          <button type="submit" class="uba-btn uba-btn-primary" form="project-form">
+            <span class="icon">💾</span> Save Project
+          </button>
         </div>
       </div>
     </div>
