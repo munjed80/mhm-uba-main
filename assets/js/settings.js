@@ -313,6 +313,11 @@ function initAdvancedSettings() {
   const notificationsToggle = document.getElementById("setting-notifications");
   const singlePageToggle = document.getElementById("setting-single-page");
   const compactViewToggle = document.getElementById("setting-compact-view");
+  const aiToneSelect = document.getElementById("setting-ai-tone");
+  const aiVerbositySelect = document.getElementById("setting-ai-verbosity");
+  const aiVoiceModeToggle = document.getElementById("setting-ai-voice-mode");
+  const aiAutoActionsToggle = document.getElementById("setting-ai-auto-actions");
+  const aiEmbeddedButtonsToggle = document.getElementById("setting-ai-embedded-buttons");
   const saveAllBtn = document.getElementById("save-all-settings");
   const statusEl = document.getElementById("settings-status");
   
@@ -350,6 +355,27 @@ function initAdvancedSettings() {
   
   if (compactViewToggle) {
     compactViewToggle.checked = settings.compactView;
+  }
+  
+  // Populate AI settings
+  if (aiToneSelect) {
+    aiToneSelect.value = settings.aiTone || 'professional';
+  }
+  
+  if (aiVerbositySelect) {
+    aiVerbositySelect.value = settings.aiVerbosity || 'medium';
+  }
+  
+  if (aiVoiceModeToggle) {
+    aiVoiceModeToggle.checked = settings.aiVoiceMode !== false;
+  }
+  
+  if (aiAutoActionsToggle) {
+    aiAutoActionsToggle.checked = settings.aiAutoActionsEnabled !== false;
+  }
+  
+  if (aiEmbeddedButtonsToggle) {
+    aiEmbeddedButtonsToggle.checked = settings.aiEmbeddedButtons !== false;
   }
   
   // Load user and workspace data from store
@@ -431,6 +457,47 @@ function initAdvancedSettings() {
     });
   }
   
+  // AI preferences handlers
+  if (aiToneSelect) {
+    aiToneSelect.addEventListener("change", function() {
+      saveExtendedSettings({ aiTone: this.value });
+      showStatus("AI tone updated", "success");
+    });
+  }
+  
+  if (aiVerbositySelect) {
+    aiVerbositySelect.addEventListener("change", function() {
+      saveExtendedSettings({ aiVerbosity: this.value });
+      showStatus("AI verbosity updated", "success");
+    });
+  }
+  
+  if (aiVoiceModeToggle) {
+    aiVoiceModeToggle.addEventListener("change", function() {
+      saveExtendedSettings({ aiVoiceMode: this.checked });
+      showStatus("Voice mode preference updated", "success");
+    });
+  }
+  
+  if (aiAutoActionsToggle) {
+    aiAutoActionsToggle.addEventListener("change", function() {
+      saveExtendedSettings({ aiAutoActionsEnabled: this.checked });
+      showStatus("Auto-actions preference updated", "success");
+      
+      // Update AI auto-actions config
+      if (window.UBA && window.UBA.ai && window.UBA.ai.auto) {
+        UBA.ai.auto.config.enabled = this.checked;
+      }
+    });
+  }
+  
+  if (aiEmbeddedButtonsToggle) {
+    aiEmbeddedButtonsToggle.addEventListener("change", function() {
+      saveExtendedSettings({ aiEmbeddedButtons: this.checked });
+      showStatus("Embedded AI buttons preference updated. Reload page to see changes.", "success");
+    });
+  }
+  
   // Save all settings handler
   if (saveAllBtn) {
     saveAllBtn.addEventListener("click", function() {
@@ -443,6 +510,11 @@ function initAdvancedSettings() {
         notifications: notificationsToggle?.checked ?? settings.notifications,
         singlePage: singlePageToggle?.checked ?? settings.singlePage,
         compactView: compactViewToggle?.checked ?? settings.compactView,
+        aiTone: aiToneSelect?.value || settings.aiTone || 'professional',
+        aiVerbosity: aiVerbositySelect?.value || settings.aiVerbosity || 'medium',
+        aiVoiceMode: aiVoiceModeToggle?.checked ?? (settings.aiVoiceMode !== false),
+        aiAutoActionsEnabled: aiAutoActionsToggle?.checked ?? (settings.aiAutoActionsEnabled !== false),
+        aiEmbeddedButtons: aiEmbeddedButtonsToggle?.checked ?? (settings.aiEmbeddedButtons !== false),
       };
       
       // Save settings
