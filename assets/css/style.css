@@ -2062,3 +2062,199 @@ a:focus-visible {
     max-width: none;
   }
 }
+
+/* ================================
+   WordPress-style Sidebar Navigation
+   ================================ */
+
+.uba-sidebar-wp {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100vh;
+  background: #23282d;
+  border-right: 1px solid #3c434a;
+  z-index: 1000;
+  overflow-y: auto;
+  overflow-x: hidden;
+  color: #ffffff;
+}
+
+.uba-sidebar-wp::-webkit-scrollbar {
+  width: 6px;
+}
+
+.uba-sidebar-wp::-webkit-scrollbar-track {
+  background: #1e2328;
+}
+
+.uba-sidebar-wp::-webkit-scrollbar-thumb {
+  background: #3c434a;
+  border-radius: 3px;
+}
+
+.uba-sidebar-wp::-webkit-scrollbar-thumb:hover {
+  background: #50575e;
+}
+
+.uba-sidebar-wp-header {
+  padding: 20px 16px 24px;
+  border-bottom: 1px solid #3c434a;
+  background: #191e23;
+}
+
+.uba-logo-wp {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.uba-logo-wp span {
+  color: #0073aa;
+}
+
+.uba-tagline-wp {
+  font-size: 12px;
+  line-height: 1.4;
+  color: #a7aaad;
+  max-width: 200px;
+}
+
+.uba-nav-wp {
+  list-style: none;
+  margin: 0;
+  padding: 12px 0;
+}
+
+.uba-nav-wp-item {
+  margin: 0;
+}
+
+.uba-nav-wp-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px 16px;
+  margin: 0;
+  background: transparent;
+  border: none;
+  color: #eee;
+  font-size: 14px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.uba-nav-wp-btn:hover {
+  background: #2c3338;
+  color: #ffffff;
+}
+
+.uba-nav-wp-btn:hover .uba-nav-wp-icon {
+  opacity: 1;
+}
+
+.uba-nav-wp-btn:focus {
+  outline: 2px solid #0073aa;
+  outline-offset: -2px;
+  background: #2c3338;
+}
+
+.uba-nav-wp-btn.active {
+  background: #0073aa;
+  color: #ffffff;
+  border-left: 4px solid #005177;
+}
+
+.uba-nav-wp-btn.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #005177;
+}
+
+.uba-nav-wp-icon {
+  font-size: 16px;
+  min-width: 20px;
+  margin-right: 12px;
+  text-align: center;
+  opacity: 0.9;
+}
+
+.uba-nav-wp-btn span:not(.uba-nav-wp-icon) {
+  flex: 1;
+  text-align: left;
+}
+
+/* Main content adjustment for fixed sidebar */
+.uba-shell {
+  margin-left: 240px;
+}
+
+.uba-main {
+  width: 100%;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .uba-sidebar-wp {
+    width: 60px;
+  }
+  
+  .uba-shell {
+    margin-left: 60px;
+  }
+  
+  .uba-sidebar-wp-header {
+    padding: 16px 8px;
+  }
+  
+  .uba-logo-wp {
+    font-size: 16px;
+    text-align: center;
+  }
+  
+  .uba-tagline-wp {
+    display: none;
+  }
+  
+  .uba-nav-wp-btn {
+    padding: 12px 8px;
+    justify-content: center;
+  }
+  
+  .uba-nav-wp-btn span:not(.uba-nav-wp-icon) {
+    display: none;
+  }
+  
+  .uba-nav-wp-icon {
+    margin-right: 0;
+  }
+  
+  .uba-sidebar-wp:hover {
+    width: 240px;
+  }
+  
+  .uba-sidebar-wp:hover .uba-tagline-wp {
+    display: block;
+  }
+  
+  .uba-sidebar-wp:hover .uba-nav-wp-btn {
+    padding: 12px 16px;
+    justify-content: flex-start;
+  }
+  
+  .uba-sidebar-wp:hover .uba-nav-wp-btn span:not(.uba-nav-wp-icon) {
+    display: block;
+  }
+  
+  .uba-sidebar-wp:hover .uba-nav-wp-icon {
+    margin-right: 12px;
+  }
+}
