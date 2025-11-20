@@ -44,6 +44,18 @@ function saveExtendedSettings(updates = {}) {
 }
 
 /**
+ * Apply compact mode to the page
+ */
+function applyCompactMode(isCompact) {
+  document.body.classList.toggle("uba-compact", isCompact);
+  
+  // Save to localStorage for persistence across sessions
+  localStorage.setItem("uba-compact-mode", isCompact.toString());
+  
+  console.log(`Applied compact mode: ${isCompact}`);
+}
+
+/**
  * Apply theme to the page
  */
 function applyTheme(theme) {
@@ -128,10 +140,166 @@ function updateUserProfile(name, email, language, timezone) {
 }
 
 /**
- * Initialize advanced settings page
+ * Initialize workspace management interface
  */
+function initWorkspaceManagement() {
+  // Populate workspace list
+  renderWorkspaceList();
+  
+  // Set up workspace form handlers
+  const saveWorkspaceBtn = document.getElementById('save-workspace-settings');
+  const workspaceNameInput = document.getElementById('setting-workspace-name');
+  const workspaceDescInput = document.getElementById('setting-workspace-description');
+  
+  if (saveWorkspaceBtn) {
+    saveWorkspaceBtn.addEventListener('click', function() {
+      const currentWorkspace = window.WorkspaceManager.getCurrentWorkspace();
+      if (!currentWorkspace) return;
+      
+      const newName = workspaceNameInput.value.trim();
+      const newDescription = workspaceDescInput.value.trim();
+      
+      if (newName && newName !== currentWorkspace.name) {
+        window.WorkspaceManager.updateWorkspace(currentWorkspace.id, {
+          name: newName,
+          description: newDescription
+        });
+        
+        // Update all workspace selectors
+        window.WorkspaceManager.updateAllWorkspaceSelectors();
+        renderWorkspaceList();
+        showStatus('Workspace settings updated!', 'success');
+      }
+    });
+  }
+  
+  // Load current workspace data
+  const currentWorkspace = window.WorkspaceManager.getCurrentWorkspace();
+  if (currentWorkspace) {
+    if (workspaceNameInput) workspaceNameInput.value = currentWorkspace.name || '';
+    if (workspaceDescInput) workspaceDescInput.value = currentWorkspace.description || '';
+  }
+}
+
+/**
+ * Render workspace list in settings
+ */
+function renderWorkspaceList() {
+  const container = document.getElementById('workspace-list-container');
+  if (!container) return;
+  
+  const workspaces = window.WorkspaceManager.getAllWorkspaces();
+  const currentId = window.WorkspaceManager.getCurrentWorkspaceId();
+  
+  container.innerHTML = workspaces.map(workspace => `
+    <div class="workspace-item ${workspace.id === currentId ? 'active' : ''}">
+      <div class="workspace-info">
+        <h4 class="workspace-name">
+          ${workspace.name}
+          ${workspace.id === currentId ? '<span class="workspace-current-badge">Current</span>' : ''}
+        </h4>
+        <p class="workspace-desc">${workspace.description || 'No description'}</p>
+        <small class="workspace-meta">
+          Created: ${new Date(workspace.createdAt).toLocaleDateString()}
+          ${workspace.isDefault ? '• Default workspace' : ''}
+        </small>
+      </div>
+      <div class="workspace-actions">
+        ${workspace.id !== currentId ? `
+          <button class="uba-btn-link" data-workspace-action="switch" data-workspace-id="${workspace.id}">
+            Switch
+          </button>
+        ` : ''}
+        <button class="uba-btn-link" data-workspace-action="rename" data-workspace-id="${workspace.id}">
+          Rename
+        </button>
+        ${!workspace.isDefault ? `
+          <button class="uba-btn-link workspace-delete-btn" data-workspace-action="delete" data-workspace-id="${workspace.id}">
+            Delete
+          </button>
+        ` : ''}
+        <button class="uba-btn-link" onclick="exportWorkspace('${workspace.id}')">
+          Export
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+/**
+ * Export workspace data
+ */
+function exportWorkspace(workspaceId) {
+  try {
+    const workspace = window.WorkspaceManager.getWorkspace(workspaceId);
+    if (!workspace) {
+      alert('Workspace not found');
+      return;
+    }
+    
+    const exportData = window.WorkspaceManager.exportWorkspaceData(workspaceId);
+    
+    // Create download
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${workspace.name.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-backup.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
+    URL.revokeObjectURL(url);
+    
+    showStatus(`Workspace "${workspace.name}" exported successfully!`, 'success');
+  } catch (error) {
+    alert(`Export failed: ${error.message}`);
+  }
+}
+
+/**
+ * Import workspace data
+ */
+function importWorkspace() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  
+  input.onchange = function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const importData = JSON.parse(e.target.result);
+        const workspace = window.WorkspaceManager.importWorkspaceData(importData);
+        
+        renderWorkspaceList();
+        window.WorkspaceManager.updateAllWorkspaceSelectors();
+        
+        showStatus(`Workspace "${workspace.name}" imported successfully!`, 'success');
+      } catch (error) {
+        alert(`Import failed: ${error.message}`);
+      }
+    };
+    reader.readAsText(file);
+  };
+  
+  input.click();
+}
 function initAdvancedSettings() {
+  // Initialize workspace management first
+  if (window.WorkspaceManager) {
+    initWorkspaceManagement();
+  }
+
   const settings = loadExtendedSettings();
+  
+  // Apply current theme and compact mode immediately
+  applyTheme(settings.theme);
+  applyCompactMode(settings.compactView);
   
   // Get all form elements
   const themeToggle = document.getElementById("theme-toggle");
@@ -257,8 +425,8 @@ function initAdvancedSettings() {
   if (compactViewToggle) {
     compactViewToggle.addEventListener("change", function() {
       const compactView = this.checked;
+      applyCompactMode(compactView);
       saveExtendedSettings({ compactView });
-      document.body.classList.toggle("uba-compact-view", compactView);
       showStatus("View preference updated", "success");
     });
   }
@@ -299,7 +467,11 @@ function initAdvancedSettings() {
     });
   }
   
+  // Show initial status
+  showStatus("Settings loaded", "info");
+
   function showStatus(message, type = "info") {
+    const statusEl = document.getElementById("settings-status");
     if (statusEl) {
       statusEl.textContent = message;
       statusEl.className = `uba-settings-status uba-status-${type}`;
@@ -311,9 +483,6 @@ function initAdvancedSettings() {
       }, 3000);
     }
   }
-  
-  // Show initial status
-  showStatus("Settings loaded", "info");
 }
 
 // Attach to window for global access
@@ -321,6 +490,9 @@ window.initAdvancedSettings = initAdvancedSettings;
 window.loadExtendedSettings = loadExtendedSettings;
 window.saveExtendedSettings = saveExtendedSettings;
 window.applyTheme = applyTheme;
+window.applyCompactMode = applyCompactMode;
+window.exportWorkspace = exportWorkspace;
+window.importWorkspace = importWorkspace;
 
 // Auto-initialize when DOM is ready
 if (document.readyState === "loading") {

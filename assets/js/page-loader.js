@@ -112,6 +112,12 @@
         case "automations-page":
           if (typeof initAutomationsPage === "function") initAutomationsPage();
           break;
+        case "leads-page":
+          if (typeof initLeadsPage === "function") initLeadsPage();
+          break;
+        case "expenses-page":
+          if (typeof initExpensesPage === "function") initExpensesPage();
+          break;
         case "files-page":
           if (typeof initFilesPage === "function") initFilesPage();
           break;

@@ -7,6 +7,32 @@
 console.log("Running in local/demo mode — Supabase disabled");
 
 // ------------------------------------------------------
+// Global UI State Management
+// ------------------------------------------------------
+
+// Apply saved compact mode on page load
+function initGlobalUIState() {
+  // Apply saved compact mode
+  const savedCompactMode = localStorage.getItem("uba-compact-mode");
+  if (savedCompactMode === "true") {
+    document.body.classList.add("uba-compact");
+  }
+
+  // Apply saved theme
+  const savedTheme = localStorage.getItem("uba-theme") || "light";
+  const isDark = savedTheme === "dark";
+  document.body.classList.toggle("uba-dark-theme", isDark);
+  document.body.classList.toggle("uba-light-theme", !isDark);
+}
+
+// Initialize UI state as early as possible
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initGlobalUIState);
+} else {
+  initGlobalUIState();
+}
+
+// ------------------------------------------------------
 // Local i18n helpers
 // ------------------------------------------------------
 const fallbackI18n = {
@@ -1015,8 +1041,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (store && store.ensureSeed) {
       store.ensureSeed("clients", clientSeed || []);
       store.ensureSeed("invoices", invoiceSeed || []);
-      store.ensureSeed("projects", projectStagesSeed || []);
-      store.ensureSeed("tasks", taskBoardSeed || []);
+      store.ensureSeed("projects", projectsSeed || []);
+      store.ensureSeed("tasks", tasksSeed || []);
+      store.ensureSeed("leads", leadsSeed || []);
+      store.ensureSeed("expenses", expensesSeed || []);
       store.ensureSeed("leads", leadsSeed || []);
       store.ensureSeed("expenses", expensesSeed || []);
       store.ensureSeed("files", filesSeed || []);
@@ -1160,13 +1188,24 @@ document.addEventListener("DOMContentLoaded", () => {
               const task = col.tasks && col.tasks.find((t) => t.id === taskId);
               if (task) {
                 task.status = newStatus;
+                
+                // Trigger automation for task completion
+                if (newStatus === 'done' && typeof window.runAutomations === 'function') {
+                  window.runAutomations('task_completed', { task });
+                }
               }
             }
             if (store.tasks.saveAll) store.tasks.saveAll(cols);
           } else {
             const task = all.find((t) => t.id === taskId);
-            if (task && store.tasks.update)
+            if (task && store.tasks.update) {
               store.tasks.update(task.id, { status: newStatus });
+              
+              // Trigger automation for task completion
+              if (newStatus === 'done' && typeof window.runAutomations === 'function') {
+                window.runAutomations('task_completed', { task });
+              }
+            }
           }
         }
       } catch (e) {
@@ -1544,8 +1583,9 @@ const invoiceSeed = [
     client: "Atlas Labs",
     label: "Sprint 12 delivery",
     amount: 4200,
-    status: "sent",
+    status: "paid",
     due: "2024-11-01",
+    date: "2024-10-15",
     notes: "Net 14",
   },
   {
@@ -1555,8 +1595,147 @@ const invoiceSeed = [
     amount: 1800,
     status: "draft",
     due: "2024-11-05",
+    date: "2024-10-28",
     notes: "Awaiting PO",
   },
+  {
+    id: "inv-1003",
+    client: "Atlas Labs", 
+    label: "October retainer",
+    amount: 3500,
+    status: "paid",
+    due: "2024-10-31",
+    date: "2024-10-01",
+    notes: "Monthly retainer",
+  },
+  {
+    id: "inv-1004",
+    client: "Tech Startup Inc",
+    label: "MVP Development",
+    amount: 8900,
+    status: "sent",
+    due: "2024-10-15",
+    date: "2024-09-28",
+    notes: "Overdue - follow up",
+  },
+  {
+    id: "inv-1005",
+    client: "River & Co",
+    label: "September consulting",
+    amount: 2400,
+    status: "paid",
+    due: "2024-09-30",
+    date: "2024-09-15",
+    notes: "Consulting hours",
+  },
+  {
+    id: "inv-1006",
+    client: "Design Agency Pro",
+    label: "August project",
+    amount: 5200,
+    status: "paid",
+    due: "2024-08-31",
+    date: "2024-08-15",
+    notes: "Web redesign",
+  }
+];
+
+// Additional seed data for analytics
+const projectsSeed = [
+  {
+    id: "proj-1",
+    name: "Atlas Labs MVP",
+    stage: "lead",
+    client: "Atlas Labs", 
+    value: 12000,
+    created_at: "2024-09-15T10:00:00Z"
+  },
+  {
+    id: "proj-2", 
+    name: "River & Co Redesign",
+    stage: "in_progress",
+    client: "River & Co",
+    value: 8500,
+    created_at: "2024-10-01T14:30:00Z"
+  },
+  {
+    id: "proj-3",
+    name: "Tech Startup Platform",
+    stage: "ongoing", 
+    client: "Tech Startup Inc",
+    value: 25000,
+    created_at: "2024-08-20T09:15:00Z"
+  },
+  {
+    id: "proj-4",
+    name: "Design Agency Website",
+    stage: "completed",
+    client: "Design Agency Pro", 
+    value: 6500,
+    created_at: "2024-07-10T16:20:00Z"
+  }
+];
+
+const tasksSeed = [
+  {
+    id: "task-1",
+    title: "Prep onboarding doc", 
+    status: "todo",
+    owner: "Mara",
+    project: "proj-1",
+    created_at: "2024-11-01T09:00:00Z"
+  },
+  {
+    id: "task-2",
+    title: "Collect invoice proof",
+    status: "todo", 
+    owner: "Jules",
+    project: "proj-2",
+    created_at: "2024-11-02T11:30:00Z"
+  },
+  {
+    id: "task-3",
+    title: "Pipeline review",
+    status: "in_progress",
+    owner: "Sam", 
+    project: "proj-2",
+    created_at: "2024-10-28T14:00:00Z"
+  },
+  {
+    id: "task-4", 
+    title: "QA sprint 12",
+    status: "in_progress",
+    owner: "Lena",
+    project: "proj-3", 
+    created_at: "2024-10-25T10:45:00Z"
+  },
+  {
+    id: "task-5",
+    title: "Send follow-up deck",
+    status: "done",
+    owner: "Mara",
+    project: "proj-1",
+    created_at: "2024-10-20T16:30:00Z",
+    updated_at: "2024-11-01T08:15:00Z"
+  },
+  {
+    id: "task-6",
+    title: "Client feedback review", 
+    status: "done",
+    owner: "Sam",
+    project: "proj-4",
+    created_at: "2024-10-15T12:00:00Z",
+    updated_at: "2024-10-30T17:45:00Z"
+  },
+  {
+    id: "task-7",
+    title: "Deploy to production",
+    status: "done", 
+    owner: "Jules",
+    project: "proj-4",
+    created_at: "2024-10-12T13:20:00Z",
+    updated_at: "2024-11-01T14:30:00Z"
+  }
 ];
 
 const projectStagesSeed = [
@@ -2399,7 +2578,7 @@ const renderProjectsBoard = () => {
   const store = window.ubaStore;
   const stages =
     (store && store.projects.getAll()) ||
-    ensureSeedData(LOCAL_KEYS.projects, projectStagesSeed) ||
+    ensureSeedData(LOCAL_KEYS.projects, projectsSeed) ||
     [];
 
   container.innerHTML = "";
@@ -2613,7 +2792,7 @@ const renderTasksBoard = () => {
   const store = window.ubaStore;
   const columns =
     (store && store.tasks.getAll()) ||
-    ensureSeedData(LOCAL_KEYS.tasks, taskBoardSeed) ||
+    ensureSeedData(LOCAL_KEYS.tasks, tasksSeed) ||
     [];
 
   container.innerHTML = "";
@@ -3456,8 +3635,10 @@ const renderSettingsPage = () => {
         if (store && store.ensureSeed) {
           store.ensureSeed("clients", clientSeed || []);
           store.ensureSeed("invoices", invoiceSeed || []);
-          store.ensureSeed("projects", projectStagesSeed || []);
-          store.ensureSeed("tasks", taskBoardSeed || []);
+          store.ensureSeed("projects", projectsSeed || []);
+          store.ensureSeed("tasks", tasksSeed || []);
+          store.ensureSeed("leads", leadsSeed || []);
+          store.ensureSeed("expenses", expensesSeed || []);
           store.ensureSeed("leads", leadsSeed || []);
           store.ensureSeed("expenses", expensesSeed || []);
           store.ensureSeed("files", filesSeed || []);

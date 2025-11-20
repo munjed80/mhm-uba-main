@@ -157,34 +157,29 @@
                             class="uba-card-sub"
                             data-i18n="view.automations.desc"
                           >
-                            Overview of flows with sample activity logs.
+                            Create automation rules to streamline your workflow
                           </p>
                         </div>
-                        <span
-                          class="uba-pill"
-                          data-i18n="view.automations.badge"
-                          >Preview</span
-                        >
+                        <button id="new-automation-btn" class="uba-btn-primary">
+                          <span data-i18n="automations.new">+ New Automation</span>
+                        </button>
                       </div>
 
-                      <div class="uba-support-grid" id="automation-tiles">
-                        <!-- tiles from JS -->
-                      </div>
-
-                      <div class="uba-section-hero">
+                      <div class="automations-meta">
                         <div>
-                          <p
-                            class="uba-banner-label"
-                            data-i18n="view.automations.logTitle"
-                          >
-                            Recent runs
+                          <p class="label" data-i18n="automations.meta.count">
+                            Active rules
                           </p>
-                          <h3 data-i18n="view.automations.logDesc">
-                            Lightweight history of automation activity
-                          </h3>
-                          <p data-i18n="view.automations.logHint">
-                            Static sample data for now.
+                          <strong id="automation-count">0</strong>
+                        </div>
+                        <div>
+                          <p class="label" data-i18n="automations.meta.runs">
+                            Total runs
                           </p>
+                          <strong id="automation-runs">0</strong>
+                        </div>
+                        <div class="mini-chip" data-i18n="view.automations.local">
+                          Local only
                         </div>
                       </div>
 
@@ -192,22 +187,183 @@
                         <table class="uba-table">
                           <thead>
                             <tr>
-                              <th data-i18n="view.automations.logAutomation">
-                                Automation
+                              <th data-i18n="table.name">Name</th>
+                              <th data-i18n="automations.trigger">Trigger</th>
+                              <th data-i18n="automations.action">Action</th>
+                              <th data-i18n="table.status">Status</th>
+                              <th style="width: 120px" data-i18n="table.actions">
+                                Actions
                               </th>
-                              <th data-i18n="view.automations.logStatus">
-                                Status
-                              </th>
-                              <th data-i18n="view.automations.logTime">When</th>
                             </tr>
                           </thead>
-                          <tbody id="automation-log-body"></tbody>
+                          <tbody id="automations-body">
+                            <tr>
+                              <td colspan="5" data-i18n="automations.empty">
+                                No automations yet. Create your first rule.
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+
+                    <!-- Recent Runs Section -->
+                    <section class="uba-card">
+                      <div class="uba-card-header">
+                        <div>
+                          <div class="uba-card-title" data-i18n="automations.recentRuns">
+                            Recent Runs
+                          </div>
+                          <p class="uba-card-sub" data-i18n="automations.recentRunsDesc">
+                            History of automation executions
+                          </p>
+                        </div>
+                        <button id="clear-logs-btn" class="uba-btn-ghost">
+                          <span data-i18n="automations.clearLogs">Clear Logs</span>
+                        </button>
+                      </div>
+
+                      <div class="uba-table-wrap">
+                        <table class="uba-table">
+                          <thead>
+                            <tr>
+                              <th data-i18n="automations.logRule">Rule</th>
+                              <th data-i18n="automations.logTrigger">Trigger</th>
+                              <th data-i18n="automations.logResult">Result</th>
+                              <th data-i18n="automations.logTime">Time</th>
+                            </tr>
+                          </thead>
+                          <tbody id="automation-logs-body">
+                            <tr>
+                              <td colspan="4" data-i18n="automations.noLogs">
+                                No automation runs yet.
+                              </td>
+                            </tr>
+                          </tbody>
                         </table>
                       </div>
                     </section>
                   </div>
                 </div>
               </section>
+            </div>
+
+            <!-- Automation Modal -->
+            <div id="automation-modal" class="uba-modal" style="display: none;">
+              <div class="uba-modal-backdrop" onclick="closeAutomationModal()"></div>
+              <div class="uba-modal-dialog">
+                <div class="uba-modal-header">
+                  <h3 id="automation-modal-title" data-i18n="automations.new">New Automation</h3>
+                  <button class="uba-modal-close" onclick="closeAutomationModal()">&times;</button>
+                </div>
+                <div class="uba-modal-body">
+                  <form id="automation-form" class="uba-form">
+                    <input type="hidden" id="automation-edit-id" />
+                    
+                    <div class="uba-form-group">
+                      <label for="automation-name" data-i18n="table.name">Name</label>
+                      <input
+                        type="text"
+                        id="automation-name"
+                        class="uba-input"
+                        placeholder="e.g., Create follow-up task for overdue invoices"
+                        required
+                      />
+                    </div>
+
+                    <div class="uba-form-row">
+                      <div class="uba-form-group">
+                        <label for="automation-trigger" data-i18n="automations.trigger">Trigger</label>
+                        <select id="automation-trigger" class="uba-select">
+                          <option value="invoice_created" data-i18n="triggers.invoiceCreated">Invoice Created</option>
+                          <option value="invoice_overdue" data-i18n="triggers.invoiceOverdue">Invoice Overdue</option>
+                          <option value="client_created" data-i18n="triggers.clientCreated">Client Created</option>
+                          <option value="task_due_today" data-i18n="triggers.taskDueToday">Task Due Today</option>
+                          <option value="project_completed" data-i18n="triggers.projectCompleted">Project Completed</option>
+                        </select>
+                      </div>
+                      <div class="uba-form-group">
+                        <label for="automation-action" data-i18n="automations.action">Action</label>
+                        <select id="automation-action" class="uba-select">
+                          <option value="create_task" data-i18n="actions.createTask">Create Task</option>
+                          <option value="add_note_to_client" data-i18n="actions.addNoteToClient">Add Note to Client</option>
+                          <option value="show_notification" data-i18n="actions.showNotification">Show Notification</option>
+                          <option value="send_email" data-i18n="actions.sendEmail">Send Email (Demo)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <!-- Action Configuration -->
+                    <div id="action-config" class="uba-form-group" style="display: none;">
+                      <label id="config-label">Configuration</label>
+                      
+                      <!-- Create Task Config -->
+                      <div id="config-create-task" class="config-section" style="display: none;">
+                        <input
+                          type="text"
+                          id="config-task-title"
+                          class="uba-input"
+                          placeholder="Task title (use {client} for client name)"
+                        />
+                        <input
+                          type="number"
+                          id="config-days-offset"
+                          class="uba-input"
+                          placeholder="Days from trigger (e.g., 3 for 3 days later)"
+                          style="margin-top: 8px;"
+                        />
+                      </div>
+
+                      <!-- Add Note Config -->
+                      <div id="config-add-note" class="config-section" style="display: none;">
+                        <textarea
+                          id="config-note-text"
+                          class="uba-textarea"
+                          placeholder="Note text (use {trigger} for trigger info)"
+                          rows="3"
+                        ></textarea>
+                      </div>
+
+                      <!-- Notification Config -->
+                      <div id="config-notification" class="config-section" style="display: none;">
+                        <input
+                          type="text"
+                          id="config-notification-message"
+                          class="uba-input"
+                          placeholder="Notification message"
+                        />
+                      </div>
+
+                      <!-- Email Config -->
+                      <div id="config-email" class="config-section" style="display: none;">
+                        <input
+                          type="text"
+                          id="config-email-subject"
+                          class="uba-input"
+                          placeholder="Email subject"
+                        />
+                        <textarea
+                          id="config-email-body"
+                          class="uba-textarea"
+                          placeholder="Email body"
+                          rows="3"
+                          style="margin-top: 8px;"
+                        ></textarea>
+                      </div>
+                    </div>
+
+                    <div id="automation-error" class="uba-error-message" style="display: none;"></div>
+                  </form>
+                </div>
+                <div class="uba-modal-footer">
+                  <button type="button" class="uba-btn-ghost" onclick="closeAutomationModal()">
+                    <span data-i18n="action.cancel">Cancel</span>
+                  </button>
+                  <button type="button" id="save-automation-btn" class="uba-btn-primary">
+                    <span data-i18n="action.save">Save Automation</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </main>
         </div>

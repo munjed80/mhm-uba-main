@@ -131,55 +131,45 @@
 
             <div class="uba-views">
               <section class="uba-view" data-view="expenses">
+                <!-- Metrics Panel -->
+                <div class="uba-grid" style="margin-bottom: 20px;">
+                  <div class="uba-grid-col">
+                    <div style="display: flex; gap: 12px;">
+                      <div class="uba-card" style="padding: 16px; flex: 1;">
+                        <div class="uba-card-title" style="font-size: 14px; margin-bottom: 8px;">This Month</div>
+                        <div id="expenses-this-month" style="font-weight: 700; font-size: 24px; color: var(--primary);">€0</div>
+                      </div>
+                      <div class="uba-card" style="padding: 16px; flex: 1;">
+                        <div class="uba-card-title" style="font-size: 14px; margin-bottom: 8px;">Total Expenses</div>
+                        <div id="expenses-total-count" style="font-weight: 700; font-size: 24px; color: var(--primary);">0</div>
+                      </div>
+                      <div class="uba-card" style="padding: 16px; flex: 1;">
+                        <div class="uba-card-title" style="font-size: 14px; margin-bottom: 8px;">Pending</div>
+                        <div id="expenses-pending-count" style="font-weight: 700; font-size: 24px; color: var(--warning);">0</div>
+                      </div>
+                      <div class="uba-card" style="padding: 16px; flex: 1;">
+                        <div class="uba-card-title" style="font-size: 14px; margin-bottom: 8px;">Avg/Month</div>
+                        <div id="expenses-avg-month" style="font-weight: 700; font-size: 24px; color: var(--muted);">€0</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Main Expenses Table -->
                 <div class="uba-grid">
                   <div class="uba-grid-col">
                     <section class="uba-card">
                       <div class="uba-card-header">
                         <div>
-                          <div class="uba-card-title">Expenses</div>
-                          <p class="uba-card-sub">
-                            Overview of recent expenses
-                          </p>
+                          <div class="uba-card-title">Expenses Management</div>
+                          <p class="uba-card-sub">Track and manage business expenses</p>
                         </div>
-                        <span class="uba-pill" id="expenses-total">Total</span>
+                        <button class="uba-btn-primary" onclick="openExpenseModal()">
+                          <span style="margin-right: 8px;">+</span>Add Expense
+                        </button>
                       </div>
 
-                      <div style="padding: 12px">
-                        <div
-                          style="display: flex; gap: 8px; margin-bottom: 10px"
-                        >
-                          <div
-                            class="uba-card"
-                            style="padding: 8px; min-width: 160px"
-                          >
-                            <div class="uba-card-title" style="font-size: 14px">
-                              This month
-                            </div>
-                            <div
-                              id="expenses-this-month"
-                              style="font-weight: 700"
-                            >
-                              €0
-                            </div>
-                          </div>
-                          <div
-                            class="uba-card"
-                            style="padding: 8px; min-width: 160px"
-                          >
-                            <div class="uba-card-title" style="font-size: 14px">
-                              Top categories
-                            </div>
-                            <ul
-                              id="expenses-cats"
-                              style="
-                                margin: 6px 0 0;
-                                padding-left: 16px;
-                                color: var(--muted);
-                              "
-                            ></ul>
-                          </div>
-                        </div>
-
+                      <div style="padding: 16px;">
                         <div class="uba-table-wrap">
                           <table class="uba-table">
                             <thead>
@@ -189,9 +179,12 @@
                                 <th>Description</th>
                                 <th>Amount</th>
                                 <th>Status</th>
+                                <th>Actions</th>
                               </tr>
                             </thead>
-                            <tbody id="expenses-body"></tbody>
+                            <tbody id="expenses-table-body">
+                              <!-- Expenses will be rendered here -->
+                            </tbody>
                           </table>
                         </div>
                       </div>
@@ -200,6 +193,76 @@
                 </div>
               </section>
             </div>
+
+            <!-- Expense Modal -->
+            <div id="expense-modal" class="uba-modal" style="display: none;">
+              <div class="uba-modal-content" style="max-width: 500px;">
+                <div class="uba-modal-header">
+                  <h2 id="expense-modal-title">Add New Expense</h2>
+                  <button class="uba-modal-close" onclick="closeExpenseModal()">&times;</button>
+                </div>
+                
+                <form id="expense-form" class="uba-modal-body">
+                  <div class="uba-form-group">
+                    <label for="expense-date">Date *</label>
+                    <input type="date" id="expense-date" name="date" required>
+                    <div class="uba-field-error" id="expense-date-error"></div>
+                  </div>
+
+                  <div class="uba-form-group">
+                    <label for="expense-category">Category *</label>
+                    <select id="expense-category" name="category" required>
+                      <option value="">Select Category</option>
+                      <option value="Office Supplies">Office Supplies</option>
+                      <option value="Software">Software</option>
+                      <option value="Travel">Travel</option>
+                      <option value="Marketing">Marketing</option>
+                      <option value="Equipment">Equipment</option>
+                      <option value="Utilities">Utilities</option>
+                      <option value="Rent">Rent</option>
+                      <option value="Insurance">Insurance</option>
+                      <option value="Professional Services">Professional Services</option>
+                      <option value="Meals & Entertainment">Meals & Entertainment</option>
+                      <option value="Other">Other</option>
+                    </select>
+                    <div class="uba-field-error" id="expense-category-error"></div>
+                  </div>
+
+                  <div class="uba-form-group">
+                    <label for="expense-description">Description</label>
+                    <input type="text" id="expense-description" name="description" placeholder="Brief description of the expense">
+                    <div class="uba-field-error" id="expense-description-error"></div>
+                  </div>
+
+                  <div class="uba-form-group">
+                    <label for="expense-amount">Amount *</label>
+                    <input type="number" id="expense-amount" name="amount" step="0.01" min="0" placeholder="0.00" required>
+                    <div class="uba-field-error" id="expense-amount-error"></div>
+                  </div>
+
+                  <div class="uba-form-group">
+                    <label for="expense-status">Status</label>
+                    <select id="expense-status" name="status">
+                      <option value="pending">Pending</option>
+                      <option value="paid">Paid</option>
+                      <option value="reimbursed">Reimbursed</option>
+                    </select>
+                  </div>
+
+                  <div class="uba-form-group">
+                    <label for="expense-receipt">Receipt/Notes</label>
+                    <textarea id="expense-receipt" name="receipt" rows="3" placeholder="Receipt number, notes, or additional details"></textarea>
+                  </div>
+                </form>
+
+                <div class="uba-modal-footer">
+                  <button type="button" class="uba-btn-secondary" onclick="closeExpenseModal()">Cancel</button>
+                  <button type="button" class="uba-btn-primary" onclick="saveExpense()">
+                    <span id="expense-save-text">Save Expense</span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </main>
         </div>
       </div>
@@ -207,147 +270,11 @@
 
     <script src="assets/js/i18n.js"></script>
     <script src="assets/js/store.js"></script>
+    <script src="assets/js/notifications.js"></script>
+    <script src="assets/js/search.js"></script>
+    <script src="assets/js/expenses.js"></script>
     <script src="assets/js/app.js"></script>
     <script src="assets/js/page-loader.js"></script>
-    <script>
-      (function () {
-        const store = window.ubaStore;
-
-        const render = () => {
-          const expenses =
-            (store && store.expenses.getAll()) || window.ubaExpenses || [];
-          const thisMonth = expenses.filter(
-            (e) =>
-              e.date &&
-              e.date.startsWith(
-                new Date().getFullYear() +
-                  "-" +
-                  String(new Date().getMonth() + 1).padStart(2, "0"),
-              ),
-          );
-          const total = thisMonth.reduce(
-            (s, e) => s + Number(e.amount || 0),
-            0,
-          );
-          document.getElementById("expenses-this-month").textContent =
-            `€ ${total.toFixed(2)}`;
-          // top categories
-          const cats = {};
-          thisMonth.forEach(
-            (e) =>
-              (cats[e.category] =
-                (cats[e.category] || 0) + Number(e.amount || 0)),
-          );
-          const sorted = Object.entries(cats)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 3);
-          const ul = document.getElementById("expenses-cats");
-          ul.innerHTML = "";
-          sorted.forEach((s) => {
-            const li = document.createElement("li");
-            li.textContent = `${s[0]} — € ${s[1].toFixed(2)}`;
-            ul.appendChild(li);
-          });
-
-          const body = document.getElementById("expenses-body");
-          body.innerHTML = "";
-          expenses.forEach((e) => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `<td>${e.date}</td><td>${e.category}</td><td>${e.desc}</td><td>€ ${Number(e.amount || 0).toFixed(2)}</td><td>${e.status}</td>`;
-            const actions = document.createElement("td");
-            actions.innerHTML = "";
-            const edit = document.createElement("button");
-            edit.type = "button";
-            edit.className = "uba-btn-link";
-            edit.textContent = "Edit";
-            edit.addEventListener("click", () => {
-              const date = prompt("Date (YYYY-MM-DD)", e.date) || e.date;
-              const category = prompt("Category", e.category) || e.category;
-              const desc = prompt("Description", e.desc) || e.desc;
-              const amount =
-                Number(prompt("Amount", e.amount) || e.amount) || 0;
-              const status = prompt("Status", e.status) || e.status;
-              if (store && store.expenses)
-                store.expenses.update(e.id, {
-                  date,
-                  category,
-                  desc,
-                  amount,
-                  status,
-                });
-              render();
-            });
-            const del = document.createElement("button");
-            del.type = "button";
-            del.className = "uba-btn-link";
-            del.textContent = "Delete";
-            del.addEventListener("click", () => {
-              if (!confirm("Delete expense?")) return;
-              if (store && store.expenses) store.expenses.delete(e.id);
-              render();
-            });
-            const tdActions = document.createElement("td");
-            tdActions.appendChild(edit);
-            tdActions.appendChild(del);
-            tr.appendChild(tdActions);
-            body.appendChild(tr);
-          });
-        };
-
-        // insert simple add form
-        const header = document.querySelector(".uba-card-header");
-        if (header) {
-          const bar = document.createElement("div");
-          bar.style.display = "flex";
-          bar.style.gap = "8px";
-          bar.style.marginTop = "8px";
-          bar.innerHTML = `<input id="exp-date" type="date" style="width:160px;"/><input id="exp-cat" placeholder="Category" style="flex:1;"/><input id="exp-desc" placeholder="Description" style="flex:1;"/><input id="exp-amount" placeholder="Amount" style="width:120px;"/><select id="exp-status"><option value="paid">Paid</option><option value="pending">Pending</option></select><button id="exp-add" class="uba-btn-primary">Add</button>`;
-          header.appendChild(bar);
-          document.getElementById("exp-add").addEventListener("click", () => {
-            const dateEl = document.getElementById("exp-date");
-            const date = dateEl.value || new Date().toISOString().slice(0, 10);
-            const categoryEl = document.getElementById("exp-cat");
-            const category = categoryEl.value.trim() || "Misc";
-            const desc = document.getElementById("exp-desc").value.trim() || "";
-            const amountEl = document.getElementById("exp-amount");
-            const amount = Number(amountEl.value) || 0;
-            const status = document.getElementById("exp-status").value;
-            if (!date) {
-              dateEl.focus();
-              alert("Date required");
-              return;
-            }
-            if (Number.isNaN(amount) || amount <= 0) {
-              amountEl.focus();
-              alert("Amount must be a positive number");
-              return;
-            }
-            if (store && store.expenses)
-              store.expenses.create({
-                id: "exp-" + Date.now(),
-                date,
-                category,
-                desc,
-                amount,
-                status,
-              });
-            render();
-            document.getElementById("exp-date").value = "";
-            document.getElementById("exp-cat").value = "";
-            document.getElementById("exp-desc").value = "";
-            document.getElementById("exp-amount").value = "";
-            if (window.showToast)
-              window.showToast(t("expenses.added", "Expense added"));
-          });
-        }
-
-        render();
-        if (window.ubaI18n && window.ubaI18n.applyTranslations)
-          window.ubaI18n.applyTranslations(
-            localStorage.getItem("uba-lang") || "en",
-          );
-      })();
-    </script>
     <script>
       const pageId = document.getElementById("page-id").dataset.page;
       loadPageScripts(pageId);

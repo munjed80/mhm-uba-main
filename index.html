@@ -146,11 +146,14 @@
                 </p>
               </div>
               <div class="uba-top-right">
-                <select class="uba-select" id="workspace-select">
-                  <option>Main workspace</option>
-                  <option>Client projects</option>
-                  <option>Internal tools</option>
-                </select>
+                <div class="workspace-selector-container">
+                  <select class="uba-select workspace-selector" id="workspace-select">
+                    <option>Loading workspaces...</option>
+                  </select>
+                  <button class="uba-btn-ghost workspace-new-btn" data-workspace-action="create" title="Create new workspace">
+                    ➕
+                  </button>
+                </div>
                 <div class="uba-user-pill">
                   <span class="uba-avatar"></span>
                   <span id="uba-user-label">Admin</span>
@@ -671,7 +674,10 @@
     </section>
 
     <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/workspace-manager.js"></script>
     <script src="assets/js/store.js"></script>
+    <script src="assets/js/notifications.js"></script>
+    <script src="assets/js/search.js"></script>
     <script src="assets/js/app.js"></script>
     <script src="assets/js/page-loader.js"></script>
     <script src="assets/js/assistant.js"></script>

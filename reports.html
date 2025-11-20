@@ -137,68 +137,93 @@
 
             <div class="uba-views">
               <section class="uba-view" data-view="reports">
-                <div class="uba-grid">
-                  <div class="uba-grid-col">
-                    <section class="uba-card">
-                      <div class="uba-card-header">
-                        <div>
-                          <div class="uba-card-title">Revenue & invoices</div>
-                          <p class="uba-card-sub">Mini table of invoices</p>
-                        </div>
-                      </div>
-                      <div style="padding: 12px">
-                        <div
-                          id="revenue-kpi"
-                          class="uba-kpi-strip"
-                          style="margin-bottom: 12px"
-                        ></div>
-                        <div class="uba-table-wrap">
-                          <table class="uba-table">
-                            <thead>
-                              <tr>
-                                <th>Metric</th>
-                                <th>Value</th>
-                              </tr>
-                            </thead>
-                            <tbody id="revenue-table"></tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </section>
-
-                    <section class="uba-card" style="margin-top: 12px">
-                      <div class="uba-card-header">
-                        <div>
-                          <div class="uba-card-title">Active clients</div>
-                          <p class="uba-card-sub">Current active clients</p>
-                        </div>
-                      </div>
-                      <div style="padding: 12px">
-                        <div id="active-clients">0</div>
-                      </div>
-                    </section>
+                <!-- KPI Cards Grid -->
+                <div class="reports-kpi-grid">
+                  <div class="reports-kpi-card">
+                    <div class="reports-kpi-icon">💰</div>
+                    <div class="reports-kpi-content">
+                      <div class="reports-kpi-label">Total Revenue</div>
+                      <div class="reports-kpi-value" id="kpi-total-revenue">€0</div>
+                      <div class="reports-kpi-change" id="kpi-revenue-change">+0%</div>
+                    </div>
                   </div>
 
-                  <div class="uba-grid-col">
-                    <section class="uba-card">
-                      <div class="uba-card-header">
-                        <div>
-                          <div class="uba-card-title">Projects summary</div>
-                          <p class="uba-card-sub">Quick status</p>
-                        </div>
-                      </div>
-                      <div style="padding: 12px" id="projects-summary"></div>
-                    </section>
+                  <div class="reports-kpi-card">
+                    <div class="reports-kpi-icon">📋</div>
+                    <div class="reports-kpi-content">
+                      <div class="reports-kpi-label">Total Invoices</div>
+                      <div class="reports-kpi-value" id="kpi-total-invoices">0</div>
+                      <div class="reports-kpi-change" id="kpi-invoices-change">0 overdue</div>
+                    </div>
+                  </div>
 
-                    <section class="uba-card" style="margin-top: 12px">
-                      <div class="uba-card-header">
-                        <div>
-                          <div class="uba-card-title">Tasks overview</div>
-                          <p class="uba-card-sub">Open vs done</p>
-                        </div>
+                  <div class="reports-kpi-card">
+                    <div class="reports-kpi-icon">👥</div>
+                    <div class="reports-kpi-content">
+                      <div class="reports-kpi-label">Active Clients</div>
+                      <div class="reports-kpi-value" id="kpi-total-clients">0</div>
+                      <div class="reports-kpi-change" id="kpi-clients-change">0 this month</div>
+                    </div>
+                  </div>
+
+                  <div class="reports-kpi-card">
+                    <div class="reports-kpi-icon">✅</div>
+                    <div class="reports-kpi-content">
+                      <div class="reports-kpi-label">Tasks Completed</div>
+                      <div class="reports-kpi-value" id="kpi-tasks-completed">0</div>
+                      <div class="reports-kpi-change" id="kpi-tasks-change">0 this month</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Charts Grid -->
+                <div class="reports-charts-grid">
+                  <div class="reports-chart-card">
+                    <div class="uba-card-header">
+                      <div>
+                        <div class="uba-card-title">Revenue by Month</div>
+                        <p class="uba-card-sub">Monthly revenue from paid invoices</p>
                       </div>
-                      <div style="padding: 12px" id="tasks-overview"></div>
-                    </section>
+                    </div>
+                    <div class="reports-chart-container">
+                      <canvas id="revenue-chart" width="400" height="200"></canvas>
+                    </div>
+                  </div>
+
+                  <div class="reports-chart-card">
+                    <div class="uba-card-header">
+                      <div>
+                        <div class="uba-card-title">Invoice Status</div>
+                        <p class="uba-card-sub">Open vs paid invoices</p>
+                      </div>
+                    </div>
+                    <div class="reports-chart-container">
+                      <canvas id="invoices-chart" width="400" height="200"></canvas>
+                    </div>
+                  </div>
+
+                  <div class="reports-chart-card">
+                    <div class="uba-card-header">
+                      <div>
+                        <div class="uba-card-title">Project Pipeline</div>
+                        <p class="uba-card-sub">Projects by stage</p>
+                      </div>
+                    </div>
+                    <div class="reports-chart-container">
+                      <canvas id="projects-chart" width="400" height="200"></canvas>
+                    </div>
+                  </div>
+
+                  <div class="reports-chart-card">
+                    <div class="uba-card-header">
+                      <div>
+                        <div class="uba-card-title">Task Progress</div>
+                        <p class="uba-card-sub">Completed vs remaining tasks</p>
+                      </div>
+                    </div>
+                    <div class="reports-chart-container">
+                      <canvas id="tasks-chart" width="400" height="200"></canvas>
+                    </div>
                   </div>
                 </div>
               </section>

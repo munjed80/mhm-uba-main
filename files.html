@@ -121,47 +121,85 @@
             <header class="uba-topbar">
               <div class="uba-top-left">
                 <p class="uba-top-kicker">Files</p>
-                <h1 id="uba-view-title">Files</h1>
-                <p id="uba-view-desc">File manager (UI only)</p>
+                <h1 id="uba-view-title">Document Manager</h1>
+                <p id="uba-view-desc">Upload, store and manage files locally</p>
               </div>
               <div class="uba-top-right">
-                <div class="uba-pill">Quick filters</div>
+                <div class="uba-pill" id="files-count">0 files</div>
               </div>
             </header>
 
             <div class="uba-views">
               <section class="uba-view" data-view="files">
+                
+                <!-- File Upload Section -->
+                <div class="uba-card" style="margin-bottom: 20px;">
+                  <div class="uba-card-header">
+                    <div>
+                      <div class="uba-card-title">Upload Files</div>
+                      <p class="uba-card-sub">Add documents to your workspace</p>
+                    </div>
+                  </div>
+                  <div style="padding: 20px;">
+                    <div class="files-upload-area" id="upload-area">
+                      <input type="file" id="file-input" multiple style="display: none;" accept="*/*">
+                      <div class="files-upload-content">
+                        <div class="files-upload-icon">📁</div>
+                        <h3>Drop files here or click to upload</h3>
+                        <p>Supports all file types • Multiple files allowed</p>
+                        <button class="uba-btn-primary" id="upload-btn">Choose Files</button>
+                      </div>
+                      <div class="files-upload-progress" id="upload-progress" style="display: none;">
+                        <div class="files-progress-bar">
+                          <div class="files-progress-fill" id="progress-fill"></div>
+                        </div>
+                        <span id="progress-text">Uploading...</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Files List Section -->
                 <div class="uba-card">
                   <div class="uba-card-header">
                     <div>
-                      <div class="uba-card-title">Files</div>
-                      <p class="uba-card-sub">Grouped by client or project</p>
+                      <div class="uba-card-title">Stored Files</div>
+                      <p class="uba-card-sub">Manage your uploaded documents</p>
+                    </div>
+                    <div class="files-header-actions">
+                      <input type="text" id="search-files" placeholder="Search files..." class="files-search">
+                      <select id="filter-type" class="files-filter">
+                        <option value="">All types</option>
+                        <option value="image">Images</option>
+                        <option value="document">Documents</option>
+                        <option value="text">Text</option>
+                        <option value="application">Applications</option>
+                        <option value="other">Other</option>
+                      </select>
                     </div>
                   </div>
 
-                  <div style="padding: 12px">
-                    <div style="margin-bottom: 10px; display: flex; gap: 8px">
-                      <button class="uba-pill" data-filter="all">All</button>
-                      <button class="uba-pill" data-filter="clients">
-                        Clients
-                      </button>
-                      <button class="uba-pill" data-filter="projects">
-                        Projects
-                      </button>
-                    </div>
-
+                  <div style="padding: 12px;">
                     <div class="uba-table-wrap">
                       <table class="uba-table">
                         <thead>
                           <tr>
-                            <th>File name</th>
+                            <th>Name</th>
+                            <th>Size</th>
                             <th>Type</th>
-                            <th>Linked to</th>
-                            <th>Last updated</th>
+                            <th>Uploaded</th>
+                            <th>Actions</th>
                           </tr>
                         </thead>
-                        <tbody id="files-body"></tbody>
+                        <tbody id="files-table"></tbody>
                       </table>
+                    </div>
+                    
+                    <!-- Empty state -->
+                    <div class="files-empty-state" id="empty-state">
+                      <div class="files-empty-icon">📂</div>
+                      <h3>No files uploaded yet</h3>
+                      <p>Upload your first file to get started</p>
                     </div>
                   </div>
                 </div>

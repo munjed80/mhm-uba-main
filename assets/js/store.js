@@ -13,6 +13,8 @@
     expenses: "uba-local-expenses",
     files: "uba-local-files",
     reports: "uba-local-reports",
+    automations: "uba-local-automations",
+    automationLogs: "uba-local-automation-logs",
     settings: "uba-settings",
   };
 
@@ -73,14 +75,15 @@
   const setSession = (obj) => saveJSON(SESSION_KEY, obj);
   const clearSession = () => localStorage.removeItem(SESSION_KEY);
 
-  // Helper: resolve storage key for a collection, scoped to user+workspace when session exists
+  // Helper: resolve storage key for a collection, scoped to current workspace
   const resolveStorageKey = (name) => {
-    const session = getSession();
-    if (session && session.userId && session.workspaceId) {
-      return `${PREFIX}${session.userId}_${session.workspaceId}_${name}`;
-    }
-    // fallback to global KEYS map or prefixed name
-    return KEYS[name] || `${PREFIX}${name}`;
+    // Get current workspace ID from WorkspaceManager
+    const currentWorkspaceId = window.WorkspaceManager ? 
+      window.WorkspaceManager.getCurrentWorkspaceId() : 
+      (localStorage.getItem('uba-current-workspace') || 'default');
+    
+    const baseKey = KEYS[name] || `uba-local-${name}`;
+    return `${baseKey}-${currentWorkspaceId}`;
   };
 
   // Generic collection API
@@ -285,6 +288,8 @@
     leads: makeHelpers("leads"),
     expenses: makeHelpers("expenses"),
     files: makeHelpers("files"),
+    automations: makeHelpers("automations"),
+    automationLogs: makeHelpers("automationLogs"),
     auth,
     workspace,
     _internal: {
