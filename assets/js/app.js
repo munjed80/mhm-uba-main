@@ -552,11 +552,62 @@ window.logout = async function () {
 // ======================================================
 
 /**
+ * Initialize index page with KPI cards populated from ubaStore
+ */
+function initIndexPage() {
+  const store = window.ubaStore;
+  if (!store) {
+    console.warn("ubaStore not available for KPI cards");
+    return;
+  }
+
+  try {
+    // Total Clients
+    const clients = store.clients ? store.clients.getAll() : [];
+    const totalClients = clients.length;
+    const clientsEl = document.getElementById('kpi-total-clients');
+    if (clientsEl) clientsEl.textContent = totalClients;
+
+    // Total Projects
+    const projects = store.projects ? store.projects.getAll() : [];
+    const totalProjects = projects.length;
+    const projectsEl = document.getElementById('kpi-total-projects');
+    if (projectsEl) projectsEl.textContent = totalProjects;
+
+    // Tasks Due Today
+    const tasks = store.tasks ? store.tasks.getAll() : [];
+    const today = new Date().toISOString().split('T')[0];
+    const tasksDueToday = tasks.filter(task => 
+      task.due && task.due.startsWith(today) && task.status !== 'done'
+    ).length;
+    const tasksTodayEl = document.getElementById('kpi-tasks-today');
+    if (tasksTodayEl) tasksTodayEl.textContent = tasksDueToday;
+
+    // Unpaid Invoices
+    const invoices = store.invoices ? store.invoices.getAll() : [];
+    const unpaidInvoices = invoices.filter(invoice => 
+      invoice.status === 'sent' || invoice.status === 'draft' || invoice.status === 'overdue'
+    ).length;
+    const unpaidEl = document.getElementById('kpi-unpaid-invoices');
+    if (unpaidEl) unpaidEl.textContent = unpaidInvoices;
+
+    // Active Tasks (not done)
+    const activeTasks = tasks.filter(task => task.status !== 'done').length;
+    const activeTasksEl = document.getElementById('kpi-active-tasks');
+    if (activeTasksEl) activeTasksEl.textContent = activeTasks;
+
+  } catch (error) {
+    console.error('Error populating KPI cards:', error);
+  }
+}
+
+/**
  * Main dispatcher to load all dashboard components.
  * @param {string} userId - Supabase user id
  */
 async function loadDashboardData(userId) {
   console.log("Starting dashboard data load…");
+  initIndexPage(); // Populate KPI cards
   await loadKPIs(userId);
   await loadTasks(userId);
   await loadPipeline(userId);
@@ -572,6 +623,8 @@ async function loadDemoDashboard() {
   if (banner) {
     banner.hidden = false;
   }
+
+  initIndexPage(); // Populate KPI cards with demo data
 
   const demoKPIs = {
     billed: 12850,
