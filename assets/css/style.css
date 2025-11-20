@@ -1328,90 +1328,240 @@ a:focus-visible {
 }
 
 /* ======================
-   Cards
+   Cards - Modern & Elegant
    ====================== */
 
 .uba-card {
   background: var(--card);
-  border-radius: 12px;
-  border: 1px solid rgba(55, 65, 81, 0.9);
-  padding: 14px;
-  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.7);
+  border-radius: 16px;
+  border: 1px solid rgba(55, 65, 81, 0.3);
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.4);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.uba-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.3), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.uba-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.6);
+  border-color: rgba(34, 211, 238, 0.4);
+}
+
+.uba-card:hover::before {
+  opacity: 1;
+}
+
+/* Card variants */
+.uba-card-elevated {
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.03), rgba(15, 23, 42, 1));
+  border: 1px solid rgba(34, 211, 238, 0.2);
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.7);
+}
+
+.uba-card-modern {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(55, 65, 81, 0.4);
+}
+
+.uba-card-events {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.02), rgba(15, 23, 42, 1));
+  border: 1px solid rgba(168, 85, 247, 0.15);
+}
+
+.uba-card-compact {
+  padding: 16px;
 }
 
 .uba-card-header {
   display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.uba-card-icon {
+  font-size: 20px;
+  width: 32px;
+  height: 32px;
+  display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 10px;
+  justify-content: center;
+  background: rgba(34, 211, 238, 0.1);
+  border-radius: 8px;
+  flex-shrink: 0;
 }
 
 .uba-card-title {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
 }
 
 .uba-card-sub {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
-  margin: 0;
-  line-height: 1.5;
+  margin: 2px 0 0 0;
+  line-height: 1.4;
+}
+
+.uba-card-badge {
+  background: rgba(34, 211, 238, 0.15);
+  color: var(--accent);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.uba-card-footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(55, 65, 81, 0.2);
+}
+
+.uba-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.uba-link:hover {
+  color: #67e8f9;
 }
 
 .uba-pill {
   font-size: 11px;
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(55, 65, 81, 0.9);
+  border: 1px solid rgba(55, 65, 81, 0.4);
   color: var(--muted);
-  background: #020617;
+  background: rgba(15, 23, 42, 0.6);
   cursor: pointer;
-  transition:
-    border-color 0.2s,
-    color 0.2s,
-    background-color 0.2s;
+  transition: all 0.2s ease;
+  font-weight: 500;
 }
 
 .uba-pill:hover {
-  border-color: var(--text);
-  color: var(--text);
-  background: #02081f;
+  border-color: var(--accent);
+  color: var(--accent);
+
+}
+
+.uba-pill-accent {
+  background: rgba(34, 211, 238, 0.1);
+  border-color: rgba(34, 211, 238, 0.3);
+  color: var(--accent);
+}
+
+.uba-pill-accent:hover {
+  background: rgba(34, 211, 238, 0.15);
+  border-color: rgba(34, 211, 238, 0.5);
 }
 
 /* ======================
-   KPI Strip
+   KPI Strip - Modern Design
    ====================== */
 
 .uba-kpi-strip {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.uba-kpi-modern {
+  gap: 20px;
 }
 
 .uba-kpi {
-  background: #020617;
-  border-radius: 10px;
-  border: 1px solid rgba(39, 39, 42, 0.9);
-  padding: 8px 9px;
-  font-size: 11px;
-  transition: all 0.2s ease;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 12px;
+  border: 1px solid rgba(55, 65, 81, 0.3);
+  padding: 16px;
+  transition: all 0.3s ease;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.uba-kpi:hover {
+  transform: translateY(-1px);
+  border-color: rgba(34, 211, 238, 0.4);
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.6);
+}
+
+.uba-kpi-icon {
+  font-size: 18px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.uba-kpi-primary .uba-kpi-icon {
+  background: rgba(34, 211, 238, 0.15);
+}
+
+.uba-kpi-success .uba-kpi-icon {
+  background: rgba(34, 197, 94, 0.15);
+}
+
+.uba-kpi-warning .uba-kpi-icon {
+  background: rgba(249, 115, 22, 0.15);
+}
+
+.uba-kpi-info .uba-kpi-icon {
+  background: rgba(99, 102, 241, 0.15);
+}
+
+.uba-kpi-content {
+  flex: 1;
 }
 
 .uba-kpi-label {
   color: var(--muted);
-  margin-bottom: 2px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .uba-kpi-value {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
 }
 
 .uba-kpi-trend {
-  font-size: 10px;
-  margin-top: 1px;
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .uba-kpi-trend.good {
@@ -1422,15 +1572,6 @@ a:focus-visible {
 }
 .uba-kpi-trend.bad {
   color: var(--bad);
-}
-
-/* Hover effect for KPIs */
-
-.uba-kpi:hover {
-  border-color: var(--accent);
-  background: rgba(34, 211, 238, 0.05);
-  transform: translateY(-1px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
 }
 
 /* ======================
@@ -2207,3 +2348,172 @@ a:focus-visible {
 }
 
 
+
+/* Modern Dashboard Cards */
+.uba-dashboard-row {
+  display: grid;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.uba-dashboard-row:nth-child(2) {
+  grid-template-columns: 2fr 1fr;
+}
+
+@media (max-width: 1024px) {
+  .uba-dashboard-row:nth-child(2) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.uba-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.uba-event-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(55, 65, 81, 0.2);
+  transition: all 0.2s ease;
+}
+
+.uba-event-item:hover {
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.uba-event-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+.uba-event-high .uba-event-indicator { background: var(--bad); box-shadow: 0 0 6px rgba(239, 68, 68, 0.4); }
+.uba-event-success .uba-event-indicator { background: var(--good); box-shadow: 0 0 6px rgba(34, 197, 94, 0.4); }
+.uba-event-normal .uba-event-indicator { background: var(--accent); box-shadow: 0 0 6px rgba(34, 211, 238, 0.4); }
+
+.uba-event-content { flex: 1; }
+.uba-event-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.uba-event-meta { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+.uba-event-time { font-size: 10px; color: var(--muted); opacity: 0.8; }
+.uba-event-action { flex-shrink: 0; }
+
+.uba-btn-mini {
+  padding: 4px 8px;
+  font-size: 10px;
+  border-radius: 4px;
+  background: rgba(34, 211, 238, 0.1);
+  color: var(--accent);
+  border: 1px solid rgba(34, 211, 238, 0.2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.uba-btn-mini:hover {
+  background: rgba(34, 211, 238, 0.2);
+  border-color: rgba(34, 211, 238, 0.4);
+}
+
+.uba-event-status {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.uba-quick-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.uba-action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(55, 65, 81, 0.3);
+  background: rgba(15, 23, 42, 0.4);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 10px;
+  transition: all 0.2s ease;
+}
+
+.uba-action-btn:hover {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: rgba(34, 211, 238, 0.4);
+}
+
+.uba-action-primary {
+  background: rgba(34, 211, 238, 0.1);
+  border-color: rgba(34, 211, 238, 0.3);
+  color: var(--accent);
+}
+
+.uba-action-icon { font-size: 14px; }
+
+.uba-card-elevated {
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.03), rgba(15, 23, 42, 1));
+  border: 1px solid rgba(34, 211, 238, 0.2);
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.7);
+}
+
+.uba-card-modern {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(55, 65, 81, 0.4);
+}
+
+.uba-card-events {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.02), rgba(15, 23, 42, 1));
+  border: 1px solid rgba(168, 85, 247, 0.15);
+}
+
+.uba-card-compact { padding: 16px; }
+
+.uba-card-icon {
+  font-size: 18px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(34, 211, 238, 0.1);
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.uba-card-badge {
+  background: rgba(34, 211, 238, 0.15);
+  color: var(--accent);
+  padding: 3px 6px;
+  border-radius: 10px;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.uba-card-footer {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(55, 65, 81, 0.2);
+}
+
+.uba-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.uba-link:hover { color: #67e8f9; }

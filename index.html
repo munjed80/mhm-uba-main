@@ -200,6 +200,169 @@
                 </div>
 
                 <div class="uba-grid">
+                  <!-- Top row - Key metrics -->
+                  <div class="uba-dashboard-row">
+                    <section class="uba-card uba-card-elevated" id="card-metrics">
+                      <div class="uba-card-header">
+                        <div class="uba-card-icon">📊</div>
+                        <div>
+                          <div class="uba-card-title" data-i18n="card.metrics.title">
+                            Key metrics
+                          </div>
+                          <p class="uba-card-sub" data-i18n="card.metrics.desc">
+                            Revenue, workload and business health overview
+                          </p>
+                        </div>
+                        <span class="uba-pill uba-pill-accent" data-i18n="card.metrics.range">Last 30 days</span>
+                      </div>
+
+                      <div class="uba-kpi-strip uba-kpi-modern">
+                        <div class="uba-kpi uba-kpi-primary">
+                          <div class="uba-kpi-icon">💰</div>
+                          <div class="uba-kpi-content">
+                            <div class="uba-kpi-label" data-i18n="kpi.billed.label">Revenue (30d)</div>
+                            <div class="uba-kpi-value" id="kpi-billed">€ 0</div>
+                            <div class="uba-kpi-trend" id="kpi-billed-trend" data-i18n="kpi.billed.trend">
+                              +12% from last month
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="uba-kpi uba-kpi-warning">
+                          <div class="uba-kpi-icon">📄</div>
+                          <div class="uba-kpi-content">
+                            <div class="uba-kpi-label" data-i18n="kpi.openInvoices.label">Open invoices</div>
+                            <div class="uba-kpi-value" id="kpi-open-invoices">€ 0</div>
+                            <div class="uba-kpi-trend" id="kpi-open-invoices-trend" data-i18n="kpi.openInvoices.trend">
+                              3 overdue
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="uba-kpi uba-kpi-success">
+                          <div class="uba-kpi-icon">👥</div>
+                          <div class="uba-kpi-content">
+                            <div class="uba-kpi-label" data-i18n="kpi.clients.label">Active clients</div>
+                            <div class="uba-kpi-value" id="kpi-active-clients">0</div>
+                            <div class="uba-kpi-trend" id="kpi-active-clients-trend" data-i18n="kpi.clients.trend">
+                              2 new this week
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="uba-kpi uba-kpi-info">
+                          <div class="uba-kpi-icon">✅</div>
+                          <div class="uba-kpi-content">
+                            <div class="uba-kpi-label" data-i18n="kpi.tasks.label">Tasks today</div>
+                            <div class="uba-kpi-value" id="kpi-tasks-today">—</div>
+                            <div class="uba-kpi-trend" id="kpi-tasks-today-trend" data-i18n="kpi.tasks.trend">
+                              4 completed
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+
+                  <!-- Second row - Events and Activity -->
+                  <div class="uba-dashboard-row">
+                    <section class="uba-card uba-card-events" id="card-recent-events">
+                      <div class="uba-card-header">
+                        <div class="uba-card-icon">🔔</div>
+                        <div>
+                          <div class="uba-card-title">Recent Events</div>
+                          <p class="uba-card-sub">Important activities and notifications from your workspace</p>
+                        </div>
+                        <div class="uba-card-badge">Live</div>
+                      </div>
+                      
+                      <div class="uba-events-list" id="events-list">
+                        <div class="uba-event-item uba-event-high">
+                          <div class="uba-event-indicator"></div>
+                          <div class="uba-event-content">
+                            <div class="uba-event-title">Invoice #INV-1045 is overdue</div>
+                            <div class="uba-event-meta">Atlas Labs • Due 3 days ago • €4,200</div>
+                            <div class="uba-event-time">12 minutes ago</div>
+                          </div>
+                          <div class="uba-event-action">
+                            <button class="uba-btn-mini">Send Reminder</button>
+                          </div>
+                        </div>
+                        
+                        <div class="uba-event-item uba-event-success">
+                          <div class="uba-event-indicator"></div>
+                          <div class="uba-event-content">
+                            <div class="uba-event-title">Payment received from River & Co</div>
+                            <div class="uba-event-meta">Invoice #INV-1044 • €1,800</div>
+                            <div class="uba-event-time">2 hours ago</div>
+                          </div>
+                          <div class="uba-event-action">
+                            <span class="uba-event-status">✓ Paid</span>
+                          </div>
+                        </div>
+                        
+                        <div class="uba-event-item uba-event-normal">
+                          <div class="uba-event-indicator"></div>
+                          <div class="uba-event-content">
+                            <div class="uba-event-title">New task: "Prep onboarding doc"</div>
+                            <div class="uba-event-meta">Assigned to Mara • Due today</div>
+                            <div class="uba-event-time">4 hours ago</div>
+                          </div>
+                          <div class="uba-event-action">
+                            <button class="uba-btn-mini">View</button>
+                          </div>
+                        </div>
+                        
+                        <div class="uba-event-item uba-event-normal">
+                          <div class="uba-event-indicator"></div>
+                          <div class="uba-event-content">
+                            <div class="uba-event-title">Project moved to delivery</div>
+                            <div class="uba-event-meta">Nova Analytics • €18k value</div>
+                            <div class="uba-event-time">1 day ago</div>
+                          </div>
+                          <div class="uba-event-action">
+                            <span class="uba-event-status">In Progress</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="uba-card-footer">
+                        <a href="events.html" class="uba-link">View all events →</a>
+                      </div>
+                    </section>
+                    
+                    <section class="uba-card uba-card-compact" id="card-quick-actions">
+                      <div class="uba-card-header">
+                        <div class="uba-card-icon">⚡</div>
+                        <div>
+                          <div class="uba-card-title">Quick Actions</div>
+                          <p class="uba-card-sub">Frequently used operations</p>
+                        </div>
+                      </div>
+                      
+                      <div class="uba-quick-actions">
+                        <button class="uba-action-btn uba-action-primary">
+                          <span class="uba-action-icon">💵</span>
+                          <span>New Invoice</span>
+                        </button>
+                        <button class="uba-action-btn uba-action-secondary">
+                          <span class="uba-action-icon">👤</span>
+                          <span>Add Client</span>
+                        </button>
+                        <button class="uba-action-btn uba-action-secondary">
+                          <span class="uba-action-icon">✅</span>
+                          <span>Create Task</span>
+                        </button>
+                        <button class="uba-action-btn uba-action-secondary">
+                          <span class="uba-action-icon">📊</span>
+                          <span>View Reports</span>
+                        </button>
+                      </div>
+                    </section>
+                  </div>
+
+                  <!-- Third row - Details -->
+                  <div class="uba-grid">
                   <div class="uba-grid-col">
                     <!-- Key metrics -->
                     <section class="uba-card" id="card-metrics">
@@ -299,20 +462,15 @@
                     </section>
 
                     <!-- Recent invoices -->
-                    <section class="uba-card" id="card-mini-invoices">
+                    <section class="uba-card uba-card-modern" id="card-mini-invoices">
                       <div class="uba-card-header">
+                        <div class="uba-card-icon">📋</div>
                         <div>
-                          <div
-                            class="uba-card-title"
-                            data-i18n="card.miniInvoices.title"
-                          >
-                            Recent invoices
+                          <div class="uba-card-title" data-i18n="card.miniInvoices.title">
+                            Recent Invoices
                           </div>
-                          <p
-                            class="uba-card-sub"
-                            data-i18n="card.miniInvoices.desc"
-                          >
-                            Latest activity including drafts and sent invoices.
+                          <p class="uba-card-sub" data-i18n="card.miniInvoices.desc">
+                            Latest billing activity and payment status
                           </p>
                         </div>
                         <button
@@ -324,29 +482,41 @@
                         </button>
                       </div>
 
-                      <div class="uba-list" id="mini-invoices-list">
+                      <div class="uba-list uba-invoice-list" id="mini-invoices-list">
                         <!-- Dynamic content loaded here -->
+                        <div class="uba-invoice-item">
+                          <div class="uba-invoice-client">Atlas Labs</div>
+                          <div class="uba-invoice-amount">€4,200</div>
+                          <div class="uba-invoice-status uba-status-overdue">Overdue</div>
+                          <div class="uba-invoice-date">3 days ago</div>
+                        </div>
+                        <div class="uba-invoice-item">
+                          <div class="uba-invoice-client">River & Co</div>
+                          <div class="uba-invoice-amount">€1,800</div>
+                          <div class="uba-invoice-status uba-status-paid">Paid</div>
+                          <div class="uba-invoice-date">2 hours ago</div>
+                        </div>
+                        <div class="uba-invoice-item">
+                          <div class="uba-invoice-client">Nova Analytics</div>
+                          <div class="uba-invoice-amount">€2,400</div>
+                          <div class="uba-invoice-status uba-status-sent">Sent</div>
+                          <div class="uba-invoice-date">5 days ago</div>
+                        </div>
                       </div>
                     </section>
                   </div>
 
                   <div class="uba-grid-col">
                     <!-- Project pipeline -->
-                    <section class="uba-card" id="card-pipeline">
+                    <section class="uba-card uba-card-modern" id="card-pipeline">
                       <div class="uba-card-header">
+                        <div class="uba-card-icon">🚀</div>
                         <div>
-                          <div
-                            class="uba-card-title"
-                            data-i18n="card.pipeline.title"
-                          >
-                            Project pipeline
+                          <div class="uba-card-title" data-i18n="card.pipeline.title">
+                            Project Pipeline
                           </div>
-                          <p
-                            class="uba-card-sub"
-                            data-i18n="card.pipeline.desc"
-                          >
-                            Live view of leads, active projects and ongoing
-                            collaborations.
+                          <p class="uba-card-sub" data-i18n="card.pipeline.desc">
+                            Active projects and sales opportunities
                           </p>
                         </div>
                         <button
@@ -358,23 +528,59 @@
                         </button>
                       </div>
 
-                      <div class="uba-stages" id="pipeline-stages">
+                      <div class="uba-stages uba-pipeline-modern" id="pipeline-stages">
                         <!-- Dynamic stages loaded here -->
+                        <div class="uba-pipeline-stage">
+                          <div class="uba-stage-header">
+                            <span class="uba-stage-title">Leads</span>
+                            <span class="uba-stage-count">2</span>
+                          </div>
+                          <div class="uba-pipeline-items">
+                            <div class="uba-pipeline-item">
+                              <div class="uba-pipeline-name">Umbrella Corp</div>
+                              <div class="uba-pipeline-value">€12k</div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="uba-pipeline-stage">
+                          <div class="uba-stage-header">
+                            <span class="uba-stage-title">In Progress</span>
+                            <span class="uba-stage-count">3</span>
+                          </div>
+                          <div class="uba-pipeline-items">
+                            <div class="uba-pipeline-item">
+                              <div class="uba-pipeline-name">Atlas Labs</div>
+                              <div class="uba-pipeline-value">€9.5k</div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="uba-pipeline-stage">
+                          <div class="uba-stage-header">
+                            <span class="uba-stage-title">Ongoing</span>
+                            <span class="uba-stage-count">1</span>
+                          </div>
+                          <div class="uba-pipeline-items">
+                            <div class="uba-pipeline-item">
+                              <div class="uba-pipeline-name">Helio Solar</div>
+                              <div class="uba-pipeline-value">€6.1k</div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </section>
 
-                    <!-- Recent activity -->
-                    <section class="uba-card" id="card-tasks">
+                    <!-- Active tasks -->
+                    <section class="uba-card uba-card-modern" id="card-tasks">
                       <div class="uba-card-header">
+                        <div class="uba-card-icon">📝</div>
                         <div>
-                          <div
-                            class="uba-card-title"
-                            data-i18n="card.tasks.title"
-                          >
-                            Active tasks
+                          <div class="uba-card-title" data-i18n="card.tasks.title">
+                            Active Tasks
                           </div>
                           <p class="uba-card-sub" data-i18n="card.tasks.desc">
-                            Today's priorities and upcoming deliverables.
+                            Today's priorities and upcoming deliverables
                           </p>
                         </div>
                         <button
@@ -386,12 +592,38 @@
                         </button>
                       </div>
 
-                      <div class="uba-list" id="mini-tasks-list">
+                      <div class="uba-list uba-tasks-modern" id="mini-tasks-list">
                         <!-- Dynamic content loaded here -->
+                        <div class="uba-task-item uba-task-high">
+                          <div class="uba-task-indicator"></div>
+                          <div class="uba-task-content">
+                            <div class="uba-task-title">Send SOW to Atlas Labs</div>
+                            <div class="uba-task-meta">Due today • Assigned to Mara</div>
+                          </div>
+                          <div class="uba-task-status">In Progress</div>
+                        </div>
+                        
+                        <div class="uba-task-item uba-task-normal">
+                          <div class="uba-task-indicator"></div>
+                          <div class="uba-task-content">
+                            <div class="uba-task-title">Review invoice NW-104</div>
+                            <div class="uba-task-meta">Due tomorrow • Assigned to Jules</div>
+                          </div>
+                          <div class="uba-task-status">Todo</div>
+                        </div>
+                        
+                        <div class="uba-task-item uba-task-normal">
+                          <div class="uba-task-indicator"></div>
+                          <div class="uba-task-content">
+                            <div class="uba-task-title">Prep onboarding for Lumen</div>
+                            <div class="uba-task-meta">Due Friday • Assigned to Sam</div>
+                          </div>
+                          <div class="uba-task-status">Todo</div>
+                        </div>
                       </div>
                     </section>
                   </div>
-                </div>
+                  </div>
               </section>
             </div>
           </main>
