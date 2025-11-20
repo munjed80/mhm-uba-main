@@ -15,7 +15,7 @@ function initGlobalUIState() {
   // Apply saved compact mode
   const savedCompactMode = localStorage.getItem("uba-compact-mode");
   if (savedCompactMode === "true") {
-    document.body.classList.add("uba-compact");
+    document.body.classList.add("uba-compact-view");
   }
 
   // Apply saved theme
@@ -99,6 +99,22 @@ function initSmartTools() {
       return renderSmartToolsGrid();
   } catch (e) {
     console.warn("initSmartTools error", e);
+  }
+}
+
+function initReportsPage() {
+  try {
+    if (typeof window.initReportsPage === "function") return window.initReportsPage();
+  } catch (e) {
+    console.warn("initReportsPage error", e);
+  }
+}
+
+function initFilesPage() {
+  try {
+    if (typeof window.initFilesPage === "function") return window.initFilesPage();
+  } catch (e) {
+    console.warn("initFilesPage error", e);
   }
 }
 

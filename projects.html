@@ -189,7 +189,27 @@
                         "
                         id="projects-columns"
                       >
-                        <!-- filled by JS -->
+                        <div class="uba-pipe-col" data-stage="lead">
+                          <h4 class="uba-pipe-title">Lead</h4>
+                          <div class="uba-pipe-zone" id="projects-lead"></div>
+                        </div>
+                        <div class="uba-pipe-col" data-stage="in_progress">
+                          <h4 class="uba-pipe-title">In Progress</h4>
+                          <div class="uba-pipe-zone" id="projects-in_progress"></div>
+                        </div>
+                        <div class="uba-pipe-col" data-stage="ongoing">
+                          <h4 class="uba-pipe-title">Ongoing</h4>
+                          <div class="uba-pipe-zone" id="projects-ongoing"></div>
+                        </div>
+                        <div class="uba-pipe-col" data-stage="completed">
+                          <h4 class="uba-pipe-title">Completed</h4>
+                          <div class="uba-pipe-zone" id="projects-completed"></div>
+                        </div>
+                      </div>
+                      <div style="margin-top: 16px; text-align: center;">
+                        <button type="button" class="uba-btn uba-btn-primary" id="add-project-btn">
+                          Add Project
+                        </button>
                       </div>
                     </section>
                   </div>
@@ -200,6 +220,67 @@
         </div>
       </div>
     </section>
+
+    <!-- Project Form Modal -->
+    <div class="uba-modal is-hidden" id="project-form-modal" aria-hidden="true">
+      <div class="uba-modal-overlay"></div>
+      <div class="uba-modal-dialog">
+        <div class="uba-modal-header">
+          <h3>Project</h3>
+          <button type="button" class="uba-modal-close" id="project-form-close">×</button>
+        </div>
+        <div class="uba-modal-body">
+          <form id="project-form">
+            <input type="hidden" id="project-id">
+            <div class="uba-form-group">
+              <label for="project-title">Title</label>
+              <input type="text" id="project-title" class="uba-input" required>
+            </div>
+            <div class="uba-form-group">
+              <label for="project-client">Client</label>
+              <input type="text" id="project-client" class="uba-input">
+            </div>
+            <div class="uba-form-group">
+              <label for="project-budget">Budget</label>
+              <input type="number" id="project-budget" class="uba-input">
+            </div>
+            <div class="uba-form-group">
+              <label for="project-stage">Stage</label>
+              <select id="project-stage" class="uba-select">
+                <option value="lead">Lead</option>
+                <option value="in_progress">In Progress</option>
+                <option value="ongoing">Ongoing</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+            <div class="uba-form-group">
+              <label for="project-notes">Notes</label>
+              <textarea id="project-notes" class="uba-input" rows="3"></textarea>
+            </div>
+            <div class="uba-modal-footer">
+              <button type="button" class="uba-btn" id="project-cancel">Cancel</button>
+              <button type="submit" class="uba-btn uba-btn-primary">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project Details Modal -->
+    <div class="uba-modal is-hidden" id="project-detail-modal" aria-hidden="true">
+      <div class="uba-modal-overlay"></div>
+      <div class="uba-modal-dialog">
+        <div class="uba-modal-header">
+          <h3 id="project-detail-title">Project Details</h3>
+          <button type="button" class="uba-modal-close" id="project-detail-close">×</button>
+        </div>
+        <div class="uba-modal-body">
+          <div id="project-detail-content">
+            <!-- Filled by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script src="assets/js/i18n.js"></script>
     <script src="assets/js/store.js"></script>

@@ -47,7 +47,7 @@ function saveExtendedSettings(updates = {}) {
  * Apply compact mode to the page
  */
 function applyCompactMode(isCompact) {
-  document.body.classList.toggle("uba-compact", isCompact);
+  document.body.classList.toggle("uba-compact-view", isCompact);
   
   // Save to localStorage for persistence across sessions
   localStorage.setItem("uba-compact-mode", isCompact.toString());

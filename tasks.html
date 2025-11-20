@@ -144,6 +144,40 @@
               <section class="uba-view" data-view="tasks">
                 <div class="uba-grid">
                   <div class="uba-grid-col">
+                    <!-- Task Filters -->
+                    <section class="uba-card" style="margin-bottom: 16px;">
+                      <div class="uba-card-header">
+                        <div class="uba-card-title">Filters</div>
+                      </div>
+                      <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+                        <div>
+                          <label for="filter-project" style="font-size: 13px; margin-right: 8px;">Project:</label>
+                          <select id="filter-project" class="uba-select" style="min-width: 150px;">
+                            <option value="">All Projects</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label for="filter-status" style="font-size: 13px; margin-right: 8px;">Status:</label>
+                          <select id="filter-status" class="uba-select" style="min-width: 120px;">
+                            <option value="">All Status</option>
+                            <option value="todo">To Do</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="done">Done</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label for="filter-priority" style="font-size: 13px; margin-right: 8px;">Priority:</label>
+                          <select id="filter-priority" class="uba-select" style="min-width: 100px;">
+                            <option value="">All</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                          </select>
+                        </div>
+                        <button type="button" class="uba-btn" id="clear-filters">Clear</button>
+                      </div>
+                    </section>
+
                     <section class="uba-card" id="tasks-board">
                       <div class="uba-card-header">
                         <div>
@@ -158,9 +192,11 @@
                             actions.
                           </p>
                         </div>
-                        <span class="uba-pill" data-i18n="view.tasks.badge"
-                          >Local board</span
-                        >
+                        <div>
+                          <button type="button" class="uba-btn uba-btn-primary" id="add-task-btn">
+                            Add Task
+                          </button>
+                        </div>
                       </div>
 
                       <div
@@ -171,7 +207,18 @@
                         "
                         id="tasks-columns"
                       >
-                        <!-- populated via JS -->
+                        <div class="uba-pipe-col" data-status="todo">
+                          <h4 class="uba-pipe-title">To Do</h4>
+                          <div class="uba-pipe-zone" id="tasks-todo"></div>
+                        </div>
+                        <div class="uba-pipe-col" data-status="in_progress">
+                          <h4 class="uba-pipe-title">In Progress</h4>
+                          <div class="uba-pipe-zone" id="tasks-in_progress"></div>
+                        </div>
+                        <div class="uba-pipe-col" data-status="done">
+                          <h4 class="uba-pipe-title">Done</h4>
+                          <div class="uba-pipe-zone" id="tasks-done"></div>
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -182,6 +229,60 @@
         </div>
       </div>
     </section>
+
+    <!-- Task Form Modal -->
+    <div class="uba-modal is-hidden" id="task-form-modal" aria-hidden="true">
+      <div class="uba-modal-overlay"></div>
+      <div class="uba-modal-dialog">
+        <div class="uba-modal-header">
+          <h3>Task</h3>
+          <button type="button" class="uba-modal-close" id="task-form-close">×</button>
+        </div>
+        <div class="uba-modal-body">
+          <form id="task-form">
+            <input type="hidden" id="task-id">
+            <div class="uba-form-group">
+              <label for="task-title">Title</label>
+              <input type="text" id="task-title" class="uba-input" required>
+            </div>
+            <div class="uba-form-group">
+              <label for="task-project">Project</label>
+              <select id="task-project" class="uba-select">
+                <option value="">No Project</option>
+              </select>
+            </div>
+            <div class="uba-form-group">
+              <label for="task-status">Status</label>
+              <select id="task-status" class="uba-select">
+                <option value="todo">To Do</option>
+                <option value="in_progress">In Progress</option>
+                <option value="done">Done</option>
+              </select>
+            </div>
+            <div class="uba-form-group">
+              <label for="task-priority">Priority</label>
+              <select id="task-priority" class="uba-select">
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+            <div class="uba-form-group">
+              <label for="task-due">Due Date</label>
+              <input type="date" id="task-due" class="uba-input">
+            </div>
+            <div class="uba-form-group">
+              <label for="task-description">Description</label>
+              <textarea id="task-description" class="uba-input" rows="3"></textarea>
+            </div>
+            <div class="uba-modal-footer">
+              <button type="button" class="uba-btn" id="task-cancel">Cancel</button>
+              <button type="submit" class="uba-btn uba-btn-primary">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
 
     <script src="assets/js/i18n.js"></script>
     <script src="assets/js/store.js"></script>
