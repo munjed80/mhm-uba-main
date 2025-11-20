@@ -290,6 +290,7 @@
     files: makeHelpers("files"),
     automations: makeHelpers("automations"),
     automationLogs: makeHelpers("automationLogs"),
+    settings: makeHelpers("settings"),
     auth,
     workspace,
     _internal: {

@@ -251,8 +251,79 @@
 
     <script src="assets/js/i18n.js"></script>
     <script src="assets/js/store.js"></script>
+    <script src="assets/js/data-layer.js"></script>
     <script src="assets/js/app.js"></script>
     <script src="assets/js/page-loader.js"></script>
+    <script>
+      // Signup handler using UBA.auth
+      async function handleSignup() {
+        const email = document.getElementById('signup-email').value.trim();
+        const password = document.getElementById('signup-password').value.trim();
+        const confirmPassword = document.getElementById('signup-password-confirm').value.trim();
+        const successBox = document.getElementById('signupSuccess');
+        const errorBox = document.getElementById('signupError');
+        
+        successBox.textContent = '';
+        errorBox.textContent = '';
+        
+        if (!email || !password || !confirmPassword) {
+          errorBox.textContent = 'Please fill in all fields';
+          return;
+        }
+        
+        if (password !== confirmPassword) {
+          errorBox.textContent = 'Passwords do not match';
+          return;
+        }
+        
+        if (password.length < 6) {
+          errorBox.textContent = 'Password must be at least 6 characters';
+          return;
+        }
+        
+        try {
+          // Use UBA.auth for registration
+          const result = await window.UBA.auth.register({
+            name: email.split('@')[0], // Use email username as name
+            email,
+            password,
+            language: localStorage.getItem('uba-lang') || 'en'
+          });
+          
+          console.log('Signup successful:', result.user.name);
+          successBox.textContent = 'Account created successfully! Redirecting...';
+          
+          // Redirect to dashboard after a short delay
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 1500);
+        } catch (error) {
+          console.error('Signup error:', error);
+          errorBox.textContent = error.message || 'Signup failed. Please try again.';
+        }
+      }
+      
+      // Wire up the signup button
+      document.addEventListener('DOMContentLoaded', () => {
+        const signupBtn = document.getElementById('signup-btn');
+        if (signupBtn) {
+          signupBtn.addEventListener('click', handleSignup);
+        }
+        
+        // Allow Enter key to submit
+        const inputs = ['signup-email', 'signup-password', 'signup-password-confirm'];
+        inputs.forEach(id => {
+          const input = document.getElementById(id);
+          if (input) {
+            input.addEventListener('keypress', (e) => {
+              if (e.key === 'Enter') {
+                handleSignup();
+              }
+            });
+          }
+        });
+      });
+    </script>
     <script>
       (function () {
         const lang = localStorage.getItem("uba-lang") || "en";
