@@ -119,6 +119,8 @@
       "invoices.paid": "Paid:",
       "invoices.overdue": "Overdue:",
       "invoices.empty": "No invoices yet.",
+      "invoices.new": "New Invoice",
+      "invoices.edit": "Edit Invoice",
       "btn.newInvoice": "New invoice",
       "btn.newAutomation": "New automation",
       "view.automations.empty":
@@ -182,6 +184,9 @@
       "settings.workspace.industry": "Industry",
       "settings.workspace.description": "Description",
       "action.logout": "Logout",
+      "action.save": "Save",
+      "action.cancel": "Cancel",
+      "action.update": "Update",
       "settings.preferences.title": "Preferences",
       "settings.preferences.desc":
         "Toggle single-page view mode and notifications.",

@@ -141,198 +141,258 @@
 
             <div class="uba-views">
               <section class="uba-view" data-view="settings">
-                <div class="uba-card" style="padding: 12px">
-                  <form id="settings-form">
-                    <h3 data-i18n="settings.profile.title">Profile</h3>
-                    <div
-                      style="
-                        display: flex;
-                        gap: 8px;
-                        flex-wrap: wrap;
-                        margin-bottom: 8px;
-                      "
-                    >
-                      <div style="flex: 1; min-width: 160px">
-                        <label
-                          for="setting-user-name"
-                          data-i18n="settings.profile.name"
-                          >Name</label
-                        >
-                        <input
-                          id="setting-user-name"
-                          type="text"
-                          placeholder="Your name"
-                        />
-                      </div>
-                      <div style="flex: 1; min-width: 160px">
-                        <label
-                          for="setting-user-email"
-                          data-i18n="settings.profile.email"
-                          >Email</label
-                        >
-                        <input
-                          id="setting-user-email"
-                          type="email"
-                          placeholder="you@example.com"
-                        />
-                      </div>
-                    </div>
+                <!-- Theme Settings -->
+                <div class="uba-card uba-settings-section" style="padding: 20px; margin-bottom: 16px;">
+                  <div class="uba-settings-header">
+                    <h3 class="uba-settings-title">
+                      <span class="uba-settings-icon">🎨</span>
+                      <span data-i18n="settings.theme.title">Theme</span>
+                    </h3>
+                    <p class="uba-settings-desc" data-i18n="settings.theme.desc">
+                      Choose your preferred visual appearance
+                    </p>
+                  </div>
+                  <div class="uba-theme-toggle">
+                    <label class="uba-toggle-switch">
+                      <input type="checkbox" id="theme-toggle" />
+                      <span class="uba-toggle-slider"></span>
+                      <span class="uba-toggle-labels">
+                        <span data-i18n="settings.theme.light">Light</span>
+                        <span data-i18n="settings.theme.dark">Dark</span>
+                      </span>
+                    </label>
+                  </div>
+                </div>
 
-                    <h3 data-i18n="settings.workspace.title">Workspace</h3>
-                    <div
-                      style="
-                        display: flex;
-                        gap: 8px;
-                        flex-wrap: wrap;
-                        margin-bottom: 8px;
-                      "
-                    >
-                      <div style="flex: 1; min-width: 220px">
-                        <label
-                          for="setting-workspace-name"
-                          data-i18n="settings.workspace.name"
-                          >Workspace name</label
-                        >
+                <!-- Language Settings -->
+                <div class="uba-card uba-settings-section" style="padding: 20px; margin-bottom: 16px;">
+                  <div class="uba-settings-header">
+                    <h3 class="uba-settings-title">
+                      <span class="uba-settings-icon">🌍</span>
+                      <span data-i18n="language.label">Language</span>
+                    </h3>
+                    <p class="uba-settings-desc" data-i18n="settings.language.desc">
+                      Select your preferred language for the interface
+                    </p>
+                  </div>
+                  <div class="uba-settings-field">
+                    <select id="language-select-settings" class="uba-select uba-select-full">
+                      <option value="en" data-i18n="language.en">English</option>
+                      <option value="ar" data-i18n="language.ar">Arabic</option>
+                      <option value="nl" data-i18n="language.nl">Dutch</option>
+                      <option value="fr" data-i18n="language.fr">French</option>
+                      <option value="es" data-i18n="language.es">Spanish</option>
+                      <option value="de" data-i18n="language.de">German</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Workspace Settings -->
+                <div class="uba-card uba-settings-section" style="padding: 20px; margin-bottom: 16px;">
+                  <div class="uba-settings-header">
+                    <h3 class="uba-settings-title">
+                      <span class="uba-settings-icon">🏢</span>
+                      <span data-i18n="settings.workspace.title">Workspace</span>
+                    </h3>
+                    <p class="uba-settings-desc" data-i18n="settings.workspace.desc">
+                      Configure your workspace name and details
+                    </p>
+                  </div>
+                  <form id="workspace-form">
+                    <div class="uba-settings-grid">
+                      <div class="uba-settings-field">
+                        <label for="setting-workspace-name" data-i18n="settings.workspace.name">
+                          Workspace name
+                        </label>
                         <input
                           id="setting-workspace-name"
                           type="text"
                           placeholder="Main workspace"
+                          class="uba-input"
                         />
                       </div>
-                      <div style="flex: 1; min-width: 160px">
-                        <label
-                          for="setting-workspace-industry"
-                          data-i18n="settings.workspace.industry"
-                          >Industry</label
-                        >
+                      <div class="uba-settings-field">
+                        <label for="setting-workspace-description" data-i18n="settings.workspace.description">
+                          Description
+                        </label>
                         <input
-                          id="setting-workspace-industry"
+                          id="setting-workspace-description"
                           type="text"
-                          placeholder="Industry (optional)"
+                          placeholder="Brief description (optional)"
+                          class="uba-input"
                         />
                       </div>
                     </div>
-
-                    <div
-                      style="
-                        display: flex;
-                        gap: 8px;
-                        align-items: center;
-                        margin-bottom: 8px;
-                      "
-                    >
-                      <div style="flex: 1; min-width: 160px">
-                        <label
-                          for="language-select-settings"
-                          data-i18n="language.label"
-                          >Language</label
-                        >
-                        <select id="language-select-settings">
-                          <option value="en" data-i18n="language.en">
-                            English
-                          </option>
-                          <option value="ar" data-i18n="language.ar">
-                            Arabic
-                          </option>
-                          <option value="nl" data-i18n="language.nl">
-                            Dutch
-                          </option>
-                          <option value="fr" data-i18n="language.fr">
-                            French
-                          </option>
-                          <option value="es" data-i18n="language.es">
-                            Spanish
-                          </option>
-                          <option value="de" data-i18n="language.de">
-                            German
-                          </option>
-                        </select>
-                      </div>
-                      <div style="width: 160px">
-                        <label
-                          for="setting-timezone"
-                          data-i18n="settings.workspace.timezone"
-                          >Timezone</label
-                        >
-                        <select id="setting-timezone">
-                          <option>UTC</option>
-                        </select>
-                      </div>
+                    <div class="uba-settings-field">
+                      <label for="setting-workspace-industry" data-i18n="settings.workspace.industry">
+                        Industry
+                      </label>
+                      <input
+                        id="setting-workspace-industry"
+                        type="text"
+                        placeholder="e.g., Technology, Consulting, Design"
+                        class="uba-input"
+                      />
                     </div>
-
-                    <div
-                      style="
-                        display: flex;
-                        gap: 8px;
-                        align-items: center;
-                        margin-bottom: 12px;
-                      "
-                    >
-                      <label
-                        style="display: flex; align-items: center; gap: 8px"
-                      >
-                        <input id="setting-single-page" type="checkbox" />
-                        <span data-i18n="settings.preferences.singlePage"
-                          >Single-page navigation</span
-                        >
-                      </label>
-                      <label
-                        style="display: flex; align-items: center; gap: 8px"
-                      >
-                        <input id="setting-notifications" type="checkbox" />
-                        <span data-i18n="settings.preferences.notifications"
-                          >Notifications</span
-                        >
-                      </label>
-                      <label
-                        style="display: flex; align-items: center; gap: 8px"
-                      >
-                        <input id="setting-dark-mode" type="checkbox" />
-                        <span>Dark mode</span>
-                      </label>
-                      <label
-                        style="display: flex; align-items: center; gap: 8px"
-                      >
-                        <input id="setting-compact-view" type="checkbox" />
-                        <span>Compact view</span>
-                      </label>
-                      <label
-                        style="display: flex; align-items: center; gap: 8px"
-                      >
-                        <input id="setting-show-archived" type="checkbox" />
-                        <span>Show archived items</span>
-                      </label>
-                    </div>
-
-                    <div style="display: flex; gap: 8px; align-items: center">
-                      <button type="submit" class="uba-btn-primary">
-                        Save
-                      </button>
-                      <button
-                        type="button"
-                        id="reset-demo-data"
-                        class="uba-btn-ghost"
-                        style="margin-left: 8px"
-                      >
-                        Reset demo data
-                      </button>
-                      <button
-                        type="button"
-                        class="uba-logout-btn uba-btn-ghost"
-                        style="margin-left: auto"
-                      >
-                        Logout
-                      </button>
-                    </div>
-
-                    <div
-                      id="settings-status"
-                      style="margin-top: 8px; color: var(--muted, #6b7280)"
-                    ></div>
                   </form>
                 </div>
-                <div class="uba-card" style="margin-top: 12px; padding: 12px">
-                  <div id="settings-summary"></div>
+
+                <!-- User Profile Settings -->
+                <div class="uba-card uba-settings-section" style="padding: 20px; margin-bottom: 16px;">
+                  <div class="uba-settings-header">
+                    <h3 class="uba-settings-title">
+                      <span class="uba-settings-icon">👤</span>
+                      <span data-i18n="settings.profile.title">User Profile</span>
+                    </h3>
+                    <p class="uba-settings-desc" data-i18n="settings.profile.desc">
+                      Manage your personal account information
+                    </p>
+                  </div>
+                  <form id="profile-form">
+                    <div class="uba-settings-grid">
+                      <div class="uba-settings-field">
+                        <label for="setting-user-name" data-i18n="settings.profile.name">
+                          Display Name
+                        </label>
+                        <input
+                          id="setting-user-name"
+                          type="text"
+                          placeholder="Your name"
+                          class="uba-input"
+                        />
+                      </div>
+                      <div class="uba-settings-field">
+                        <label for="setting-user-email" data-i18n="settings.profile.email">
+                          Email
+                        </label>
+                        <input
+                          id="setting-user-email"
+                          type="email"
+                          placeholder="you@example.com"
+                          class="uba-input"
+                        />
+                      </div>
+                    </div>
+                    <div class="uba-settings-field">
+                      <label for="setting-timezone" data-i18n="settings.workspace.timezone">
+                        Timezone
+                      </label>
+                      <select id="setting-timezone" class="uba-select uba-select-full">
+                        <option value="UTC">UTC</option>
+                        <option value="America/New_York">Eastern Time</option>
+                        <option value="America/Chicago">Central Time</option>
+                        <option value="America/Denver">Mountain Time</option>
+                        <option value="America/Los_Angeles">Pacific Time</option>
+                        <option value="Europe/London">London</option>
+                        <option value="Europe/Paris">Paris</option>
+                        <option value="Europe/Amsterdam">Amsterdam</option>
+                        <option value="Asia/Tokyo">Tokyo</option>
+                      </select>
+                    </div>
+                  </form>
+                </div>
+
+                <!-- Preferences -->
+                <div class="uba-card uba-settings-section" style="padding: 20px; margin-bottom: 16px;">
+                  <div class="uba-settings-header">
+                    <h3 class="uba-settings-title">
+                      <span class="uba-settings-icon">⚙️</span>
+                      <span data-i18n="settings.preferences.title">Preferences</span>
+                    </h3>
+                    <p class="uba-settings-desc" data-i18n="settings.preferences.desc">
+                      Customize your workspace behavior
+                    </p>
+                  </div>
+                  <div class="uba-settings-toggles">
+                    <label class="uba-setting-item">
+                      <input id="setting-notifications" type="checkbox" class="uba-checkbox" />
+                      <div class="uba-setting-info">
+                        <span class="uba-setting-label" data-i18n="settings.preferences.notifications">
+                          Enable notifications
+                        </span>
+                        <span class="uba-setting-help" data-i18n="settings.preferences.notifications.help">
+                          Receive alerts for important events
+                        </span>
+                      </div>
+                    </label>
+                    <label class="uba-setting-item">
+                      <input id="setting-single-page" type="checkbox" class="uba-checkbox" />
+                      <div class="uba-setting-info">
+                        <span class="uba-setting-label" data-i18n="settings.preferences.singlePage">
+                          Single-page navigation
+                        </span>
+                        <span class="uba-setting-help" data-i18n="settings.preferences.singlePage.help">
+                          Navigate without page reloads
+                        </span>
+                      </div>
+                    </label>
+                    <label class="uba-setting-item">
+                      <input id="setting-compact-view" type="checkbox" class="uba-checkbox" />
+                      <div class="uba-setting-info">
+                        <span class="uba-setting-label" data-i18n="settings.preferences.compact">
+                          Compact view
+                        </span>
+                        <span class="uba-setting-help" data-i18n="settings.preferences.compact.help">
+                          Show more content with smaller spacing
+                        </span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="uba-card uba-settings-section" style="padding: 20px; margin-bottom: 16px;">
+                  <div class="uba-settings-actions">
+                    <button type="button" id="save-all-settings" class="uba-btn-primary">
+                      <span data-i18n="settings.actions.save">Save All Settings</span>
+                    </button>
+                    <button type="button" id="reset-demo-data" class="uba-btn-ghost">
+                      <span data-i18n="settings.actions.reset">Reset Demo Data</span>
+                    </button>
+                    <button type="button" class="uba-logout-btn uba-btn-ghost" style="margin-left: auto;">
+                      <span data-i18n="settings.actions.logout">Logout</span>
+                    </button>
+                  </div>
+                  <div id="settings-status" class="uba-settings-status"></div>
+                </div>
+                
+                <!-- Backup System -->
+                <div class="uba-card" style="margin-top: 12px; padding: 16px">
+                  <h3 data-i18n="settings.backup.title">Backup & Restore</h3>
+                  <p style="color: var(--muted); margin-bottom: 16px; font-size: 14px;" data-i18n="settings.backup.desc">
+                    Export your complete workspace to a JSON file or import a backup to restore your data across devices.
+                  </p>
+                  
+                  <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+                    <button 
+                      id="export-backup-btn" 
+                      class="uba-btn-primary" 
+                      type="button"
+                      data-i18n="settings.backup.export"
+                    >
+                      📁 Export Backup
+                    </button>
+                    
+                    <button 
+                      id="import-backup-btn" 
+                      class="uba-btn-ghost" 
+                      type="button"
+                      data-i18n="settings.backup.import"
+                    >
+                      📂 Import Backup
+                    </button>
+                    
+                    <input 
+                      id="import-backup-input" 
+                      type="file" 
+                      accept=".json" 
+                      style="display: none;"
+                    />
+                  </div>
+                  
+                  <div style="margin-top: 12px; padding: 12px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; font-size: 13px; color: var(--muted);">
+                    <strong>💡 Tip:</strong> Regular backups help you move your workspace between devices and protect against data loss.
+                  </div>
                 </div>
               </section>
             </div>
@@ -344,6 +404,8 @@
     <script src="assets/js/i18n.js"></script>
     <script src="assets/js/store.js"></script>
     <script src="assets/js/app.js"></script>
+    <script src="assets/js/settings.js"></script>
+    <script src="assets/js/backup.js"></script>
     <script src="assets/js/page-loader.js"></script>
     <script>
       (function () {

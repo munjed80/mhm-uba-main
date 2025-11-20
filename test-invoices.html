@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice System Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .status {
+            font-family: monospace;
+            background: #f3f4f6;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { color: #22c55e; }
+        .error { color: #ef4444; }
+        .warning { color: #f59e0b; }
+    </style>
+</head>
+<body>
+    <h1>🧾 Invoice System Test Page</h1>
+    
+    <div class="test-section">
+        <h2>Quick Tests</h2>
+        <p>Use these buttons to test the invoice system functionality:</p>
+        
+        <button onclick="runVerification()">🔍 Run Verification</button>
+        <button onclick="testAddSampleData()">🧪 Add Test Data</button>
+        <button onclick="testClearData()">🗑️ Clear Data</button>
+        <button onclick="testModalFunctions()">🎭 Test Modal</button>
+        
+        <div id="test-results" class="status">
+            Click a button to start testing...
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Manual Tests</h2>
+        <p>Open the browser console and try these commands:</p>
+        <ul>
+            <li><code>verifyInvoicesSetup()</code> - Complete system verification</li>
+            <li><code>addTestInvoices()</code> - Add sample invoice data</li>
+            <li><code>clearAllInvoices()</code> - Clear all invoice data</li>
+            <li><code>openInvoiceModal()</code> - Open the modal dialog</li>
+            <li><code>window.ubaStore.invoices.getAll()</code> - Get all invoices</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>Live Invoice List</h2>
+        <div id="invoice-list">Loading...</div>
+        <button onclick="refreshInvoiceList()">🔄 Refresh List</button>
+    </div>
+
+    <!-- Include all necessary scripts -->
+    <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/store.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/invoices.js"></script>
+
+    <script>
+        function log(message, type = 'info') {
+            const results = document.getElementById('test-results');
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : type === 'warning' ? 'warning' : '';
+            results.innerHTML += `<div class="${className}">${message}</div>`;
+            results.scrollTop = results.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('test-results').innerHTML = '';
+        }
+
+        function runVerification() {
+            clearLog();
+            log('🔍 Starting verification...', 'info');
+            
+            // Capture console output
+            const originalLog = console.log;
+            const originalWarn = console.warn;
+            const originalError = console.error;
+            
+            console.log = (...args) => {
+                log(args.join(' '), 'info');
+                originalLog(...args);
+            };
+            console.warn = (...args) => {
+                log(args.join(' '), 'warning');
+                originalWarn(...args);
+            };
+            console.error = (...args) => {
+                log(args.join(' '), 'error');
+                originalError(...args);
+            };
+            
+            try {
+                if (typeof verifyInvoicesSetup === 'function') {
+                    verifyInvoicesSetup();
+                } else {
+                    log('❌ verifyInvoicesSetup function not available', 'error');
+                }
+            } catch (error) {
+                log(`❌ Verification failed: ${error.message}`, 'error');
+            }
+            
+            // Restore console
+            setTimeout(() => {
+                console.log = originalLog;
+                console.warn = originalWarn;
+                console.error = originalError;
+            }, 1000);
+        }
+
+        function testAddSampleData() {
+            clearLog();
+            log('🧪 Adding test data...', 'info');
+            try {
+                if (typeof addTestInvoices === 'function') {
+                    addTestInvoices();
+                    log('✅ Test data added successfully', 'success');
+                    refreshInvoiceList();
+                } else {
+                    log('❌ addTestInvoices function not available', 'error');
+                }
+            } catch (error) {
+                log(`❌ Failed to add test data: ${error.message}`, 'error');
+            }
+        }
+
+        function testClearData() {
+            clearLog();
+            log('🗑️ Clearing data...', 'info');
+            try {
+                if (typeof clearAllInvoices === 'function') {
+                    clearAllInvoices();
+                    log('✅ Data cleared successfully', 'success');
+                    refreshInvoiceList();
+                } else {
+                    log('❌ clearAllInvoices function not available', 'error');
+                }
+            } catch (error) {
+                log(`❌ Failed to clear data: ${error.message}`, 'error');
+            }
+        }
+
+        function testModalFunctions() {
+            clearLog();
+            log('🎭 Testing modal functions...', 'info');
+            try {
+                if (typeof openInvoiceModal === 'function') {
+                    log('✅ Opening modal...', 'success');
+                    openInvoiceModal();
+                    
+                    setTimeout(() => {
+                        if (typeof closeInvoiceModal === 'function') {
+                            log('✅ Closing modal...', 'success');
+                            closeInvoiceModal();
+                            log('✅ Modal test completed', 'success');
+                        }
+                    }, 2000);
+                } else {
+                    log('❌ Modal functions not available', 'error');
+                }
+            } catch (error) {
+                log(`❌ Modal test failed: ${error.message}`, 'error');
+            }
+        }
+
+        function refreshInvoiceList() {
+            const listEl = document.getElementById('invoice-list');
+            try {
+                if (window.ubaStore && window.ubaStore.invoices) {
+                    const invoices = window.ubaStore.invoices.getAll() || [];
+                    if (invoices.length === 0) {
+                        listEl.innerHTML = '<em>No invoices found</em>';
+                    } else {
+                        listEl.innerHTML = `
+                            <h3>📋 ${invoices.length} Invoice(s)</h3>
+                            ${invoices.map(inv => `
+                                <div style="border: 1px solid #ddd; padding: 10px; margin: 5px 0; border-radius: 4px;">
+                                    <strong>${inv.client}</strong> - €${inv.amount} 
+                                    <span style="background: #e5e7eb; padding: 2px 6px; border-radius: 3px; font-size: 12px;">
+                                        ${inv.status}
+                                    </span>
+                                    <br>
+                                    <small>${inv.label || 'No description'} | Due: ${inv.due || 'No due date'}</small>
+                                </div>
+                            `).join('')}
+                        `;
+                    }
+                } else {
+                    listEl.innerHTML = '<em style="color: red;">ubaStore not available</em>';
+                }
+            } catch (error) {
+                listEl.innerHTML = `<em style="color: red;">Error loading invoices: ${error.message}</em>`;
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Test page loaded', 'success');
+            refreshInvoiceList();
+        });
+    </script>
+</body>
+</html>

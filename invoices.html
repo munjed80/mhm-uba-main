@@ -161,74 +161,10 @@
                             style.
                           </p>
                         </div>
-                        <span class="uba-pill" data-i18n="view.invoices.badge"
-                          >Local billing</span
-                        >
+                        <button id="new-invoice-btn" class="uba-btn-primary">
+                          <span data-i18n="invoices.new">+ New Invoice</span>
+                        </button>
                       </div>
-
-                      <form id="invoice-form" class="uba-form">
-                        <input type="hidden" id="invoice-edit-id" />
-                        <div class="uba-form-row">
-                          <input
-                            type="text"
-                            id="invoice-client"
-                            placeholder="Client"
-                            data-i18n-placeholder="table.client"
-                            required
-                          />
-                          <input
-                            type="text"
-                            id="invoice-label"
-                            placeholder="Label"
-                            data-i18n-placeholder="table.label"
-                          />
-                        </div>
-
-                        <div class="uba-form-row">
-                          <input
-                            type="number"
-                            id="invoice-amount"
-                            placeholder="Amount (€)"
-                            step="0.01"
-                            min="0"
-                            data-i18n-placeholder="form.amount"
-                            required
-                          />
-                          <select id="invoice-status">
-                            <option value="draft" data-i18n="form.draft">
-                              Draft
-                            </option>
-                            <option value="sent" data-i18n="form.sent">
-                              Sent
-                            </option>
-                            <option value="paid" data-i18n="form.paid">
-                              Paid
-                            </option>
-                          </select>
-                          <input type="date" id="invoice-due" />
-                        </div>
-
-                        <div class="uba-form-row">
-                          <input
-                            type="text"
-                            id="invoice-notes"
-                            placeholder="Notes"
-                            data-i18n-placeholder="form.notes"
-                          />
-                          <button
-                            type="submit"
-                            class="uba-btn-primary"
-                            data-i18n="form.saveInvoice"
-                          >
-                            Save invoice
-                          </button>
-                        </div>
-                        <p
-                          id="invoice-error"
-                          class="uba-text-danger"
-                          aria-live="polite"
-                        ></p>
-                      </form>
 
                       <div class="mini-invoices-meta">
                         <div>
@@ -265,7 +201,7 @@
                               </th>
                             </tr>
                           </thead>
-                          <tbody id="invoice-table-body">
+                          <tbody id="invoices-body">
                             <tr>
                               <td colspan="6" data-i18n="mini.none">
                                 No invoices yet. Add your first one.
@@ -275,6 +211,93 @@
                         </table>
                       </div>
                     </section>
+                  </div>
+                </div>
+
+                <!-- Invoice Modal -->
+                <div id="invoice-modal" class="uba-modal" style="display: none;">
+                  <div class="uba-modal-backdrop" onclick="closeInvoiceModal()"></div>
+                  <div class="uba-modal-dialog">
+                    <div class="uba-modal-header">
+                      <h3 id="modal-title" data-i18n="invoices.new">New Invoice</h3>
+                      <button class="uba-modal-close" onclick="closeInvoiceModal()">&times;</button>
+                    </div>
+                    <div class="uba-modal-body">
+                      <form id="invoice-form" class="uba-form">
+                        <input type="hidden" id="invoice-edit-id" />
+                        
+                        <div class="uba-form-group">
+                          <label for="invoice-client" data-i18n="table.client">Client</label>
+                          <input
+                            type="text"
+                            id="invoice-client"
+                            class="uba-input"
+                            placeholder="Client name"
+                            required
+                          />
+                        </div>
+
+                        <div class="uba-form-row">
+                          <div class="uba-form-group">
+                            <label for="invoice-label" data-i18n="table.label">Label</label>
+                            <input
+                              type="text"
+                              id="invoice-label"
+                              class="uba-input"
+                              placeholder="Invoice description"
+                            />
+                          </div>
+                          <div class="uba-form-group">
+                            <label for="invoice-amount" data-i18n="table.amount">Amount (€)</label>
+                            <input
+                              type="number"
+                              id="invoice-amount"
+                              class="uba-input"
+                              placeholder="0.00"
+                              step="0.01"
+                              min="0"
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div class="uba-form-row">
+                          <div class="uba-form-group">
+                            <label for="invoice-status" data-i18n="table.status">Status</label>
+                            <select id="invoice-status" class="uba-select">
+                              <option value="draft" data-i18n="form.draft">Draft</option>
+                              <option value="sent" data-i18n="form.sent">Sent</option>
+                              <option value="paid" data-i18n="form.paid">Paid</option>
+                              <option value="overdue" data-i18n="form.overdue">Overdue</option>
+                            </select>
+                          </div>
+                          <div class="uba-form-group">
+                            <label for="invoice-due" data-i18n="view.invoices.due">Due Date</label>
+                            <input type="date" id="invoice-due" class="uba-input" />
+                          </div>
+                        </div>
+
+                        <div class="uba-form-group">
+                          <label for="invoice-notes" data-i18n="form.notes">Notes</label>
+                          <textarea
+                            id="invoice-notes"
+                            class="uba-textarea"
+                            placeholder="Optional notes or description"
+                            rows="3"
+                          ></textarea>
+                        </div>
+
+                        <div id="invoice-error" class="uba-error-message" style="display: none;"></div>
+                      </form>
+                    </div>
+                    <div class="uba-modal-footer">
+                      <button type="button" class="uba-btn-ghost" onclick="closeInvoiceModal()">
+                        <span data-i18n="action.cancel">Cancel</span>
+                      </button>
+                      <button type="button" id="save-invoice-btn" class="uba-btn-primary">
+                        <span data-i18n="action.save">Save Invoice</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </section>
