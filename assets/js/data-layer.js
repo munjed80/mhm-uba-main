@@ -331,6 +331,18 @@
           reject(error);
         }
       });
+    },
+
+    async getUser(userId) {
+      return new Promise((resolve) => {
+        try {
+          const users = getJSON(USERS_KEY, []);
+          const user = users.find(u => u.id === userId);
+          resolve(user || null);
+        } catch (error) {
+          resolve(null);
+        }
+      });
     }
   };
 
