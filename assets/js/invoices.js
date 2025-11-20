@@ -1,12 +1,25 @@
 /**
- * Invoices Page - Modern CRUD Interface
+ * Invoices Page - Modern CRUD Interface with Validation and Pagination
  */
 
 let isEditMode = false;
 let editInvoiceId = null;
+let currentPage = 1;
+let pageSize = 20;
+let filteredInvoices = [];
+
+// Validation schema for invoices
+const invoiceValidationSchema = {
+    'invoice-client': { required: true, type: 'string' },
+    'invoice-amount': { required: true, type: 'number', options: { min: 0.01 } },
+    'invoice-label': { required: false, type: 'string' },
+    'invoice-status': { required: true, type: 'string' },
+    'invoice-due': { required: false, type: 'date' },
+    'invoice-notes': { required: false, type: 'string' }
+};
 
 function initInvoicesPage() {
-    console.log('🧯 Initializing invoices page with modal CRUD interface');
+    console.log('🧯 Initializing enhanced invoices page with validation and pagination');
     
     // Check if required elements exist
     const requiredElements = {
@@ -18,9 +31,11 @@ function initInvoicesPage() {
     };
     
     let missingElements = [];
-    for (const [id, name] of Object.entries(requiredElements)) {
-        if (!document.getElementById(id)) {
-            missingElements.push(`${name} (ID: ${id})`);
+    for (const id in requiredElements) {
+        if (requiredElements.hasOwnProperty(id)) {
+            if (!document.getElementById(id)) {
+                missingElements.push(requiredElements[id] + ' (ID: ' + id + ')');
+            }
         }
     }
     
@@ -41,13 +56,16 @@ function initInvoicesPage() {
     // Initialize modal event handlers
     initModalEvents();
     
+    // Initialize pagination with search and sort
+    initInvoicesPagination();
+    
     // Render the invoices table
     renderInvoicesTable();
     
     // Update invoice count and total
     updateInvoiceMetrics();
     
-    console.log('✓ Invoices page initialization complete');
+    console.log('✓ Enhanced invoices page initialization complete');
 }
 
 function initModalEvents() {
@@ -181,15 +199,43 @@ function handleSaveInvoice() {
     const due = document.getElementById('invoice-due').value;
     const notes = document.getElementById('invoice-notes').value.trim();
     
-    // Validation
-    if (!client) {
-        showInvoiceError('Client name is required');
-        return;
+    // Clear previous errors
+    if (window.UBAValidation) {
+        window.UBAValidation.clearAllErrors('invoice-form');
     }
     
-    if (amount <= 0) {
-        showInvoiceError('Amount must be greater than 0');
-        return;
+    // Prepare form data for validation
+    const formData = {
+        'invoice-client': client,
+        'invoice-amount': amount,
+        'invoice-label': label,
+        'invoice-status': status,
+        'invoice-due': due,
+        'invoice-notes': notes
+    };
+    
+    // Validate form if validation is available
+    if (window.UBAValidation) {
+        const isValid = window.UBAValidation.validateAndShowErrors(
+            invoiceValidationSchema, 
+            formData, 
+            'invoice-form'
+        );
+        
+        if (!isValid) {
+            return;
+        }
+    } else {
+        // Fallback validation
+        if (!client) {
+            showInvoiceError('Client name is required');
+            return;
+        }
+        
+        if (amount <= 0) {
+            showInvoiceError('Amount must be greater than 0');
+            return;
+        }
     }
     
     // Prepare invoice data
@@ -215,6 +261,10 @@ function handleSaveInvoice() {
         }
         
         if (isEditMode && editInvoiceId) {
+            // Get original invoice for comparison
+            const originalInvoice = window.ubaStore.invoices.getById(editInvoiceId);
+            const originalStatus = originalInvoice ? originalInvoice.status : null;
+            
             // Update existing invoice
             const success = window.ubaStore.invoices.update(editInvoiceId, invoiceData);
             if (success) {
@@ -223,6 +273,14 @@ function handleSaveInvoice() {
                 // Trigger automations for invoice update
                 const updatedInvoice = window.ubaStore.invoices.getById(editInvoiceId);
                 if (updatedInvoice && typeof window.runAutomations === 'function') {
+                    // Check if status changed
+                    if (originalStatus && originalStatus !== updatedInvoice.status) {
+                        window.runAutomations('invoice_status_changed', { 
+                            invoice: updatedInvoice, 
+                            previousStatus: originalStatus 
+                        });
+                    }
+                    
                     // Check for overdue status
                     if (updatedInvoice.status === 'overdue') {
                         window.runAutomations('invoice_overdue', { invoice: updatedInvoice });
@@ -901,9 +959,9 @@ function renderInvoicesTable() {
         return;
     }
     
-    const invoices = window.ubaStore.invoices.getAll();
+    const allInvoices = window.ubaStore.invoices.getAll();
     
-    if (!invoices || invoices.length === 0) {
+    if (!allInvoices || allInvoices.length === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">
@@ -914,61 +972,205 @@ function renderInvoicesTable() {
         return;
     }
     
-    // Sort invoices by creation date (newest first)
-    const sortedInvoices = invoices.sort((a, b) => {
-        const dateA = new Date(a.created_at || 0);
-        const dateB = new Date(b.created_at || 0);
-        return dateB - dateA;
+    // Apply search filter
+    const searchInput = document.getElementById('invoices-search');
+    const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+    
+    filteredInvoices = allInvoices.filter(invoice => {
+        if (!searchTerm) return true;
+        return (
+            (invoice.client || '').toLowerCase().includes(searchTerm) ||
+            (invoice.label || '').toLowerCase().includes(searchTerm) ||
+            (invoice.status || '').toLowerCase().includes(searchTerm)
+        );
     });
     
-    tbody.innerHTML = sortedInvoices.map(invoice => {
-        const statusClass = getStatusClass(invoice.status);
-        const formattedAmount = formatAmount(invoice.amount);
-        const formattedDue = formatDate(invoice.due);
-        
-        return `
+    // Apply sorting
+    const sortSelect = document.getElementById('invoices-sort');
+    const sortBy = sortSelect ? sortSelect.value : 'date_desc';
+    
+    filteredInvoices.sort((a, b) => {
+        switch (sortBy) {
+            case 'date_asc':
+                return new Date(a.created_at || 0) - new Date(b.created_at || 0);
+            case 'date_desc':
+                return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+            case 'amount_asc':
+                return (parseFloat(a.amount) || 0) - (parseFloat(b.amount) || 0);
+            case 'amount_desc':
+                return (parseFloat(b.amount) || 0) - (parseFloat(a.amount) || 0);
+            case 'client_asc':
+                return (a.client || '').localeCompare(b.client || '');
+            case 'client_desc':
+                return (b.client || '').localeCompare(a.client || '');
+            case 'status':
+                return (a.status || '').localeCompare(b.status || '');
+            default:
+                return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+        }
+    });
+    
+    // Get paged results
+    const pagedInvoices = getPagedInvoices();
+    
+    if (pagedInvoices.length === 0) {
+        tbody.innerHTML = `
             <tr>
-                <td>
-                    <strong>${escapeHtml(invoice.client)}</strong>
-                </td>
-                <td>${escapeHtml(invoice.label || '—')}</td>
-                <td>
-                    <strong>${formattedAmount}</strong>
-                </td>
-                <td>
-                    <span class="uba-status ${statusClass}">
-                        ${capitalizeFirst(invoice.status)}
-                    </span>
-                </td>
-                <td>${formattedDue}</td>
-                <td>
-                    <div class="uba-table-actions">
-                        <button 
-                            class="uba-btn-sm uba-btn-ghost" 
-                            onclick="viewInvoice('${invoice.id}')"
-                            title="View Invoice"
-                        >
-                            👁️
-                        </button>
-                        <button 
-                            class="uba-btn-sm uba-btn-ghost" 
-                            onclick="editInvoice('${invoice.id}')"
-                            title="Edit Invoice"
-                        >
-                            ✏️
-                        </button>
-                        <button 
-                            class="uba-btn-sm uba-btn-danger" 
-                            onclick="deleteInvoice('${invoice.id}')"
-                            title="Delete Invoice"
-                        >
-                            🗑️
-                        </button>
-                    </div>
+                <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    <span>No invoices found matching your search.</span>
                 </td>
             </tr>
         `;
-    }).join('');
+    } else {
+        tbody.innerHTML = pagedInvoices.map(invoice => {
+            const statusClass = getStatusClass(invoice.status);
+            const formattedAmount = formatAmount(invoice.amount);
+            const formattedDue = formatDate(invoice.due);
+            
+            return `
+                <tr>
+                    <td>
+                        <strong>${escapeHtml(invoice.client)}</strong>
+                    </td>
+                    <td>${escapeHtml(invoice.label || '—')}</td>
+                    <td>
+                        <strong>${formattedAmount}</strong>
+                    </td>
+                    <td>
+                        <span class="uba-status ${statusClass}">
+                            ${capitalizeFirst(invoice.status)}
+                        </span>
+                    </td>
+                    <td>${formattedDue}</td>
+                    <td>
+                        <div class="uba-table-actions">
+                            <button 
+                                class="uba-btn-sm uba-btn-ghost" 
+                                onclick="viewInvoice('${invoice.id}')"
+                                title="View Invoice"
+                            >
+                                👁️
+                            </button>
+                            <button 
+                                class="uba-btn-sm uba-btn-ghost" 
+                                onclick="editInvoice('${invoice.id}')"
+                                title="Edit Invoice"
+                            >
+                                ✏️
+                            </button>
+                            <button 
+                                class="uba-btn-sm uba-btn-danger" 
+                                onclick="deleteInvoice('${invoice.id}')"
+                                title="Delete Invoice"
+                            >
+                                🗑️
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+    
+    // Update pagination controls
+    updateInvoicesPagination();
+}
+
+function initInvoicesPagination() {
+    // Add toolbar if it doesn't exist
+    const table = document.getElementById("invoices-page-table");
+    if (table && !document.getElementById('invoices-toolbar')) {
+        addInvoicesToolbar();
+    }
+    
+    // Add pagination container if it doesn't exist
+    if (table && !document.getElementById('invoices-pagination')) {
+        const paginationHtml = `
+            <div id="invoices-pagination" class="uba-pagination">
+                <button id="invoices-prev-page" class="uba-btn-ghost uba-btn-sm" disabled>Previous</button>
+                <span id="invoices-page-info" class="uba-page-info">Page 1 of 1</span>
+                <button id="invoices-next-page" class="uba-btn-ghost uba-btn-sm" disabled>Next</button>
+            </div>
+        `;
+        table.parentElement.insertAdjacentHTML('afterend', paginationHtml);
+        
+        // Attach event listeners
+        document.getElementById('invoices-prev-page').addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderInvoicesTable();
+            }
+        });
+        
+        document.getElementById('invoices-next-page').addEventListener('click', () => {
+            const totalPages = Math.ceil(filteredInvoices.length / pageSize);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderInvoicesTable();
+            }
+        });
+    }
+}
+
+function updateInvoicesPagination() {
+    const totalPages = Math.ceil(filteredInvoices.length / pageSize);
+    const prevBtn = document.getElementById('invoices-prev-page');
+    const nextBtn = document.getElementById('invoices-next-page');
+    const pageInfo = document.getElementById('invoices-page-info');
+    
+    if (prevBtn) prevBtn.disabled = currentPage <= 1;
+    if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+    if (pageInfo) pageInfo.textContent = `Page ${currentPage} of ${Math.max(1, totalPages)} (${filteredInvoices.length} total)`;
+}
+
+function getPagedInvoices() {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return filteredInvoices.slice(startIndex, endIndex);
+}
+
+function addInvoicesToolbar() {
+    const table = document.getElementById("invoices-page-table");
+    if (!table) return;
+    
+    const toolbarHtml = `
+        <div id="invoices-toolbar" class="uba-table-toolbar">
+            <div class="uba-toolbar-left">
+                <input type="text" id="invoices-search" placeholder="Search invoices..." class="uba-input uba-input-sm">
+            </div>
+            <div class="uba-toolbar-right">
+                <select id="invoices-sort" class="uba-input uba-input-sm">
+                    <option value="date_desc">Date (Newest)</option>
+                    <option value="date_asc">Date (Oldest)</option>
+                    <option value="amount_desc">Amount (High to Low)</option>
+                    <option value="amount_asc">Amount (Low to High)</option>
+                    <option value="client_asc">Client (A-Z)</option>
+                    <option value="client_desc">Client (Z-A)</option>
+                    <option value="status">Status</option>
+                </select>
+            </div>
+        </div>
+    `;
+    
+    table.parentElement.insertAdjacentHTML('beforebegin', toolbarHtml);
+    
+    // Attach event listeners
+    const searchInput = document.getElementById('invoices-search');
+    const sortSelect = document.getElementById('invoices-sort');
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            currentPage = 1; // Reset to first page on search
+            renderInvoicesTable();
+        });
+    }
+    
+    if (sortSelect) {
+        sortSelect.addEventListener('change', () => {
+            currentPage = 1; // Reset to first page on sort
+            renderInvoicesTable();
+        });
+    }
 }
 
 function updateInvoiceMetrics() {

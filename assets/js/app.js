@@ -1540,13 +1540,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         // Use centralized helper (will prefer store when present)
-        await createClient({
+        const newClient = await createClient({
           name,
           email: emailInput.value.trim() || "",
           company: companyInput.value.trim() || "",
           phone: phoneInput.value.trim() || "",
           notes: notesInput.value.trim() || "",
         });
+
+        // Trigger automations for new client
+        if (typeof window.runAutomations === 'function' && newClient) {
+          window.runAutomations('client_created', { client: newClient });
+        }
 
         nameInput.value = "";
         emailInput.value = "";
@@ -2548,7 +2553,12 @@ const renderClientsPage = () => {
         }
       } else {
         // create new client (centralized helper)
-        createClient(payload);
+        const newClient = createClient(payload);
+        
+        // Trigger automations for new client
+        if (typeof window.runAutomations === 'function' && newClient) {
+          window.runAutomations('client_created', { client: newClient });
+        }
       }
       clientsEditingId = null;
 

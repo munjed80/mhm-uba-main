@@ -30,7 +30,7 @@ function initExpensesPage() {
 function loadExpensesData() {
     try {
         const store = window.ubaStore;
-        if (store && store.expenses) {
+        if (store && store.expenses && typeof store.expenses.getAll === 'function') {
             expensesData = store.expenses.getAll() || [];
         } else {
             // Fallback to demo data if no store available
@@ -346,7 +346,7 @@ function saveExpense() {
         
         if (isEditMode && currentExpenseId) {
             // Update existing expense
-            if (store && store.expenses) {
+            if (store && store.expenses && typeof store.expenses.update === 'function') {
                 store.expenses.update(currentExpenseId, expenseData);
             } else {
                 // Fallback for demo mode
@@ -370,7 +370,7 @@ function saveExpense() {
                 ...expenseData
             };
             
-            if (store && store.expenses) {
+            if (store && store.expenses && typeof store.expenses.create === 'function') {
                 store.expenses.create(newExpense);
             } else {
                 // Fallback for demo mode
@@ -414,7 +414,7 @@ function deleteExpense(expenseId) {
     try {
         const store = window.ubaStore;
         
-        if (store && store.expenses) {
+        if (store && store.expenses && typeof store.expenses.delete === 'function') {
             store.expenses.delete(expenseId);
         } else {
             // Fallback for demo mode

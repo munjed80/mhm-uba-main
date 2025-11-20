@@ -1,17 +1,25 @@
 /**
- * Automations Engine - Zapier-style rules engine
+ * Automations Engine V2 - Advanced business automation system
+ * 
+ * Features:
+ * - Standardized automation rule model
+ * - Robust execution engine with runAutomations()
+ * - Comprehensive logging system
+ * - Dark dashboard UI with enhanced modal forms
+ * - Integration hooks for invoices, tasks, and clients
  */
 
 let isEditMode = false;
 let editAutomationId = null;
 
-// Automation configuration
+// V2 Automation Configuration
 const TRIGGER_TYPES = {
     invoice_created: { label: 'Invoice Created', description: 'When a new invoice is created' },
+    invoice_status_changed: { label: 'Invoice Status Changed', description: 'When an invoice status is modified' },
     invoice_overdue: { label: 'Invoice Overdue', description: 'When an invoice becomes overdue' },
     client_created: { label: 'Client Created', description: 'When a new client is added' },
-    task_due_today: { label: 'Task Due Today', description: 'When a task is due today' },
-    project_completed: { label: 'Project Completed', description: 'When a project is marked as completed' }
+    task_created: { label: 'Task Created', description: 'When a new task is created' },
+    task_completed: { label: 'Task Completed', description: 'When a task is marked as completed' }
 };
 
 const ACTION_TYPES = {
@@ -27,18 +35,18 @@ const ACTION_TYPES = {
     },
     show_notification: { 
         label: 'Show Notification', 
-        description: 'Display a notification message',
+        description: 'Log a notification entry',
         config: ['message']
     },
-    send_email: { 
-        label: 'Send Email (Demo)', 
-        description: 'Send an email (demo action)',
-        config: ['subject', 'body']
+    mark_invoice_as_overdue: { 
+        label: 'Mark Invoice as Overdue', 
+        description: 'Automatically mark invoice as overdue when date is past due',
+        config: ['overdueDays']
     }
 };
 
 function initAutomationsPage() {
-    console.log('🤖 Initializing automations page with rules engine');
+    console.log('🤖 Initializing Automations V2 page...');
     
     // Check if required elements exist
     const requiredElements = {
@@ -46,7 +54,8 @@ function initAutomationsPage() {
         'save-automation-btn': 'Save button',
         'automation-form': 'Automation form',
         'automations-body': 'Automations table body',
-        'automation-modal': 'Automation modal'
+        'automation-modal': 'Automation modal',
+        'automation-logs-body': 'Automation logs table body'
     };
     
     let missingElements = [];
@@ -70,6 +79,9 @@ function initAutomationsPage() {
     console.log('✓ All required elements found');
     console.log('✓ ubaStore available');
     
+    // Ensure automation collections exist
+    ensureAutomationCollections();
+    
     // Initialize modal event handlers
     initModalEvents();
     
@@ -85,7 +97,7 @@ function initAutomationsPage() {
     // Update automation metrics
     updateAutomationMetrics();
     
-    console.log('✓ Automations page initialization complete');
+    console.log('✅ Automations V2 page initialization complete');
 }
 
 function initModalEvents() {
@@ -171,9 +183,9 @@ function showActionConfig(actionType) {
             document.getElementById('config-notification').style.display = 'block';
             configLabel.textContent = 'Notification Configuration';
             break;
-        case 'send_email':
-            document.getElementById('config-email').style.display = 'block';
-            configLabel.textContent = 'Email Configuration';
+        case 'mark_invoice_as_overdue':
+            document.getElementById('config-mark-overdue').style.display = 'block';
+            configLabel.textContent = 'Overdue Configuration';
             break;
         default:
             configContainer.style.display = 'none';
@@ -203,6 +215,13 @@ function openAutomationModal(automationData = null) {
         // Populate form fields
         document.getElementById('automation-edit-id').value = automationData.id;
         document.getElementById('automation-name').value = automationData.name || '';
+        
+        // Set description if field exists
+        const descField = document.getElementById('automation-description');
+        if (descField) {
+            descField.value = automationData.description || '';
+        }
+        
         document.getElementById('automation-trigger').value = automationData.triggerType || '';
         document.getElementById('automation-action').value = automationData.actionType || '';
         
@@ -259,11 +278,9 @@ function populateActionConfig(actionType, config) {
             const messageEl = document.getElementById('config-notification-message');
             if (messageEl) messageEl.value = config.message || '';
             break;
-        case 'send_email':
-            const subjectEl = document.getElementById('config-email-subject');
-            const bodyEl = document.getElementById('config-email-body');
-            if (subjectEl) subjectEl.value = config.subject || '';
-            if (bodyEl) bodyEl.value = config.body || '';
+        case 'mark_invoice_as_overdue':
+            const overdueDaysEl = document.getElementById('config-overdue-days');
+            if (overdueDaysEl) overdueDaysEl.value = config.overdueDays || '7';
             break;
     }
 }
@@ -285,6 +302,10 @@ function handleSaveAutomation() {
     const name = document.getElementById('automation-name').value.trim();
     const triggerType = document.getElementById('automation-trigger').value;
     const actionType = document.getElementById('automation-action').value;
+    
+    // Get description if field exists
+    const descField = document.getElementById('automation-description');
+    const description = descField ? descField.value.trim() : '';
     
     // Validation
     if (!name) {
@@ -309,14 +330,17 @@ function handleSaveAutomation() {
         return;
     }
     
-    // Prepare automation data
+    // Prepare automation data using V2 standardized model
+    const currentTime = new Date().toISOString();
     const automationData = {
         name,
+        description,
         triggerType,
         actionType,
-        config,
         active: true,
-        created_at: isEditMode ? null : new Date().toISOString()
+        config,
+        createdAt: isEditMode ? null : currentTime,
+        updatedAt: currentTime
     };
     
     try {
@@ -394,17 +418,10 @@ function getActionConfig(actionType) {
             config.message = message;
             break;
             
-        case 'send_email':
-            const subject = document.getElementById('config-email-subject').value.trim();
-            const body = document.getElementById('config-email-body').value.trim();
+        case 'mark_invoice_as_overdue':
+            const overdueDays = document.getElementById('config-overdue-days').value;
             
-            if (!subject || !body) {
-                showAutomationError('Email subject and body are required');
-                return false;
-            }
-            
-            config.subject = subject;
-            config.body = body;
+            config.overdueDays = parseInt(overdueDays) || 7;
             break;
             
         default:
@@ -503,7 +520,7 @@ function renderAutomationsTable() {
         console.warn('❌ ubaStore.automations not available');
         tbody.innerHTML = `
             <tr>
-                <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">
                     <span>Data store not available. Please check your setup.</span>
                 </td>
             </tr>
@@ -516,7 +533,7 @@ function renderAutomationsTable() {
     if (!automations || automations.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">
                     <span data-i18n="automations.empty">No automations yet. Create your first rule.</span>
                 </td>
             </tr>
@@ -524,10 +541,13 @@ function renderAutomationsTable() {
         return;
     }
     
+    // Get automation logs for last run info
+    const logs = window.ubaStore.automationLogs ? window.ubaStore.automationLogs.getAll() : [];
+    
     // Sort automations by creation date (newest first)
     const sortedAutomations = automations.sort((a, b) => {
-        const dateA = new Date(a.created_at || 0);
-        const dateB = new Date(b.created_at || 0);
+        const dateA = new Date(a.createdAt || a.created_at || 0);
+        const dateB = new Date(b.createdAt || b.created_at || 0);
         return dateB - dateA;
     });
     
@@ -539,10 +559,20 @@ function renderAutomationsTable() {
         const toggleText = automation.active ? 'Pause' : 'Activate';
         const toggleIcon = automation.active ? '⏸️' : '▶️';
         
+        // Find last run for this automation
+        const lastRun = logs
+            .filter(log => log.ruleId === automation.id)
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+        
+        const lastRunText = lastRun 
+            ? formatRelativeTime(lastRun.timestamp)
+            : '—';
+        
         return `
             <tr>
                 <td>
                     <strong>${escapeHtml(automation.name)}</strong>
+                    ${automation.description ? `<br><small style="color: var(--text-muted);">${escapeHtml(automation.description)}</small>` : ''}
                 </td>
                 <td>
                     <span class="uba-automation-trigger">
@@ -558,6 +588,9 @@ function renderAutomationsTable() {
                     <span class="uba-status ${statusClass}">
                         ${statusText}
                     </span>
+                </td>
+                <td>
+                    <span style="color: var(--text-muted);">${lastRunText}</span>
                 </td>
                 <td>
                     <div class="uba-table-actions">
@@ -596,7 +629,7 @@ function renderAutomationLogs() {
     if (!window.ubaStore || !window.ubaStore.automationLogs) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">
                     <span>No automation logs available.</span>
                 </td>
             </tr>
@@ -609,7 +642,7 @@ function renderAutomationLogs() {
     if (!logs || logs.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">
                     <span data-i18n="automations.noLogs">No automation runs yet.</span>
                 </td>
             </tr>
@@ -617,15 +650,16 @@ function renderAutomationLogs() {
         return;
     }
     
-    // Sort logs by timestamp (newest first) and limit to 20
+    // Sort logs by timestamp (newest first) and limit to 50
     const sortedLogs = logs
         .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-        .slice(0, 20);
+        .slice(0, 50);
     
     tbody.innerHTML = sortedLogs.map(log => {
         const statusClass = log.success ? 'uba-status-success' : 'uba-status-danger';
         const statusText = log.success ? 'Success' : 'Failed';
         const timestamp = formatDateTime(log.timestamp);
+        const payloadSummary = log.payloadSummary || '';
         
         return `
             <tr>
@@ -634,17 +668,20 @@ function renderAutomationLogs() {
                 </td>
                 <td>
                     <span class="uba-automation-trigger">
-                        ${escapeHtml(log.triggerType || 'Unknown')}
+                        ${escapeHtml(TRIGGER_TYPES[log.triggerType]?.label || log.triggerType || 'Unknown')}
                     </span>
                 </td>
                 <td>
                     <span class="uba-status ${statusClass}">
                         ${statusText}
                     </span>
-                    ${log.result ? `<br><small>${escapeHtml(log.result)}</small>` : ''}
                 </td>
                 <td>
-                    ${timestamp}
+                    ${log.result ? `<span style="color: var(--text-muted); font-size: 14px;">${escapeHtml(log.result)}</span>` : '—'}
+                    ${payloadSummary ? `<br><small style="color: var(--text-muted); font-size: 12px;">${escapeHtml(payloadSummary)}</small>` : ''}
+                </td>
+                <td>
+                    <span style="color: var(--text-muted); font-size: 14px;">${timestamp}</span>
                 </td>
             </tr>
         `;
@@ -709,8 +746,27 @@ function hideAutomationError() {
 }
 
 // ============================================================================
-// AUTOMATION EXECUTION ENGINE
+// AUTOMATION EXECUTION ENGINE V2
 // ============================================================================
+
+/**
+ * Ensure automation collections exist in ubaStore
+ */
+function ensureAutomationCollections() {
+    if (!window.ubaStore) return;
+    
+    // Ensure automations collection exists
+    if (!window.ubaStore.automations && window.ubaStore.makeHelpers) {
+        window.ubaStore.automations = window.ubaStore.makeHelpers('automations');
+        console.log('✓ Created automations collection');
+    }
+    
+    // Ensure automationLogs collection exists
+    if (!window.ubaStore.automationLogs && window.ubaStore.makeHelpers) {
+        window.ubaStore.automationLogs = window.ubaStore.makeHelpers('automationLogs');
+        console.log('✓ Created automationLogs collection');
+    }
+}
 
 /**
  * Main automation execution function
@@ -742,6 +798,14 @@ function runAutomations(triggerType, payload = {}) {
             executeAutomation(automation, payload);
         });
         
+        // Update UI if on automations page
+        if (window.location.pathname.includes('automations.html')) {
+            setTimeout(() => {
+                renderAutomationLogs();
+                updateAutomationMetrics();
+            }, 100);
+        }
+        
     } catch (error) {
         console.error('❌ Error running automations:', error);
         logAutomationRun(null, triggerType, false, `Error: ${error.message}`);
@@ -763,12 +827,12 @@ function executeAutomation(automation, payload) {
         switch (automation.actionType) {
             case 'create_task':
                 result = executeCreateTask(automation.config, payload);
-                success = !!result;
+                success = !!result && !result.startsWith('Failed') && !result.includes('Error');
                 break;
                 
             case 'add_note_to_client':
                 result = executeAddNoteToClient(automation.config, payload);
-                success = !!result;
+                success = !!result && !result.startsWith('Failed') && !result.includes('Error');
                 break;
                 
             case 'show_notification':
@@ -776,9 +840,9 @@ function executeAutomation(automation, payload) {
                 success = !!result;
                 break;
                 
-            case 'send_email':
-                result = executeSendEmail(automation.config, payload);
-                success = !!result;
+            case 'mark_invoice_as_overdue':
+                result = executeMarkInvoiceAsOverdue(automation.config, payload);
+                success = !!result && !result.startsWith('Failed') && !result.includes('Error');
                 break;
                 
             default:
@@ -786,8 +850,11 @@ function executeAutomation(automation, payload) {
                 success = false;
         }
         
+        // Generate payload summary for logging
+        const payloadSummary = generatePayloadSummary(payload);
+        
         // Log the automation run
-        logAutomationRun(automation, automation.triggerType, success, result);
+        logAutomationRun(automation, automation.triggerType, success, result, payloadSummary);
         
         if (success) {
             console.log(`✅ Automation executed successfully: ${automation.name} - ${result}`);
@@ -806,31 +873,42 @@ function executeAutomation(automation, payload) {
  */
 function executeCreateTask(config, payload) {
     if (!window.ubaStore || !window.ubaStore.tasks) {
-        return 'Tasks store not available';
+        return 'Failed: Tasks store not available';
     }
     
-    // Process task title with payload data
-    let taskTitle = config.taskTitle || 'New Task';
-    taskTitle = processTemplate(taskTitle, payload);
-    
-    // Calculate due date with offset
-    const daysOffset = parseInt(config.daysOffset) || 0;
-    const dueDate = new Date();
-    dueDate.setDate(dueDate.getDate() + daysOffset);
-    
-    // Create the task
-    const taskData = {
-        title: taskTitle,
-        description: `Automatically created by automation`,
-        status: 'todo',
-        due: dueDate.toISOString().split('T')[0],
-        priority: 'medium',
-        created_at: new Date().toISOString()
-    };
-    
     try {
+        // Process task title with payload data
+        let taskTitle = config.taskTitle || 'New Task';
+        taskTitle = processTemplate(taskTitle, payload);
+        
+        // Calculate due date with offset
+        const daysOffset = parseInt(config.daysOffset) || 0;
+        const dueDate = new Date();
+        dueDate.setDate(dueDate.getDate() + daysOffset);
+        
+        // Determine project ID from payload if available
+        let projectId = null;
+        if (payload.invoice && payload.invoice.projectId) {
+            projectId = payload.invoice.projectId;
+        } else if (payload.task && payload.task.projectId) {
+            projectId = payload.task.projectId;
+        }
+        
+        // Create the task
+        const taskData = {
+            title: taskTitle,
+            description: `Automatically created by automation`,
+            status: 'todo',
+            due: daysOffset > 0 ? dueDate.toISOString().split('T')[0] : null,
+            priority: 'medium',
+            projectId,
+            created_at: new Date().toISOString(),
+            created: new Date().toISOString()
+        };
+        
         const newTask = window.ubaStore.tasks.create(taskData);
         return newTask ? `Created task: "${taskTitle}"` : 'Failed to create task';
+        
     } catch (error) {
         return `Task creation failed: ${error.message}`;
     }
@@ -841,41 +919,52 @@ function executeCreateTask(config, payload) {
  */
 function executeAddNoteToClient(config, payload) {
     if (!window.ubaStore || !window.ubaStore.clients) {
-        return 'Clients store not available';
+        return 'Failed: Clients store not available';
     }
     
-    // Find client from payload
-    let clientId = null;
-    if (payload.invoice && payload.invoice.client) {
-        // Find client by name (in a real app, you'd use client ID)
-        const clients = window.ubaStore.clients.getAll() || [];
-        const client = clients.find(c => c.name === payload.invoice.client);
-        if (client) clientId = client.id;
-    } else if (payload.client) {
-        clientId = payload.client.id;
-    }
-    
-    if (!clientId) {
-        return 'No client found to add note to';
-    }
-    
-    // Process note text
-    let noteText = config.noteText || 'Automation note';
-    noteText = processTemplate(noteText, payload);
-    
-    // Add note to client
     try {
+        // Find client from payload
+        let clientId = null;
+        let clientName = 'Unknown Client';
+        
+        if (payload.invoice && payload.invoice.client) {
+            // Find client by name (in a real app, you'd use client ID)
+            const clients = window.ubaStore.clients.getAll() || [];
+            const client = clients.find(c => c.name === payload.invoice.client);
+            if (client) {
+                clientId = client.id;
+                clientName = client.name;
+            }
+        } else if (payload.client) {
+            clientId = payload.client.id;
+            clientName = payload.client.name;
+        }
+        
+        if (!clientId) {
+            return 'Failed: No client found to add note to';
+        }
+        
+        // Process note text
+        let noteText = config.noteText || 'Automation note';
+        noteText = processTemplate(noteText, payload);
+        
+        // Add note to client
         const client = window.ubaStore.clients.getById(clientId);
         if (!client) {
-            return 'Client not found';
+            return 'Failed: Client not found';
         }
         
         const notes = client.notes || '';
         const timestamp = new Date().toLocaleString();
         const newNotes = notes + (notes ? '\n' : '') + `[${timestamp}] ${noteText}`;
         
-        const success = window.ubaStore.clients.update(clientId, { notes: newNotes });
-        return success ? `Added note to client: "${client.name}"` : 'Failed to update client';
+        const success = window.ubaStore.clients.update(clientId, { 
+            notes: newNotes,
+            updatedAt: new Date().toISOString()
+        });
+        
+        return success ? `Added note to client: "${clientName}"` : 'Failed to update client';
+        
     } catch (error) {
         return `Client update failed: ${error.message}`;
     }
@@ -885,31 +974,69 @@ function executeAddNoteToClient(config, payload) {
  * Show notification action
  */
 function executeShowNotification(config, payload) {
-    // Process message template
-    let message = config.message || 'Automation notification';
-    message = processTemplate(message, payload);
-    
-    // Log as notification (in a real app, this would show a toast/notification)
-    console.log(`📢 Automation Notification: ${message}`);
-    
-    return `Notification shown: "${message}"`;
+    try {
+        // Process message template
+        let message = config.message || 'Automation notification';
+        message = processTemplate(message, payload);
+        
+        // Log as notification (in a real app, this would show a toast/notification)
+        console.log(`📢 Automation Notification: ${message}`);
+        
+        return `Notification: "${message}"`;
+        
+    } catch (error) {
+        return `Notification failed: ${error.message}`;
+    }
 }
 
 /**
- * Send email action (demo)
+ * Mark invoice as overdue action
  */
-function executeSendEmail(config, payload) {
-    // Process email template
-    let subject = config.subject || 'Automation Email';
-    let body = config.body || 'This is an automated email.';
+function executeMarkInvoiceAsOverdue(config, payload) {
+    if (!window.ubaStore || !window.ubaStore.invoices) {
+        return 'Failed: Invoices store not available';
+    }
     
-    subject = processTemplate(subject, payload);
-    body = processTemplate(body, payload);
-    
-    // Demo implementation - just log it
-    console.log('📧 Demo Email Sent:', { subject, body, payload });
-    
-    return `Demo email sent: "${subject}"`;
+    try {
+        // Get invoice from payload
+        let invoice = null;
+        if (payload.invoice) {
+            invoice = payload.invoice;
+        } else {
+            return 'Failed: No invoice in payload';
+        }
+        
+        // Check if invoice has a due date
+        if (!invoice.due) {
+            return 'Failed: Invoice has no due date';
+        }
+        
+        // Calculate if invoice is overdue
+        const dueDate = new Date(invoice.due);
+        const today = new Date();
+        const overdueDays = parseInt(config.overdueDays) || 0;
+        const overdueThreshold = new Date(dueDate);
+        overdueThreshold.setDate(overdueThreshold.getDate() + overdueDays);
+        
+        if (today < overdueThreshold) {
+            return `Invoice not yet overdue (due: ${invoice.due})`;
+        }
+        
+        // Update invoice status to overdue if not already
+        if (invoice.status === 'overdue') {
+            return `Invoice already marked as overdue`;
+        }
+        
+        const success = window.ubaStore.invoices.update(invoice.id, { 
+            status: 'overdue',
+            updatedAt: new Date().toISOString()
+        });
+        
+        return success ? `Marked invoice as overdue: ${invoice.label || invoice.client}` : 'Failed to update invoice';
+        
+    } catch (error) {
+        return `Mark overdue failed: ${error.message}`;
+    }
 }
 
 /**
@@ -923,14 +1050,17 @@ function processTemplate(template, payload) {
         processed = processed.replace(/\{client\}/g, payload.invoice.client || 'Unknown Client');
         processed = processed.replace(/\{amount\}/g, payload.invoice.amount || '0');
         processed = processed.replace(/\{status\}/g, payload.invoice.status || 'unknown');
+        processed = processed.replace(/\{label\}/g, payload.invoice.label || 'invoice');
     }
     
     if (payload.client) {
         processed = processed.replace(/\{client\}/g, payload.client.name || 'Unknown Client');
+        processed = processed.replace(/\{company\}/g, payload.client.company || '');
     }
     
     if (payload.task) {
         processed = processed.replace(/\{task\}/g, payload.task.title || 'Unknown Task');
+        processed = processed.replace(/\{priority\}/g, payload.task.priority || 'medium');
     }
     
     // Replace trigger placeholder
@@ -940,20 +1070,36 @@ function processTemplate(template, payload) {
 }
 
 /**
+ * Generate payload summary for logging
+ */
+function generatePayloadSummary(payload) {
+    const summaryParts = [];
+    
+    if (payload.invoice) {
+        summaryParts.push(`Invoice: ${payload.invoice.client || 'Unknown'} - $${payload.invoice.amount || 0}`);
+    }
+    
+    if (payload.client) {
+        summaryParts.push(`Client: ${payload.client.name || 'Unknown'}`);
+    }
+    
+    if (payload.task) {
+        summaryParts.push(`Task: ${payload.task.title || 'Unknown'}`);
+    }
+    
+    return summaryParts.join(', ') || 'No details';
+}
+
+/**
  * Log an automation run
  */
-function logAutomationRun(automation, triggerType, success, result) {
+function logAutomationRun(automation, triggerType, success, result, payloadSummary = '') {
     if (!window.ubaStore) return;
     
     // Ensure automationLogs collection exists
     if (!window.ubaStore.automationLogs) {
-        // Initialize the collection if it doesn't exist
-        try {
-            // This will be handled by the store helpers
-            window.ubaStore.automationLogs = window.ubaStore.makeHelpers ? 
-                window.ubaStore.makeHelpers('automationLogs') : 
-                { getAll: () => [], create: () => null, saveAll: () => {} };
-        } catch (error) {
+        ensureAutomationCollections();
+        if (!window.ubaStore.automationLogs) {
             console.warn('Could not initialize automationLogs collection');
             return;
         }
@@ -965,18 +1111,19 @@ function logAutomationRun(automation, triggerType, success, result) {
         triggerType,
         success,
         result,
+        payloadSummary,
         timestamp: new Date().toISOString()
     };
     
     try {
         window.ubaStore.automationLogs.create(logEntry);
         
-        // Keep only last 100 logs
+        // Keep only last 50 logs to prevent storage bloat
         const logs = window.ubaStore.automationLogs.getAll() || [];
-        if (logs.length > 100) {
+        if (logs.length > 50) {
             const trimmedLogs = logs
                 .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-                .slice(0, 100);
+                .slice(0, 50);
             window.ubaStore.automationLogs.saveAll(trimmedLogs);
         }
     } catch (error) {
@@ -997,6 +1144,26 @@ function formatDateTime(dateStr) {
     try {
         const date = new Date(dateStr);
         return date.toLocaleString();
+    } catch (e) {
+        return '—';
+    }
+}
+
+function formatRelativeTime(dateStr) {
+    if (!dateStr) return '—';
+    try {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins}m ago`;
+        if (diffHours < 24) return `${diffHours}h ago`;
+        if (diffDays < 7) return `${diffDays}d ago`;
+        return date.toLocaleDateString();
     } catch (e) {
         return '—';
     }

@@ -191,11 +191,19 @@
                               <th data-i18n="automations.trigger">Trigger</th>
                               <th data-i18n="automations.action">Action</th>
                               <th data-i18n="table.status">Status</th>
+                              <th data-i18n="automations.lastRun">Last Run</th>
                               <th style="width: 120px" data-i18n="table.actions">
                                 Actions
                               </th>
                             </tr>
                           </thead>
+                          <tbody id="automations-body">
+                            <tr>
+                              <td colspan="6" data-i18n="automations.empty">
+                                No automations yet. Create your first rule.
+                              </td>
+                            </tr>
+                          </tbody>
                           <tbody id="automations-body">
                             <tr>
                               <td colspan="5" data-i18n="automations.empty">
@@ -227,9 +235,10 @@
                         <table class="uba-table">
                           <thead>
                             <tr>
-                              <th data-i18n="automations.logRule">Rule</th>
-                              <th data-i18n="automations.logTrigger">Trigger</th>
-                              <th data-i18n="automations.logResult">Result</th>
+                              <th data-i18n="automations.logRule">Rule Name</th>
+                              <th data-i18n="automations.logTrigger">Trigger Type</th>
+                              <th data-i18n="automations.logResult">Status</th>
+                              <th data-i18n="automations.logPayload">Details</th>
                               <th data-i18n="automations.logTime">Time</th>
                             </tr>
                           </thead>
@@ -271,24 +280,37 @@
                       />
                     </div>
 
+                    <div class="uba-form-group">
+                      <label for="automation-description" data-i18n="table.description">Description (Optional)</label>
+                      <textarea
+                        id="automation-description"
+                        class="uba-textarea"
+                        placeholder="Brief description of what this automation does"
+                        rows="2"
+                      ></textarea>
+                    </div>
+
                     <div class="uba-form-row">
                       <div class="uba-form-group">
                         <label for="automation-trigger" data-i18n="automations.trigger">Trigger</label>
                         <select id="automation-trigger" class="uba-select">
+                          <option value="" disabled selected>Select a trigger...</option>
                           <option value="invoice_created" data-i18n="triggers.invoiceCreated">Invoice Created</option>
+                          <option value="invoice_status_changed" data-i18n="triggers.invoiceStatusChanged">Invoice Status Changed</option>
                           <option value="invoice_overdue" data-i18n="triggers.invoiceOverdue">Invoice Overdue</option>
                           <option value="client_created" data-i18n="triggers.clientCreated">Client Created</option>
-                          <option value="task_due_today" data-i18n="triggers.taskDueToday">Task Due Today</option>
-                          <option value="project_completed" data-i18n="triggers.projectCompleted">Project Completed</option>
+                          <option value="task_created" data-i18n="triggers.taskCreated">Task Created</option>
+                          <option value="task_completed" data-i18n="triggers.taskCompleted">Task Completed</option>
                         </select>
                       </div>
                       <div class="uba-form-group">
                         <label for="automation-action" data-i18n="automations.action">Action</label>
                         <select id="automation-action" class="uba-select">
+                          <option value="" disabled selected>Select an action...</option>
                           <option value="create_task" data-i18n="actions.createTask">Create Task</option>
                           <option value="add_note_to_client" data-i18n="actions.addNoteToClient">Add Note to Client</option>
                           <option value="show_notification" data-i18n="actions.showNotification">Show Notification</option>
-                          <option value="send_email" data-i18n="actions.sendEmail">Send Email (Demo)</option>
+                          <option value="mark_invoice_as_overdue" data-i18n="actions.markInvoiceOverdue">Mark Invoice as Overdue</option>
                         </select>
                       </div>
                     </div>
@@ -299,56 +321,62 @@
                       
                       <!-- Create Task Config -->
                       <div id="config-create-task" class="config-section" style="display: none;">
+                        <label for="config-task-title">Task Title Template</label>
                         <input
                           type="text"
                           id="config-task-title"
                           class="uba-input"
-                          placeholder="Task title (use {client} for client name)"
+                          placeholder="e.g., Follow up with {client} on overdue invoice"
+                          style="margin-bottom: 8px;"
                         />
+                        <label for="config-days-offset">Days Offset (optional)</label>
                         <input
                           type="number"
                           id="config-days-offset"
                           class="uba-input"
-                          placeholder="Days from trigger (e.g., 3 for 3 days later)"
-                          style="margin-top: 8px;"
+                          placeholder="0"
+                          min="0"
+                          max="365"
                         />
+                        <small style="color: var(--text-muted); font-size: 12px;">Number of days from trigger date (0 = today)</small>
                       </div>
 
                       <!-- Add Note Config -->
                       <div id="config-add-note" class="config-section" style="display: none;">
+                        <label for="config-note-text">Note Template</label>
                         <textarea
                           id="config-note-text"
                           class="uba-textarea"
-                          placeholder="Note text (use {trigger} for trigger info)"
+                          placeholder="e.g., Automated note: {trigger} occurred for {client}"
                           rows="3"
                         ></textarea>
+                        <small style="color: var(--text-muted); font-size: 12px;">Use {client}, {amount}, {status}, {trigger} for dynamic values</small>
                       </div>
 
                       <!-- Notification Config -->
                       <div id="config-notification" class="config-section" style="display: none;">
+                        <label for="config-notification-message">Notification Message</label>
                         <input
                           type="text"
                           id="config-notification-message"
                           class="uba-input"
-                          placeholder="Notification message"
+                          placeholder="e.g., Alert: {client} invoice is now {status}"
                         />
+                        <small style="color: var(--text-muted); font-size: 12px;">Use {client}, {amount}, {status}, {trigger} for dynamic values</small>
                       </div>
 
-                      <!-- Email Config -->
-                      <div id="config-email" class="config-section" style="display: none;">
+                      <!-- Mark Overdue Config -->
+                      <div id="config-mark-overdue" class="config-section" style="display: none;">
+                        <label for="config-overdue-days">Days After Due Date</label>
                         <input
-                          type="text"
-                          id="config-email-subject"
+                          type="number"
+                          id="config-overdue-days"
                           class="uba-input"
-                          placeholder="Email subject"
+                          placeholder="7"
+                          min="0"
+                          max="365"
                         />
-                        <textarea
-                          id="config-email-body"
-                          class="uba-textarea"
-                          placeholder="Email body"
-                          rows="3"
-                          style="margin-top: 8px;"
-                        ></textarea>
+                        <small style="color: var(--text-muted); font-size: 12px;">Automatically mark invoice as overdue after this many days past due date</small>
                       </div>
                     </div>
 
@@ -372,6 +400,7 @@
 
     <script src="assets/js/i18n.js"></script>
     <script src="assets/js/store.js"></script>
+    <script src="assets/js/validation.js"></script>
     <script src="assets/js/app.js"></script>
     <script src="assets/js/page-loader.js"></script>
     <script src="assets/js/automations.js"></script>

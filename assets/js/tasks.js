@@ -307,6 +307,11 @@
     if (!store || !store.tasks) return;
     
     try {
+      // Get original task for automation trigger
+      const originalTask = store.tasks.getById ? store.tasks.getById(taskId) : 
+                          store.tasks.get ? store.tasks.get(taskId) : null;
+      const oldStatus = originalTask ? originalTask.status : null;
+      
       store.tasks.update(taskId, { 
         status: newStatus, 
         updated: new Date().toISOString()
@@ -317,6 +322,13 @@
         in_progress: 'In Progress',
         done: 'Done'
       };
+      
+      // Trigger automations for task status changes
+      if (typeof window.runAutomations === 'function' && originalTask) {
+        if (newStatus === 'done' && oldStatus !== 'done') {
+          window.runAutomations('task_completed', { task: { ...originalTask, status: newStatus } });
+        }
+      }
       
       showToast(`Task moved to ${statusLabels[newStatus]}`, 'success');
       renderTasks();
@@ -680,7 +692,13 @@
     };
     
     try {
-      store.tasks.create(newTask);
+      const newTask = store.tasks.create(newTask);
+      
+      // Trigger automations for new task
+      if (typeof window.runAutomations === 'function' && newTask) {
+        window.runAutomations('task_created', { task: newTask });
+      }
+      
       showToast('Task duplicated successfully', 'success');
       renderTasks();
     } catch (e) {
@@ -746,8 +764,13 @@
             store.tasks.update(id, payload);
             showToast(`Task "${title}" updated`, 'success');
           } else {
-            store.tasks.create(payload);
+            const newTask = store.tasks.create(payload);
             showToast(`Task "${title}" created`, 'success');
+            
+            // Trigger automations for new task
+            if (typeof window.runAutomations === 'function' && newTask) {
+              window.runAutomations('task_created', { task: newTask });
+            }
           }
           hideModal("task-form-modal");
           renderTasks();

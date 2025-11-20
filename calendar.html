@@ -123,7 +123,7 @@
               <div class="uba-top-left">
                 <p class="uba-top-kicker">Calendar view</p>
                 <h1 id="uba-view-title">Calendar</h1>
-                <p id="uba-view-desc">Month view of events and deadlines.</p>
+                <p id="uba-view-desc">Monthly overview of tasks, deadlines and events</p>
               </div>
               <div class="uba-top-right">
                 <select id="workspace-select" class="uba-select">
@@ -138,39 +138,36 @@
 
             <div class="uba-views">
               <section class="uba-view" data-view="calendar">
-                <div class="uba-grid">
-                  <div class="uba-grid-col">
-                    <section class="uba-card">
-                      <div class="uba-card-header">
-                        <div>
-                          <div class="uba-card-title">Calendar</div>
-                          <p class="uba-card-sub">View events, deadlines and schedules</p>
-                        </div>
-                        <span class="uba-pill">November 2025</span>
-                      </div>
+                <div class="uba-calendar-container">
+                  <div class="uba-calendar-header">
+                    <div class="uba-calendar-nav">
+                      <button id="prev-month" class="uba-btn uba-btn-ghost">
+                        <span class="icon">‹</span> Previous
+                      </button>
+                      <h2 id="current-month" class="uba-calendar-title">November 2025</h2>
+                      <button id="next-month" class="uba-btn uba-btn-ghost">
+                        Next <span class="icon">›</span>
+                      </button>
+                    </div>
+                    <div class="uba-calendar-filters">
+                      <button class="uba-chip active" data-filter="all">All</button>
+                      <button class="uba-chip" data-filter="task">Tasks</button>
+                      <button class="uba-chip" data-filter="invoice">Invoices</button>
+                      <button class="uba-chip" data-filter="project">Projects</button>
+                    </div>
+                  </div>
 
-                      <div class="calendar-controls">
-                        <div class="calendar-filters">
-                          <button class="uba-chip active" data-filter="all">All</button>
-                          <button class="uba-chip" data-filter="invoice">Invoices</button>
-                          <button class="uba-chip" data-filter="project">Projects</button>
-                          <button class="uba-chip" data-filter="task">Tasks</button>
-                        </div>
-                      </div>
-
-                      <div class="calendar-container">
-                        <div class="calendar-weekdays">
-                          <div class="calendar-weekday">Mon</div>
-                          <div class="calendar-weekday">Tue</div>
-                          <div class="calendar-weekday">Wed</div>
-                          <div class="calendar-weekday">Thu</div>
-                          <div class="calendar-weekday">Fri</div>
-                          <div class="calendar-weekday">Sat</div>
-                          <div class="calendar-weekday">Sun</div>
-                        </div>
-                        <div id="calendar-grid" class="calendar-grid"></div>
-                      </div>
-                    </section>
+                  <div class="uba-calendar">
+                    <div class="uba-calendar-weekdays">
+                      <div class="uba-calendar-weekday">Mon</div>
+                      <div class="uba-calendar-weekday">Tue</div>
+                      <div class="uba-calendar-weekday">Wed</div>
+                      <div class="uba-calendar-weekday">Thu</div>
+                      <div class="uba-calendar-weekday">Fri</div>
+                      <div class="uba-calendar-weekday">Sat</div>
+                      <div class="uba-calendar-weekday">Sun</div>
+                    </div>
+                    <div id="calendar-grid" class="uba-calendar-grid"></div>
                   </div>
                 </div>
               </section>

@@ -3,7 +3,7 @@
   
   // Data aggregation functions
   function calculateRevenueMetrics() {
-    const invoices = window.ubaStore?.invoices || [];
+    const invoices = window.ubaStore?.invoices?.getAll() || [];
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
@@ -47,7 +47,7 @@
   }
   
   function calculateClientMetrics() {
-    const clients = window.ubaStore?.clients || [];
+    const clients = window.ubaStore?.clients?.getAll() || [];
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
@@ -66,7 +66,7 @@
   }
   
   function calculateProjectMetrics() {
-    const projects = window.ubaStore?.projects || [];
+    const projects = window.ubaStore?.projects?.getAll() || [];
     
     const metrics = {
       lead: 0,
@@ -87,7 +87,7 @@
   }
   
   function calculateTaskMetrics() {
-    const tasks = window.ubaStore?.tasks || [];
+    const tasks = window.ubaStore?.tasks?.getAll() || [];
     const currentDate = new Date();
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
