@@ -246,6 +246,53 @@
     },
 
     /**
+     * Generate Smart Summary
+     */
+    async generateSummary(type, id = null) {
+      console.log('[UBA AI] Generating summary:', type, id);
+      
+      try {
+        let summary;
+        
+        switch (type) {
+          case 'project':
+            summary = await this._generateProjectSummary(id);
+            break;
+          case 'client':
+            summary = await this._generateClientSummary2(id);
+            break;
+          case 'task-list':
+            summary = await this._generateTaskListSummary();
+            break;
+          case 'invoices':
+            summary = await this._generateInvoicesSummary();
+            break;
+          case 'workspace-activity':
+            summary = await this._generateWorkspaceActivitySummary();
+            break;
+          case 'billing-usage':
+            summary = await this._generateBillingUsageSummary();
+            break;
+          default:
+            throw new Error(`Unknown summary type: ${type}`);
+        }
+        
+        return {
+          success: true,
+          type,
+          summary,
+          timestamp: new Date().toISOString()
+        };
+      } catch (error) {
+        console.error('[UBA AI] Summary generation error:', error);
+        return {
+          success: false,
+          error: error.message
+        };
+      }
+    },
+
+    /**
      * Predict outcomes and estimates
      */
     async predict(type) {
@@ -1056,6 +1103,237 @@
       return {
         taskId: updated.id,
         message: `Task status updated to ${payload.status}`
+      };
+    },
+
+    // ============ Summary Generators ============
+
+    /**
+     * Generate Project Summary
+     */
+    async _generateProjectSummary(projectId) {
+      const projects = await UBA.data.list('projects');
+      const project = projects.find(p => p.id === projectId);
+      
+      if (!project) {
+        throw new Error('Project not found');
+      }
+      
+      const tasks = await UBA.data.list('tasks');
+      const projectTasks = tasks.filter(t => t.projectId === projectId);
+      const completedTasks = projectTasks.filter(t => t.status === 'done');
+      const progress = projectTasks.length > 0 ? (completedTasks.length / projectTasks.length * 100).toFixed(1) : 0;
+      
+      const content = `**Project: ${project.name}**\n\n` +
+        `📊 Progress: ${progress}%\n` +
+        `✅ ${completedTasks.length}/${projectTasks.length} tasks completed\n` +
+        `📅 Stage: ${project.stage}\n\n` +
+        `**Recommendations:**\n`;
+      
+      const recommendations = [];
+      if (progress < 50) {
+        recommendations.push('- Accelerate task completion to meet deadlines');
+      }
+      if (projectTasks.length === 0) {
+        recommendations.push('- Create tasks to track project progress');
+      }
+      
+      return {
+        content: content + (recommendations.length > 0 ? recommendations.join('\n') : '- Project is on track'),
+        data: { project, progress, tasks: projectTasks.length, completed: completedTasks.length },
+        recommendations
+      };
+    },
+
+    /**
+     * Generate Client Summary (for summary feature)
+     */
+    async _generateClientSummary2(clientId) {
+      const clients = await UBA.data.list('clients');
+      const client = clients.find(c => c.id === clientId);
+      
+      if (!client) {
+        throw new Error('Client not found');
+      }
+      
+      const [projects, invoices] = await Promise.all([
+        UBA.data.list('projects'),
+        UBA.data.list('invoices')
+      ]);
+      
+      const clientProjects = projects.filter(p => p.clientId === clientId);
+      const clientInvoices = invoices.filter(i => i.clientId === clientId);
+      const totalRevenue = clientInvoices.filter(i => i.status === 'paid')
+        .reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0);
+      
+      const content = `**Client: ${client.name}**\n\n` +
+        `💰 Total Revenue: €${totalRevenue.toFixed(2)}\n` +
+        `💼 Projects: ${clientProjects.length}\n` +
+        `💵 Invoices: ${clientInvoices.length}\n\n` +
+        `**Recommendations:**\n`;
+      
+      const recommendations = [];
+      if (clientProjects.length === 0) {
+        recommendations.push('- Consider creating a project for this client');
+      }
+      const unpaid = clientInvoices.filter(i => i.status !== 'paid');
+      if (unpaid.length > 0) {
+        recommendations.push(`- Follow up on ${unpaid.length} unpaid invoice(s)`);
+      }
+      
+      return {
+        content: content + (recommendations.length > 0 ? recommendations.join('\n') : '- Client relationship is healthy'),
+        data: { client, revenue: totalRevenue, projects: clientProjects.length, invoices: clientInvoices.length },
+        recommendations
+      };
+    },
+
+    /**
+     * Generate Task List Summary
+     */
+    async _generateTaskListSummary() {
+      const tasks = await UBA.data.list('tasks');
+      const now = new Date();
+      
+      const overdue = tasks.filter(t => new Date(t.dueDate) < now && t.status !== 'done');
+      const dueToday = tasks.filter(t => {
+        const due = new Date(t.dueDate);
+        return due.toDateString() === now.toDateString() && t.status !== 'done';
+      });
+      const completed = tasks.filter(t => t.status === 'done');
+      const highPriority = tasks.filter(t => t.priority === 'high' && t.status !== 'done');
+      
+      const content = `**Task Overview**\n\n` +
+        `📝 Total Tasks: ${tasks.length}\n` +
+        `✅ Completed: ${completed.length}\n` +
+        `⚠️ Overdue: ${overdue.length}\n` +
+        `📅 Due Today: ${dueToday.length}\n` +
+        `🔴 High Priority: ${highPriority.length}\n\n` +
+        `**Recommendations:**\n`;
+      
+      const recommendations = [];
+      if (overdue.length > 0) {
+        recommendations.push(`- You should address ${overdue.length} overdue task(s) immediately`);
+      }
+      if (dueToday.length > 0) {
+        recommendations.push(`- Focus on ${dueToday.length} task(s) due today`);
+      }
+      if (highPriority.length > 0 && overdue.length === 0) {
+        recommendations.push(`- Prioritize ${highPriority.length} high-priority task(s)`);
+      }
+      
+      return {
+        content: content + (recommendations.length > 0 ? recommendations.join('\n') : '- You\'re all caught up!'),
+        data: { total: tasks.length, completed: completed.length, overdue: overdue.length, dueToday: dueToday.length },
+        recommendations
+      };
+    },
+
+    /**
+     * Generate Invoices Summary
+     */
+    async _generateInvoicesSummary() {
+      const invoices = await UBA.data.list('invoices');
+      
+      const paid = invoices.filter(i => i.status === 'paid');
+      const unpaid = invoices.filter(i => i.status === 'sent' || i.status === 'overdue');
+      const overdue = invoices.filter(i => i.status === 'overdue' || (i.status === 'sent' && new Date(i.dueDate) < new Date()));
+      
+      const totalRevenue = paid.reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0);
+      const outstanding = unpaid.reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0);
+      
+      const content = `**Invoice Overview**\n\n` +
+        `💵 Total Invoices: ${invoices.length}\n` +
+        `✅ Paid: ${paid.length} (€${totalRevenue.toFixed(2)})\n` +
+        `⏳ Unpaid: ${unpaid.length} (€${outstanding.toFixed(2)})\n` +
+        `⚠️ Overdue: ${overdue.length}\n\n` +
+        `**Recommendations:**\n`;
+      
+      const recommendations = [];
+      if (overdue.length > 0) {
+        recommendations.push(`- Send reminders for ${overdue.length} overdue invoice(s)`);
+      }
+      if (unpaid.length > 3) {
+        recommendations.push('- Consider implementing automated payment reminders');
+      }
+      if (outstanding > totalRevenue * 0.5) {
+        recommendations.push('- High outstanding amount - follow up with clients');
+      }
+      
+      return {
+        content: content + (recommendations.length > 0 ? recommendations.join('\n') : '- Invoice management is on track'),
+        data: { total: invoices.length, paid: paid.length, unpaid: unpaid.length, revenue: totalRevenue, outstanding },
+        recommendations
+      };
+    },
+
+    /**
+     * Generate Workspace Activity Summary
+     */
+    async _generateWorkspaceActivitySummary() {
+      const analysis = await this.analyzeWorkspace();
+      
+      if (!analysis.success) {
+        throw new Error('Failed to analyze workspace');
+      }
+      
+      const insights = analysis.insights;
+      
+      const content = `**Workspace Activity Summary**\n\n` +
+        `📊 Activity Score: ${insights.summary.activityScore}/100\n` +
+        `📝 Tasks: ${insights.tasks.total} (${insights.tasks.overdue} overdue)\n` +
+        `👥 Clients: ${insights.clients.total}\n` +
+        `💼 Projects: ${insights.projects.total}\n` +
+        `💰 Revenue: €${insights.financial.revenue.toFixed(2)}\n\n` +
+        `**Recommendations:**\n`;
+      
+      const recommendations = insights.recommendations.slice(0, 3).map(r => `- ${r.message}`);
+      
+      return {
+        content: content + (recommendations.length > 0 ? recommendations.join('\n') : '- Workspace is performing well'),
+        data: insights.summary,
+        recommendations: insights.recommendations
+      };
+    },
+
+    /**
+     * Generate Billing Usage Summary
+     */
+    async _generateBillingUsageSummary() {
+      const subscription = await UBA.billing?.getCurrentSubscription();
+      const usage = await UBA.billing?.getCurrentUsage();
+      
+      if (!subscription || !usage) {
+        return {
+          content: '**Billing Usage**\n\nNo subscription data available.',
+          data: {},
+          recommendations: []
+        };
+      }
+      
+      const plan = UBA.billing?.PLAN_CATALOG?.find(p => p.id === subscription.planId);
+      const limits = plan?.limits || {};
+      
+      const content = `**Billing Usage Summary**\n\n` +
+        `📦 Plan: ${plan?.name || subscription.planId}\n` +
+        `👥 Members: ${usage.members || 0}/${limits.maxMembers || '∞'}\n` +
+        `🧑‍💻 Clients: ${usage.clients || 0}/${limits.maxClients || '∞'}\n` +
+        `💼 Projects: ${usage.projects || 0}/${limits.maxProjects || '∞'}\n` +
+        `📝 Tasks: ${usage.tasks || 0}/${limits.maxTasks || '∞'}\n\n` +
+        `**Recommendations:**\n`;
+      
+      const recommendations = [];
+      Object.keys(usage).forEach(key => {
+        const limit = limits[`max${key.charAt(0).toUpperCase() + key.slice(1)}`];
+        if (limit && usage[key] >= limit * 0.8) {
+          recommendations.push(`- You're using ${(usage[key] / limit * 100).toFixed(0)}% of your ${key} limit - consider upgrading`);
+        }
+      });
+      
+      return {
+        content: content + (recommendations.length > 0 ? recommendations.join('\n') : '- Usage is within limits'),
+        data: { plan: plan?.name, usage, limits },
+        recommendations
       };
     },
 

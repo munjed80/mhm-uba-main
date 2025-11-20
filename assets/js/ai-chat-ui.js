@@ -131,6 +131,12 @@
 
         <div class="uba-ai-panel-footer">
           <div class="uba-ai-input-container">
+            <button class="uba-ai-voice-btn" id="uba-ai-voice-btn" onclick="window.AIUI.toggleVoiceMode()" title="Voice input">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
             <input
               type="text"
               id="uba-ai-input"
@@ -523,6 +529,105 @@
         }
       } catch (error) {
         console.error('[UBA AI UI] Failed to load conversation:', error);
+      }
+    },
+
+    /**
+     * Voice Mode - using Web Speech API
+     */
+    voiceMode: {
+      isListening: false,
+      recognition: null,
+
+      init() {
+        // Check if browser supports Speech Recognition
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        
+        if (!SpeechRecognition) {
+          console.warn('[UBA AI UI] Speech Recognition not supported');
+          return false;
+        }
+
+        this.recognition = new SpeechRecognition();
+        this.recognition.continuous = false;
+        this.recognition.interimResults = false;
+        this.recognition.lang = 'en-US';
+
+        this.recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          const input = document.getElementById('uba-ai-input');
+          if (input) {
+            input.value = transcript;
+          }
+          this.stop();
+        };
+
+        this.recognition.onerror = (event) => {
+          console.error('[UBA AI UI] Speech recognition error:', event.error);
+          this.stop();
+        };
+
+        this.recognition.onend = () => {
+          this.stop();
+        };
+
+        return true;
+      },
+
+      start() {
+        if (!this.recognition) {
+          if (!this.init()) {
+            alert('Voice input is not supported in your browser');
+            return;
+          }
+        }
+
+        try {
+          this.recognition.start();
+          this.isListening = true;
+          this.updateButton();
+        } catch (error) {
+          console.error('[UBA AI UI] Failed to start voice recognition:', error);
+        }
+      },
+
+      stop() {
+        if (this.recognition && this.isListening) {
+          this.recognition.stop();
+        }
+        this.isListening = false;
+        this.updateButton();
+      },
+
+      updateButton() {
+        const btn = document.getElementById('uba-ai-voice-btn');
+        if (btn) {
+          if (this.isListening) {
+            btn.classList.add('listening');
+            btn.title = 'Stop listening';
+          } else {
+            btn.classList.remove('listening');
+            btn.title = 'Voice input';
+          }
+        }
+      }
+    },
+
+    /**
+     * Toggle voice mode
+     */
+    toggleVoiceMode() {
+      // Check if voice mode is enabled in settings
+      const settings = JSON.parse(localStorage.getItem('uba-settings') || '{}');
+      if (settings.aiVoiceMode === false) {
+        alert('Voice mode is disabled in settings. Enable it in AI Preferences to use this feature.');
+        return;
+      }
+
+      if (this.voiceMode.isListening) {
+        this.voiceMode.stop();
+      } else {
+        this.voiceMode.start();
       }
     }
   };
