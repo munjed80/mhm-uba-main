@@ -133,9 +133,9 @@
 .uba-sidebar {
   position: fixed;
   top: 0;
+  bottom: 0;
   left: 0;
   width: 240px;
-  height: 100vh;
   background: var(--bg-soft);
   border-right: 1px solid rgba(51, 65, 85, 0.7);
   padding: 20px 14px 18px;
@@ -145,7 +145,6 @@
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 1000;
-  overflow-y: auto;
 }
 
 .uba-logo {
@@ -303,12 +302,16 @@
 
 .rtl .uba-shell {
   direction: rtl;
+  margin-left: 0;
+  margin-right: 240px;
 }
 .rtl .uba-nav-btn small {
   margin-left: 0;
   margin-right: auto;
 }
 .rtl .uba-sidebar {
+  left: auto;
+  right: 0;
   border-right: none;
   border-left: 1px solid rgba(51, 65, 85, 0.7);
 }
@@ -2054,18 +2057,20 @@ a:focus-visible {
 @media (max-width: 768px) {
   .uba-sidebar {
     width: 200px;
+    padding: 16px 10px;
   }
   
   .uba-shell {
     margin-left: 200px;
   }
   
-  .uba-main {
-    padding: 8px;
+  .rtl .uba-shell {
+    margin-left: 0;
+    margin-right: 200px;
   }
   
-  .uba-sidebar {
-    padding: 16px 10px;
+  .uba-main {
+    padding: 8px;
   }
   
   .uba-nav-btn {
