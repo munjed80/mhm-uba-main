@@ -1178,10 +1178,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // Standalone page initializers (Smart Tools / Projects / Tasks) are now invoked by the page-loader
   // via `initSmartTools`, `initProjectsPage`, and `initTasksPage` so we do not auto-run them here.
 
-  // 6.5 Sidebar navigation
-  const navButtons = document.querySelectorAll(".uba-nav-wp-btn[data-section], .uba-nav-btn[data-section]");
-  const viewSections = document.querySelectorAll(".uba-view[data-view]");
-
+  // 6.5 Static WordPress-style sidebar navigation
+  // The sidebar now uses standard <a href=""> links for navigation
+  // No SPA navigation interference - each page loads independently
+  console.log("Static sidebar navigation active - using standard HTML links");
+  
+  // Keep view renderers available for manual calls if needed
   const viewRenderers = {
     clients: renderClientsPage,
     projects: renderProjectsBoard,
@@ -1194,8 +1196,10 @@ document.addEventListener("DOMContentLoaded", () => {
     settings: renderSettingsPage,
   };
 
+  // Simplified showView function for internal use only (no sidebar interference)
   const showView = (target) => {
     const selected = target || "dashboard";
+    const viewSections = document.querySelectorAll(".uba-view[data-view]");
     const singlePageMode = loadSettingsState().singlePage !== false;
 
     viewSections.forEach((section) => {
@@ -1205,14 +1209,6 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         section.classList.toggle("is-hidden", false);
       }
-    });
-
-    // Update both old and new navigation buttons
-    document.querySelectorAll(".uba-nav-wp-btn[data-section], .uba-nav-btn[data-section]").forEach((btn) => {
-      btn.classList.toggle(
-        "active",
-        btn.getAttribute("data-section") === selected,
-      );
     });
 
     document.body.dataset.activeView = selected;
@@ -1225,44 +1221,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const renderer = viewRenderers[selected];
     if (typeof renderer === "function") {
       renderer();
-      // Ensure page-specific init runs for SPA navigation (projects/tasks etc.)
-      try {
-        if (typeof window.loadPageScripts === "function") {
-          // call with -page suffix (matches page-id dataset values)
-          window.loadPageScripts(selected + "-page");
-        }
-      } catch (e) {
-        console.warn("spa: loadPageScripts call failed", e);
-      }
     }
   };
 
-  // Expose showView globally for external access
+  // Expose showView globally for backward compatibility (but don't interfere with sidebar)
   window.showView = showView;
 
-  if (navButtons.length && viewSections.length) {
-    console.log("Navigation wiring active.");
-
-    navButtons.forEach((btn) => {
-      btn.addEventListener("click", (event) => {
-        // For normal href links, let them navigate naturally
-        if (btn.getAttribute('href')) {
-          return; // Don't prevent default, allow normal navigation
-        }
-        
-        // Only handle SPA navigation for buttons without href
-        const target = btn.getAttribute("data-section") || "dashboard";
-        console.log("Switching view to:", target);
-        event.preventDefault();
-        showView(target);
-      });
+  // Set active state for current page in sidebar
+  try {
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const sidebarLinks = document.querySelectorAll('.uba-nav-btn');
+    
+    sidebarLinks.forEach(link => {
+      const href = link.getAttribute('href');
+      link.classList.remove('active');
+      
+      if (href === currentPage || 
+          (currentPage === 'index.html' && href === 'index.html') ||
+          (currentPage === '' && href === 'index.html')) {
+        link.classList.add('active');
+      }
     });
-
-    // If the URL contains a hash (e.g. index.html#clients) use it to select a view
-    const hash = (window.location.hash || "").replace(/^#/, "").toLowerCase();
-    const initialView =
-      hash || (i18n.getCurrentView ? i18n.getCurrentView() : "dashboard");
-    showView(initialView);
+  } catch (e) {
+    console.warn('Failed to set active sidebar state:', e);
   }
 
   // 6.6 Workspace select (log only)

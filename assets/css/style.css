@@ -127,7 +127,7 @@
 }
 
 /* ======================
-   Sidebar
+   Sidebar - WordPress-style static navigation
    ====================== */
 
 .uba-sidebar {
@@ -145,6 +145,8 @@
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 1000;
+  /* WordPress-style: prevent any content shifts or animations that affect layout */
+  will-change: auto;
 }
 
 .uba-logo {
@@ -222,6 +224,7 @@
     color 0.2s,
     box-shadow 0.2s,
     transform 0.1s;
+  text-decoration: none; /* WordPress-style: no underlines */
 }
 
 .uba-nav-btn span.icon {
@@ -237,11 +240,12 @@
   color: var(--muted);
 }
 
-/* Hover & focus */
+/* Hover & focus - WordPress-style subtle interactions */
 
 .uba-nav-btn:hover:not(.active) {
   background-color: rgba(55, 65, 81, 0.2);
   color: var(--text);
+  text-decoration: none;
 }
 
 .uba-nav-btn:focus-visible {
@@ -249,7 +253,7 @@
   outline-offset: 2px;
 }
 
-/* Active state */
+/* Active state - WordPress-style current page highlighting */
 
 .uba-nav-btn.active {
   background: radial-gradient(
@@ -261,6 +265,7 @@
     0 0 0 1px rgba(34, 211, 238, 0.7),
     0 0 18px rgba(34, 211, 238, 0.45);
   color: #f9fafb;
+  text-decoration: none;
 }
 
 .uba-sidebar-footer {
