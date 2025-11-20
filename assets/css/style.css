@@ -4032,6 +4032,10 @@ a:focus-visible {
   animation: modalFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
+.uba-modal.is-hidden {
+  display: none !important;
+}
+
 .uba-modal-backdrop {
   position: absolute;
   top: 0;

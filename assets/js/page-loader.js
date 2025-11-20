@@ -91,29 +91,63 @@
     try {
       switch (pageId) {
         case "index-page":
-          if (typeof initIndexPage === "function") initIndexPage();
+          if (typeof initIndexPage === "function") {
+            console.log("✅ Calling initIndexPage");
+            initIndexPage();
+          } else {
+            console.warn("❌ initIndexPage function not found");
+          }
           break;
         case "clients-page":
-          if (typeof initClientsPage === "function") initClientsPage();
+          if (typeof initClientsPage === "function") {
+            console.log("✅ Calling initClientsPage");
+            initClientsPage();
+          } else {
+            console.warn("❌ initClientsPage function not found");
+          }
           break;
         case "projects-page":
-          if (typeof initProjectsPage === "function") initProjectsPage();
+          if (typeof initProjectsPage === "function") {
+            console.log("✅ Calling initProjectsPage");
+            initProjectsPage();
+          } else {
+            console.warn("❌ initProjectsPage function not found");
+          }
           break;
         case "tasks-page":
-          if (typeof initTasksPage === "function") initTasksPage();
+          if (typeof initTasksPage === "function") {
+            console.log("✅ Calling initTasksPage");
+            initTasksPage();
+          } else {
+            console.warn("❌ initTasksPage function not found");
+          }
           break;
         case "invoices-page":
           if (typeof initInvoicesPage === "function") {
+            console.log("✅ Calling initInvoicesPage");
             initInvoicesPage();
           } else if (typeof renderInvoicePage === "function") {
+            console.log("✅ Calling renderInvoicePage");
             renderInvoicePage();
+          } else {
+            console.warn("❌ initInvoicesPage and renderInvoicePage functions not found");
           }
           break;
         case "automations-page":
-          if (typeof initAutomationsPage === "function") initAutomationsPage();
+          if (typeof initAutomationsPage === "function") {
+            console.log("✅ Calling initAutomationsPage");
+            initAutomationsPage();
+          } else {
+            console.warn("❌ initAutomationsPage function not found");
+          }
           break;
         case "leads-page":
-          if (typeof initLeadsPage === "function") initLeadsPage();
+          if (typeof initLeadsPage === "function") {
+            console.log("✅ Calling initLeadsPage");
+            initLeadsPage();
+          } else {
+            console.warn("❌ initLeadsPage function not found");
+          }
           break;
         case "expenses-page":
           if (typeof initExpensesPage === "function") initExpensesPage();

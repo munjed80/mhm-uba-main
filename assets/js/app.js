@@ -6,6 +6,159 @@
 // ------------------------------------------------------
 console.log("Running in local/demo mode — Supabase disabled");
 
+// ======================================================
+// Global Modal Management System
+// ======================================================
+
+// Unified modal management functions
+function showModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) {
+    console.warn(`Modal ${modalId} not found`);
+    return;
+  }
+
+  // Handle different modal patterns
+  if (modal.classList.contains('uba-modal')) {
+    // New pattern with .is-hidden class
+    modal.classList.remove("is-hidden");
+    modal.setAttribute("aria-hidden", "false");
+    modal.style.display = 'flex';
+  } else {
+    // Legacy pattern with style.display
+    modal.style.display = 'flex';
+  }
+  
+  document.body.style.overflow = 'hidden';
+  
+  // Focus first input if available
+  setTimeout(() => {
+    const firstInput = modal.querySelector('input, textarea, select, button');
+    if (firstInput && typeof firstInput.focus === 'function') {
+      firstInput.focus();
+    }
+  }, 100);
+}
+
+function hideModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (!modal) {
+    console.warn(`Modal ${modalId} not found`);
+    return;
+  }
+
+  // Handle different modal patterns
+  if (modal.classList.contains('uba-modal')) {
+    // New pattern with .is-hidden class
+    modal.classList.add("is-hidden");
+    modal.setAttribute("aria-hidden", "true");
+  }
+  
+  // Always set display none for both patterns
+  modal.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function closeModal(modalId) {
+  hideModal(modalId);
+}
+
+// Global modal event handlers
+function initGlobalModalHandlers() {
+  // ESC key handler for all modals
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      // Find visible modals and close the topmost one
+      const visibleModals = Array.from(document.querySelectorAll('.uba-modal'))
+        .filter(modal => 
+          !modal.classList.contains('is-hidden') || 
+          modal.style.display === 'flex'
+        );
+      
+      if (visibleModals.length > 0) {
+        const topModal = visibleModals[visibleModals.length - 1];
+        hideModal(topModal.id);
+      }
+    }
+  });
+
+  // Click outside to close modals
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('uba-modal') || 
+        e.target.classList.contains('uba-modal-backdrop')) {
+      const modal = e.target.closest('.uba-modal') || e.target;
+      if (modal && modal.id) {
+        hideModal(modal.id);
+      }
+    }
+  });
+
+  // Close button handlers
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('uba-modal-close') || 
+        e.target.closest('.uba-modal-close')) {
+      const modal = e.target.closest('.uba-modal');
+      if (modal && modal.id) {
+        hideModal(modal.id);
+      }
+    }
+  });
+}
+
+// Make modal functions globally available
+window.showModal = showModal;
+window.hideModal = hideModal;
+window.closeModal = closeModal;
+
+// ======================================================
+// Global Error Handling and Debugging
+// ======================================================
+
+// Global error handler to catch issues
+window.addEventListener('error', (e) => {
+  console.error('💥 Global Error:', e.error);
+  console.error('📍 At:', e.filename, 'line', e.lineno);
+});
+
+// Global unhandled promise rejection handler
+window.addEventListener('unhandledrejection', (e) => {
+  console.error('💥 Unhandled Promise Rejection:', e.reason);
+});
+
+// Debug function to check page state
+window.debugPageState = function() {
+  const pageId = document.getElementById("page-id")?.dataset?.page;
+  console.log('🔍 PAGE DEBUG INFO:');
+  console.log('📄 Current page:', pageId);
+  console.log('🔧 Available functions:');
+  
+  const functions = [
+    'initInvoicesPage', 'openInvoiceModal', 'closeInvoiceModal',
+    'initLeadsPage', 'openLeadModal', 'closeLeadModal',
+    'initAutomationsPage', 'openAutomationModal', 'closeAutomationModal',
+    'initProjectsPage', 'initTasksPage', 'showModal', 'hideModal'
+  ];
+  
+  functions.forEach(funcName => {
+    const exists = typeof window[funcName] === 'function';
+    console.log(`   ${exists ? '✅' : '❌'} ${funcName}: ${exists ? 'Available' : 'Missing'}`);
+  });
+  
+  console.log('📋 Modal elements:');
+  const modals = ['invoice-modal', 'lead-modal', 'automation-modal', 'project-form-modal', 'task-form-modal'];
+  modals.forEach(modalId => {
+    const el = document.getElementById(modalId);
+    console.log(`   ${el ? '✅' : '❌'} ${modalId}: ${el ? 'Found' : 'Missing'}`);
+  });
+  
+  console.log('🔘 Action buttons:');
+  const buttons = ['new-invoice-btn', 'new-lead-btn', 'new-automation-btn'];
+  buttons.forEach(btnId => {
+    const el = document.getElementById(btnId);
+    console.log(`   ${el ? '✅' : '❌'} ${btnId}: ${el ? 'Found' : 'Missing'}`);
+  });
+};
+
 // ------------------------------------------------------
 // Global UI State Management
 // ------------------------------------------------------
@@ -23,6 +176,9 @@ function initGlobalUIState() {
   const isDark = savedTheme === "dark";
   document.body.classList.toggle("uba-dark-theme", isDark);
   document.body.classList.toggle("uba-light-theme", !isDark);
+  
+  // Initialize global modal handlers
+  initGlobalModalHandlers();
 }
 
 // Initialize UI state as early as possible
@@ -1407,6 +1563,233 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+  
+  // ======================================================
+  // GLOBAL QUICK ACTION BUTTON HANDLERS
+  // ======================================================
+  
+  // Robust button handler that works regardless of individual page script loading
+  function handleGlobalButtonClicks(e) {
+    const target = e.target.closest('button') || e.target;
+    const buttonId = target.id;
+    const buttonText = target.textContent.trim();
+    
+    console.log('🔘 Button clicked:', buttonId, '|', buttonText);
+    
+    // Handle specific button IDs
+    if (buttonId === 'new-invoice-btn') {
+      console.log('📄 New Invoice button clicked');
+      if (typeof window.openInvoiceModal === 'function') {
+        console.log('✅ Calling openInvoiceModal');
+        e.preventDefault();
+        window.openInvoiceModal();
+      } else {
+        console.log('❌ openInvoiceModal not available, using showModal fallback');
+        if (typeof showModal === 'function') {
+          e.preventDefault();
+          showModal('invoice-modal');
+        } else {
+          console.log('⚠️ No modal functions available, allowing default navigation');
+        }
+      }
+      return;
+    }
+    
+    if (buttonId === 'new-lead-btn') {
+      console.log('🎯 New Lead button clicked');
+      if (typeof window.openLeadModal === 'function') {
+        console.log('✅ Calling openLeadModal');
+        e.preventDefault();
+        window.openLeadModal();
+      } else {
+        console.log('❌ openLeadModal not available, using showModal fallback');
+        if (typeof showModal === 'function') {
+          e.preventDefault();
+          showModal('lead-modal');
+        } else {
+          console.log('⚠️ No modal functions available, allowing default navigation');
+        }
+      }
+      return;
+    }
+    
+    if (buttonId === 'new-automation-btn') {
+      console.log('🤖 New Automation button clicked');
+      if (typeof window.openAutomationModal === 'function') {
+        console.log('✅ Calling openAutomationModal');
+        e.preventDefault();
+        window.openAutomationModal();
+      } else {
+        console.log('❌ openAutomationModal not available, using showModal fallback');
+        if (typeof showModal === 'function') {
+          e.preventDefault();
+          showModal('automation-modal');
+        } else {
+          console.log('⚠️ No modal functions available, allowing default navigation');
+        }
+      }
+      return;
+    }
+    
+    // Handle by button class or text content
+    if (target.classList.contains('uba-action-btn')) {
+      console.log('⚡ Quick action button clicked');
+      
+      if (buttonText.includes('New Invoice') || buttonText.includes('Invoice')) {
+        if (window.location.pathname.includes('invoices.html')) {
+          if (typeof window.openInvoiceModal === 'function') {
+            e.preventDefault();
+            window.openInvoiceModal();
+          }
+        } else {
+          window.location.href = 'invoices.html';
+        }
+      }
+      
+      else if (buttonText.includes('Add Client') || buttonText.includes('Client')) {
+        if (window.location.pathname.includes('clients.html')) {
+          const clientNameInput = document.getElementById('client-name');
+          if (clientNameInput) {
+            clientNameInput.focus();
+          }
+        } else {
+          window.location.href = 'clients.html';
+        }
+      }
+      
+      else if (buttonText.includes('Create Task') || buttonText.includes('Task')) {
+        if (window.location.pathname.includes('tasks.html')) {
+          if (typeof window.openAddForm === 'function') {
+            e.preventDefault();
+            window.openAddForm();
+          } else if (typeof showModal === 'function') {
+            e.preventDefault();
+            showModal('task-form-modal');
+          }
+        } else {
+          window.location.href = 'tasks.html';
+        }
+      }
+      
+      else if (buttonText.includes('View Reports') || buttonText.includes('Report')) {
+        window.location.href = 'reports.html';
+      }
+    }
+  }
+  
+  // Add global click handler
+  document.addEventListener('click', handleGlobalButtonClicks);
+  
+  // Dashboard quick action buttons (legacy handler)
+  document.addEventListener('click', (e) => {
+    const actionBtn = e.target.closest('.uba-action-btn');
+    if (!actionBtn) return;
+    
+    const actionText = actionBtn.textContent.trim();
+    
+    if (actionText.includes('New Invoice') || actionText.includes('Invoice')) {
+      // Navigate to invoices page and open modal
+      if (window.location.pathname.includes('invoices.html')) {
+        // Already on invoices page, try to open modal
+        if (typeof window.openInvoiceModal === 'function') {
+          window.openInvoiceModal();
+        } else {
+          showToast('Opening invoice form...', { type: 'info' });
+        }
+      } else {
+        // Navigate to invoices page
+        window.location.href = 'invoices.html';
+      }
+    }
+    
+    else if (actionText.includes('Add Client') || actionText.includes('Client')) {
+      // Navigate to clients page and open form
+      if (window.location.pathname.includes('clients.html')) {
+        // Already on clients page, focus on form
+        const clientNameInput = document.getElementById('client-name');
+        if (clientNameInput) {
+          clientNameInput.focus();
+        }
+      } else {
+        // Navigate to clients page
+        window.location.href = 'clients.html';
+      }
+    }
+    
+    else if (actionText.includes('Create Task') || actionText.includes('Task')) {
+      // Navigate to tasks page and open modal
+      if (window.location.pathname.includes('tasks.html')) {
+        // Already on tasks page, try to open modal
+        if (typeof window.openAddForm === 'function') {
+          window.openAddForm();
+        } else if (typeof showModal === 'function') {
+          showModal('task-form-modal');
+        } else {
+          showToast('Opening task form...', { type: 'info' });
+        }
+      } else {
+        // Navigate to tasks page
+        window.location.href = 'tasks.html';
+      }
+    }
+    
+    else if (actionText.includes('View Reports') || actionText.includes('Report')) {
+      // Navigate to reports page
+      window.location.href = 'reports.html';
+    }
+  });
+  
+  // Legacy button handlers for backward compatibility
+  document.addEventListener('click', (e) => {
+    const target = e.target;
+    if (target.textContent.includes('New Invoice') || 
+        target.id === 'new-invoice-btn' || 
+        target.classList.contains('new-invoice-btn')) {
+      
+      if (typeof window.openInvoiceModal === 'function') {
+        e.preventDefault();
+        window.openInvoiceModal();
+      } else {
+        // Navigate to invoices page if modal function not available
+        window.location.href = 'invoices.html';
+      }
+    }
+  });
+  
+  // New lead button handler
+  document.addEventListener('click', (e) => {
+    const target = e.target;
+    if (target.textContent.includes('New Lead') || 
+        target.id === 'new-lead-btn' || 
+        target.classList.contains('new-lead-btn')) {
+      
+      if (typeof window.openLeadModal === 'function') {
+        e.preventDefault();
+        window.openLeadModal();
+      } else {
+        // Navigate to leads page if modal function not available
+        window.location.href = 'leads.html';
+      }
+    }
+  });
+  
+  // New automation button handler
+  document.addEventListener('click', (e) => {
+    const target = e.target;
+    if (target.textContent.includes('New Automation') || 
+        target.id === 'new-automation-btn' || 
+        target.classList.contains('new-automation-btn')) {
+      
+      if (typeof window.openAutomationModal === 'function') {
+        e.preventDefault();
+        window.openAutomationModal();
+      } else {
+        // Navigate to automations page if modal function not available
+        window.location.href = 'automations.html';
+      }
+    }
+  });
+  
 });
 
 // ======================================================
