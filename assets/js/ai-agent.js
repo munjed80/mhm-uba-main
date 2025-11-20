@@ -41,6 +41,61 @@
     },
 
     /**
+     * Check if AI features are available based on plan and permissions
+     */
+    async checkAIAccess(feature = 'basic') {
+      try {
+        // Check subscription plan
+        if (UBA.billing && typeof UBA.billing.getCurrentSubscription === 'function') {
+          const subscription = await UBA.billing.getCurrentSubscription();
+          const plan = subscription?.planId || 'free';
+          
+          // AI features require Pro or Enterprise plan
+          if (plan === 'free') {
+            return {
+              allowed: false,
+              reason: 'AI features require a Pro or Enterprise plan',
+              upgradeRequired: true,
+              planRequired: 'pro'
+            };
+          }
+        }
+        
+        // Check role permissions
+        if (window.Members && typeof Members.getCurrentRole === 'function') {
+          const role = Members.getCurrentRole();
+          
+          // Viewer role has read-only access
+          if (role === 'viewer') {
+            if (feature === 'generate' || feature === 'execute' || feature === 'create') {
+              return {
+                allowed: false,
+                reason: 'Your role does not have permission to use AI generation features',
+                permissionRequired: 'editData'
+              };
+            }
+          }
+        }
+        
+        return { allowed: true };
+      } catch (error) {
+        console.error('[UBA AI] Access check error:', error);
+        return { allowed: true }; // Allow by default if check fails
+      }
+    },
+
+    /**
+     * Show paywall modal
+     */
+    showPaywall(reason) {
+      if (window.showModal && document.getElementById('upgrade-modal')) {
+        window.showModal('upgrade-modal');
+      } else {
+        alert(reason || 'This feature requires a Pro or Enterprise plan. Please upgrade to continue.');
+      }
+    },
+
+    /**
      * Analyze workspace data and generate insights
      */
     async analyzeWorkspace() {
@@ -123,6 +178,19 @@
       console.log('[UBA AI] Processing query:', query);
       
       try {
+        // Check AI access for basic queries
+        const access = await this.checkAIAccess('basic');
+        if (!access.allowed) {
+          this.showPaywall(access.reason);
+          return {
+            success: false,
+            query,
+            error: access.reason,
+            response: access.reason,
+            upgradeRequired: access.upgradeRequired
+          };
+        }
+        
         // Parse query intent
         const parsed = this._parseQuery(query);
         
@@ -202,6 +270,17 @@
       console.log('[UBA AI] Generating:', type, payload);
       
       try {
+        // Check AI access for generation features
+        const access = await this.checkAIAccess('generate');
+        if (!access.allowed) {
+          this.showPaywall(access.reason);
+          return {
+            success: false,
+            error: access.reason,
+            upgradeRequired: access.upgradeRequired
+          };
+        }
+        
         let generated;
         
         switch (type) {
@@ -347,6 +426,18 @@
       console.log('[UBA AI] Executing action:', action, payload);
       
       try {
+        // Check AI access for execution features
+        const access = await this.checkAIAccess('execute');
+        if (!access.allowed) {
+          this.showPaywall(access.reason);
+          return {
+            success: false,
+            error: access.reason,
+            action,
+            upgradeRequired: access.upgradeRequired
+          };
+        }
+        
         // Check permissions first
         const canExecute = await this._checkExecutePermission(action);
         if (!canExecute) {
