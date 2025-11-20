@@ -1505,6 +1505,7 @@ a:focus-visible {
 }
 
 .uba-kpi {
+  position: relative;
   background: rgba(15, 23, 42, 0.6);
   border-radius: 12px;
   border: 1px solid rgba(55, 65, 81, 0.3);
@@ -1514,6 +1515,7 @@ a:focus-visible {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-height: 80px;
 }
 
 .uba-kpi:hover {
@@ -6820,8 +6822,1758 @@ a:focus-visible {
   gap: 0.75rem;
 }
 
-.uba-input-sm {
+/* ========================================
+   Enhanced Client Features
+   ======================================== */
+
+/* Warning and Error Banners */
+.uba-warning-banner,
+.uba-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  border: 1px solid;
+}
+
+.uba-warning-banner {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+
+.uba-error-banner {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.uba-warning-content,
+.uba-error-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.uba-warning-icon,
+.uba-error-icon {
+  font-size: 1.25rem;
+}
+
+/* Custom Fields */
+.uba-custom-fields {
+  margin-top: 1rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+}
+
+.uba-form-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.uba-custom-fields-content {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.uba-custom-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.uba-custom-field label {
   font-size: 0.875rem;
-  padding: 0.375rem 0.75rem;
-  min-width: 200px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* Client Details Modal */
+.uba-modal-large {
+  max-width: 800px;
+}
+
+.uba-client-details {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.uba-details-section {
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background-secondary);
+}
+
+.uba-details-section h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.uba-related-items {
+  margin-top: 0.75rem;
+}
+
+.uba-related-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  background: var(--background);
+}
+
+.uba-related-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Duplicate Detection */
+.uba-duplicate-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--warning);
+  background: rgba(245, 158, 11, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+}
+
+/* Enhanced Table Features */
+.uba-table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: var(--background-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.uba-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.uba-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* ========================================
+   Sparkline Components
+   ======================================== */
+
+.uba-sparkline {
+  display: block;
+  overflow: visible;
+}
+
+.uba-sparkline-empty,
+.uba-sparkline-flat {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+@keyframes uba-sparkline-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.uba-sparkline-trend-up {
+  position: relative;
+}
+
+.uba-sparkline-trend-up::after {
+  content: '↗';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  font-size: 0.75rem;
+  color: var(--good);
+}
+
+.uba-sparkline-trend-down::after {
+  content: '↘';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  font-size: 0.75rem;
+  color: var(--danger);
+}
+
+/* KPI Sparklines */
+.uba-kpi-sparkline {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 80px;
+  height: 24px;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.uba-kpi:hover .uba-kpi-sparkline {
+  opacity: 1;
+}
+
+/* Metrics Controls */
+.uba-metrics-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.uba-select-sm {
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--background);
+  color: var(--text);
+  min-width: 80px;
+}
+
+.uba-select-sm:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* ========================================
+   Enhanced Projects - Drag & Drop
+   ======================================== */
+
+/* Dragging body state */
+.uba-dragging {
+  cursor: grabbing !important;
+  user-select: none;
+}
+
+.uba-dragging * {
+  cursor: grabbing !important;
+}
+
+/* Project card enhancements */
+.uba-project-card {
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: grab;
+}
+
+.uba-project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Drag preview */
+.uba-drag-preview {
+  pointer-events: none;
+  z-index: 10000;
+  opacity: 0.9;
+  transform: rotate(5deg) scale(1.05);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  transition: none !important;
+}
+
+/* Drop zones */
+.uba-pipeline-stage {
+  transition: all 0.3s ease;
+}
+
+.uba-drop-zone-active {
+  background: rgba(34, 211, 238, 0.05);
+  border: 2px dashed rgba(34, 211, 238, 0.3);
+  border-radius: var(--radius);
+}
+
+.uba-drop-zone-highlight {
+  background: rgba(34, 211, 238, 0.1) !important;
+  border: 2px solid rgba(34, 211, 238, 0.5) !important;
+  transform: scale(1.02);
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.2);
+}
+
+/* Stage badges */
+.uba-stage-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  text-transform: capitalize;
+}
+
+.uba-stage-lead {
+  background: rgba(251, 191, 36, 0.1);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.2);
+}
+
+.uba-stage-in_progress {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.uba-stage-ongoing {
+  background: rgba(34, 211, 238, 0.1);
+  color: #22d3ee;
+  border: 1px solid rgba(34, 211, 238, 0.2);
+}
+
+.uba-stage-completed {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+/* Project progress bars */
+.uba-project-progress {
+  margin: 1rem 0;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.uba-progress-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.uba-progress-label span:first-child {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.uba-progress-label span:last-child {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.uba-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.uba-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--good));
+  border-radius: 3px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.uba-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.uba-progress-details {
+  margin-top: 0.5rem;
+}
+
+.uba-progress-details small {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+/* Large progress bar for details modal */
+.uba-progress-bar-large {
+  width: 100%;
+  height: 12px;
+  background: var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.uba-progress-bar-large .uba-progress-fill {
+  height: 100%;
+  border-radius: 6px;
+}
+
+/* Progress stats */
+.uba-progress-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.uba-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0.75rem;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.uba-stat-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+
+.uba-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* ========================================
+   Project Details Modal
+   ======================================== */
+
+.uba-modal-large {
+  max-width: 900px;
+  width: 90vw;
+}
+
+.uba-project-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.uba-overview-section {
+  padding: 1.5rem;
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.uba-overview-section h4 {
+  margin: 0 0 1rem 0;
+  color: var(--text);
+  font-size: 1.125rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.uba-project-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.uba-project-info-grid > div {
+  padding: 0.75rem;
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.uba-project-description {
+  margin: 1rem 0 0 0;
+  padding: 1rem;
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--accent);
+  font-style: italic;
+  color: var(--muted);
+}
+
+.uba-project-progress-detailed {
+  background: var(--card);
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+/* Linked items */
+.uba-linked-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.uba-linked-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.uba-linked-item:hover {
+  border-color: var(--accent);
+  transform: translateX(4px);
+}
+
+.uba-item-info {
+  flex: 1;
+}
+
+.uba-item-title {
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.uba-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.875rem;
+}
+
+.uba-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.uba-status-todo {
+  background: rgba(156, 163, 175, 0.1);
+  color: #9ca3af;
+  border: 1px solid rgba(156, 163, 175, 0.2);
+}
+
+.uba-status-in_progress {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.uba-status-done {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.uba-status-draft {
+  background: rgba(156, 163, 175, 0.1);
+  color: #9ca3af;
+  border: 1px solid rgba(156, 163, 175, 0.2);
+}
+
+.uba-status-sent {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.uba-status-paid {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.uba-status-overdue {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.uba-due-date {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.uba-item-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.uba-empty-state {
+  text-align: center;
+  color: var(--muted);
+  font-style: italic;
+  padding: 2rem;
+}
+
+/* Project details button */
+.uba-project-details-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+}
+
+/* Card actions enhancements */
+.uba-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .uba-modal-large {
+    width: 95vw;
+    margin: 1rem auto;
+  }
+  
+  .uba-project-info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .uba-progress-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .uba-linked-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .uba-item-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* Touch device optimizations */
+@media (hover: none) {
+  .uba-project-card {
+    cursor: default;
+  }
+  
+  .uba-project-card:hover {
+    transform: none;
+  }
+  
+  .uba-dragging {
+    cursor: default !important;
+  }
+  
+  .uba-dragging * {
+    cursor: default !important;
+  }
+}
+
+/* ========================================
+   Enhanced Tasks - Due Date Reminders
+   ======================================== */
+
+/* Due date badges */
+.uba-due-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-left: auto;
+}
+
+.uba-due-overdue {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  animation: pulse-red 2s infinite;
+}
+
+.uba-due-today {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  animation: pulse-orange 2s infinite;
+}
+
+@keyframes pulse-red {
+  0%, 100% { background: rgba(239, 68, 68, 0.1); }
+  50% { background: rgba(239, 68, 68, 0.2); }
+}
+
+@keyframes pulse-orange {
+  0%, 100% { background: rgba(245, 158, 11, 0.1); }
+  50% { background: rgba(245, 158, 11, 0.2); }
+}
+
+.uba-due-icon {
+  font-size: 0.875rem;
+}
+
+/* Task card due date states */
+.uba-task-overdue {
+  border-left: 4px solid #ef4444;
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.05), transparent);
+}
+
+.uba-task-due-soon {
+  border-left: 4px solid #f59e0b;
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.05), transparent);
+}
+
+.uba-task-due-week {
+  border-left: 4px solid #22d3ee;
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0.05), transparent);
+}
+
+/* Due date display */
+.uba-due-date-display {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.5rem;
+}
+
+.uba-due-icon {
+  opacity: 0.7;
+}
+
+/* Priority badges and color coding */
+.uba-priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.uba-priority-high {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.uba-priority-medium {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.uba-priority-low {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.uba-priority-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Task card priority color coding */
+.uba-task-card.uba-priority-high {
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+.uba-task-card.uba-priority-medium {
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+.uba-task-card.uba-priority-low {
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+
+/* ========================================
+   Enhanced Tasks - Details Modal
+   ======================================== */
+
+.uba-task-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.uba-task-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.uba-task-info-grid > div {
+  padding: 0.75rem;
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.uba-task-description {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--accent);
+}
+
+.uba-task-description h5 {
+  margin: 0 0 0.5rem 0;
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.uba-task-description p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Time information */
+.uba-time-status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.uba-time-overdue {
+  border-left: 4px solid #ef4444;
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.1), var(--card));
+}
+
+.uba-time-due-today {
+  border-left: 4px solid #f59e0b;
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.1), var(--card));
+}
+
+.uba-time-due-soon {
+  border-left: 4px solid #22d3ee;
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0.1), var(--card));
+}
+
+.uba-time-icon {
+  font-size: 1.5rem;
+}
+
+.uba-time-text {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.uba-time-date {
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin-left: auto;
+}
+
+/* Linked project */
+.uba-linked-project {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.uba-linked-project:hover {
+  border-color: var(--accent);
+  transform: translateX(4px);
+}
+
+.uba-project-info h5 {
+  margin: 0 0 0.25rem 0;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.uba-project-info p {
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+/* Task actions grid */
+.uba-task-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.uba-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.uba-action-btn:hover {
+  background: var(--card);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.uba-action-icon {
+  font-size: 1rem;
+}
+
+.uba-action-edit:hover {
+  border-color: #3b82f6;
+}
+
+.uba-action-duplicate:hover {
+  border-color: #22d3ee;
+}
+
+.uba-action-move:hover {
+  border-color: #f59e0b;
+}
+
+.uba-action-delete:hover {
+  border-color: #ef4444;
+}
+
+/* Activity log */
+.uba-activity-log {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.uba-activity-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: var(--card);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.uba-activity-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.uba-activity-text {
+  flex: 1;
+  color: var(--text);
+  font-size: 0.875rem;
+}
+
+.uba-activity-time {
+  font-size: 0.75rem;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+/* ========================================
+   Enhanced Tasks - Smart Search
+   ======================================== */
+
+.uba-smart-search {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.uba-search-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.uba-search-input {
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.875rem;
+  width: 200px;
+  transition: all 0.2s ease;
+}
+
+.uba-search-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.1);
+  width: 250px;
+}
+
+.uba-search-input::placeholder {
+  color: var(--muted);
+}
+
+.uba-search-clear {
+  position: absolute;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.uba-search-clear:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+}
+
+.uba-search-filters {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Search highlights */
+.uba-search-highlight {
+  background: rgba(245, 158, 11, 0.3);
+  color: var(--text);
+  padding: 0.125rem 0.25rem;
+  border-radius: 3px;
+  font-weight: 600;
+}
+
+/* Filter states */
+.uba-filtered-out {
+  opacity: 0.3;
+  transform: scale(0.95);
+  transition: all 0.3s ease;
+}
+
+/* Task count display */
+.uba-task-count {
+  font-size: 0.875rem;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* Responsive design for enhanced tasks */
+@media (max-width: 768px) {
+  .uba-smart-search {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  
+  .uba-search-input {
+    width: 100%;
+  }
+  
+  .uba-search-input:focus {
+    width: 100%;
+  }
+  
+  .uba-search-filters {
+    justify-content: center;
+  }
+  
+  .uba-task-info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .uba-task-actions-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .uba-time-status {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .uba-time-date {
+    margin-left: 0;
+  }
+  
+  .uba-linked-project {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .uba-activity-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .uba-activity-time {
+    width: 100%;
+    text-align: right;
+  }
+}
+
+/* Touch optimizations for enhanced tasks */
+@media (hover: none) {
+  .uba-action-btn:hover {
+    transform: none;
+  }
+  
+  .uba-linked-project:hover {
+    transform: none;
+  }
+  
+  .uba-search-clear:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* === ENHANCED INVOICE SYSTEM STYLES === */
+
+/* Invoice View Toggle */
+.invoice-view-toggle {
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+}
+
+.invoice-view-toggle .uba-btn-group {
+  display: flex;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+}
+
+.invoice-view-btn {
+  border: none !important;
+  border-radius: 0 !important;
+  border-right: 1px solid var(--border-light) !important;
+  background: var(--bg-secondary);
+  color: var(--muted);
+  transition: all 0.2s ease;
+}
+
+.invoice-view-btn:last-child {
+  border-right: none !important;
+}
+
+.invoice-view-btn.active {
+  background: var(--primary);
+  color: white;
+}
+
+.invoice-view-btn:hover:not(.active) {
+  background: var(--primary-50, rgba(37, 99, 235, 0.1));
+  color: var(--primary);
+}
+
+/* Monthly Invoice View */
+.monthly-invoices-container {
+  margin-top: 2rem;
+}
+
+.monthly-invoices-container.hidden {
+  display: none;
+}
+
+.monthly-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.monthly-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.monthly-controls h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.monthly-stats {
+  display: flex;
+  gap: 2rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+.monthly-invoices-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.monthly-invoice-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.monthly-invoice-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: var(--primary);
+}
+
+.invoice-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.invoice-info h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.invoice-label {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.invoice-amount {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.invoice-amount .amount {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.invoice-amount .status {
+  margin-top: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-paid {
+  background: var(--good-bg, rgba(34, 197, 94, 0.1));
+  color: var(--good);
+  border: 1px solid var(--good);
+}
+
+.status-sent {
+  background: rgba(251, 191, 36, 0.1);
+  color: #d97706;
+  border: 1px solid #f59e0b;
+}
+
+.status-draft {
+  background: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
+  border: 1px solid #9ca3af;
+}
+
+.status-overdue {
+  background: var(--bad-bg, rgba(239, 68, 68, 0.1));
+  color: var(--bad);
+  border: 1px solid var(--bad);
+}
+
+.invoice-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin-bottom: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.invoice-card-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.empty-month {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--muted);
+  font-size: 1.125rem;
+}
+
+/* Invoice Preview Modal */
+.invoice-preview-modal .uba-modal-dialog {
+  max-width: 800px;
+  width: 95vw;
+  max-height: 90vh;
+}
+
+.invoice-preview-dialog {
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.preview-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.invoice-preview-content {
+  padding: 2rem;
+  background: white;
+  min-height: 600px;
+}
+
+.is-visible {
+  display: flex !important;
+}
+
+/* Invoice Document Styles */
+.invoice-document {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background: white;
+  padding: 2rem;
+  margin: 0 auto;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 3px solid #eee;
+}
+
+.company-info {
+  flex: 1;
+}
+
+.company-logo {
+  max-height: 80px;
+  max-width: 200px;
+  margin-bottom: 1rem;
+}
+
+.company-info h1 {
+  margin: 0 0 1rem 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.company-details p {
+  margin: 0.25rem 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.invoice-details {
+  flex: 0 0 250px;
+  text-align: right;
+}
+
+.invoice-details h2 {
+  margin: 0 0 1rem 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.invoice-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.meta-row .label {
+  font-weight: 600;
+  color: #666;
+}
+
+.meta-row .value {
+  font-weight: 500;
+  color: #333;
+}
+
+.bill-to-section {
+  margin: 2rem 0;
+}
+
+.bill-to-section h3 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.client-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 0.5rem 0;
+}
+
+.invoice-items {
+  margin: 2rem 0;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.items-table th,
+.items-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.items-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.items-table td:last-child,
+.items-table th:last-child {
+  text-align: right;
+}
+
+.invoice-totals {
+  margin: 2rem 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.totals-section {
+  min-width: 300px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #f8f9fa;
+  padding: 1rem;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.total-row:last-child {
+  border-bottom: none;
+}
+
+.final-total {
+  border-top: 2px solid #333 !important;
+  font-weight: 700;
+  font-size: 1.125rem;
+  background: #fff;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem !important;
+}
+
+.invoice-footer {
+  margin-top: 3rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+}
+
+.invoice-footer h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.invoice-footer p {
+  margin: 0.25rem 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Client Dropdown */
+.client-dropdown-container {
+  position: relative;
+}
+
+.client-search-input {
+  width: 100% !important;
+}
+
+.client-dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: white;
+  border: 1px solid var(--border-light);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+}
+
+.client-dropdown-list.visible {
+  display: block;
+}
+
+.dropdown-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background: var(--primary-50, rgba(37, 99, 235, 0.1));
+}
+
+.dropdown-item.dropdown-empty {
+  color: var(--muted);
+  font-style: italic;
+  cursor: default;
+}
+
+.dropdown-item.dropdown-empty:hover {
+  background: transparent;
+}
+
+.dropdown-item.dropdown-add-new {
+  background: var(--good-bg, rgba(34, 197, 94, 0.1));
+  color: var(--good);
+  font-weight: 500;
+}
+
+.dropdown-item.dropdown-add-new:hover {
+  background: rgba(34, 197, 94, 0.2);
+}
+
+.client-name {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.client-email {
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+/* Branding Settings Modal */
+.branding-settings-modal .uba-modal-dialog {
+  max-width: 600px;
+  width: 90vw;
+}
+
+.uba-form-section {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  background: rgba(248, 250, 252, 0.5);
+}
+
+.uba-form-section h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.color-input {
+  width: 60px !important;
+  height: 40px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+  cursor: pointer;
+}
+
+.form-help {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+/* Responsive Design for Invoice Features */
+@media (max-width: 768px) {
+  .monthly-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .monthly-stats {
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .monthly-invoices-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .invoice-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .invoice-details {
+    text-align: left;
+  }
+  
+  .invoice-footer {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .invoice-view-toggle {
+    margin-right: 0;
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+  
+  .invoice-view-toggle .uba-btn-group {
+    width: 100%;
+  }
+  
+  .invoice-view-btn {
+    flex: 1;
+  }
+  
+  .preview-actions {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+}
+
+@media print {
+  .invoice-document {
+    box-shadow: none;
+    margin: 0;
+    padding: 1rem;
+  }
+  
+  .invoice-preview-modal .uba-modal-header,
+  .invoice-preview-modal .uba-modal-footer {
+    display: none;
+  }
 }

@@ -141,76 +141,255 @@
 
             <div class="uba-views">
               <section class="uba-view" data-view="smart-tools">
-                <div class="uba-card" style="padding: 12px">
-                  <div
-                    id="smart-tools-grid"
-                    class="uba-feature-grid"
-                    style="margin-top: 4px"
-                  >
-                    <!-- Client brief -->
-                    <div class="uba-support-card" style="min-width: 220px">
-                      <div class="uba-support-icon">👤</div>
-                      <h4 data-i18n="tool.clientBrief.title">Client brief</h4>
-                      <p data-i18n="tool.clientBrief.desc">
-                        Snapshot of selected client including recent invoices,
-                        open tasks and contact details.
-                      </p>
+                <!-- Smart Tools Header -->
+                <div class="smart-tools-header">
+                  <div class="tools-overview">
+                    <h2>🧠 AI-Powered Business Intelligence</h2>
+                    <p>Advanced tools to accelerate your business operations with smart insights and automation</p>
+                  </div>
+                  <div class="tools-stats">
+                    <div class="stat-item">
+                      <span class="stat-value" id="tools-usage-count">0</span>
+                      <span class="stat-label">Tools Used Today</span>
                     </div>
-
-                    <!-- Smart outreach -->
-                    <div class="uba-support-card" style="min-width: 220px">
-                      <div class="uba-support-icon">✉️</div>
-                      <h4 data-i18n="tool.outreach.title">Smart outreach</h4>
-                      <p data-i18n="tool.outreach.desc">
-                        Create personalised outreach sequences using templates
-                        and client data.
-                      </p>
+                    <div class="stat-item">
+                      <span class="stat-value" id="insights-generated">0</span>
+                      <span class="stat-label">Insights Generated</span>
                     </div>
+                  </div>
+                </div>
 
-                    <!-- Next-best action -->
-                    <div class="uba-support-card" style="min-width: 220px">
-                      <div class="uba-support-icon">⚡</div>
-                      <h4 data-i18n="tool.actions.title">Next-best action</h4>
-                      <p data-i18n="tool.actions.desc">
-                        One-click suggestions for high-impact actions tailored
-                        to each client.
-                      </p>
+                <!-- Smart Tools Grid -->
+                <div class="smart-tools-grid">
+                  <!-- Tool #1: Client Brief (Smart Summary) -->
+                  <div class="smart-tool-card" data-tool="client-brief">
+                    <div class="tool-header">
+                      <div class="tool-icon gradient-bg-1">👤</div>
+                      <div class="tool-info">
+                        <h3>Client Brief</h3>
+                        <p class="tool-subtitle">Smart Summary & Analysis</p>
+                      </div>
+                      <div class="tool-status">
+                        <span class="status-badge active">AI Ready</span>
+                      </div>
                     </div>
-
-                    <!-- Quick insights -->
-                    <div class="uba-support-card" style="min-width: 220px">
-                      <div class="uba-support-icon">📊</div>
-                      <h4 data-i18n="tool.insights.title">Quick insights</h4>
-                      <p data-i18n="tool.insights.desc">
-                        Fast metrics and signals — revenue, overdue invoices,
-                        and engagement trends.
-                      </p>
+                    <div class="tool-description">
+                      <p>Generate comprehensive client summaries with AI-powered insights, recent activity analysis, and predictive engagement scores.</p>
+                      <ul class="feature-list">
+                        <li>📊 Client health score & engagement metrics</li>
+                        <li>💰 Revenue analysis & payment patterns</li>
+                        <li>📈 Project progress & task completion</li>
+                        <li>🔮 Predictive insights & recommendations</li>
+                      </ul>
                     </div>
+                    <div class="tool-actions">
+                      <div class="input-group">
+                        <select id="client-brief-select" class="smart-select">
+                          <option value="">Select a client...</option>
+                        </select>
+                        <button class="btn-primary" onclick="generateClientBrief()">Generate Brief</button>
+                      </div>
+                    </div>
+                  </div>
 
-                    <!-- UBA Assistant (opens assistant) -->
-                    <div
-                      class="uba-support-card"
-                      data-assistant-card="true"
-                      style="min-width: 220px; cursor: pointer"
-                    >
-                      <div class="uba-support-icon">🤖</div>
-                      <h4 data-i18n="tool.assistant.title">UBA Assistant</h4>
-                      <p data-i18n="tool.assistant.desc">
-                        Ask UBA for help with the workspace, create drafts, or
-                        get step-by-step guidance.
-                      </p>
-                      <div style="margin-top: 8px">
-                        <a
-                          href="assistant.html"
-                          class="uba-btn-primary"
-                          data-i18n="tool.assistant.open"
-                          >Open UBA Assistant</a
-                        >
+                  <!-- Tool #2: Smart Outreach (Templates) -->
+                  <div class="smart-tool-card" data-tool="smart-outreach">
+                    <div class="tool-header">
+                      <div class="tool-icon gradient-bg-2">✉️</div>
+                      <div class="tool-info">
+                        <h3>Smart Outreach</h3>
+                        <p class="tool-subtitle">AI-Powered Templates</p>
+                      </div>
+                      <div class="tool-status">
+                        <span class="status-badge active">AI Ready</span>
+                      </div>
+                    </div>
+                    <div class="tool-description">
+                      <p>Create personalized outreach campaigns with AI-generated templates tailored to client behavior and preferences.</p>
+                      <ul class="feature-list">
+                        <li>🎯 Personalized messaging based on client data</li>
+                        <li>📧 Email templates for different scenarios</li>
+                        <li>📱 Multi-channel outreach sequences</li>
+                        <li>📈 Success rate optimization</li>
+                      </ul>
+                    </div>
+                    <div class="tool-actions">
+                      <div class="template-selector">
+                        <div class="template-grid">
+                          <div class="template-option" data-template="follow-up">
+                            <span class="template-icon">📞</span>
+                            <span>Follow-up</span>
+                          </div>
+                          <div class="template-option" data-template="proposal">
+                            <span class="template-icon">📋</span>
+                            <span>Proposal</span>
+                          </div>
+                          <div class="template-option" data-template="invoice">
+                            <span class="template-icon">💵</span>
+                            <span>Invoice</span>
+                          </div>
+                          <div class="template-option" data-template="check-in">
+                            <span class="template-icon">✅</span>
+                            <span>Check-in</span>
+                          </div>
+                        </div>
+                        <button class="btn-primary" onclick="openOutreachBuilder()">Create Outreach</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Tool #3: Next Best Action (AI Recommendations) -->
+                  <div class="smart-tool-card" data-tool="next-action">
+                    <div class="tool-header">
+                      <div class="tool-icon gradient-bg-3">⚡</div>
+                      <div class="tool-info">
+                        <h3>Next Best Action</h3>
+                        <p class="tool-subtitle">AI Recommendations</p>
+                      </div>
+                      <div class="tool-status">
+                        <span class="status-badge active">AI Ready</span>
+                      </div>
+                    </div>
+                    <div class="tool-description">
+                      <p>Get intelligent, data-driven recommendations for your next business actions based on AI analysis of your workspace.</p>
+                      <ul class="feature-list">
+                        <li>🎯 Prioritized action recommendations</li>
+                        <li>📊 Impact & effort scoring</li>
+                        <li>⏰ Optimal timing suggestions</li>
+                        <li>🔄 Automated follow-up sequences</li>
+                      </ul>
+                    </div>
+                    <div class="tool-actions">
+                      <div id="recommendations-preview" class="recommendations-preview">
+                        <div class="loading-state">
+                          <div class="pulse-dot"></div>
+                          <span>Click to generate intelligent recommendations...</span>
+                        </div>
+                      </div>
+                      <button class="btn-primary" onclick="generateRecommendations()">Generate Recommendations</button>
+                    </div>
+                  </div>
+
+                  <!-- Tool #4: Quick Insights -->
+                  <div class="smart-tool-card" data-tool="quick-insights">
+                    <div class="tool-header">
+                      <div class="tool-icon gradient-bg-4">📊</div>
+                      <div class="tool-info">
+                        <h3>Quick Insights</h3>
+                        <p class="tool-subtitle">Real-time Analytics</p>
+                      </div>
+                      <div class="tool-status">
+                        <span class="status-badge active">Live Data</span>
+                      </div>
+                    </div>
+                    <div class="tool-description">
+                      <p>Instant business intelligence with real-time metrics, trend analysis, and predictive insights for faster decision-making.</p>
+                      <ul class="feature-list">
+                        <li>⚡ Real-time business metrics</li>
+                        <li>📈 Trend analysis & forecasting</li>
+                        <li>🚨 Alert-worthy insights</li>
+                        <li>📋 Executive summary reports</li>
+                      </ul>
+                    </div>
+                    <div class="tool-actions">
+                      <div class="insights-dashboard" id="insights-dashboard">
+                        <div class="insight-metric">
+                          <span class="metric-value" id="revenue-trend">+15%</span>
+                          <span class="metric-label">Revenue Growth</span>
+                        </div>
+                        <div class="insight-metric">
+                          <span class="metric-value" id="client-satisfaction">92%</span>
+                          <span class="metric-label">Client Satisfaction</span>
+                        </div>
+                        <div class="insight-metric">
+                          <span class="metric-value" id="project-velocity">8.2</span>
+                          <span class="metric-label">Project Velocity</span>
+                        </div>
+                      </div>
+                      <button class="btn-primary" onclick="generateDetailedInsights()">Detailed Analysis</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- AI Assistant Integration -->
+                <div class="ai-assistant-section">
+                  <div class="assistant-card">
+                    <div class="assistant-header">
+                      <div class="assistant-icon">🤖</div>
+                      <div class="assistant-info">
+                        <h3>UBA AI Assistant</h3>
+                        <p>Your intelligent business companion</p>
+                      </div>
+                      <div class="assistant-status">
+                        <div class="status-indicator active"></div>
+                        <span>Online</span>
+                      </div>
+                    </div>
+                    <div class="assistant-quick-actions">
+                      <button class="quick-action-btn" onclick="askAssistant('analyze my business performance')">
+                        <span class="action-icon">📊</span>
+                        <span>Analyze Performance</span>
+                      </button>
+                      <button class="quick-action-btn" onclick="askAssistant('suggest next actions')">
+                        <span class="action-icon">💡</span>
+                        <span>Get Suggestions</span>
+                      </button>
+                      <button class="quick-action-btn" onclick="askAssistant('create client report')">
+                        <span class="action-icon">📋</span>
+                        <span>Generate Report</span>
+                      </button>
+                    </div>
+                    <div class="assistant-input">
+                      <div class="chat-input-group">
+                        <input type="text" id="assistant-input" class="chat-input" placeholder="Ask anything about your business..." />
+                        <button class="chat-send-btn" onclick="sendToAssistant()">
+                          <span class="send-icon">→</span>
+                        </button>
                       </div>
                     </div>
                   </div>
                 </div>
               </section>
+
+              <!-- Modals -->
+              <div id="client-brief-modal" class="smart-modal">
+                <div class="modal-overlay" onclick="closeModal('client-brief-modal')"></div>
+                <div class="modal-content client-brief-content">
+                  <div class="modal-header">
+                    <h2 id="client-brief-title">Client Brief</h2>
+                    <button class="modal-close" onclick="closeModal('client-brief-modal')">×</button>
+                  </div>
+                  <div class="modal-body" id="client-brief-body">
+                    <!-- Client brief content will be loaded here -->
+                  </div>
+                </div>
+              </div>
+
+              <div id="outreach-builder-modal" class="smart-modal">
+                <div class="modal-overlay" onclick="closeModal('outreach-builder-modal')"></div>
+                <div class="modal-content outreach-builder-content">
+                  <div class="modal-header">
+                    <h2>Smart Outreach Builder</h2>
+                    <button class="modal-close" onclick="closeModal('outreach-builder-modal')">×</button>
+                  </div>
+                  <div class="modal-body" id="outreach-builder-body">
+                    <!-- Outreach builder content will be loaded here -->
+                  </div>
+                </div>
+              </div>
+
+              <div id="insights-detail-modal" class="smart-modal">
+                <div class="modal-overlay" onclick="closeModal('insights-detail-modal')"></div>
+                <div class="modal-content insights-detail-content">
+                  <div class="modal-header">
+                    <h2>Detailed Business Insights</h2>
+                    <button class="modal-close" onclick="closeModal('insights-detail-modal')">×</button>
+                  </div>
+                  <div class="modal-body" id="insights-detail-body">
+                    <!-- Detailed insights content will be loaded here -->
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- UBA Assistant panel removed: now available as a dedicated page -->
@@ -219,6 +398,7 @@
       </div>
     </section>
 
+    <link rel="stylesheet" href="assets/css/enhanced-smart-tools.css" />
     <script src="assets/js/i18n.js"></script>
     <script src="assets/js/store.js"></script>
     <script src="assets/js/app.js"></script>
@@ -226,6 +406,7 @@
     <script src="assets/js/clients.js"></script>
     <script src="assets/js/tasks.js"></script>
     <script src="assets/js/smarttools.js"></script>
+    <script src="assets/js/enhanced-smart-tools.js"></script>
     <script>
       const pageId = document.getElementById("page-id").dataset.page;
       loadPageScripts(pageId);

@@ -3,8 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>UBA Reports</title>
+    <title>UBA Reports | تقارير يو بي إيه</title>
     <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="stylesheet" href="assets/css/enhanced-reports.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   </head>
   <body>
     <section id="uba-dashboard">
@@ -124,10 +127,10 @@
           <main class="uba-main">
             <header class="uba-topbar">
               <div class="uba-top-left">
-                <p class="uba-top-kicker">Reports</p>
-                <h1 id="uba-view-title">Business reports</h1>
+                <p class="uba-top-kicker">Reports | التقارير</p>
+                <h1 id="uba-view-title">Business Reports | التقارير التجارية</h1>
                 <p id="uba-view-desc">
-                  Quick KPIs and summaries for this workspace.
+                  Professional analytics with interactive charts and detailed insights | تحليلات احترافية مع رسوم بيانية تفاعلية
                 </p>
               </div>
               <div class="uba-top-right">
@@ -181,48 +184,48 @@
                   <div class="reports-chart-card">
                     <div class="uba-card-header">
                       <div>
-                        <div class="uba-card-title">Revenue by Month</div>
-                        <p class="uba-card-sub">Monthly revenue from paid invoices</p>
+                        <div class="uba-card-title">Monthly Revenue Trend | اتجاه الإيرادات الشهرية</div>
+                        <p class="uba-card-sub">Revenue performance over the last 12 months | أداء الإيرادات خلال الـ 12 شهرًا الماضية</p>
                       </div>
                     </div>
                     <div class="reports-chart-container">
-                      <canvas id="revenue-chart" width="400" height="200"></canvas>
+                      <canvas id="revenue-chart"></canvas>
                     </div>
                   </div>
 
                   <div class="reports-chart-card">
                     <div class="uba-card-header">
                       <div>
-                        <div class="uba-card-title">Invoice Status</div>
-                        <p class="uba-card-sub">Open vs paid invoices</p>
+                        <div class="uba-card-title">Invoice Status Distribution | توزيع حالات الفواتير</div>
+                        <p class="uba-card-sub">Breakdown of invoice statuses | تفصيل حالات الفواتير</p>
                       </div>
                     </div>
                     <div class="reports-chart-container">
-                      <canvas id="invoices-chart" width="400" height="200"></canvas>
+                      <canvas id="invoices-chart"></canvas>
                     </div>
                   </div>
 
                   <div class="reports-chart-card">
                     <div class="uba-card-header">
                       <div>
-                        <div class="uba-card-title">Project Pipeline</div>
-                        <p class="uba-card-sub">Projects by stage</p>
+                        <div class="uba-card-title">Project Velocity | سرعة إنجاز المشاريع</div>
+                        <p class="uba-card-sub">Projects started vs completed over time | المشاريع المبدأة مقابل المكتملة عبر الوقت</p>
                       </div>
                     </div>
                     <div class="reports-chart-container">
-                      <canvas id="projects-chart" width="400" height="200"></canvas>
+                      <canvas id="projects-chart"></canvas>
                     </div>
                   </div>
 
                   <div class="reports-chart-card">
                     <div class="uba-card-header">
                       <div>
-                        <div class="uba-card-title">Task Progress</div>
-                        <p class="uba-card-sub">Completed vs remaining tasks</p>
+                        <div class="uba-card-title">Task Completion Analytics | تحليلات إنجاز المهام</div>
+                        <p class="uba-card-sub">Weekly task completion trends | اتجاهات إنجاز المهام الأسبوعية</p>
                       </div>
                     </div>
                     <div class="reports-chart-container">
-                      <canvas id="tasks-chart" width="400" height="200"></canvas>
+                      <canvas id="tasks-chart"></canvas>
                     </div>
                   </div>
                 </div>
@@ -235,9 +238,19 @@
 
     <script src="assets/js/i18n.js"></script>
     <script src="assets/js/store.js"></script>
+    <script src="assets/js/unified-metrics.js"></script>
     <script src="assets/js/app.js"></script>
     <script src="assets/js/page-loader.js"></script>
     <script src="assets/js/uba-pages-data.js"></script>
     <script src="assets/js/reports.js"></script>
+    <script src="assets/js/enhanced-reports.js"></script>
+    <script>
+      // Initialize enhanced reports after page load
+      document.addEventListener('DOMContentLoaded', function() {
+        if (typeof initEnhancedReports === 'function') {
+          setTimeout(initEnhancedReports, 500);
+        }
+      });
+    </script>
   </body>
 </html>

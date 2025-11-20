@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UBA Enhanced Features Demo</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <style>
+        body { padding: 20px; font-family: 'Segoe UI', sans-serif; background: #f8fafc; }
+        .demo-container { max-width: 1400px; margin: 0 auto; }
+        .demo-header { text-align: center; margin-bottom: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 16px; }
+        .demo-header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .demo-header p { font-size: 1.2rem; opacity: 0.9; }
+        
+        .demo-nav { display: flex; gap: 12px; justify-content: center; margin-bottom: 40px; flex-wrap: wrap; }
+        .demo-nav-btn { 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            border: none; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #334155;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .demo-nav-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.15); color: #667eea; }
+        
+        .demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; margin-bottom: 40px; }
+        .demo-card { 
+            background: white; 
+            border-radius: 16px; 
+            padding: 24px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+        .demo-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); border-color: #667eea; }
+        
+        .demo-card h3 { 
+            margin-top: 0; 
+            color: #1e293b; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            font-size: 1.25rem;
+            margin-bottom: 16px;
+        }
+        
+        .demo-card p { color: #64748b; margin-bottom: 20px; line-height: 1.6; }
+        
+        .feature-list { 
+            list-style: none; 
+            padding: 0; 
+            margin: 0 0 20px 0; 
+        }
+        .feature-list li { 
+            padding: 8px 0; 
+            border-bottom: 1px solid #f1f5f9; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            color: #475569;
+            font-size: 0.9rem;
+        }
+        .feature-list li:last-child { border-bottom: none; }
+        
+        .demo-btn { 
+            padding: 10px 20px; 
+            border-radius: 6px; 
+            border: none; 
+            font-weight: 500; 
+            cursor: pointer; 
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+        .demo-btn-primary { background: #667eea; color: white; }
+        .demo-btn-primary:hover { background: #5a6fd8; transform: translateY(-1px); }
+        .demo-btn-secondary { background: #f1f5f9; color: #475569; }
+        .demo-btn-secondary:hover { background: #e2e8f0; }
+        
+        .status-badge { 
+            padding: 4px 10px; 
+            border-radius: 12px; 
+            font-size: 0.75rem; 
+            font-weight: 600; 
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .status-implemented { background: #dcfce7; color: #166534; }
+        .status-enhanced { background: #dbeafe; color: #1d4ed8; }
+        .status-new { background: #fef3c7; color: #92400e; }
+        
+        .demo-icon { font-size: 2rem; margin-bottom: 8px; }
+        
+        .stats-row { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 16px; 
+            margin: 30px 0; 
+        }
+        .stat-card { 
+            background: white; 
+            border-radius: 12px; 
+            padding: 20px; 
+            text-align: center; 
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .stat-value { 
+            font-size: 2rem; 
+            font-weight: 700; 
+            color: #667eea; 
+            margin-bottom: 4px; 
+        }
+        .stat-label { color: #64748b; font-size: 0.875rem; }
+        
+        .demo-footer { 
+            text-align: center; 
+            padding: 40px; 
+            background: white; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+        
+        @media (max-width: 768px) {
+            .demo-grid { grid-template-columns: 1fr; }
+            .demo-nav { flex-direction: column; align-items: center; }
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        .feature-preview { 
+            background: #f8fafe; 
+            border: 1px solid #e1e7f5; 
+            border-radius: 8px; 
+            padding: 16px; 
+            margin: 16px 0; 
+        }
+        .feature-preview h4 { margin: 0 0 8px 0; color: #667eea; font-size: 0.95rem; }
+        .feature-preview p { margin: 0; font-size: 0.85rem; color: #64748b; }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🚀 UBA Enhanced Features Demo</h1>
+            <p>Comprehensive business automation platform with professional features across all modules</p>
+            <p style="opacity: 0.8; font-size: 1rem; margin-top: 16px;">
+                Tasks • Invoices • Expenses • Leads • Calendar • Automations • Files • Reports
+            </p>
+        </div>
+
+        <div class="demo-nav">
+            <a href="index.html" class="demo-nav-btn">📊 Dashboard</a>
+            <a href="tasks-demo.html" class="demo-nav-btn">✅ Enhanced Tasks</a>
+            <a href="invoices-demo.html" class="demo-nav-btn">💰 Enhanced Invoices</a>
+            <a href="expenses-demo.html" class="demo-nav-btn">📤 Enhanced Expenses</a>
+            <a href="leads-demo.html" class="demo-nav-btn">🧲 Enhanced Leads</a>
+            <a href="calendar-demo.html" class="demo-nav-btn">📅 Enhanced Calendar</a>
+            <a href="automations-demo.html" class="demo-nav-btn">🤖 Enhanced Automations</a>
+            <a href="files-demo.html" class="demo-nav-btn">📁 Enhanced Files</a>
+            <a href="reports-demo.html" class="demo-nav-btn">📊 Enhanced Reports</a>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value">8</div>
+                <div class="stat-label">Enhanced Modules</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">45+</div>
+                <div class="stat-label">New Features</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">100%</div>
+                <div class="stat-label">Arabic Support</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">Pro</div>
+                <div class="stat-label">Quality Level</div>
+            </div>
+        </div>
+
+        <div class="demo-grid">
+            <div class="demo-card">
+                <h3>✅ Enhanced Tasks System</h3>
+                <p>Professional task management with priority handling, smart search, and comprehensive analytics.</p>
+                <ul class="feature-list">
+                    <li>🎯 Priority color coding with visual indicators</li>
+                    <li>📅 Due date reminders and notifications</li>
+                    <li>🔍 Smart search with advanced filtering</li>
+                    <li>📋 Detailed task information modal</li>
+                    <li>🌐 Arabic RTL support</li>
+                </ul>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <a href="tasks-demo.html" class="demo-btn demo-btn-primary">View Demo</a>
+                    <a href="tasks.html" class="demo-btn demo-btn-secondary">Live System</a>
+                    <span class="status-badge status-implemented">Enhanced</span>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <h3>💰 Enhanced Invoice System</h3>
+                <p>Professional invoicing with PDF export, branding templates, and automated client linking.</p>
+                <ul class="feature-list">
+                    <li>📄 PDF export with jsPDF integration</li>
+                    <li>📊 Monthly grouping and analytics</li>
+                    <li>👁️ Preview modals with detailed information</li>
+                    <li>🏷️ Branding templates and customization</li>
+                    <li>🔗 Automatic client linking</li>
+                </ul>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <a href="invoices-demo.html" class="demo-btn demo-btn-primary">View Demo</a>
+                    <a href="invoices.html" class="demo-btn demo-btn-secondary">Live System</a>
+                    <span class="status-badge status-implemented">Enhanced</span>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <h3>📤 Enhanced Expenses System</h3>
+                <p>Comprehensive expense management with analytics, receipt uploads, and category management.</p>
+                <ul class="feature-list">
+                    <li>📊 Pie charts and trend analysis with Chart.js</li>
+                    <li>🏷️ Category management with color coding</li>
+                    <li>📸 Receipt upload and attachment system</li>
+                    <li>💰 Monthly expense tracking</li>
+                    <li>🎨 Professional dropdown design</li>
+                </ul>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <a href="expenses-demo.html" class="demo-btn demo-btn-primary">View Demo</a>
+                    <a href="expenses.html" class="demo-btn demo-btn-secondary">Live System</a>
+                    <span class="status-badge status-implemented">Enhanced</span>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <h3>🧲 Enhanced Lead Management</h3>
+                <p>Intelligent lead scoring system with contact logging and project integration capabilities.</p>
+                <ul class="feature-list">
+                    <li>🎯 0-100 scoring algorithm with configurable criteria</li>
+                    <li>📞 Contact activity logging and tracking</li>
+                    <li>🔄 Project conversion workflows</li>
+                    <li>📊 Enhanced table views with sorting</li>
+                    <li>📈 Lead analytics and reporting</li>
+                </ul>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <a href="leads-demo.html" class="demo-btn demo-btn-primary">View Demo</a>
+                    <a href="leads.html" class="demo-btn demo-btn-secondary">Live System</a>
+                    <span class="status-badge status-implemented">Enhanced</span>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <h3>📅 Enhanced Calendar System</h3>
+                <p>Professional calendar with event management, drag & drop functionality, and task synchronization.</p>
+                <ul class="feature-list">
+                    <li>➕ Event creation modal with full details</li>
+                    <li>🖱️ Drag & drop event management</li>
+                    <li>🔄 Task synchronization and integration</li>
+                    <li>🎨 Enhanced sidebar with quick actions</li>
+                    <li>📱 Mobile responsive design</li>
+                </ul>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <a href="calendar-demo.html" class="demo-btn demo-btn-primary">View Demo</a>
+                    <a href="calendar.html" class="demo-btn demo-btn-secondary">Live System</a>
+                    <span class="status-badge status-implemented">Enhanced</span>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <h3>🤖 Enhanced Automations Engine</h3>
+                <p>Professional automation system with real triggers, actions, and comprehensive management interface.</p>
+                <ul class="feature-list">
+                    <li>⚡ Real triggers (task created, invoice due, etc.)</li>
+                    <li>🎯 Professional actions (notifications, tasks, logs)</li>
+                    <li>✅ Enable/disable controls with validation</li>
+                    <li>📊 Automation analytics and monitoring</li>
+                    <li>🔧 Advanced configuration options</li>
+                </ul>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <a href="automations-demo.html" class="demo-btn demo-btn-primary">View Demo</a>
+                    <a href="automations.html" class="demo-btn demo-btn-secondary">Live System</a>
+                    <span class="status-badge status-implemented">Enhanced</span>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <h3>📁 Enhanced File Management</h3>
+                <p>Professional file system with folder organization, previews, and storage management.</p>
+                <ul class="feature-list">
+                    <li>🗂️ LocalStorage-safe file indexing</li>
+                    <li>📂 Folder structure with auto-categorization</li>
+                    <li>👁️ File previews (images, PDF, text, media)</li>
+                    <li>📊 Storage limits and progress tracking</li>
+                    <li>🔧 Fixed invalid date handling</li>
+                </ul>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <a href="files-demo.html" class="demo-btn demo-btn-primary">View Demo</a>
+                    <a href="files.html" class="demo-btn demo-btn-secondary">Live System</a>
+                    <span class="status-badge status-implemented">Enhanced</span>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <h3>📊 Enhanced Reports System</h3>
+                <p>Professional business analytics with Chart.js integration and comprehensive export capabilities.</p>
+                <ul class="feature-list">
+                    <li>📈 Chart.js integration with interactive charts</li>
+                    <li>💰 Monthly revenue trend analysis</li>
+                    <li>🚀 Project velocity analytics</li>
+                    <li>✅ Task completion chart with insights</li>
+                    <li>📑 CSV/PDF export with professional formatting</li>
+                </ul>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <a href="reports-demo.html" class="demo-btn demo-btn-primary">View Demo</a>
+                    <a href="reports.html" class="demo-btn demo-btn-secondary">Live System</a>
+                    <span class="status-badge status-implemented">Enhanced</span>
+                </div>
+            </div>
+
+            <div class="demo-card">
+                <h3>🎨 Arabic Language Support</h3>
+                <p>Complete RTL support and Arabic translations across all enhanced modules.</p>
+                <div class="feature-preview">
+                    <h4>Arabic Interface Elements</h4>
+                    <p style="direction: rtl; text-align: right;">
+                        دعم كامل للغة العربية مع تخطيط من اليمين إلى اليسار • ترجمات شاملة • تنسيق التاريخ والأرقام
+                    </p>
+                </div>
+                <ul class="feature-list">
+                    <li>🌐 RTL (Right-to-Left) layout support</li>
+                    <li>📝 Comprehensive Arabic translations</li>
+                    <li>📅 Localized date and number formatting</li>
+                    <li>🎯 Cultural adaptations and considerations</li>
+                    <li>📱 Mobile-responsive Arabic interface</li>
+                </ul>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button onclick="toggleArabicDemo()" class="demo-btn demo-btn-primary">Toggle Arabic</button>
+                    <span class="status-badge status-implemented">Complete</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-footer">
+            <h3>🚀 Ready to Explore the Enhanced UBA Platform?</h3>
+            <p style="color: #64748b; margin-bottom: 24px;">
+                All enhanced features are fully functional with professional design, Arabic support, and comprehensive functionality.
+            </p>
+            <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                <a href="index.html" class="demo-btn demo-btn-primary" style="padding: 16px 32px; font-size: 1rem;">
+                    🏠 Open Main Dashboard
+                </a>
+                <a href="#" onclick="openRandomDemo()" class="demo-btn demo-btn-secondary" style="padding: 16px 32px; font-size: 1rem;">
+                    🎲 Random Feature Demo
+                </a>
+            </div>
+            <p style="color: #94a3b8; font-size: 0.875rem; margin-top: 24px;">
+                Enhanced by professional development • Full-featured • Arabic supported • Production ready
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function toggleArabicDemo() {
+            const isArabic = document.documentElement.dir === 'rtl';
+            if (isArabic) {
+                document.documentElement.dir = 'ltr';
+                alert('🌐 Switched to English (LTR)\n\nThe interface is now displayed in left-to-right layout with English text direction.');
+            } else {
+                document.documentElement.dir = 'rtl';
+                alert('🌐 تم التبديل إلى العربية (RTL)\n\nيتم عرض الواجهة الآن في تخطيط من اليمين إلى اليسار مع اتجاه النص العربي.');
+            }
+        }
+
+        function openRandomDemo() {
+            const demos = [
+                'tasks-demo.html',
+                'invoices-demo.html', 
+                'expenses-demo.html',
+                'leads-demo.html',
+                'calendar-demo.html',
+                'automations-demo.html',
+                'files-demo.html',
+                'reports-demo.html'
+            ];
+            const randomDemo = demos[Math.floor(Math.random() * demos.length)];
+            window.open(randomDemo, '_blank');
+        }
+
+        // Add hover animations to cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.demo-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.background = 'linear-gradient(135deg, #ffffff 0%, #f8fafe 100%)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.background = 'white';
+                });
+            });
+
+            // Animate stats on load
+            const statValues = document.querySelectorAll('.stat-value');
+            statValues.forEach((stat, index) => {
+                setTimeout(() => {
+                    stat.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        stat.style.transform = 'scale(1)';
+                    }, 200);
+                }, index * 100);
+            });
+
+            console.log('🚀 UBA Enhanced Features Demo loaded');
+        });
+    </script>
+</body>
+</html>

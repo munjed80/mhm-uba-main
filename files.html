@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>UBA Files</title>
     <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="stylesheet" href="assets/css/enhanced-files.css" />
   </head>
   <body>
     <section id="uba-dashboard">
@@ -120,9 +121,9 @@
           <main class="uba-main">
             <header class="uba-topbar">
               <div class="uba-top-left">
-                <p class="uba-top-kicker">Files</p>
-                <h1 id="uba-view-title">Document Manager</h1>
-                <p id="uba-view-desc">Upload, store and manage files locally</p>
+                <p class="uba-top-kicker">Files • الملفات</p>
+                <h1 id="uba-view-title">Enhanced File Manager</h1>
+                <p id="uba-view-desc">Professional file management with folders, previews and storage control</p>
               </div>
               <div class="uba-top-right">
                 <div class="uba-pill" id="files-count">0 files</div>
@@ -136,8 +137,11 @@
                 <div class="uba-card" style="margin-bottom: 20px;">
                   <div class="uba-card-header">
                     <div>
-                      <div class="uba-card-title">Upload Files</div>
-                      <p class="uba-card-sub">Add documents to your workspace</p>
+                      <div class="uba-card-title">📤 Upload Files (رفع الملفات)</div>
+                      <p class="uba-card-sub">Drag & drop files or click to browse • Multiple files supported • Auto-organized by type</p>
+                    </div>
+                    <div class="upload-stats">
+                      <span id="upload-limit-info">Max 10MB per file</span>
                     </div>
                   </div>
                   <div style="padding: 20px;">
@@ -163,18 +167,27 @@
                 <div class="uba-card">
                   <div class="uba-card-header">
                     <div>
-                      <div class="uba-card-title">Stored Files</div>
-                      <p class="uba-card-sub">Manage your uploaded documents</p>
+                      <div class="uba-card-title">📁 File Library (مكتبة الملفات)</div>
+                      <p class="uba-card-sub">Browse, preview and manage your files with advanced organization</p>
                     </div>
                     <div class="files-header-actions">
                       <input type="text" id="search-files" placeholder="Search files..." class="files-search">
                       <select id="filter-type" class="files-filter">
                         <option value="">All types</option>
-                        <option value="image">Images</option>
-                        <option value="document">Documents</option>
-                        <option value="text">Text</option>
-                        <option value="application">Applications</option>
-                        <option value="other">Other</option>
+                        <option value="image">Images 🖼️</option>
+                        <option value="document">Documents 📄</option>
+                        <option value="text">Text Files 📝</option>
+                        <option value="video">Videos 🎥</option>
+                        <option value="audio">Audio 🎵</option>
+                        <option value="other">Other 📎</option>
+                      </select>
+                      <select id="sort-files" class="files-sort">
+                        <option value="name-asc">Name A-Z</option>
+                        <option value="name-desc">Name Z-A</option>
+                        <option value="date-desc">Newest First</option>
+                        <option value="date-asc">Oldest First</option>
+                        <option value="size-desc">Largest First</option>
+                        <option value="size-asc">Smallest First</option>
                       </select>
                     </div>
                   </div>
@@ -184,11 +197,11 @@
                       <table class="uba-table">
                         <thead>
                           <tr>
-                            <th>Name</th>
-                            <th>Size</th>
-                            <th>Type</th>
-                            <th>Uploaded</th>
-                            <th>Actions</th>
+                            <th style="width: 40%;">Name & Details</th>
+                            <th style="width: 10%;">Size</th>
+                            <th style="width: 12%;">Type</th>
+                            <th style="width: 15%;">Date</th>
+                            <th style="width: 23%;">Actions</th>
                           </tr>
                         </thead>
                         <tbody id="files-table"></tbody>
@@ -198,8 +211,9 @@
                     <!-- Empty state -->
                     <div class="files-empty-state" id="empty-state">
                       <div class="files-empty-icon">📂</div>
-                      <h3>No files uploaded yet</h3>
-                      <p>Upload your first file to get started</p>
+                      <h3>No files in this location</h3>
+                      <p>Drag & drop files here or use the upload button above</p>
+                      <p><small>Supported: Images, Documents, Videos, Audio, Archives and more</small></p>
                     </div>
                   </div>
                 </div>
@@ -216,5 +230,6 @@
     <script src="assets/js/uba-pages-data.js"></script>
     <script src="assets/js/page-loader.js"></script>
     <script src="assets/js/files.js"></script>
+    <script src="assets/js/enhanced-files.js"></script>
   </body>
 </html>

@@ -343,13 +343,28 @@
   }
   
   function initReportsPage() {
-    // Calculate all metrics
-    const revenueMetrics = calculateRevenueMetrics();
-    const clientMetrics = calculateClientMetrics();
-    const projectMetrics = calculateProjectMetrics();
-    const taskMetrics = calculateTaskMetrics();
+    console.log('📊 Initializing enhanced reports page with unified metrics');
     
-    // Update KPI cards
+    // Use unified metrics if available, otherwise fallback to local calculations
+    let metrics;
+    if (window.UBAMetrics) {
+      metrics = window.UBAMetrics.calculate();
+    } else {
+      // Fallback to original calculations
+      const revenueMetrics = calculateRevenueMetrics();
+      const clientMetrics = calculateClientMetrics();
+      const projectMetrics = calculateProjectMetrics();
+      const taskMetrics = calculateTaskMetrics();
+      
+      metrics = {
+        revenue: revenueMetrics,
+        clients: clientMetrics,
+        projects: projectMetrics,
+        tasks: taskMetrics
+      };
+    }
+    
+    // Update KPI cards with unified data
     const kpiTotalRevenue = document.getElementById('kpi-total-revenue');
     const kpiRevenueChange = document.getElementById('kpi-revenue-change');
     const kpiTotalInvoices = document.getElementById('kpi-total-invoices');
@@ -360,46 +375,48 @@
     const kpiTasksChange = document.getElementById('kpi-tasks-change');
     
     if (kpiTotalRevenue) {
-      kpiTotalRevenue.textContent = formatCurrency(revenueMetrics.totalRevenue);
+      const formatCurrency = window.UBAMetrics ? window.UBAMetrics.formatCurrency : formatCurrency;
+      kpiTotalRevenue.textContent = formatCurrency(metrics.revenue.totalRevenue);
     }
     
     if (kpiRevenueChange) {
-      kpiRevenueChange.textContent = `€${revenueMetrics.thisMonthRevenue.toLocaleString()} this month`;
+      kpiRevenueChange.textContent = `€${metrics.revenue.monthlyRevenue.toLocaleString()} this month`;
     }
     
     if (kpiTotalInvoices) {
-      kpiTotalInvoices.textContent = revenueMetrics.totalInvoices.toString();
+      kpiTotalInvoices.textContent = metrics.revenue.totalInvoices.toString();
     }
     
     if (kpiInvoicesChange) {
-      kpiInvoicesChange.textContent = `${revenueMetrics.overdueInvoices} overdue`;
-      kpiInvoicesChange.className = 'reports-kpi-change' + (revenueMetrics.overdueInvoices > 0 ? ' negative' : '');
+      const overdueCount = Math.round(metrics.revenue.overdueInvoices / Math.max(metrics.revenue.averageInvoiceValue || 1000, 1));
+      kpiInvoicesChange.textContent = overdueCount > 0 ? `${overdueCount} overdue` : 'All current';
+      kpiInvoicesChange.className = 'reports-kpi-change' + (overdueCount > 0 ? ' negative' : '');
     }
     
     if (kpiTotalClients) {
-      kpiTotalClients.textContent = clientMetrics.totalClients.toString();
+      kpiTotalClients.textContent = metrics.clients.totalClients.toString();
     }
     
     if (kpiClientsChange) {
-      kpiClientsChange.textContent = `${clientMetrics.newThisMonth} new this month`;
+      kpiClientsChange.textContent = `${metrics.clients.newThisMonth} new this month`;
     }
     
     if (kpiTasksCompleted) {
-      kpiTasksCompleted.textContent = taskMetrics.done.toString();
+      kpiTasksCompleted.textContent = metrics.tasks.completedTasks.toString();
     }
     
     if (kpiTasksChange) {
-      kpiTasksChange.textContent = `${taskMetrics.completedThisMonth} this month`;
+      kpiTasksChange.textContent = `${metrics.tasks.tasksDueToday} due today`;
     }
     
-    // Render charts
+    // Render charts with unified metrics data
     const revenueChart = document.getElementById('revenue-chart');
-    if (revenueChart) {
-      const monthlyData = getMonthlyRevenueData(revenueMetrics.monthlyRevenue);
+    if (revenueChart && metrics.revenue.revenueTrend) {
+      const monthlyData = getMonthlyRevenueData(metrics.revenue.revenueTrend);
       drawLineChart(revenueChart, monthlyData, {
         lineColor: '#10b981',
         pointColor: '#10b981',
-        formatValue: formatCurrency
+        formatValue: window.UBAMetrics ? window.UBAMetrics.formatCurrency : formatCurrency
       });
     }
     
@@ -408,9 +425,9 @@
       const invoiceData = {
         labels: ['Paid', 'Overdue', 'Draft'],
         values: [
-          revenueMetrics.paidInvoices,
-          revenueMetrics.overdueInvoices,
-          revenueMetrics.totalInvoices - revenueMetrics.paidInvoices - revenueMetrics.overdueInvoices
+          metrics.revenue.paidInvoices || 0,
+          Math.round(metrics.revenue.overdueInvoices / Math.max(metrics.revenue.averageInvoiceValue || 1000, 1)),
+          metrics.revenue.draftInvoices || 0
         ]
       };
       drawDonutChart(invoicesChart, invoiceData, {

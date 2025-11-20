@@ -3,8 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>UBA Insights</title>
+    <title>UBA Insights Lab</title>
     <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="stylesheet" href="assets/css/enhanced-insights-lab.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
   </head>
   <body>
     <section id="uba-dashboard">
@@ -122,10 +125,10 @@
               <div class="uba-top-left">
                 <p class="uba-top-kicker">Insights</p>
                 <h1 id="uba-view-title" data-i18n="view.insights.title">
-                  Insights
+                  Insights Lab
                 </h1>
                 <p id="uba-view-desc" data-i18n="view.insights.desc">
-                  Quick metrics and trend analysis for your workspace.
+                  AI-powered business intelligence with interactive analytics and predictive insights.
                 </p>
               </div>
               <div class="uba-top-right">
@@ -141,76 +144,460 @@
 
             <div class="uba-views">
               <section class="uba-view" data-view="insights">
-                <div class="uba-card" style="padding: 12px">
-                  <div class="uba-section-hero">
-                    <div>
-                      <p
-                        class="uba-banner-label"
-                        data-i18n="insights.hero.kicker"
-                      >
-                        Decision cockpit
-                      </p>
-                      <h3 data-i18n="insights.hero.title">
-                        See the signals behind your KPIs
-                      </h3>
-                      <p data-i18n="insights.hero.desc">
-                        Track revenue momentum, deal velocity, and workload
-                        saturation with annotated insights.
-                      </p>
+                <!-- Insights Lab Header -->
+                <div class="insights-lab-header">
+                  <div class="lab-overview">
+                    <div class="lab-icon">🧪</div>
+                    <div class="lab-content">
+                      <h2>Business Intelligence Laboratory</h2>
+                      <p>Advanced analytics engine with AI-powered insights and predictive modeling</p>
                     </div>
-                    <div class="uba-hero-cta">
-                      <button
-                        class="uba-btn-primary"
-                        data-i18n="insights.hero.primary"
-                      >
-                        Export snapshot
+                  </div>
+                  <div class="lab-controls">
+                    <div class="time-selector">
+                      <select id="insights-time-range" class="uba-select">
+                        <option value="7d">Last 7 days</option>
+                        <option value="30d" selected>Last 30 days</option>
+                        <option value="90d">Last 90 days</option>
+                        <option value="1y">Last year</option>
+                        <option value="all">All time</option>
+                      </select>
+                    </div>
+                    <div class="lab-actions">
+                      <button class="uba-btn uba-btn-ghost" onclick="generateWeeklyReport()">
+                        📧 Weekly Report
                       </button>
-                      <button
-                        class="uba-btn-ghost"
-                        data-i18n="insights.hero.secondary"
-                      >
-                        Schedule email
+                      <button class="uba-btn uba-btn-primary" onclick="exportInsightsSnapshot()">
+                        💾 Export Snapshot
                       </button>
                     </div>
                   </div>
+                </div>
 
-                  <div class="uba-analytic-grid" style="margin-top: 12px">
-                    <div class="uba-analytic-panel">
-                      <h4 data-i18n="insights.panels.revenue.title">
-                        Revenue pace
-                      </h4>
-                      <p
-                        class="uba-card-sub"
-                        data-i18n="insights.panels.revenue.desc"
-                      >
-                        Monthly revenue trend and invoice velocity.
-                      </p>
+                <!-- KPI Analysis Dashboard -->
+                <div class="kpi-analysis-section">
+                  <div class="section-header">
+                    <h3>📊 KPI Analysis Engine</h3>
+                    <p>Real-time performance metrics with trend analysis and predictive indicators</p>
+                    <button class="refresh-btn" onclick="refreshKPIAnalysis()">
+                      <span class="refresh-icon">🔄</span> Refresh Analysis
+                    </button>
+                  </div>
+
+                  <div class="kpi-grid">
+                    <!-- Revenue KPIs -->
+                    <div class="kpi-card revenue-kpi">
+                      <div class="kpi-header">
+                        <div class="kpi-icon">💰</div>
+                        <div class="kpi-info">
+                          <h4>Revenue Performance</h4>
+                          <div class="kpi-value">
+                            <span id="revenue-current">$0</span>
+                            <span class="kpi-change" id="revenue-change">+0%</span>
+                          </div>
+                        </div>
+                        <div class="kpi-trend">
+                          <canvas id="revenue-trend-chart" width="60" height="30"></canvas>
+                        </div>
+                      </div>
+                      <div class="kpi-details">
+                        <div class="kpi-metric">
+                          <span class="metric-label">Monthly Growth</span>
+                          <span class="metric-value" id="revenue-growth">+0%</span>
+                        </div>
+                        <div class="kpi-metric">
+                          <span class="metric-label">Avg. Invoice</span>
+                          <span class="metric-value" id="avg-invoice">$0</span>
+                        </div>
+                        <div class="kpi-metric">
+                          <span class="metric-label">Collection Rate</span>
+                          <span class="metric-value" id="collection-rate">0%</span>
+                        </div>
+                      </div>
                     </div>
-                    <div class="uba-analytic-panel">
-                      <h4 data-i18n="insights.panels.clients.title">
-                        Top clients
-                      </h4>
-                      <p
-                        class="uba-card-sub"
-                        data-i18n="insights.panels.clients.desc"
-                      >
-                        Concentration by client and recent activity.
-                      </p>
+
+                    <!-- Client KPIs -->
+                    <div class="kpi-card client-kpi">
+                      <div class="kpi-header">
+                        <div class="kpi-icon">👥</div>
+                        <div class="kpi-info">
+                          <h4>Client Portfolio</h4>
+                          <div class="kpi-value">
+                            <span id="client-count">0</span>
+                            <span class="kpi-change" id="client-change">+0</span>
+                          </div>
+                        </div>
+                        <div class="kpi-trend">
+                          <canvas id="client-trend-chart" width="60" height="30"></canvas>
+                        </div>
+                      </div>
+                      <div class="kpi-details">
+                        <div class="kpi-metric">
+                          <span class="metric-label">Active Clients</span>
+                          <span class="metric-value" id="active-clients">0</span>
+                        </div>
+                        <div class="kpi-metric">
+                          <span class="metric-label">Avg. Value</span>
+                          <span class="metric-value" id="avg-client-value">$0</span>
+                        </div>
+                        <div class="kpi-metric">
+                          <span class="metric-label">Retention Rate</span>
+                          <span class="metric-value" id="retention-rate">0%</span>
+                        </div>
+                      </div>
                     </div>
-                    <div class="uba-analytic-panel">
-                      <h4 data-i18n="insights.panels.projects.title">
-                        Pipeline health
-                      </h4>
-                      <p
-                        class="uba-card-sub"
-                        data-i18n="insights.panels.projects.desc"
-                      >
-                        Stage distribution and stalled deals.
-                      </p>
+
+                    <!-- Project KPIs -->
+                    <div class="kpi-card project-kpi">
+                      <div class="kpi-header">
+                        <div class="kpi-icon">💼</div>
+                        <div class="kpi-info">
+                          <h4>Project Velocity</h4>
+                          <div class="kpi-value">
+                            <span id="project-velocity">0</span>
+                            <span class="kpi-change" id="velocity-change">+0%</span>
+                          </div>
+                        </div>
+                        <div class="kpi-trend">
+                          <canvas id="project-trend-chart" width="60" height="30"></canvas>
+                        </div>
+                      </div>
+                      <div class="kpi-details">
+                        <div class="kpi-metric">
+                          <span class="metric-label">Completion Rate</span>
+                          <span class="metric-value" id="completion-rate">0%</span>
+                        </div>
+                        <div class="kpi-metric">
+                          <span class="metric-label">Avg. Duration</span>
+                          <span class="metric-value" id="avg-duration">0d</span>
+                        </div>
+                        <div class="kpi-metric">
+                          <span class="metric-label">On-time Delivery</span>
+                          <span class="metric-value" id="ontime-delivery">0%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Productivity KPIs -->
+                    <div class="kpi-card productivity-kpi">
+                      <div class="kpi-header">
+                        <div class="kpi-icon">⚡</div>
+                        <div class="kpi-info">
+                          <h4>Productivity Index</h4>
+                          <div class="kpi-value">
+                            <span id="productivity-score">0</span>
+                            <span class="kpi-change" id="productivity-change">+0%</span>
+                          </div>
+                        </div>
+                        <div class="kpi-trend">
+                          <canvas id="productivity-trend-chart" width="60" height="30"></canvas>
+                        </div>
+                      </div>
+                      <div class="kpi-details">
+                        <div class="kpi-metric">
+                          <span class="metric-label">Task Completion</span>
+                          <span class="metric-value" id="task-completion">0%</span>
+                        </div>
+                        <div class="kpi-metric">
+                          <span class="metric-label">Efficiency Score</span>
+                          <span class="metric-value" id="efficiency-score">0</span>
+                        </div>
+                        <div class="kpi-metric">
+                          <span class="metric-label">Focus Time</span>
+                          <span class="metric-value" id="focus-time">0h</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Interactive Charts Section -->
+                <div class="charts-section">
+                  <div class="section-header">
+                    <h3>📈 Interactive Analytics</h3>
+                    <p>Deep-dive analysis with interactive visualizations and drill-down capabilities</p>
+                  </div>
+
+                  <div class="charts-grid">
+                    <!-- Revenue Trend Chart -->
+                    <div class="chart-container">
+                      <div class="chart-header">
+                        <h4>Revenue Trend Analysis</h4>
+                        <div class="chart-controls">
+                          <button class="chart-btn active" data-chart="revenue" data-view="line">Line</button>
+                          <button class="chart-btn" data-chart="revenue" data-view="bar">Bar</button>
+                          <button class="chart-btn" data-chart="revenue" data-view="area">Area</button>
+                        </div>
+                      </div>
+                      <div class="chart-wrapper">
+                        <canvas id="revenue-analytics-chart"></canvas>
+                      </div>
+                      <div class="chart-insights" id="revenue-insights">
+                        <!-- AI-generated insights will appear here -->
+                      </div>
+                    </div>
+
+                    <!-- Client Distribution Chart -->
+                    <div class="chart-container">
+                      <div class="chart-header">
+                        <h4>Client Portfolio Distribution</h4>
+                        <div class="chart-controls">
+                          <button class="chart-btn active" data-chart="client" data-view="doughnut">Doughnut</button>
+                          <button class="chart-btn" data-chart="client" data-view="pie">Pie</button>
+                          <button class="chart-btn" data-chart="client" data-view="bar">Bar</button>
+                        </div>
+                      </div>
+                      <div class="chart-wrapper">
+                        <canvas id="client-distribution-chart"></canvas>
+                      </div>
+                      <div class="chart-insights" id="client-insights">
+                        <!-- AI-generated insights will appear here -->
+                      </div>
+                    </div>
+
+                    <!-- Project Pipeline Chart -->
+                    <div class="chart-container">
+                      <div class="chart-header">
+                        <h4>Project Pipeline Flow</h4>
+                        <div class="chart-controls">
+                          <button class="chart-btn active" data-chart="project" data-view="funnel">Funnel</button>
+                          <button class="chart-btn" data-chart="project" data-view="horizontal">Horizontal</button>
+                          <button class="chart-btn" data-chart="project" data-view="stacked">Stacked</button>
+                        </div>
+                      </div>
+                      <div class="chart-wrapper">
+                        <canvas id="project-pipeline-chart"></canvas>
+                      </div>
+                      <div class="chart-insights" id="project-insights">
+                        <!-- AI-generated insights will appear here -->
+                      </div>
+                    </div>
+
+                    <!-- Performance Heatmap -->
+                    <div class="chart-container">
+                      <div class="chart-header">
+                        <h4>Performance Heatmap</h4>
+                        <div class="chart-controls">
+                          <button class="chart-btn active" data-chart="performance" data-view="heatmap">Heatmap</button>
+                          <button class="chart-btn" data-chart="performance" data-view="matrix">Matrix</button>
+                          <button class="chart-btn" data-chart="performance" data-view="bubble">Bubble</button>
+                        </div>
+                      </div>
+                      <div class="chart-wrapper">
+                        <canvas id="performance-heatmap-chart"></canvas>
+                      </div>
+                      <div class="chart-insights" id="performance-insights">
+                        <!-- AI-generated insights will appear here -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Categorized Insights Section -->
+                <div class="insights-categories-section">
+                  <div class="section-header">
+                    <h3>🔍 Intelligent Insights</h3>
+                    <p>AI-powered insights categorized by business domain with actionable recommendations</p>
+                  </div>
+
+                  <div class="insights-tabs">
+                    <button class="insight-tab active" data-category="financial">
+                      <span class="tab-icon">💰</span>
+                      <span class="tab-label">Financial</span>
+                      <span class="insight-count" id="financial-count">0</span>
+                    </button>
+                    <button class="insight-tab" data-category="operational">
+                      <span class="tab-icon">⚙️</span>
+                      <span class="tab-label">Operational</span>
+                      <span class="insight-count" id="operational-count">0</span>
+                    </button>
+                    <button class="insight-tab" data-category="strategic">
+                      <span class="tab-icon">🎯</span>
+                      <span class="tab-label">Strategic</span>
+                      <span class="insight-count" id="strategic-count">0</span>
+                    </button>
+                    <button class="insight-tab" data-category="predictive">
+                      <span class="tab-icon">🔮</span>
+                      <span class="tab-label">Predictive</span>
+                      <span class="insight-count" id="predictive-count">0</span>
+                    </button>
+                    <button class="insight-tab" data-category="alerts">
+                      <span class="tab-icon">🚨</span>
+                      <span class="tab-label">Alerts</span>
+                      <span class="insight-count" id="alerts-count">0</span>
+                    </button>
+                  </div>
+
+                  <div class="insights-content">
+                    <!-- Financial Insights -->
+                    <div class="insight-category active" data-category="financial">
+                      <div class="insights-list" id="financial-insights">
+                        <!-- Financial insights will be populated here -->
+                      </div>
+                    </div>
+
+                    <!-- Operational Insights -->
+                    <div class="insight-category" data-category="operational">
+                      <div class="insights-list" id="operational-insights">
+                        <!-- Operational insights will be populated here -->
+                      </div>
+                    </div>
+
+                    <!-- Strategic Insights -->
+                    <div class="insight-category" data-category="strategic">
+                      <div class="insights-list" id="strategic-insights">
+                        <!-- Strategic insights will be populated here -->
+                      </div>
+                    </div>
+
+                    <!-- Predictive Insights -->
+                    <div class="insight-category" data-category="predictive">
+                      <div class="insights-list" id="predictive-insights">
+                        <!-- Predictive insights will be populated here -->
+                      </div>
+                    </div>
+
+                    <!-- Alert Insights -->
+                    <div class="insight-category" data-category="alerts">
+                      <div class="insights-list" id="alert-insights">
+                        <!-- Alert insights will be populated here -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Weekly Reports Section -->
+                <div class="weekly-reports-section">
+                  <div class="section-header">
+                    <h3>📧 Automated Intelligence Reports</h3>
+                    <p>Scheduled email reports with personalized insights and business recommendations</p>
+                  </div>
+
+                  <div class="reports-config">
+                    <div class="report-schedule">
+                      <h4>Report Schedule Configuration</h4>
+                      <div class="schedule-form">
+                        <div class="form-group">
+                          <label>Email Address</label>
+                          <input type="email" id="report-email" class="uba-input" placeholder="your@email.com" />
+                        </div>
+                        <div class="form-group">
+                          <label>Frequency</label>
+                          <select id="report-frequency" class="uba-select">
+                            <option value="weekly">Weekly (Mondays)</option>
+                            <option value="biweekly">Bi-weekly</option>
+                            <option value="monthly">Monthly</option>
+                          </select>
+                        </div>
+                        <div class="form-group">
+                          <label>Report Type</label>
+                          <div class="checkbox-group">
+                            <label class="checkbox-label">
+                              <input type="checkbox" id="include-kpis" checked />
+                              <span class="checkmark"></span>
+                              KPI Summary
+                            </label>
+                            <label class="checkbox-label">
+                              <input type="checkbox" id="include-insights" checked />
+                              <span class="checkmark"></span>
+                              AI Insights
+                            </label>
+                            <label class="checkbox-label">
+                              <input type="checkbox" id="include-recommendations" checked />
+                              <span class="checkmark"></span>
+                              Recommendations
+                            </label>
+                            <label class="checkbox-label">
+                              <input type="checkbox" id="include-charts" />
+                              <span class="checkmark"></span>
+                              Charts & Visuals
+                            </label>
+                          </div>
+                        </div>
+                        <div class="form-actions">
+                          <button class="uba-btn uba-btn-primary" onclick="setupWeeklyReports()">
+                            📅 Setup Weekly Reports
+                          </button>
+                          <button class="uba-btn uba-btn-ghost" onclick="previewWeeklyReport()">
+                            👁️ Preview Report
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="report-history">
+                      <h4>Report History</h4>
+                      <div class="history-list" id="report-history">
+                        <!-- Report history will be populated here -->
+                      </div>
                     </div>
                   </div>
                 </div>
               </section>
+
+              <!-- Report Preview Modal -->
+              <div id="report-preview-modal" class="insights-modal">
+                <div class="modal-overlay" onclick="closeModal('report-preview-modal')"></div>
+                <div class="modal-content report-preview-content">
+                  <div class="modal-header">
+                    <h2>📧 Weekly Intelligence Report Preview</h2>
+                    <button class="modal-close" onclick="closeModal('report-preview-modal')">×</button>
+                  </div>
+                  <div class="modal-body" id="report-preview-body">
+                    <!-- Report preview content will be loaded here -->
+                  </div>
+                  <div class="modal-footer">
+                    <button class="uba-btn uba-btn-ghost" onclick="closeModal('report-preview-modal')">Close</button>
+                    <button class="uba-btn uba-btn-primary" onclick="sendTestReport()">📧 Send Test Report</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Export Options Modal -->
+              <div id="export-options-modal" class="insights-modal">
+                <div class="modal-overlay" onclick="closeModal('export-options-modal')"></div>
+                <div class="modal-content export-options-content">
+                  <div class="modal-header">
+                    <h2>💾 Export Insights Snapshot</h2>
+                    <button class="modal-close" onclick="closeModal('export-options-modal')">×</button>
+                  </div>
+                  <div class="modal-body" id="export-options-body">
+                    <div class="export-format-selector">
+                      <h4>Export Format</h4>
+                      <div class="format-options">
+                        <label class="format-option">
+                          <input type="radio" name="export-format" value="pdf" checked />
+                          <span class="format-icon">📄</span>
+                          <span class="format-label">PDF Report</span>
+                          <span class="format-desc">Complete insights with charts</span>
+                        </label>
+                        <label class="format-option">
+                          <input type="radio" name="export-format" value="excel" />
+                          <span class="format-icon">📊</span>
+                          <span class="format-label">Excel Workbook</span>
+                          <span class="format-desc">Raw data and calculations</span>
+                        </label>
+                        <label class="format-option">
+                          <input type="radio" name="export-format" value="csv" />
+                          <span class="format-icon">📋</span>
+                          <span class="format-label">CSV Data</span>
+                          <span class="format-desc">Structured data export</span>
+                        </label>
+                        <label class="format-option">
+                          <input type="radio" name="export-format" value="json" />
+                          <span class="format-icon">🔧</span>
+                          <span class="format-label">JSON Export</span>
+                          <span class="format-desc">API-ready data format</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button class="uba-btn uba-btn-ghost" onclick="closeModal('export-options-modal')">Cancel</button>
+                    <button class="uba-btn uba-btn-primary" onclick="performExport()">💾 Export Now</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </main>
         </div>
@@ -221,6 +608,7 @@
     <script src="assets/js/store.js"></script>
     <script src="assets/js/app.js"></script>
     <script src="assets/js/page-loader.js"></script>
+    <script src="assets/js/enhanced-insights-lab.js"></script>
     <script>
       (function () {
         const lang = localStorage.getItem("uba-lang") || "en";

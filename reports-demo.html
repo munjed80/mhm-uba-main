@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Enhanced UBA Reports Demo</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="stylesheet" href="assets/css/enhanced-reports.css" />
+    <style>
+        body { padding: 20px; font-family: 'Segoe UI', sans-serif; }
+        .demo-container { max-width: 1200px; margin: 0 auto; }
+        .demo-header { text-align: center; margin-bottom: 40px; }
+        .demo-header h1 { color: #667eea; margin-bottom: 10px; }
+        .demo-header p { color: #64748b; font-size: 1.1rem; }
+        .demo-actions { display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
+        .demo-btn { 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            border: none; 
+            font-weight: 500; 
+            cursor: pointer; 
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .demo-btn-primary { background: #667eea; color: white; }
+        .demo-btn-primary:hover { background: #5a6fd8; transform: translateY(-1px); }
+        .demo-btn-secondary { background: #f3f4f6; color: #374151; }
+        .demo-btn-secondary:hover { background: #e5e7eb; }
+        .demo-section { 
+            background: white; 
+            border-radius: 12px; 
+            padding: 24px; 
+            margin-bottom: 24px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+        }
+        .demo-section h3 { 
+            margin-top: 0; 
+            color: #1e293b; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+        }
+        .features-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 20px; 
+        }
+        .feature-card { 
+            background: #f8fafe; 
+            border: 1px solid #e1e7f5; 
+            border-radius: 8px; 
+            padding: 20px; 
+        }
+        .feature-card h4 { 
+            margin-top: 0; 
+            color: #667eea; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        .feature-list { 
+            list-style: none; 
+            padding: 0; 
+            margin: 0; 
+        }
+        .feature-list li { 
+            padding: 8px 0; 
+            border-bottom: 1px solid #e1e7f5; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        .feature-list li:last-child { border-bottom: none; }
+        .status-badge { 
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            font-size: 0.8rem; 
+            font-weight: 500; 
+        }
+        .status-implemented { background: #d1fae5; color: #059669; }
+        .status-new { background: #dbeafe; color: #2563eb; }
+        .arabic-text { direction: rtl; text-align: right; font-family: 'Arial', sans-serif; }
+        .charts-preview { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 16px; 
+            margin: 20px 0; 
+        }
+        .chart-preview { 
+            background: #f8fafe; 
+            border: 1px solid #e1e7f5; 
+            border-radius: 8px; 
+            padding: 16px; 
+            text-align: center; 
+            cursor: pointer; 
+            transition: transform 0.2s; 
+        }
+        .chart-preview:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .chart-icon { font-size: 2.5rem; margin-bottom: 8px; }
+        .export-demo { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .kpi-demo { 
+            display: grid; 
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 16px; 
+            margin: 20px 0; 
+        }
+        .kpi-demo-card { 
+            background: white; 
+            border: 1px solid #e1e7f5; 
+            border-radius: 8px; 
+            padding: 16px; 
+            text-align: center; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+        }
+        .kpi-demo-card:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.15); border-color: #667eea; }
+        .kpi-demo-value { font-size: 1.8rem; font-weight: 700; color: #667eea; margin-bottom: 4px; }
+        .kpi-demo-label { color: #64748b; font-size: 0.875rem; }
+        @media (max-width: 768px) {
+            .charts-preview { grid-template-columns: 1fr; }
+            .kpi-demo { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>📊 Enhanced UBA Reports Demo</h1>
+            <p>Professional business analytics with Chart.js integration and interactive insights</p>
+            <p class="arabic-text">تحليلات أعمال احترافية مع تكامل Chart.js ورؤى تفاعلية</p>
+        </div>
+
+        <div class="demo-actions">
+            <button class="demo-btn demo-btn-primary" onclick="openReportsPage()">
+                📊 Open Reports Page
+            </button>
+            <button class="demo-btn demo-btn-secondary" onclick="showChartsDemo()">
+                📈 Chart.js Integration Demo
+            </button>
+            <button class="demo-btn demo-btn-secondary" onclick="showExportDemo()">
+                📑 Export Features Demo
+            </button>
+            <button class="demo-btn demo-btn-secondary" onclick="showDetailedReportsDemo()">
+                🔍 Detailed Reports Demo
+            </button>
+        </div>
+
+        <div class="demo-section">
+            <h3>✨ Enhanced Features Overview</h3>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h4>📈 Chart.js Integration</h4>
+                    <ul class="feature-list">
+                        <li>✅ Professional Chart.js charts replacing custom canvas</li>
+                        <li>✅ Interactive tooltips and legends</li>
+                        <li>✅ Responsive design with animations</li>
+                        <li>✅ Multiple chart types (line, bar, doughnut)</li>
+                        <li>✅ Professional color schemes and gradients</li>
+                        <li>✅ High-resolution rendering for all devices</li>
+                    </ul>
+                    <span class="status-badge status-implemented">Implemented</span>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>📊 Monthly Revenue Trend</h4>
+                    <ul class="feature-list">
+                        <li>📈 Interactive line chart showing 12-month revenue</li>
+                        <li>💰 Automatic currency formatting</li>
+                        <li>📱 Responsive design for mobile devices</li>
+                        <li>🎯 Gradient fill for visual appeal</li>
+                        <li>📊 Hover tooltips with detailed information</li>
+                        <li>⚡ Real-time data updates</li>
+                    </ul>
+                    <span class="status-badge status-implemented">Implemented</span>
+                </div>
+
+                <div class="feature-card">
+                    <h4>🚀 Project Velocity Analytics</h4>
+                    <ul class="feature-list">
+                        <li>📊 Side-by-side comparison of started vs completed</li>
+                        <li>📅 6-month trend analysis</li>
+                        <li>🎨 Color-coded bars for easy identification</li>
+                        <li>📈 Velocity calculations and trends</li>
+                        <li>📋 Project stage progression metrics</li>
+                        <li>⚡ Performance indicators and insights</li>
+                    </ul>
+                    <span class="status-badge status-implemented">Implemented</span>
+                </div>
+
+                <div class="feature-card">
+                    <h4>✅ Task Completion Chart</h4>
+                    <ul class="feature-list">
+                        <li>📊 Weekly completion trend visualization</li>
+                        <li>📈 Bar chart showing productivity patterns</li>
+                        <li>🎯 Status distribution with doughnut chart</li>
+                        <li>⚠️ Overdue task identification</li>
+                        <li>📋 Detailed task analytics</li>
+                        <li>🔄 Real-time status updates</li>
+                    </ul>
+                    <span class="status-badge status-implemented">Implemented</span>
+                </div>
+
+                <div class="feature-card">
+                    <h4>📑 Export Functionality</h4>
+                    <ul class="feature-list">
+                        <li>📊 CSV export with comprehensive data</li>
+                        <li>📄 PDF export with professional formatting</li>
+                        <li>🎨 Branded PDF reports with charts</li>
+                        <li>📋 Detailed data tables and summaries</li>
+                        <li>⏰ Timestamped export files</li>
+                        <li>💾 Multiple format support</li>
+                    </ul>
+                    <span class="status-badge status-implemented">Implemented</span>
+                </div>
+
+                <div class="feature-card">
+                    <h4>🔍 Detailed Report Views</h4>
+                    <ul class="feature-list">
+                        <li>👆 Clickable KPI cards for deep insights</li>
+                        <li>📊 Interactive modal windows</li>
+                        <li>📋 Comprehensive data tables</li>
+                        <li>📈 Additional charts in detail views</li>
+                        <li>🎯 Filtered views and analytics</li>
+                        <li>📱 Mobile-optimized modal design</li>
+                    </ul>
+                    <span class="status-badge status-implemented">Implemented</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>💡 Interactive KPI Cards Demo</h3>
+            <p>Click on any KPI card below to see detailed reports (demo simulation)</p>
+            <div class="kpi-demo">
+                <div class="kpi-demo-card" onclick="showKPIModal('revenue')">
+                    <div class="kpi-demo-value">€45,230</div>
+                    <div class="kpi-demo-label">Total Revenue</div>
+                </div>
+                <div class="kpi-demo-card" onclick="showKPIModal('invoices')">
+                    <div class="kpi-demo-value">127</div>
+                    <div class="kpi-demo-label">Total Invoices</div>
+                </div>
+                <div class="kpi-demo-card" onclick="showKPIModal('clients')">
+                    <div class="kpi-demo-value">34</div>
+                    <div class="kpi-demo-label">Active Clients</div>
+                </div>
+                <div class="kpi-demo-card" onclick="showKPIModal('tasks')">
+                    <div class="kpi-demo-value">89</div>
+                    <div class="kpi-demo-label">Tasks Completed</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>📈 Chart.js Integration Showcase</h3>
+            <div class="charts-preview">
+                <div class="chart-preview" onclick="showChartDemo('revenue')">
+                    <div class="chart-icon">📈</div>
+                    <h4>Revenue Trend</h4>
+                    <p>Interactive line chart with gradient fill showing 12-month revenue progression</p>
+                </div>
+                <div class="chart-preview" onclick="showChartDemo('velocity')">
+                    <div class="chart-icon">🚀</div>
+                    <h4>Project Velocity</h4>
+                    <p>Dual-bar chart comparing projects started vs completed over 6 months</p>
+                </div>
+                <div class="chart-preview" onclick="showChartDemo('tasks')">
+                    <div class="chart-icon">✅</div>
+                    <h4>Task Completion</h4>
+                    <p>Weekly completion trends with bar chart visualization</p>
+                </div>
+                <div class="chart-preview" onclick="showChartDemo('invoices')">
+                    <div class="chart-icon">🍩</div>
+                    <h4>Invoice Status</h4>
+                    <p>Doughnut chart showing distribution of invoice statuses</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>📑 Export Capabilities Demo</h3>
+            <div class="export-demo">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h4 style="margin: 0;">Professional Export Options</h4>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="demo-btn demo-btn-secondary" onclick="simulateCSVExport()">
+                            📊 Export CSV
+                        </button>
+                        <button class="demo-btn demo-btn-primary" onclick="simulatePDFExport()">
+                            📄 Export PDF
+                        </button>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px;">
+                    <div style="background: rgba(255,255,255,0.1); padding: 16px; border-radius: 8px;">
+                        <h4 style="margin-top: 0;">CSV Export Features</h4>
+                        <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
+                            <li>Complete revenue breakdown by month</li>
+                            <li>Project velocity data with timestamps</li>
+                            <li>Task completion analytics</li>
+                            <li>Client revenue analysis</li>
+                        </ul>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 16px; border-radius: 8px;">
+                        <h4 style="margin-top: 0;">PDF Export Features</h4>
+                        <ul style="margin: 0; padding-left: 20px; font-size: 0.9rem;">
+                            <li>Professional branded reports</li>
+                            <li>KPI summary with key metrics</li>
+                            <li>Detailed data tables</li>
+                            <li>Timestamped report generation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>🌐 Arabic Language Support</h3>
+            <div style="background: #f8fafe; border-radius: 8px; padding: 20px; border: 1px solid #e1e7f5;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h4>English Interface</h4>
+                        <ul>
+                            <li>📊 Monthly Revenue Trend</li>
+                            <li>🚀 Project Velocity</li>
+                            <li>✅ Task Completion Analytics</li>
+                            <li>📑 Invoice Status Distribution</li>
+                        </ul>
+                    </div>
+                    <div class="arabic-text">
+                        <h4>واجهة عربية</h4>
+                        <ul>
+                            <li>اتجاه الإيرادات الشهرية 📊</li>
+                            <li>سرعة إنجاز المشاريع 🚀</li>
+                            <li>تحليلات إنجاز المهام ✅</li>
+                            <li>توزيع حالات الفواتير 📑</li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e1e7f5; text-align: center; color: #64748b;">
+                    ✨ Full RTL support with bidirectional text layout | دعم كامل لاتجاه النص من اليمين إلى اليسار
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>🚀 Getting Started</h3>
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px; padding: 24px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div>
+                        <h4 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                            <span>1️⃣</span> View Reports
+                        </h4>
+                        <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">
+                            Navigate to the Reports page to see professional Chart.js analytics with real-time data.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                            <span>2️⃣</span> Explore Data
+                        </h4>
+                        <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">
+                            Click any KPI card for detailed insights with interactive tables and additional charts.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                            <span>3️⃣</span> Export & Share
+                        </h4>
+                        <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">
+                            Export comprehensive reports in CSV or PDF format with professional branding.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openReportsPage() {
+            window.open('reports.html', '_blank');
+        }
+
+        function showChartsDemo() {
+            alert('📈 Chart.js Integration Features:\n\n' +
+                  '✨ Professional Charts:\n' +
+                  '• Interactive line chart for revenue trends\n' +
+                  '• Dual-bar chart for project velocity\n' +
+                  '• Weekly task completion analytics\n' +
+                  '• Doughnut chart for status distributions\n\n' +
+                  '🎨 Advanced Features:\n' +
+                  '• Responsive design with animations\n' +
+                  '• Professional color schemes\n' +
+                  '• Interactive tooltips and legends\n' +
+                  '• High-resolution rendering\n\n' +
+                  'Open the Reports page to see them in action!');
+        }
+
+        function showExportDemo() {
+            alert('📑 Export Features:\n\n' +
+                  '📊 CSV Export:\n' +
+                  '• Complete revenue data by month\n' +
+                  '• Project velocity analytics\n' +
+                  '• Task completion trends\n' +
+                  '• Client revenue breakdown\n\n' +
+                  '📄 PDF Export:\n' +
+                  '• Professional branded reports\n' +
+                  '• KPI summary with key metrics\n' +
+                  '• Detailed data tables\n' +
+                  '• Timestamped generation\n\n' +
+                  'Try the export buttons in the Reports page!');
+        }
+
+        function showDetailedReportsDemo() {
+            alert('🔍 Detailed Report Features:\n\n' +
+                  '👆 Interactive Elements:\n' +
+                  '• Clickable KPI cards\n' +
+                  '• Professional modal windows\n' +
+                  '• Comprehensive data tables\n' +
+                  '• Additional charts in detail views\n\n' +
+                  '📊 Deep Analytics:\n' +
+                  '• Revenue breakdown by client\n' +
+                  '• Invoice aging analysis\n' +
+                  '• Task productivity metrics\n' +
+                  '• Project completion insights\n\n' +
+                  'Click any KPI card in Reports to explore!');
+        }
+
+        function showKPIModal(type) {
+            const messages = {
+                revenue: '💰 Revenue Details:\n\n• Total Revenue: €45,230\n• Monthly Average: €3,769\n• Growth Rate: +12.5%\n• Top Client Revenue: €8,940\n• Payment Methods: Bank Transfer (78%), PayPal (22%)',
+                invoices: '📋 Invoice Analytics:\n\n• Total Invoices: 127\n• Paid: 89 (70%)\n• Sent: 23 (18%)\n• Overdue: 12 (9%)\n• Draft: 3 (3%)\n• Average Amount: €356',
+                clients: '👥 Client Overview:\n\n• Active Clients: 34\n• New This Month: 5\n• Top Revenue Client: €8,940\n• Average Client Value: €1,330\n• Client Retention: 92%',
+                tasks: '✅ Task Analytics:\n\n• Completed: 89\n• In Progress: 23\n• To Do: 34\n• Overdue: 7\n• Weekly Average: 12 completed\n• Productivity Score: 87%'
+            };
+            alert(messages[type] || 'No data available for this metric.');
+        }
+
+        function showChartDemo(chartType) {
+            const descriptions = {
+                revenue: '📈 Revenue Trend Chart\n\nInteractive line chart with:\n• 12-month revenue progression\n• Gradient fill visualization\n• Hover tooltips with amounts\n• Smooth curve animations\n• Currency formatting',
+                velocity: '🚀 Project Velocity Chart\n\nDual-bar comparison showing:\n• Projects started per month\n• Projects completed per month\n• 6-month trend analysis\n• Color-coded categories\n• Velocity calculations',
+                tasks: '✅ Task Completion Chart\n\nWeekly analytics featuring:\n• Completion trends over 8 weeks\n• Bar chart visualization\n• Productivity patterns\n• Status distribution doughnut\n• Overdue identification',
+                invoices: '🍩 Invoice Status Chart\n\nDoughnut chart displaying:\n• Status distribution percentages\n• Color-coded categories\n• Interactive legend\n• Hover animations\n• Professional styling'
+            };
+            alert(descriptions[chartType] || 'Chart details not available.');
+        }
+
+        function simulateCSVExport() {
+            alert('📊 CSV Export Simulation\n\nGenerating comprehensive CSV report with:\n• Monthly revenue data\n• Project velocity metrics\n• Task completion analytics\n• Client revenue breakdown\n\nFile would be saved as: UBA_Report_2024-11-20.csv');
+        }
+
+        function simulatePDFExport() {
+            alert('📄 PDF Export Simulation\n\nGenerating professional PDF report with:\n• Executive summary\n• KPI dashboard\n• Detailed analytics\n• Data tables\n• Professional branding\n\nFile would be saved as: UBA_Report_2024-11-20.pdf');
+        }
+
+        // Initialize demo
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📊 Enhanced Reports Demo loaded');
+            
+            // Add hover effects to interactive elements
+            const kpiCards = document.querySelectorAll('.kpi-demo-card');
+            kpiCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-4px) scale(1.02)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

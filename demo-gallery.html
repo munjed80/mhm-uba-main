@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UBA Demo Gallery - All Enhanced Features</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <style>
+        body { padding: 20px; font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .demo-container { max-width: 1200px; margin: 0 auto; }
+        .demo-header { 
+            text-align: center; 
+            margin-bottom: 40px; 
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 30px; 
+            border-radius: 16px; 
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        .demo-header h1 { 
+            font-size: 2.5rem; 
+            margin-bottom: 10px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .demo-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 20px; 
+            margin-bottom: 30px; 
+        }
+        
+        .demo-card { 
+            background: rgba(255, 255, 255, 0.95); 
+            border-radius: 16px; 
+            padding: 24px; 
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .demo-card:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 1);
+        }
+        
+        .demo-card h3 { 
+            margin-top: 0; 
+            color: #1e293b; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+        }
+        
+        .demo-card p { 
+            color: #64748b; 
+            margin-bottom: 16px; 
+            line-height: 1.6;
+            font-size: 0.95rem; 
+        }
+        
+        .demo-features { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 6px; 
+            margin-bottom: 16px; 
+        }
+        
+        .demo-feature { 
+            background: #f1f5f9; 
+            color: #475569; 
+            padding: 4px 8px; 
+            border-radius: 12px; 
+            font-size: 0.75rem; 
+            font-weight: 500; 
+        }
+        
+        .demo-buttons { 
+            display: flex; 
+            gap: 8px; 
+            align-items: center;
+        }
+        
+        .demo-btn { 
+            padding: 8px 16px; 
+            border-radius: 6px; 
+            border: none; 
+            font-weight: 500; 
+            cursor: pointer; 
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.85rem;
+        }
+        
+        .demo-btn-primary { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+        }
+        .demo-btn-primary:hover { 
+            transform: translateY(-1px); 
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .demo-btn-secondary { 
+            background: #f8fafc; 
+            color: #475569; 
+            border: 1px solid #e2e8f0;
+        }
+        .demo-btn-secondary:hover { 
+            background: #f1f5f9; 
+        }
+        
+        .status-badge { 
+            padding: 4px 8px; 
+            border-radius: 10px; 
+            font-size: 0.7rem; 
+            font-weight: 600; 
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-left: auto;
+        }
+        
+        .status-enhanced { background: #dcfce7; color: #166534; }
+        
+        .demo-icon { 
+            font-size: 1.5rem; 
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .main-actions {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .main-actions a {
+            display: inline-block;
+            padding: 16px 32px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            margin: 0 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .main-actions a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            background: rgba(255, 255, 255, 1);
+        }
+        
+        .demo-footer {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            color: #64748b;
+        }
+        
+        @media (max-width: 768px) {
+            .demo-grid { grid-template-columns: 1fr; }
+            .main-actions a { 
+                display: block; 
+                margin: 8px 0; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🎨 UBA Demo Gallery</h1>
+            <p style="color: #64748b; font-size: 1.1rem;">
+                Explore all enhanced features across the UBA platform with interactive demos
+            </p>
+        </div>
+
+        <div class="main-actions">
+            <a href="index.html">🏠 Main Dashboard</a>
+            <a href="demo-index.html">📋 Feature Overview</a>
+            <a href="#demos">🎯 Jump to Demos</a>
+        </div>
+
+        <div class="demo-grid" id="demos">
+            <div class="demo-card" onclick="openDemo('tasks-demo.html')">
+                <h3>
+                    <div class="demo-icon">✅</div>
+                    Enhanced Tasks
+                </h3>
+                <p>Professional task management with priority handling, smart search, and comprehensive analytics.</p>
+                <div class="demo-features">
+                    <span class="demo-feature">Priority Coding</span>
+                    <span class="demo-feature">Due Date Reminders</span>
+                    <span class="demo-feature">Smart Search</span>
+                    <span class="demo-feature">Arabic Support</span>
+                </div>
+                <div class="demo-buttons">
+                    <a href="tasks-demo.html" class="demo-btn demo-btn-primary">Demo</a>
+                    <a href="tasks.html" class="demo-btn demo-btn-secondary">Live</a>
+                    <span class="status-badge status-enhanced">Enhanced</span>
+                </div>
+            </div>
+
+            <div class="demo-card" onclick="openDemo('invoices-demo.html')">
+                <h3>
+                    <div class="demo-icon">💰</div>
+                    Enhanced Invoices
+                </h3>
+                <p>Professional invoicing with PDF export, branding templates, and automated client linking.</p>
+                <div class="demo-features">
+                    <span class="demo-feature">PDF Export</span>
+                    <span class="demo-feature">Monthly Grouping</span>
+                    <span class="demo-feature">Preview Modals</span>
+                    <span class="demo-feature">Auto Linking</span>
+                </div>
+                <div class="demo-buttons">
+                    <a href="invoices-demo.html" class="demo-btn demo-btn-primary">Demo</a>
+                    <a href="invoices.html" class="demo-btn demo-btn-secondary">Live</a>
+                    <span class="status-badge status-enhanced">Enhanced</span>
+                </div>
+            </div>
+
+            <div class="demo-card" onclick="openDemo('expenses-demo.html')">
+                <h3>
+                    <div class="demo-icon">📤</div>
+                    Enhanced Expenses
+                </h3>
+                <p>Comprehensive expense management with analytics, receipt uploads, and category management.</p>
+                <div class="demo-features">
+                    <span class="demo-feature">Chart.js Analytics</span>
+                    <span class="demo-feature">Category Management</span>
+                    <span class="demo-feature">Receipt Upload</span>
+                    <span class="demo-feature">Trends</span>
+                </div>
+                <div class="demo-buttons">
+                    <a href="expenses-demo.html" class="demo-btn demo-btn-primary">Demo</a>
+                    <a href="expenses.html" class="demo-btn demo-btn-secondary">Live</a>
+                    <span class="status-badge status-enhanced">Enhanced</span>
+                </div>
+            </div>
+
+            <div class="demo-card" onclick="openDemo('leads-demo.html')">
+                <h3>
+                    <div class="demo-icon">🧲</div>
+                    Enhanced Leads
+                </h3>
+                <p>Intelligent lead scoring system with contact logging and project integration capabilities.</p>
+                <div class="demo-features">
+                    <span class="demo-feature">0-100 Scoring</span>
+                    <span class="demo-feature">Contact Logging</span>
+                    <span class="demo-feature">Project Integration</span>
+                    <span class="demo-feature">Analytics</span>
+                </div>
+                <div class="demo-buttons">
+                    <a href="leads-demo.html" class="demo-btn demo-btn-primary">Demo</a>
+                    <a href="leads.html" class="demo-btn demo-btn-secondary">Live</a>
+                    <span class="status-badge status-enhanced">Enhanced</span>
+                </div>
+            </div>
+
+            <div class="demo-card" onclick="openDemo('calendar-demo.html')">
+                <h3>
+                    <div class="demo-icon">📅</div>
+                    Enhanced Calendar
+                </h3>
+                <p>Professional calendar with event management, drag & drop functionality, and task synchronization.</p>
+                <div class="demo-features">
+                    <span class="demo-feature">Event Creation</span>
+                    <span class="demo-feature">Drag & Drop</span>
+                    <span class="demo-feature">Task Sync</span>
+                    <span class="demo-feature">Mobile Ready</span>
+                </div>
+                <div class="demo-buttons">
+                    <a href="calendar-demo.html" class="demo-btn demo-btn-primary">Demo</a>
+                    <a href="calendar.html" class="demo-btn demo-btn-secondary">Live</a>
+                    <span class="status-badge status-enhanced">Enhanced</span>
+                </div>
+            </div>
+
+            <div class="demo-card" onclick="openDemo('automations-demo.html')">
+                <h3>
+                    <div class="demo-icon">🤖</div>
+                    Enhanced Automations
+                </h3>
+                <p>Professional automation system with real triggers, actions, and comprehensive management interface.</p>
+                <div class="demo-features">
+                    <span class="demo-feature">Real Triggers</span>
+                    <span class="demo-feature">Professional Actions</span>
+                    <span class="demo-feature">Enable/Disable</span>
+                    <span class="demo-feature">Analytics</span>
+                </div>
+                <div class="demo-buttons">
+                    <a href="automations-demo.html" class="demo-btn demo-btn-primary">Demo</a>
+                    <a href="automations.html" class="demo-btn demo-btn-secondary">Live</a>
+                    <span class="status-badge status-enhanced">Enhanced</span>
+                </div>
+            </div>
+
+            <div class="demo-card" onclick="openDemo('files-demo.html')">
+                <h3>
+                    <div class="demo-icon">📁</div>
+                    Enhanced Files
+                </h3>
+                <p>Professional file system with folder organization, previews, and storage management.</p>
+                <div class="demo-features">
+                    <span class="demo-feature">Safe Indexing</span>
+                    <span class="demo-feature">Folder Structure</span>
+                    <span class="demo-feature">File Previews</span>
+                    <span class="demo-feature">Storage Control</span>
+                </div>
+                <div class="demo-buttons">
+                    <a href="files-demo.html" class="demo-btn demo-btn-primary">Demo</a>
+                    <a href="files.html" class="demo-btn demo-btn-secondary">Live</a>
+                    <span class="status-badge status-enhanced">Enhanced</span>
+                </div>
+            </div>
+
+            <div class="demo-card" onclick="openDemo('reports-demo.html')">
+                <h3>
+                    <div class="demo-icon">📊</div>
+                    Enhanced Reports
+                </h3>
+                <p>Professional business analytics with Chart.js integration and comprehensive export capabilities.</p>
+                <div class="demo-features">
+                    <span class="demo-feature">Chart.js Integration</span>
+                    <span class="demo-feature">Revenue Trends</span>
+                    <span class="demo-feature">Export CSV/PDF</span>
+                    <span class="demo-feature">Detailed Views</span>
+                </div>
+                <div class="demo-buttons">
+                    <a href="reports-demo.html" class="demo-btn demo-btn-primary">Demo</a>
+                    <a href="reports.html" class="demo-btn demo-btn-secondary">Live</a>
+                    <span class="status-badge status-enhanced">Enhanced</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-footer">
+            <p>🚀 All demos are fully functional with Arabic support and professional design</p>
+            <p style="font-size: 0.85rem; margin-top: 8px; opacity: 0.8;">
+                Click on any card to open the demo, or use the buttons to access demo or live systems
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function openDemo(url) {
+            window.open(url, '_blank');
+        }
+
+        // Add animation on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.demo-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            console.log('🎨 UBA Demo Gallery loaded');
+        });
+
+        // Prevent default click on links inside cards
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A' && e.target.closest('.demo-card')) {
+                e.stopPropagation();
+            }
+        });
+    </script>
+</body>
+</html>

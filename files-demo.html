@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Enhanced UBA Files Demo</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="stylesheet" href="assets/css/enhanced-files.css" />
+    <style>
+        body { padding: 20px; font-family: 'Segoe UI', sans-serif; }
+        .demo-container { max-width: 1200px; margin: 0 auto; }
+        .demo-header { text-align: center; margin-bottom: 40px; }
+        .demo-header h1 { color: #667eea; margin-bottom: 10px; }
+        .demo-header p { color: #64748b; font-size: 1.1rem; }
+        .demo-actions { display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
+        .demo-btn { 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            border: none; 
+            font-weight: 500; 
+            cursor: pointer; 
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .demo-btn-primary { background: #667eea; color: white; }
+        .demo-btn-primary:hover { background: #5a6fd8; transform: translateY(-1px); }
+        .demo-btn-secondary { background: #f3f4f6; color: #374151; }
+        .demo-btn-secondary:hover { background: #e5e7eb; }
+        .demo-section { 
+            background: white; 
+            border-radius: 12px; 
+            padding: 24px; 
+            margin-bottom: 24px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+        }
+        .demo-section h3 { 
+            margin-top: 0; 
+            color: #1e293b; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+        }
+        .features-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 20px; 
+        }
+        .feature-card { 
+            background: #f8fafe; 
+            border: 1px solid #e1e7f5; 
+            border-radius: 8px; 
+            padding: 20px; 
+        }
+        .feature-card h4 { 
+            margin-top: 0; 
+            color: #667eea; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        .feature-list { 
+            list-style: none; 
+            padding: 0; 
+            margin: 0; 
+        }
+        .feature-list li { 
+            padding: 8px 0; 
+            border-bottom: 1px solid #e1e7f5; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        .feature-list li:last-child { border-bottom: none; }
+        .status-badge { 
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            font-size: 0.8rem; 
+            font-weight: 500; 
+        }
+        .status-implemented { background: #d1fae5; color: #059669; }
+        .status-new { background: #dbeafe; color: #2563eb; }
+        .arabic-text { direction: rtl; text-align: right; font-family: 'Arial', sans-serif; }
+        .mock-files-demo { 
+            background: #f8fafe; 
+            border: 2px dashed #e1e7f5; 
+            border-radius: 8px; 
+            padding: 20px; 
+            text-align: center; 
+            margin: 20px 0;
+        }
+        .storage-demo { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .storage-bar { 
+            background: rgba(255,255,255,0.2); 
+            height: 8px; 
+            border-radius: 4px; 
+            overflow: hidden; 
+            margin: 10px 0; 
+        }
+        .storage-fill { 
+            background: white; 
+            height: 100%; 
+            width: 67%; 
+            border-radius: 4px; 
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>📁 Enhanced UBA File Manager Demo</h1>
+            <p>Professional file management with storage control, folder organization, and instant previews</p>
+            <p class="arabic-text">إدارة ملفات احترافية مع تحكم في التخزين وتنظيم المجلدات والمعاينة الفورية</p>
+        </div>
+
+        <div class="demo-actions">
+            <button class="demo-btn demo-btn-primary" onclick="openFilesPage()">
+                📁 Open File Manager
+            </button>
+            <button class="demo-btn demo-btn-secondary" onclick="showStorageDemo()">
+                💾 Storage Management Demo
+            </button>
+            <button class="demo-btn demo-btn-secondary" onclick="showPreviewDemo()">
+                👁️ Preview System Demo
+            </button>
+            <button class="demo-btn demo-btn-secondary" onclick="showFoldersDemo()">
+                📂 Folder Structure Demo
+            </button>
+        </div>
+
+        <div class="demo-section">
+            <h3>✨ Enhanced Features Overview</h3>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h4>🗂️ LocalStorage-Safe File Indexing</h4>
+                    <ul class="feature-list">
+                        <li>✅ Safe file data validation</li>
+                        <li>✅ Automatic corruption recovery</li>
+                        <li>✅ Efficient metadata indexing</li>
+                        <li>✅ Date handling fix for invalid dates</li>
+                        <li>✅ Chunked storage for large files</li>
+                        <li>✅ Error handling with user feedback</li>
+                    </ul>
+                    <span class="status-badge status-implemented">Implemented</span>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>📁 Folder Structure System</h4>
+                    <ul class="feature-list">
+                        <li>📂 Auto-organized by file type</li>
+                        <li>📁 Create custom folders</li>
+                        <li>🗂️ Hierarchical organization</li>
+                        <li>📊 File counts per folder</li>
+                        <li>🏷️ Folder icons and colors</li>
+                        <li>📋 Move files between folders</li>
+                    </ul>
+                    <span class="status-badge status-implemented">Implemented</span>
+                </div>
+
+                <div class="feature-card">
+                    <h4>👁️ File Preview System</h4>
+                    <ul class="feature-list">
+                        <li>🖼️ Image preview (JPG, PNG, GIF, SVG)</li>
+                        <li>📄 PDF preview with iframe</li>
+                        <li>📝 Text file preview (TXT, MD, JSON)</li>
+                        <li>🎥 Video preview (MP4, WebM)</li>
+                        <li>🎵 Audio preview (MP3, WAV)</li>
+                        <li>📊 Detailed file information</li>
+                    </ul>
+                    <span class="status-badge status-implemented">Implemented</span>
+                </div>
+
+                <div class="feature-card">
+                    <h4>💾 Storage Management</h4>
+                    <ul class="feature-list">
+                        <li>📊 Real-time storage usage tracking</li>
+                        <li>⚖️ Configurable storage limits</li>
+                        <li>📈 Visual progress indicators</li>
+                        <li>🗑️ Storage cleanup tools</li>
+                        <li>⚠️ Quota warnings and management</li>
+                        <li>📋 Largest files identification</li>
+                    </ul>
+                    <span class="status-badge status-implemented">Implemented</span>
+                </div>
+
+                <div class="feature-card">
+                    <h4>🔧 Technical Enhancements</h4>
+                    <ul class="feature-list">
+                        <li>✅ Fixed invalid date handling</li>
+                        <li>🔄 Enhanced drag & drop</li>
+                        <li>📱 Mobile responsive design</li>
+                        <li>🌐 Arabic RTL support</li>
+                        <li>⚡ Optimized performance</li>
+                        <li>🛡️ Error recovery mechanisms</li>
+                    </ul>
+                    <span class="status-badge status-implemented">Implemented</span>
+                </div>
+
+                <div class="feature-card">
+                    <h4>🎨 User Experience</h4>
+                    <ul class="feature-list">
+                        <li>🎯 Professional modal design</li>
+                        <li>📊 Enhanced file table layout</li>
+                        <li>🔍 Advanced search and filtering</li>
+                        <li>📋 Bulk operations support</li>
+                        <li>🎪 Interactive notifications</li>
+                        <li>🌟 Smooth animations</li>
+                    </ul>
+                    <span class="status-badge status-implemented">Implemented</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>💾 Storage Management Demo</h3>
+            <div class="storage-demo">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h4 style="margin: 0;">Storage Usage</h4>
+                    <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 0.9rem;">
+                        33.5MB / 50MB
+                    </span>
+                </div>
+                <div class="storage-bar">
+                    <div class="storage-fill"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-top: 10px;">
+                    <span>147 files stored</span>
+                    <span>16.5MB available</span>
+                </div>
+                <div style="margin-top: 15px; font-size: 0.9rem; opacity: 0.9;">
+                    ⚡ Auto-cleanup • 🗜️ Compression • ⚠️ Quota alerts • 📊 Usage analytics
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>📂 Folder Organization Demo</h3>
+            <div style="background: #f8fafe; border-radius: 8px; padding: 20px; border: 1px solid #e1e7f5;">
+                <div style="display: grid; grid-template-columns: 200px 1fr; gap: 20px;">
+                    <div style="background: white; border-radius: 6px; padding: 16px; border: 1px solid #e1e7f5;">
+                        <h4 style="margin-top: 0; color: #667eea;">📁 Folders</h4>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px; padding: 6px; background: #667eea; color: white; border-radius: 4px;">
+                                <span>📁</span> <span>All Files</span> <span style="margin-left: auto; opacity: 0.7;">147</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: 4px; cursor: pointer;" onmouseover="this.style.background='#e1e7f5'" onmouseout="this.style.background='transparent'">
+                                <span>📄</span> <span>Documents</span> <span style="margin-left: auto; opacity: 0.7;">89</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: 4px; cursor: pointer;" onmouseover="this.style.background='#e1e7f5'" onmouseout="this.style.background='transparent'">
+                                <span>🖼️</span> <span>Images</span> <span style="margin-left: auto; opacity: 0.7;">34</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: 4px; cursor: pointer;" onmouseover="this.style.background='#e1e7f5'" onmouseout="this.style.background='transparent'">
+                                <span>🎥</span> <span>Videos</span> <span style="margin-left: auto; opacity: 0.7;">12</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: 4px; cursor: pointer;" onmouseover="this.style.background='#e1e7f5'" onmouseout="this.style.background='transparent'">
+                                <span>📦</span> <span>Archives</span> <span style="margin-left: auto; opacity: 0.7;">12</span>
+                            </div>
+                        </div>
+                        <button style="width: 100%; margin-top: 12px; padding: 8px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            ➕ New Folder
+                        </button>
+                    </div>
+                    <div style="background: white; border-radius: 6px; padding: 16px; border: 1px solid #e1e7f5;">
+                        <div style="color: #64748b; text-align: center; padding: 40px;">
+                            <div style="font-size: 3rem; margin-bottom: 16px;">📁</div>
+                            <h4>Automatic File Organization</h4>
+                            <p>Files are automatically sorted into folders based on their type:</p>
+                            <ul style="text-align: left; display: inline-block;">
+                                <li>📄 Documents: PDF, DOC, XLS, etc.</li>
+                                <li>🖼️ Images: JPG, PNG, GIF, SVG</li>
+                                <li>🎥 Videos: MP4, AVI, MOV</li>
+                                <li>📦 Archives: ZIP, RAR, 7Z</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>👁️ File Preview System Demo</h3>
+            <div style="background: #f8fafe; border-radius: 8px; padding: 20px; border: 1px solid #e1e7f5;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                    <div class="preview-demo-card" onclick="showPreviewModal('image')" style="background: white; border-radius: 8px; padding: 16px; border: 1px solid #e1e7f5; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <div style="text-align: center;">
+                            <div style="font-size: 2.5rem; margin-bottom: 8px;">🖼️</div>
+                            <h4 style="margin: 0; color: #667eea;">Image Preview</h4>
+                            <p style="color: #64748b; font-size: 0.9rem; margin: 8px 0;">JPG, PNG, GIF, SVG, WebP</p>
+                            <div style="background: #ddd6fe; color: #7c3aed; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; display: inline-block;">
+                                Instant Preview
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="preview-demo-card" onclick="showPreviewModal('pdf')" style="background: white; border-radius: 8px; padding: 16px; border: 1px solid #e1e7f5; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <div style="text-align: center;">
+                            <div style="font-size: 2.5rem; margin-bottom: 8px;">📄</div>
+                            <h4 style="margin: 0; color: #667eea;">PDF Preview</h4>
+                            <p style="color: #64748b; font-size: 0.9rem; margin: 8px 0;">PDF documents</p>
+                            <div style="background: #dbeafe; color: #2563eb; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; display: inline-block;">
+                                Embedded Viewer
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="preview-demo-card" onclick="showPreviewModal('text')" style="background: white; border-radius: 8px; padding: 16px; border: 1px solid #e1e7f5; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <div style="text-align: center;">
+                            <div style="font-size: 2.5rem; margin-bottom: 8px;">📝</div>
+                            <h4 style="margin: 0; color: #667eea;">Text Preview</h4>
+                            <p style="color: #64748b; font-size: 0.9rem; margin: 8px 0;">TXT, MD, JSON, CSS, JS</p>
+                            <div style="background: #f3f4f6; color: #374151; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; display: inline-block;">
+                                Syntax Highlighted
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="preview-demo-card" onclick="showPreviewModal('media')" style="background: white; border-radius: 8px; padding: 16px; border: 1px solid #e1e7f5; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <div style="text-align: center;">
+                            <div style="font-size: 2.5rem; margin-bottom: 8px;">🎥</div>
+                            <h4 style="margin: 0; color: #667eea;">Media Preview</h4>
+                            <p style="color: #64748b; font-size: 0.9rem; margin: 8px 0;">Video & Audio files</p>
+                            <div style="background: #ecfdf5; color: #059669; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; display: inline-block;">
+                                Native Player
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; text-align: center; color: #64748b;">
+                    <p>Click on any preview type above to see a demonstration</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>🚀 Getting Started</h3>
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px; padding: 24px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div>
+                        <h4 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                            <span>1️⃣</span> Upload Files
+                        </h4>
+                        <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">
+                            Drag & drop files or click to browse. Auto-organized by type with instant storage tracking.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                            <span>2️⃣</span> Organize
+                        </h4>
+                        <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">
+                            Files automatically sorted into folders. Create custom folders and move files as needed.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                            <span>3️⃣</span> Preview & Manage
+                        </h4>
+                        <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">
+                            Click any file to preview instantly. Download, move, or delete with professional tools.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include enhanced files system -->
+    <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/store.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/enhanced-files.js"></script>
+
+    <script>
+        function openFilesPage() {
+            window.open('files.html', '_blank');
+        }
+
+        function showStorageDemo() {
+            alert('💾 Storage Management Features:\n\n' +
+                  '• Real-time usage tracking\n' +
+                  '• Configurable storage limits (10MB-200MB)\n' +
+                  '• Visual progress indicators\n' +
+                  '• Automatic cleanup tools\n' +
+                  '• Quota warnings and management\n' +
+                  '• Largest files identification\n\n' +
+                  'Open the File Manager to see it in action!');
+        }
+
+        function showPreviewDemo() {
+            alert('👁️ File Preview System:\n\n' +
+                  '✨ Supported Formats:\n' +
+                  '• Images: JPG, PNG, GIF, SVG, WebP, BMP\n' +
+                  '• Documents: PDF with embedded viewer\n' +
+                  '• Text: TXT, MD, JSON, CSS, JS, HTML, XML\n' +
+                  '• Media: MP4, WebM (video), MP3, WAV (audio)\n\n' +
+                  '🚀 Features:\n' +
+                  '• Instant preview without download\n' +
+                  '• Professional modal interface\n' +
+                  '• Detailed file information\n' +
+                  '• Mobile responsive design');
+        }
+
+        function showFoldersDemo() {
+            alert('📂 Folder Organization System:\n\n' +
+                  '🏗️ Auto-Organization:\n' +
+                  '• Files sorted by type automatically\n' +
+                  '• Smart folder assignment\n' +
+                  '• Custom folder creation\n\n' +
+                  '🎯 Features:\n' +
+                  '• Hierarchical structure\n' +
+                  '• File counts per folder\n' +
+                  '• Drag & drop file moving\n' +
+                  '• Folder icons and colors\n' +
+                  '• Search within folders');
+        }
+
+        function showPreviewModal(type) {
+            let content = '';
+            switch (type) {
+                case 'image':
+                    content = '🖼️ Image Preview Demo\n\n' +
+                             'Supported formats: JPG, PNG, GIF, SVG, WebP, BMP\n\n' +
+                             'Features:\n' +
+                             '• Instant full-size preview\n' +
+                             '• Zoom and pan capabilities\n' +
+                             '• EXIF data display\n' +
+                             '• Download directly from preview';
+                    break;
+                case 'pdf':
+                    content = '📄 PDF Preview Demo\n\n' +
+                             'Features:\n' +
+                             '• Embedded PDF viewer\n' +
+                             '• Multi-page navigation\n' +
+                             '• Zoom controls\n' +
+                             '• Print and download options\n' +
+                             '• Mobile-friendly interface';
+                    break;
+                case 'text':
+                    content = '📝 Text File Preview Demo\n\n' +
+                             'Supported: TXT, MD, JSON, CSS, JS, HTML, XML, CSV\n\n' +
+                             'Features:\n' +
+                             '• Syntax highlighting\n' +
+                             '• Line numbers\n' +
+                             '• Search within content\n' +
+                             '• Copy to clipboard';
+                    break;
+                case 'media':
+                    content = '🎥 Media Preview Demo\n\n' +
+                             'Video: MP4, WebM, OGG\n' +
+                             'Audio: MP3, WAV, OGG, AAC\n\n' +
+                             'Features:\n' +
+                             '• Native HTML5 player\n' +
+                             '• Full playback controls\n' +
+                             '• Volume control\n' +
+                             '• Timeline scrubbing';
+                    break;
+            }
+            alert(content);
+        }
+
+        // Auto-highlight interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📁 Enhanced Files Demo loaded');
+            
+            // Add hover effects to demo cards
+            const demoCards = document.querySelectorAll('.preview-demo-card');
+            demoCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.boxShadow = '0 8px 24px rgba(102, 126, 234, 0.15)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.boxShadow = '';
+                });
+            });
+            
+            // Animate storage bar on load
+            setTimeout(() => {
+                const storageFill = document.querySelector('.storage-fill');
+                if (storageFill) {
+                    storageFill.style.width = '67%';
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

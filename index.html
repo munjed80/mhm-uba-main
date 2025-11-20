@@ -3,9 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MHM UBA – Dashboard</title>
+    <title>MHM UBA – Business Dashboard</title>
 
     <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="stylesheet" href="assets/css/enhanced-expenses.css" />
 
     <meta
       name="description"
@@ -18,64 +19,64 @@
         <aside class="uba-sidebar">
             <div>
               <div class="uba-logo">MHM <span>UBA</span></div>
-              <p class="uba-tagline" data-i18n="app.tagline">
+              <p class="uba-tagline">
                 Universal Business Automator — one workspace for clients, tasks,
                 invoices and smart tools.
               </p>
               <div class="uba-badge">
                 <span class="uba-badge-dot"></span>
-                <span data-i18n="app.badge">
+                <span>
                   Private beta · Built in the Netherlands
                 </span>
               </div>
             </div>
 
             <div class="uba-language" aria-label="Language switcher">
-              <label for="language-select" data-i18n="language.label">Language</label>
+              <label for="language-select">Language</label>
               <select id="language-select" class="uba-select">
-                <option value="en" data-i18n="language.en">English</option>
-                <option value="ar" data-i18n="language.ar">Arabic</option>
-                <option value="nl" data-i18n="language.nl">Dutch</option>
-                <option value="fr" data-i18n="language.fr">French</option>
-                <option value="es" data-i18n="language.es">Spanish</option>
-                <option value="de" data-i18n="language.de">German</option>
+                <option value="en">English</option>
+                <option value="ar">Arabic</option>
+                <option value="nl">Dutch</option>
+                <option value="fr">French</option>
+                <option value="es">Spanish</option>
+                <option value="de">German</option>
               </select>
             </div>
 
             <div>
-              <div class="uba-nav-label" data-i18n="nav.workspaceLabel">
+              <div class="uba-nav-label">
                 Workspace
               </div>
               <nav class="uba-nav">
                 <a class="uba-nav-btn active" href="index.html">
                   <span class="icon">📈</span>
-                  <span data-i18n="nav.dashboard">Dashboard</span>
-                  <small data-i18n="nav.dashboardSub">Overview</small>
+                  <span>Dashboard</span>
+                  <small>Overview</small>
                 </a>
                 <a class="uba-nav-btn" href="clients.html">
                   <span class="icon">🧑‍💻</span>
-                  <span data-i18n="nav.clients">Clients</span>
-                  <small data-i18n="nav.clientsSub">CRM</small>
+                  <span>Clients</span>
+                  <small>CRM</small>
                 </a>
                 <a class="uba-nav-btn" href="projects.html">
                   <span class="icon">💼</span>
-                  <span data-i18n="nav.projects">Projects</span>
-                  <small data-i18n="nav.projectsSub">Pipeline</small>
+                  <span>Projects</span>
+                  <small>Pipeline</small>
                 </a>
                 <a class="uba-nav-btn" href="tasks.html">
                   <span class="icon">✅</span>
-                  <span data-i18n="nav.tasks">Tasks</span>
-                  <small data-i18n="nav.tasksSub">Today</small>
+                  <span>Tasks</span>
+                  <small>Today</small>
                 </a>
                 <a class="uba-nav-btn" href="invoices.html">
                   <span class="icon">💵</span>
-                  <span data-i18n="nav.invoices">Invoices</span>
-                  <small data-i18n="nav.invoicesSub">Billing</small>
+                  <span>Invoices</span>
+                  <small>Billing</small>
                 </a>
                 <a class="uba-nav-btn" href="automations.html">
                   <span class="icon">🤖</span>
-                  <span data-i18n="nav.automations">Automations</span>
-                  <small data-i18n="nav.automationsSub">Flows</small>
+                  <span>Automations</span>
+                  <small>Flows</small>
                 </a>
                 <a class="uba-nav-btn" href="calendar.html">
                   <span class="icon">📅</span>
@@ -99,8 +100,8 @@
                 </a>
                 <a class="uba-nav-btn" href="smart-tools.html">
                   <span class="icon">🧠</span>
-                  <span data-i18n="nav.smartTools">Smart Tools</span>
-                  <small data-i18n="nav.smartToolsSub">AI ops</small>
+                  <span>Smart Tools</span>
+                  <small>AI ops</small>
                 </a>
                 <a class="uba-nav-btn" href="assistant.html">
                   <span class="icon">🤖</span>
@@ -108,23 +109,23 @@
                 </a>
                 <a class="uba-nav-btn" href="insights.html">
                   <span class="icon">📊</span>
-                  <span data-i18n="nav.insights">Insights Lab</span>
-                  <small data-i18n="nav.insightsSub">Reports</small>
+                  <span>Insights Lab</span>
+                  <small>Reports</small>
                 </a>
                 <a class="uba-nav-btn" href="help.html">
                   <span class="icon">💬</span>
-                  <span data-i18n="nav.support">Success Desk</span>
-                  <small data-i18n="nav.supportSub">Guidance</small>
+                  <span>Success Desk</span>
+                  <small>Guidance</small>
                 </a>
                 <a class="uba-nav-btn" href="settings.html">
                   <span class="icon">🛠️</span>
-                  <span data-i18n="nav.settings">Settings</span>
-                  <small data-i18n="nav.settingsSub">Workspace</small>
+                  <span>Settings</span>
+                  <small>Workspace</small>
                 </a>
               </nav>
             </div>
 
-            <div class="uba-sidebar-footer" data-i18n="sidebar.footer">
+            <div class="uba-sidebar-footer">
               Designed for small teams and solo founders who are tired of 7
               different tools just to run one business.
             </div>
@@ -136,11 +137,11 @@
             <!-- Top bar -->
             <header class="uba-topbar">
               <div class="uba-top-left">
-                <p class="uba-top-kicker" data-i18n="top.kicker">Workspace</p>
-                <h1 id="uba-view-title" data-i18n="view.dashboard.title">
-                  Business overview
+                <p class="uba-top-kicker">Workspace</p>
+                <h1 id="uba-view-title">
+                  Business Dashboard
                 </h1>
-                <p id="uba-view-desc" data-i18n="view.dashboard.desc">
+                <p id="uba-view-desc">
                   Today's snapshot across your clients, invoices, tasks and
                   automations.
                 </p>
@@ -174,11 +175,11 @@
               <section class="uba-view" data-view="dashboard">
                 <div class="uba-demo-banner" id="demo-banner" hidden>
                   <div>
-                    <p class="uba-banner-label" data-i18n="demo.label">
+                    <p class="uba-banner-label">
                       Live preview
                     </p>
-                    <h2 data-i18n="demo.title">Board ready for handoff</h2>
-                    <p data-i18n="demo.desc">
+                    <h2>Board ready for handoff</h2>
+                    <p>
                       Explore a pre-filled workspace with KPIs, pipeline, and
                       mini-invoices. Connect your Supabase keys later to sync
                       real data.
@@ -188,14 +189,12 @@
                     <button
                       class="uba-btn-primary"
                       onclick="window.location.href='login.html'"
-                      data-i18n="demo.ctaPrimary"
                     >
                       Connect account
                     </button>
                     <button
                       class="uba-btn-ghost"
                       onclick="window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })"
-                      data-i18n="demo.ctaSecondary"
                     >
                       Explore layout
                     </button>
@@ -248,56 +247,81 @@
                       <div class="uba-card-header">
                         <div class="uba-card-icon">📊</div>
                         <div>
-                          <div class="uba-card-title" data-i18n="card.metrics.title">
+                          <div class="uba-card-title">
                             Key metrics
                           </div>
-                          <p class="uba-card-sub" data-i18n="card.metrics.desc">
+                          <p class="uba-card-sub">
                             Revenue, workload and business health overview
                           </p>
                         </div>
-                        <span class="uba-pill uba-pill-accent" data-i18n="card.metrics.range">Last 30 days</span>
+                        <div class="uba-metrics-controls">
+                          <select id="metrics-year-filter" class="uba-select-sm">
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                          </select>
+                          <select id="metrics-month-filter" class="uba-select-sm">
+                            <option value="">All months</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                          </select>
+                        </div>
                       </div>
 
                       <div class="uba-kpi-strip uba-kpi-modern">
                         <div class="uba-kpi uba-kpi-primary">
+                          <div class="uba-kpi-sparkline" id="revenue-sparkline"></div>
                           <div class="uba-kpi-icon">💰</div>
                           <div class="uba-kpi-content">
-                            <div class="uba-kpi-label" data-i18n="kpi.billed.label">Revenue (30d)</div>
+                            <div class="uba-kpi-label">Revenue</div>
                             <div class="uba-kpi-value" id="kpi-billed">€ 0</div>
-                            <div class="uba-kpi-trend" id="kpi-billed-trend" data-i18n="kpi.billed.trend">
+                            <div class="uba-kpi-trend" id="kpi-billed-trend">
                               +12% from last month
                             </div>
                           </div>
                         </div>
 
                         <div class="uba-kpi uba-kpi-warning">
+                          <div class="uba-kpi-sparkline" id="invoices-sparkline"></div>
                           <div class="uba-kpi-icon">📄</div>
                           <div class="uba-kpi-content">
-                            <div class="uba-kpi-label" data-i18n="kpi.openInvoices.label">Open invoices</div>
+                            <div class="uba-kpi-label">Open invoices</div>
                             <div class="uba-kpi-value" id="kpi-open-invoices">€ 0</div>
-                            <div class="uba-kpi-trend" id="kpi-open-invoices-trend" data-i18n="kpi.openInvoices.trend">
+                            <div class="uba-kpi-trend" id="kpi-open-invoices-trend">
                               3 overdue
                             </div>
                           </div>
                         </div>
 
                         <div class="uba-kpi uba-kpi-success">
+                          <div class="uba-kpi-sparkline" id="clients-sparkline"></div>
                           <div class="uba-kpi-icon">👥</div>
                           <div class="uba-kpi-content">
-                            <div class="uba-kpi-label" data-i18n="kpi.clients.label">Active clients</div>
+                            <div class="uba-kpi-label">Active clients</div>
                             <div class="uba-kpi-value" id="kpi-active-clients">0</div>
-                            <div class="uba-kpi-trend" id="kpi-active-clients-trend" data-i18n="kpi.clients.trend">
+                            <div class="uba-kpi-trend" id="kpi-active-clients-trend">
                               2 new this week
                             </div>
                           </div>
                         </div>
 
                         <div class="uba-kpi uba-kpi-info">
+                          <div class="uba-kpi-sparkline" id="tasks-sparkline"></div>
                           <div class="uba-kpi-icon">✅</div>
                           <div class="uba-kpi-content">
-                            <div class="uba-kpi-label" data-i18n="kpi.tasks.label">Tasks today</div>
+                            <div class="uba-kpi-label">Tasks today</div>
                             <div class="uba-kpi-value" id="kpi-tasks-today">—</div>
-                            <div class="uba-kpi-trend" id="kpi-tasks-today-trend" data-i18n="kpi.tasks.trend">
+                            <div class="uba-kpi-trend" id="kpi-tasks-today-trend">
                               4 completed
                             </div>
                           </div>
@@ -383,21 +407,21 @@
                       </div>
                       
                       <div class="uba-quick-actions">
-                        <button class="uba-action-btn uba-action-primary">
+                        <button class="uba-action-btn uba-action-primary" onclick="window.location.href='invoices.html'">
                           <span class="uba-action-icon">💵</span>
                           <span>New Invoice</span>
                         </button>
-                        <button class="uba-action-btn uba-action-secondary">
+                        <button class="uba-action-btn uba-action-secondary" onclick="window.location.href='clients.html'">
                           <span class="uba-action-icon">👤</span>
                           <span>Add Client</span>
                         </button>
-                        <button class="uba-action-btn uba-action-secondary">
+                        <button class="uba-action-btn uba-action-secondary" onclick="window.location.href='tasks.html'">
                           <span class="uba-action-icon">✅</span>
                           <span>Create Task</span>
                         </button>
-                        <button class="uba-action-btn uba-action-secondary">
-                          <span class="uba-action-icon">📊</span>
-                          <span>View Reports</span>
+                        <button class="uba-action-btn uba-action-secondary" onclick="window.location.href='demo-gallery.html'">
+                          <span class="uba-action-icon">🎨</span>
+                          <span>Demo Gallery</span>
                         </button>
                       </div>
                     </section>
@@ -410,93 +434,62 @@
                     <section class="uba-card" id="card-metrics">
                       <div class="uba-card-header">
                         <div>
-                          <div
-                            class="uba-card-title"
-                            data-i18n="card.metrics.title"
-                          >
+                          <div class="uba-card-title">
                             Key metrics
                           </div>
-                          <p class="uba-card-sub" data-i18n="card.metrics.desc">
+                          <p class="uba-card-sub">
                             Quick view of revenue, open invoices and current
                             workload.
                           </p>
                         </div>
-                        <span class="uba-pill" data-i18n="card.metrics.range"
+                        <span class="uba-pill"
                           >Last 30 days</span
                         >
                       </div>
 
                       <div class="uba-kpi-strip">
                         <div class="uba-kpi">
-                          <div
-                            class="uba-kpi-label"
-                            data-i18n="kpi.billed.label"
-                          >
+                          <div class="uba-kpi-label">
                             Billed (30d)
                           </div>
                           <div class="uba-kpi-value" id="kpi-billed">€ 0</div>
-                          <div
-                            class="uba-kpi-trend"
-                            id="kpi-billed-trend"
-                            data-i18n="kpi.billed.trend"
-                          >
+                          <div class="uba-kpi-trend" id="kpi-billed-trend">
                             Based on paid invoices
                           </div>
                         </div>
 
                         <div class="uba-kpi">
-                          <div
-                            class="uba-kpi-label"
-                            data-i18n="kpi.openInvoices.label"
-                          >
+                          <div class="uba-kpi-label">
                             Open invoices
                           </div>
                           <div class="uba-kpi-value" id="kpi-open-invoices">
                             € 0
                           </div>
-                          <div
-                            class="uba-kpi-trend"
-                            id="kpi-open-invoices-trend"
-                            data-i18n="kpi.openInvoices.trend"
-                          >
+                          <div class="uba-kpi-trend" id="kpi-open-invoices-trend">
                             Sent & overdue
                           </div>
                         </div>
 
                         <div class="uba-kpi">
-                          <div
-                            class="uba-kpi-label"
-                            data-i18n="kpi.clients.label"
-                          >
+                          <div class="uba-kpi-label">
                             Active clients
                           </div>
                           <div class="uba-kpi-value" id="kpi-active-clients">
                             0
                           </div>
-                          <div
-                            class="uba-kpi-trend"
-                            id="kpi-active-clients-trend"
-                            data-i18n="kpi.clients.trend"
-                          >
+                          <div class="uba-kpi-trend" id="kpi-active-clients-trend">
                             From Supabase CRM
                           </div>
                         </div>
 
                         <div class="uba-kpi">
-                          <div
-                            class="uba-kpi-label"
-                            data-i18n="kpi.tasks.label"
-                          >
+                          <div class="uba-kpi-label">
                             Tasks today
                           </div>
                           <div class="uba-kpi-value" id="kpi-tasks-today">
                             —
                           </div>
-                          <div
-                            class="uba-kpi-trend"
-                            id="kpi-tasks-today-trend"
-                            data-i18n="kpi.tasks.trend"
-                          >
+                          <div class="uba-kpi-trend" id="kpi-tasks-today-trend">
                             Linked to projects
                           </div>
                         </div>
@@ -505,26 +498,23 @@
 
                     <!-- Recent invoices -->
                     <section class="uba-card uba-card-modern" id="card-mini-invoices">
-                      <div class="uba-card-header">
-                        <div class="uba-card-icon">📋</div>
-                        <div>
-                          <div class="uba-card-title" data-i18n="card.miniInvoices.title">
-                            Recent Invoices
+                        <div class="uba-card-header">
+                          <div class="uba-card-icon">📋</div>
+                          <div>
+                            <div class="uba-card-title">
+                              Recent Invoices
+                            </div>
+                            <p class="uba-card-sub">
+                              Latest billing activity and payment status
+                            </p>
                           </div>
-                          <p class="uba-card-sub" data-i18n="card.miniInvoices.desc">
-                            Latest billing activity and payment status
-                          </p>
-                        </div>
-                        <button
-                          class="uba-btn-ghost uba-btn-sm"
-                          onclick="window.location.href='invoices.html'"
-                          data-i18n="card.miniInvoices.cta"
-                        >
-                          View all
-                        </button>
-                      </div>
-
-                      <div class="uba-list uba-invoice-list" id="mini-invoices-list">
+                          <button
+                            class="uba-btn-ghost uba-btn-sm"
+                            onclick="window.location.href='invoices.html'"
+                          >
+                            View all
+                          </button>
+                        </div>                      <div class="uba-list uba-invoice-list" id="mini-invoices-list">
                         <!-- Dynamic content loaded here -->
                         <div class="uba-invoice-item">
                           <div class="uba-invoice-client">Atlas Labs</div>
@@ -551,26 +541,23 @@
                   <div class="uba-grid-col">
                     <!-- Project pipeline -->
                     <section class="uba-card uba-card-modern" id="card-pipeline">
-                      <div class="uba-card-header">
-                        <div class="uba-card-icon">🚀</div>
-                        <div>
-                          <div class="uba-card-title" data-i18n="card.pipeline.title">
-                            Project Pipeline
+                        <div class="uba-card-header">
+                          <div class="uba-card-icon">🚀</div>
+                          <div>
+                            <div class="uba-card-title">
+                              Project Pipeline
+                            </div>
+                            <p class="uba-card-sub">
+                              Active projects and sales opportunities
+                            </p>
                           </div>
-                          <p class="uba-card-sub" data-i18n="card.pipeline.desc">
-                            Active projects and sales opportunities
-                          </p>
-                        </div>
-                        <button
-                          class="uba-btn-ghost uba-btn-sm"
-                          onclick="window.location.href='projects.html'"
-                          data-i18n="card.pipeline.cta"
-                        >
-                          Manage
-                        </button>
-                      </div>
-
-                      <div class="uba-stages uba-pipeline-modern" id="pipeline-stages">
+                          <button
+                            class="uba-btn-ghost uba-btn-sm"
+                            onclick="window.location.href='projects.html'"
+                          >
+                            Manage
+                          </button>
+                        </div>                      <div class="uba-stages uba-pipeline-modern" id="pipeline-stages">
                         <!-- Dynamic stages loaded here -->
                         <div class="uba-pipeline-stage">
                           <div class="uba-stage-header">
@@ -615,26 +602,23 @@
 
                     <!-- Active tasks -->
                     <section class="uba-card uba-card-modern" id="card-tasks">
-                      <div class="uba-card-header">
-                        <div class="uba-card-icon">📝</div>
-                        <div>
-                          <div class="uba-card-title" data-i18n="card.tasks.title">
-                            Active Tasks
+                        <div class="uba-card-header">
+                          <div class="uba-card-icon">📝</div>
+                          <div>
+                            <div class="uba-card-title">
+                              Active Tasks
+                            </div>
+                            <p class="uba-card-sub">
+                              Today's priorities and upcoming deliverables
+                            </p>
                           </div>
-                          <p class="uba-card-sub" data-i18n="card.tasks.desc">
-                            Today's priorities and upcoming deliverables
-                          </p>
-                        </div>
-                        <button
-                          class="uba-btn-ghost uba-btn-sm"
-                          onclick="window.location.href='tasks.html'"
-                          data-i18n="card.tasks.cta"
-                        >
-                          View all
-                        </button>
-                      </div>
-
-                      <div class="uba-list uba-tasks-modern" id="mini-tasks-list">
+                          <button
+                            class="uba-btn-ghost uba-btn-sm"
+                            onclick="window.location.href='tasks.html'"
+                          >
+                            View all
+                          </button>
+                        </div>                      <div class="uba-list uba-tasks-modern" id="mini-tasks-list">
                         <!-- Dynamic content loaded here -->
                         <div class="uba-task-item uba-task-high">
                           <div class="uba-task-indicator"></div>
@@ -676,25 +660,23 @@
     <script src="assets/js/i18n.js"></script>
     <script src="assets/js/workspace-manager.js"></script>
     <script src="assets/js/store.js"></script>
+    <script src="assets/js/unified-metrics.js"></script>
+    <script src="assets/js/sparkline.js"></script>
+    <script src="assets/js/enhanced-dashboard.js"></script>
     <script src="assets/js/notifications.js"></script>
     <script src="assets/js/search.js"></script>
     <script src="assets/js/app.js"></script>
+    <script src="assets/js/demo-enhanced-data.js"></script>
+    <script src="assets/js/enhanced-expenses.js"></script>
     <script src="assets/js/page-loader.js"></script>
     <script src="assets/js/assistant.js"></script>
     <script src="assets/js/clients.js"></script>
     <script src="assets/js/tasks.js"></script>
     <script src="assets/js/smarttools.js"></script>
     <script>
-      (function () {
-        const lang = localStorage.getItem("uba-lang") || "en";
-        if (
-          window.ubaI18n &&
-          typeof window.ubaI18n.applyTranslations === "function"
-        ) {
-          window.ubaI18n.applyTranslations(lang);
-        }
-        if (lang === "ar") document.documentElement.dir = "rtl";
-      })();
+      // Set default language to English
+      localStorage.setItem("uba-lang", "en");
+      document.documentElement.dir = "ltr";
     </script>
     <script>
       try {

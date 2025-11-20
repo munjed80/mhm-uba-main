@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>UBA Automations</title>
     <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="stylesheet" href="assets/css/enhanced-automations.css" />
   </head>
   <body>
     <section id="uba-dashboard">
@@ -160,8 +161,9 @@
                             Create automation rules to streamline your workflow
                           </p>
                         </div>
-                        <button id="new-automation-btn" class="uba-btn-primary">
-                          <span data-i18n="automations.new">+ New Automation</span>
+                        <button id="new-automation-btn" class="uba-btn uba-btn-primary enhanced-create">
+                          <span class="icon">➕</span>
+                          <span data-i18n="automations.new">Create Automation</span>
                         </button>
                       </div>
 
@@ -184,15 +186,15 @@
                       </div>
 
                       <div class="uba-table-wrap">
-                        <table class="uba-table">
+                        <table class="uba-table enhanced-automations-table">
                           <thead>
                             <tr>
                               <th data-i18n="table.name">Name</th>
                               <th data-i18n="automations.trigger">Trigger</th>
-                              <th data-i18n="automations.action">Action</th>
+                              <th data-i18n="automations.action">Actions</th>
+                              <th data-i18n="automations.stats">Statistics</th>
                               <th data-i18n="table.status">Status</th>
-                              <th data-i18n="automations.lastRun">Last Run</th>
-                              <th style="width: 120px" data-i18n="table.actions">
+                              <th style="width: 140px" data-i18n="table.actions">
                                 Actions
                               </th>
                             </tr>
@@ -200,13 +202,6 @@
                           <tbody id="automations-body">
                             <tr>
                               <td colspan="6" data-i18n="automations.empty">
-                                No automations yet. Create your first rule.
-                              </td>
-                            </tr>
-                          </tbody>
-                          <tbody id="automations-body">
-                            <tr>
-                              <td colspan="5" data-i18n="automations.empty">
                                 No automations yet. Create your first rule.
                               </td>
                             </tr>
@@ -244,7 +239,7 @@
                           </thead>
                           <tbody id="automation-logs-body">
                             <tr>
-                              <td colspan="4" data-i18n="automations.noLogs">
+                              <td colspan="5" data-i18n="automations.noLogs">
                                 No automation runs yet.
                               </td>
                             </tr>
@@ -257,142 +252,7 @@
               </section>
             </div>
 
-            <!-- Automation Modal -->
-            <div id="automation-modal" class="uba-modal" style="display: none;">
-              <div class="uba-modal-backdrop" onclick="closeAutomationModal()"></div>
-              <div class="uba-modal-dialog">
-                <div class="uba-modal-header">
-                  <h3 id="automation-modal-title" data-i18n="automations.new">New Automation</h3>
-                  <button class="uba-modal-close" onclick="closeAutomationModal()">&times;</button>
-                </div>
-                <div class="uba-modal-body">
-                  <form id="automation-form" class="uba-form">
-                    <input type="hidden" id="automation-edit-id" />
-                    
-                    <div class="uba-form-group">
-                      <label for="automation-name" data-i18n="table.name">Name</label>
-                      <input
-                        type="text"
-                        id="automation-name"
-                        class="uba-input"
-                        placeholder="e.g., Create follow-up task for overdue invoices"
-                        required
-                      />
-                    </div>
-
-                    <div class="uba-form-group">
-                      <label for="automation-description" data-i18n="table.description">Description (Optional)</label>
-                      <textarea
-                        id="automation-description"
-                        class="uba-textarea"
-                        placeholder="Brief description of what this automation does"
-                        rows="2"
-                      ></textarea>
-                    </div>
-
-                    <div class="uba-form-row">
-                      <div class="uba-form-group">
-                        <label for="automation-trigger" data-i18n="automations.trigger">Trigger</label>
-                        <select id="automation-trigger" class="uba-select">
-                          <option value="" disabled selected>Select a trigger...</option>
-                          <option value="invoice_created" data-i18n="triggers.invoiceCreated">Invoice Created</option>
-                          <option value="invoice_status_changed" data-i18n="triggers.invoiceStatusChanged">Invoice Status Changed</option>
-                          <option value="invoice_overdue" data-i18n="triggers.invoiceOverdue">Invoice Overdue</option>
-                          <option value="client_created" data-i18n="triggers.clientCreated">Client Created</option>
-                          <option value="task_created" data-i18n="triggers.taskCreated">Task Created</option>
-                          <option value="task_completed" data-i18n="triggers.taskCompleted">Task Completed</option>
-                        </select>
-                      </div>
-                      <div class="uba-form-group">
-                        <label for="automation-action" data-i18n="automations.action">Action</label>
-                        <select id="automation-action" class="uba-select">
-                          <option value="" disabled selected>Select an action...</option>
-                          <option value="create_task" data-i18n="actions.createTask">Create Task</option>
-                          <option value="add_note_to_client" data-i18n="actions.addNoteToClient">Add Note to Client</option>
-                          <option value="show_notification" data-i18n="actions.showNotification">Show Notification</option>
-                          <option value="mark_invoice_as_overdue" data-i18n="actions.markInvoiceOverdue">Mark Invoice as Overdue</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <!-- Action Configuration -->
-                    <div id="action-config" class="uba-form-group" style="display: none;">
-                      <label id="config-label">Configuration</label>
-                      
-                      <!-- Create Task Config -->
-                      <div id="config-create-task" class="config-section" style="display: none;">
-                        <label for="config-task-title">Task Title Template</label>
-                        <input
-                          type="text"
-                          id="config-task-title"
-                          class="uba-input"
-                          placeholder="e.g., Follow up with {client} on overdue invoice"
-                          style="margin-bottom: 8px;"
-                        />
-                        <label for="config-days-offset">Days Offset (optional)</label>
-                        <input
-                          type="number"
-                          id="config-days-offset"
-                          class="uba-input"
-                          placeholder="0"
-                          min="0"
-                          max="365"
-                        />
-                        <small style="color: var(--text-muted); font-size: 12px;">Number of days from trigger date (0 = today)</small>
-                      </div>
-
-                      <!-- Add Note Config -->
-                      <div id="config-add-note" class="config-section" style="display: none;">
-                        <label for="config-note-text">Note Template</label>
-                        <textarea
-                          id="config-note-text"
-                          class="uba-textarea"
-                          placeholder="e.g., Automated note: {trigger} occurred for {client}"
-                          rows="3"
-                        ></textarea>
-                        <small style="color: var(--text-muted); font-size: 12px;">Use {client}, {amount}, {status}, {trigger} for dynamic values</small>
-                      </div>
-
-                      <!-- Notification Config -->
-                      <div id="config-notification" class="config-section" style="display: none;">
-                        <label for="config-notification-message">Notification Message</label>
-                        <input
-                          type="text"
-                          id="config-notification-message"
-                          class="uba-input"
-                          placeholder="e.g., Alert: {client} invoice is now {status}"
-                        />
-                        <small style="color: var(--text-muted); font-size: 12px;">Use {client}, {amount}, {status}, {trigger} for dynamic values</small>
-                      </div>
-
-                      <!-- Mark Overdue Config -->
-                      <div id="config-mark-overdue" class="config-section" style="display: none;">
-                        <label for="config-overdue-days">Days After Due Date</label>
-                        <input
-                          type="number"
-                          id="config-overdue-days"
-                          class="uba-input"
-                          placeholder="7"
-                          min="0"
-                          max="365"
-                        />
-                        <small style="color: var(--text-muted); font-size: 12px;">Automatically mark invoice as overdue after this many days past due date</small>
-                      </div>
-                    </div>
-
-                    <div id="automation-error" class="uba-error-message" style="display: none;"></div>
-                  </form>
-                </div>
-                <div class="uba-modal-footer">
-                  <button type="button" class="uba-btn-ghost" onclick="closeAutomationModal()">
-                    <span data-i18n="action.cancel">Cancel</span>
-                  </button>
-                  <button type="button" id="save-automation-btn" class="uba-btn-primary">
-                    <span data-i18n="action.save">Save Automation</span>
-                  </button>
-                </div>
-              </div>
-            </div>
+            <!-- Enhanced Automation Modal will be dynamically injected by JavaScript -->
           </main>
         </div>
       </div>
@@ -404,5 +264,7 @@
     <script src="assets/js/app.js"></script>
     <script src="assets/js/page-loader.js"></script>
     <script src="assets/js/automations.js"></script>
+    <script src="assets/js/enhanced-automations.js"></script>
+    <script src="assets/js/enhanced-automations-ui.js"></script>
   </body>
 </html>

@@ -166,6 +166,37 @@
                           >Local CRM</span
                         >
                       </div>
+                      
+                      <!-- Enhanced Clients Toolbar -->
+                      <div class="uba-table-toolbar">
+                        <div class="uba-toolbar-left">
+                          <input 
+                            type="text" 
+                            id="clients-search" 
+                            class="uba-input-sm" 
+                            placeholder="Search clients..."
+                            data-i18n-placeholder="clients.search"
+                          />
+                          <select id="clients-sort" class="uba-select-sm">
+                            <option value="name_asc">Name A-Z</option>
+                            <option value="name_desc">Name Z-A</option>
+                            <option value="created_at_desc">Newest First</option>
+                            <option value="created_at_asc">Oldest First</option>
+                            <option value="company_asc">Company A-Z</option>
+                          </select>
+                        </div>
+                        <div class="uba-toolbar-right">
+                          <select id="clients-page-size" class="uba-select-sm">
+                            <option value="10">10 per page</option>
+                            <option value="20" selected>20 per page</option>
+                            <option value="50">50 per page</option>
+                            <option value="100">100 per page</option>
+                          </select>
+                          <button type="button" class="uba-btn-sm uba-btn-ghost" onclick="showCustomFieldsModal()">
+                            ⚙️ Custom Fields
+                          </button>
+                        </div>
+                      </div>
 
                       <form id="clients-page-form" class="uba-form">
                         <input type="hidden" id="clients-edit-id" />
@@ -198,6 +229,19 @@
                             placeholder="Phone"
                             data-i18n-placeholder="form.phone"
                           />
+                        </div>
+                        
+                        <!-- Custom Fields Section -->
+                        <div id="custom-fields-container" class="uba-custom-fields">
+                          <div class="uba-form-section-header">
+                            <span>Additional Information</span>
+                            <button type="button" class="uba-btn-sm uba-btn-ghost" onclick="toggleCustomFields()">
+                              <span id="custom-fields-toggle">▼</span>
+                            </button>
+                          </div>
+                          <div id="custom-fields-content" class="uba-custom-fields-content" style="display: none;">
+                            <!-- Custom fields will be dynamically inserted here -->
+                          </div>
                         </div>
 
                         <div class="uba-form-row">
@@ -342,9 +386,67 @@
       </div>
     </section>
 
+    <!-- Custom Fields Configuration Modal -->
+    <div id="custom-fields-modal" class="uba-modal" style="display: none;">
+      <div class="uba-modal-overlay" onclick="closeCustomFieldsModal()"></div>
+      <div class="uba-modal-content">
+        <div class="uba-modal-header">
+          <h3>Configure Custom Fields</h3>
+          <button type="button" class="uba-modal-close" onclick="closeCustomFieldsModal()">×</button>
+        </div>
+        <div class="uba-modal-body">
+          <p>Customize additional fields to capture client-specific information:</p>
+          <div id="custom-fields-config">
+            <!-- Custom fields configuration will be rendered here -->
+          </div>
+          <button type="button" class="uba-btn-sm uba-btn-ghost" onclick="addCustomField()">+ Add Field</button>
+        </div>
+        <div class="uba-modal-footer">
+          <button type="button" class="uba-btn-ghost" onclick="closeCustomFieldsModal()">Cancel</button>
+          <button type="button" class="uba-btn-primary" onclick="saveCustomFields()">Save Fields</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Client Details Modal -->
+    <div id="client-details-modal" class="uba-modal" style="display: none;">
+      <div class="uba-modal-overlay" onclick="closeClientDetailsModal()"></div>
+      <div class="uba-modal-content uba-modal-large">
+        <div class="uba-modal-header">
+          <h3 id="client-details-title">Client Details</h3>
+          <button type="button" class="uba-modal-close" onclick="closeClientDetailsModal()">×</button>
+        </div>
+        <div class="uba-modal-body">
+          <div class="uba-client-details">
+            <div id="client-basic-info" class="uba-details-section">
+              <!-- Basic client info will be rendered here -->
+            </div>
+            <div id="client-custom-info" class="uba-details-section">
+              <!-- Custom fields info will be rendered here -->
+            </div>
+            <div id="client-relationships" class="uba-details-section">
+              <h4>Related Projects & Invoices</h4>
+              <div id="related-projects" class="uba-related-items">
+                <!-- Related projects will be rendered here -->
+              </div>
+              <div id="related-invoices" class="uba-related-items">
+                <!-- Related invoices will be rendered here -->
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="uba-modal-footer">
+          <button type="button" class="uba-btn-ghost" onclick="closeClientDetailsModal()">Close</button>
+          <button type="button" class="uba-btn-primary" onclick="editClientFromDetails()">Edit Client</button>
+        </div>
+      </div>
+    </div>
+
     <script src="assets/js/i18n.js"></script>
     <script src="assets/js/store.js"></script>
     <script src="assets/js/validation.js"></script>
+    <script src="assets/js/enhanced-clients.js"></script>
+    <script src="assets/js/client-relationships.js"></script>
     <script src="assets/js/app.js"></script>
     <script src="assets/js/page-loader.js"></script>
     <script src="assets/js/assistant.js"></script>

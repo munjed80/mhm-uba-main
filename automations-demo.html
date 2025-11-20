@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Enhanced UBA Automations Demo</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <link rel="stylesheet" href="assets/css/enhanced-automations.css" />
+    <style>
+        body { padding: 20px; font-family: 'Segoe UI', sans-serif; }
+        .demo-container { max-width: 1200px; margin: 0 auto; }
+        .demo-header { text-align: center; margin-bottom: 40px; }
+        .demo-header h1 { color: #667eea; margin-bottom: 10px; }
+        .demo-header p { color: #64748b; font-size: 1.1rem; }
+        .demo-actions { display: flex; gap: 15px; justify-content: center; margin-bottom: 30px; flex-wrap: wrap; }
+        .demo-btn { 
+            padding: 12px 24px; 
+            border-radius: 8px; 
+            border: none; 
+            font-weight: 500; 
+            cursor: pointer; 
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .demo-btn-primary { background: #667eea; color: white; }
+        .demo-btn-primary:hover { background: #5a6fd8; transform: translateY(-1px); }
+        .demo-btn-secondary { background: #f3f4f6; color: #374151; }
+        .demo-btn-secondary:hover { background: #e5e7eb; }
+        .demo-section { 
+            background: white; 
+            border-radius: 12px; 
+            padding: 24px; 
+            margin-bottom: 24px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+        }
+        .demo-section h3 { 
+            margin-top: 0; 
+            color: #1e293b; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+        }
+        .features-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 20px; 
+        }
+        .feature-card { 
+            background: #f8fafe; 
+            border: 1px solid #e1e7f5; 
+            border-radius: 8px; 
+            padding: 20px; 
+        }
+        .feature-card h4 { 
+            margin-top: 0; 
+            color: #667eea; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        .feature-list { 
+            list-style: none; 
+            padding: 0; 
+            margin: 0; 
+        }
+        .feature-list li { 
+            padding: 8px 0; 
+            border-bottom: 1px solid #e1e7f5; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        .feature-list li:last-child { border-bottom: none; }
+        .status-badge { 
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            font-size: 0.8rem; 
+            font-weight: 500; 
+        }
+        .status-active { background: #d1fae5; color: #059669; }
+        .status-new { background: #dbeafe; color: #2563eb; }
+        .logs-display { 
+            background: #1f2937; 
+            color: #e5e7eb; 
+            border-radius: 6px; 
+            padding: 16px; 
+            font-family: 'Courier New', monospace; 
+            font-size: 0.9rem; 
+            max-height: 200px; 
+            overflow-y: auto; 
+        }
+        .arabic-text { direction: rtl; text-align: right; font-family: 'Arial', sans-serif; }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🤖 Enhanced UBA Automations Demo</h1>
+            <p>Professional automation system with real triggers, actions, validation, and Arabic support</p>
+        </div>
+
+        <div class="demo-actions">
+            <button class="demo-btn demo-btn-primary" onclick="openEnhancedModal()">
+                ➕ Create New Automation
+            </button>
+            <button class="demo-btn demo-btn-secondary" onclick="demoTriggerEvent()">
+                🎯 Trigger Demo Event
+            </button>
+            <button class="demo-btn demo-btn-secondary" onclick="showLogs()">
+                📝 Show Execution Logs
+            </button>
+            <button class="demo-btn demo-btn-secondary" onclick="toggleArabic()">
+                🌐 Toggle Arabic (تبديل العربية)
+            </button>
+        </div>
+
+        <div class="demo-section">
+            <h3>🚀 Enhanced Features Overview</h3>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h4>🎯 Real Triggers</h4>
+                    <ul class="feature-list">
+                        <li>✅ Task Created (عند إنشاء مهمة)</li>
+                        <li>💵 Invoice Due (عند استحقاق فاتورة)</li>
+                        <li>🧲 Lead Updated (عند تحديث عميل محتمل)</li>
+                        <li>💼 Project Stage Changed</li>
+                        <li>👤 Client Created</li>
+                        <li>⏰ Deadline Approaching</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h4>⚡ Real Actions</h4>
+                    <ul class="feature-list">
+                        <li>🔔 Send Notification (إرسال تنبيه)</li>
+                        <li>✅ Create Task (إنشاء مهمة)</li>
+                        <li>📝 Add Log Entry (إضافة سجل)</li>
+                        <li>✏️ Update Record</li>
+                        <li>📧 Send Email</li>
+                        <li>🔗 Webhook Integration</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h4>🎨 Professional Design</h4>
+                    <ul class="feature-list">
+                        <li>🖼️ Enhanced Modal Interface</li>
+                        <li>🎛️ Enable/Disable Toggles</li>
+                        <li>✅ Advanced Validation Rules</li>
+                        <li>📊 Execution Statistics</li>
+                        <li>🌐 Arabic RTL Support</li>
+                        <li>📱 Mobile Responsive</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <h4>🔧 Technical Features</h4>
+                    <ul class="feature-list">
+                        <li>🔗 Real System Integration</li>
+                        <li>📈 Condition-based Triggers</li>
+                        <li>🔄 Variable Substitution</li>
+                        <li>📊 Execution Logging</li>
+                        <li>🧪 Test Mode</li>
+                        <li>⚡ Background Processing</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>📋 Current Automations</h3>
+            <div class="uba-table-wrap">
+                <table class="uba-table enhanced-automations-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Trigger</th>
+                            <th>Actions</th>
+                            <th>Statistics</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="demo-automations-body">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px; color: #64748b;">
+                                No automations created yet. Click "Create New Automation" to get started.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>📊 Execution Logs</h3>
+            <div id="logs-container">
+                <div class="logs-display" id="execution-logs">
+                    🤖 Enhanced Automation System initialized<br>
+                    📋 Loading automations from storage...<br>
+                    ✅ Automation system ready<br>
+                    <br>
+                    <span style="color: #10b981;">System Status: Active and monitoring</span><br>
+                    <span style="color: #64748b;">Waiting for automation events...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>🌟 Demo Actions</h3>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <button class="demo-btn demo-btn-secondary" onclick="demoCreateTask()">
+                    ✅ Simulate Task Creation
+                </button>
+                <button class="demo-btn demo-btn-secondary" onclick="demoInvoiceDue()">
+                    💵 Simulate Invoice Due
+                </button>
+                <button class="demo-btn demo-btn-secondary" onclick="demoLeadUpdate()">
+                    🧲 Simulate Lead Update
+                </button>
+                <button class="demo-btn demo-btn-secondary" onclick="demoProjectMove()">
+                    💼 Simulate Project Stage Change
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include the automation system scripts -->
+    <script src="assets/js/i18n.js"></script>
+    <script src="assets/js/app.js"></script>
+    <script src="assets/js/enhanced-automations.js"></script>
+    <script src="assets/js/enhanced-automations-ui.js"></script>
+
+    <script>
+        // Demo functionality
+        let isArabic = false;
+
+        function openEnhancedModal() {
+            if (window.UBAEnhancedAutomations) {
+                window.UBAEnhancedAutomations.openModal();
+            } else {
+                alert('Enhanced Automation System is loading... Please wait a moment and try again.');
+            }
+        }
+
+        function demoTriggerEvent() {
+            if (window.UBAEnhancedAutomations) {
+                window.UBAEnhancedAutomations.triggerEvent('demo.event', {
+                    id: 'demo-' + Date.now(),
+                    type: 'demo',
+                    message: 'This is a demo trigger event'
+                });
+                logMessage('🎯 Demo trigger event fired');
+            }
+        }
+
+        function demoCreateTask() {
+            if (window.UBAEnhancedAutomations) {
+                window.UBAEnhancedAutomations.triggerEvent('task.created', {
+                    id: 'task-demo-' + Date.now(),
+                    title: 'Demo Task Created',
+                    priority: 'high',
+                    category: 'demo',
+                    assignee: 'admin'
+                });
+                logMessage('✅ Task creation event triggered');
+            }
+        }
+
+        function demoInvoiceDue() {
+            if (window.UBAEnhancedAutomations) {
+                window.UBAEnhancedAutomations.triggerEvent('invoice.due', {
+                    id: 'invoice-demo-' + Date.now(),
+                    label: 'INV-DEMO-001',
+                    amount: 2500,
+                    daysUntilDue: 3,
+                    client: { name: 'Demo Client LLC' },
+                    status: 'sent'
+                });
+                logMessage('💵 Invoice due event triggered');
+            }
+        }
+
+        function demoLeadUpdate() {
+            if (window.UBAEnhancedAutomations) {
+                window.UBAEnhancedAutomations.triggerEvent('lead.updated', {
+                    id: 'lead-demo-' + Date.now(),
+                    name: 'Demo Lead Company',
+                    status: 'qualified',
+                    score: 95,
+                    source: 'website',
+                    budget: 50000
+                });
+                logMessage('🧲 Lead update event triggered');
+            }
+        }
+
+        function demoProjectMove() {
+            if (window.UBAEnhancedAutomations) {
+                window.UBAEnhancedAutomations.triggerEvent('project.stage_changed', {
+                    id: 'project-demo-' + Date.now(),
+                    name: 'Demo Project',
+                    oldStage: 'planning',
+                    newStage: 'development',
+                    priority: 'high',
+                    budget: 75000
+                });
+                logMessage('💼 Project stage change event triggered');
+            }
+        }
+
+        function showLogs() {
+            if (window.UBAEnhancedAutomations && window.UBAEnhancedAutomations.logs) {
+                const logs = window.UBAEnhancedAutomations.logs.slice(-10); // Last 10 logs
+                if (logs.length > 0) {
+                    const logDisplay = logs.map(log => 
+                        `[${new Date(log.timestamp).toLocaleTimeString()}] ${log.status.toUpperCase()}: ${log.message}`
+                    ).join('<br>');
+                    document.getElementById('execution-logs').innerHTML = logDisplay;
+                } else {
+                    document.getElementById('execution-logs').innerHTML = 'No execution logs available yet.';
+                }
+            }
+        }
+
+        function toggleArabic() {
+            isArabic = !isArabic;
+            const body = document.body;
+            
+            if (isArabic) {
+                body.style.direction = 'rtl';
+                body.style.fontFamily = 'Arial, sans-serif';
+                document.querySelector('.demo-header h1').innerHTML = '🤖 نظام أتمتة UBA المتطور';
+                document.querySelector('.demo-header p').innerHTML = 'نظام أتمتة احترافي مع محفزات حقيقية، إجراءات، تحقق، ودعم اللغة العربية';
+            } else {
+                body.style.direction = 'ltr';
+                body.style.fontFamily = "'Segoe UI', sans-serif";
+                document.querySelector('.demo-header h1').innerHTML = '🤖 Enhanced UBA Automations Demo';
+                document.querySelector('.demo-header p').innerHTML = 'Professional automation system with real triggers, actions, validation, and Arabic support';
+            }
+        }
+
+        function logMessage(message) {
+            const logs = document.getElementById('execution-logs');
+            const timestamp = new Date().toLocaleTimeString();
+            logs.innerHTML += `<br>[${timestamp}] ${message}`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function updateAutomationsTable() {
+            if (window.UBAEnhancedAutomations && window.UBAEnhancedAutomations.automations) {
+                const tbody = document.getElementById('demo-automations-body');
+                const automations = window.UBAEnhancedAutomations.automations;
+                
+                if (automations.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px; color: #64748b;">
+                                No automations created yet. Click "Create New Automation" to get started.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = automations.map(automation => {
+                    const trigger = window.UBAEnhancedAutomations.triggers[automation.trigger];
+                    const lastTriggered = automation.lastTriggered ? 
+                        new Date(automation.lastTriggered).toLocaleDateString() : 'Never';
+                    
+                    return `
+                        <tr class="automation-row ${automation.enabled ? 'enabled' : 'disabled'}">
+                            <td>
+                                <div class="automation-info">
+                                    <strong class="automation-name">${automation.name}</strong>
+                                    <small class="automation-description">${automation.description || 'No description'}</small>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="trigger-display">
+                                    <span class="trigger-icon">${trigger?.icon || '🤖'}</span>
+                                    <span class="trigger-name">${trigger?.name || 'Unknown Trigger'}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="actions-summary">
+                                    ${automation.actions.map(action => {
+                                        const actionDef = window.UBAEnhancedAutomations.actions[action.type];
+                                        return `<span class="action-badge">${actionDef?.icon || '⚡'} ${actionDef?.name || action.type}</span>`;
+                                    }).join('')}
+                                </div>
+                            </td>
+                            <td>
+                                <div class="stats-info">
+                                    <div class="trigger-count">${automation.triggerCount || 0} executions</div>
+                                    <div class="last-triggered">Last: ${lastTriggered}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="status-badge ${automation.enabled ? 'status-active' : 'status-new'}">
+                                    ${automation.enabled ? 'Active' : 'Disabled'}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="demo-btn demo-btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" 
+                                            onclick="editDemoAutomation('${automation.id}')" title="Edit automation">
+                                        ✏️
+                                    </button>
+                                    <button class="demo-btn demo-btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" 
+                                            onclick="testDemoAutomation('${automation.id}')" title="Test automation">
+                                        🧪
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        function editDemoAutomation(automationId) {
+            if (window.UBAEnhancedAutomations) {
+                window.UBAEnhancedAutomations.editAutomation(automationId);
+            }
+        }
+
+        function testDemoAutomation(automationId) {
+            if (window.UBAEnhancedAutomations) {
+                window.UBAEnhancedAutomations.testAutomation(automationId);
+                logMessage(`🧪 Testing automation ${automationId}`);
+            }
+        }
+
+        // Initialize demo when system is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if system is initialized, if not wait and try again
+            function checkAndInit() {
+                if (window.UBAEnhancedAutomations && window.UBAEnhancedAutomations.automations) {
+                    updateAutomationsTable();
+                    logMessage('🎯 Demo page initialized with Enhanced Automation System');
+                    
+                    // Update table when automations change
+                    setInterval(updateAutomationsTable, 2000);
+                } else {
+                    setTimeout(checkAndInit, 500);
+                }
+            }
+            
+            checkAndInit();
+        });
+    </script>
+</body>
+</html>
