@@ -753,13 +753,21 @@
   // Initialization
   // ===============================
 
+  let initRetryCount = 0;
+  const MAX_INIT_RETRIES = 50; // 5 seconds max wait time
+
   async function init() {
     log('Initializing Files Manager');
     
     try {
       // Wait for UBA to be ready
       if (!window.UBA || !window.UBA.data || !window.UBA.billing) {
-        warn('UBA not ready, retrying...');
+        initRetryCount++;
+        if (initRetryCount >= MAX_INIT_RETRIES) {
+          warn('Failed to initialize Files Manager: UBA dependencies not available after', MAX_INIT_RETRIES, 'retries');
+          return;
+        }
+        warn('UBA not ready, retrying...', initRetryCount, '/', MAX_INIT_RETRIES);
         setTimeout(init, 100);
         return;
       }
