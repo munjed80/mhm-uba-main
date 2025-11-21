@@ -98,6 +98,8 @@
       "view.automations.logDesc": "Lightweight history of automation activity",
       "view.automations.logHint": "Static sample data for now.",
       "view.automations.logAutomation": "Automation",
+      "view.calendar.title": "Calendar",
+      "view.calendar.desc": "Monthly overview of tasks, deadlines and events.",
       "view.automations.logStatus": "Status",
       "view.automations.logTime": "When",
       "automations.new": "New Automation",
@@ -511,6 +513,8 @@
       "view.automations.desc": "أنشئ تدفقات تربط العملاء والفواتير والمهام.",
       "view.automations.note":
         "عنصر نائب لمنطق الأتمتة. يمكننا لاحقًا تخزين التدفقات كـ JSON في Supabase.",
+      "view.calendar.title": "التقويم",
+      "view.calendar.desc": "نظرة شهرية على المهام والمواعيد النهائية والأحداث.",
       "view.smartTools.title": "أدوات UBA الذكية",
       "view.smartTools.desc":
         "مساعدات ذكاء اصطناعي تلخص سياق العملاء وتكتب رسائل المتابعة وتقترح الخطوة التالية.",
@@ -874,6 +878,8 @@
         "Bouw flows die klanten, facturen en taken verbinden.",
       "view.automations.note":
         "Plaatshouder voor automatiseringslogica. Later kunnen we flows als JSON opslaan in Supabase.",
+      "view.calendar.title": "Kalender",
+      "view.calendar.desc": "Maandelijks overzicht van taken, deadlines en gebeurtenissen.",
       "view.smartTools.title": "UBA Smart Tools",
       "view.smartTools.desc":
         "AI-hulpen die klantcontext samenvatten, opvolging schrijven en volgende acties voorstellen.",
@@ -1247,6 +1253,8 @@
         "Construisez des flux reliant clients, factures et tâches.",
       "view.automations.note":
         "Emplacement réservé pour la logique d'automatisation. Nous stockerons plus tard les flux en JSON dans Supabase.",
+      "view.calendar.title": "Calendrier",
+      "view.calendar.desc": "Vue mensuelle des tâches, échéances et événements.",
       "view.smartTools.title": "Outils UBA",
       "view.smartTools.desc":
         "Assistants IA qui résument le contexte client, rédigent les suivis et suggèrent la prochaine action.",
@@ -1624,6 +1632,8 @@
         "Crea flujos que conecten clientes, facturas y tareas.",
       "view.automations.note":
         "Marcador de posición para lógica de automatización. Luego guardaremos flujos en JSON en Supabase.",
+      "view.calendar.title": "Calendario",
+      "view.calendar.desc": "Vista mensual de tareas, fechas límite y eventos.",
       "view.smartTools.title": "UBA Smart Tools",
       "view.smartTools.desc":
         "Ayudantes de IA que resumen contexto de clientes, redactan seguimientos y sugieren la siguiente acción.",
@@ -2026,6 +2036,8 @@
       "view.automations.badge": "Vorschau",
       "view.automations.logTitle": "Aktuelle Läufe",
       "view.automations.logDesc": "Leichter Verlauf der Automations-Aktivität",
+      "view.calendar.title": "Kalender",
+      "view.calendar.desc": "Monatsübersicht von Aufgaben, Fristen und Ereignissen.",
       "view.automations.logHint": "Derzeit statische Beispieldaten.",
       "view.automations.logAutomation": "Automation",
       "view.automations.logStatus": "Status",
@@ -2351,6 +2363,10 @@
     automations: {
       titleKey: "view.automations.title",
       descKey: "view.automations.desc",
+    },
+    calendar: {
+      titleKey: "view.calendar.title",
+      descKey: "view.calendar.desc",
     },
     "smart-tools": {
       titleKey: "view.smartTools.title",
