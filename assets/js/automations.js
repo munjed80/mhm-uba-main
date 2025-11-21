@@ -958,8 +958,8 @@ function executeAddNoteToClient(config, payload) {
         
         const notes = client.notes || '';
         const timestamp = new Date().toLocaleString();
-        const newNotes = notes + (notes ? '
-' : '') + `[${timestamp}] ${noteText}`;
+        const separator = notes ? '\n' : '';
+        const newNotes = `${notes}${separator}[${timestamp}] ${noteText}`;
         
         const success = window.ubaStore.clients.update(clientId, { 
             notes: newNotes,

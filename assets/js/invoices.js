@@ -1253,68 +1253,61 @@ window.editInvoice = editInvoice;
 window.deleteInvoice = deleteInvoice;
 window.initInvoicesPage = initInvoicesPage;
 
-// Verification function to test all connections
-window.verifyInvoicesSetup = function() {
-    console.log('🔍 VERIFYING INVOICES SETUP...
-');
-    
-    // 1. Check HTML elements
+// Verification function to test all connections (sanitized strings)
+window.verifyInvoicesSetup = function verifyInvoicesSetup() {
+    console.log('🔍 VERIFYING INVOICES SETUP...');
+
     const elements = [
-        'new-invoice-btn', 'save-invoice-btn', 'invoice-form', 
-        'invoices-body', 'invoice-modal', 'invoice-client', 
-        'invoice-amount', 'invoice-status'
+        'new-invoice-btn',
+        'save-invoice-btn',
+        'invoice-form',
+        'invoices-body',
+        'invoice-modal',
+        'invoice-client',
+        'invoice-amount',
+        'invoice-status'
     ];
-    
     console.log('1️⃣ Checking HTML elements:');
-    elements.forEach(id => {
+    elements.forEach((id) => {
         const el = document.getElementById(id);
         console.log(`   ${el ? '✅' : '❌'} ${id}: ${el ? 'Found' : 'MISSING'}`);
     });
-    
-    // 2. Check global functions
-    console.log('
-2️⃣ Checking global functions:');
+
+    console.log('\n2️⃣ Checking global functions:');
     const functions = [
-        'initInvoicesPage', 'openInvoiceModal', 'closeInvoiceModal', 
-        'editInvoice', 'deleteInvoice'
+        'initInvoicesPage',
+        'openInvoiceModal',
+        'closeInvoiceModal',
+        'editInvoice',
+        'deleteInvoice'
     ];
-    
-    functions.forEach(fn => {
+    functions.forEach((fn) => {
         const exists = typeof window[fn] === 'function';
         console.log(`   ${exists ? '✅' : '❌'} ${fn}: ${exists ? 'Available' : 'MISSING'}`);
     });
-    
-    // 3. Check ubaStore
-    console.log('
-3️⃣ Checking data store:');
+
+    console.log('\n3️⃣ Checking data store:');
     const hasUbaStore = !!window.ubaStore;
     console.log(`   ${hasUbaStore ? '✅' : '❌'} window.ubaStore: ${hasUbaStore ? 'Available' : 'MISSING'}`);
-    
     if (hasUbaStore) {
         const hasInvoices = !!window.ubaStore.invoices;
         console.log(`   ${hasInvoices ? '✅' : '❌'} ubaStore.invoices: ${hasInvoices ? 'Available' : 'MISSING'}`);
-        
         if (hasInvoices) {
             const methods = ['getAll', 'getById', 'create', 'update', 'delete'];
-            methods.forEach(method => {
+            methods.forEach((method) => {
                 const exists = typeof window.ubaStore.invoices[method] === 'function';
                 console.log(`   ${exists ? '✅' : '❌'} invoices.${method}: ${exists ? 'Available' : 'MISSING'}`);
             });
         }
     }
-    
-    // 4. Test modal functionality
-    console.log('
-4️⃣ Testing modal functionality:');
+
+    console.log('\n4️⃣ Testing modal functionality:');
     try {
         const modal = document.getElementById('invoice-modal');
         if (modal) {
-            // Test opening
             openInvoiceModal();
             const isVisible = modal.style.display === 'flex';
             console.log(`   ${isVisible ? '✅' : '❌'} Modal opens: ${isVisible ? 'Success' : 'Failed'}`);
-            
-            // Test closing
             closeInvoiceModal();
             const isHidden = modal.style.display === 'none';
             console.log(`   ${isHidden ? '✅' : '❌'} Modal closes: ${isHidden ? 'Success' : 'Failed'}`);
@@ -1324,10 +1317,8 @@ window.verifyInvoicesSetup = function() {
     } catch (error) {
         console.log('   ❌ Modal test failed:', error.message);
     }
-    
-    // 5. Test data operations
-    console.log('
-5️⃣ Testing data operations:');
+
+    console.log('\n5️⃣ Testing data operations:');
     if (window.ubaStore && window.ubaStore.invoices) {
         try {
             const testInvoice = {
@@ -1336,24 +1327,16 @@ window.verifyInvoicesSetup = function() {
                 status: 'draft',
                 label: 'Test Invoice'
             };
-            
-            // Create
             const created = window.ubaStore.invoices.create(testInvoice);
             const createSuccess = !!created && !!created.id;
             console.log(`   ${createSuccess ? '✅' : '❌'} Create: ${createSuccess ? 'Success' : 'Failed'}`);
-            
             if (createSuccess) {
-                // Read
                 const retrieved = window.ubaStore.invoices.getById(created.id);
                 const readSuccess = !!retrieved && retrieved.client === 'Test Client';
                 console.log(`   ${readSuccess ? '✅' : '❌'} Read: ${readSuccess ? 'Success' : 'Failed'}`);
-                
-                // Update
                 const updated = window.ubaStore.invoices.update(created.id, { amount: 200 });
                 const updateSuccess = !!updated && updated.amount === 200;
                 console.log(`   ${updateSuccess ? '✅' : '❌'} Update: ${updateSuccess ? 'Success' : 'Failed'}`);
-                
-                // Delete
                 const deleted = window.ubaStore.invoices.delete(created.id);
                 const deleteSuccess = deleted === true;
                 console.log(`   ${deleteSuccess ? '✅' : '❌'} Delete: ${deleteSuccess ? 'Success' : 'Failed'}`);
@@ -1364,9 +1347,8 @@ window.verifyInvoicesSetup = function() {
     } else {
         console.log('   ❌ Cannot test - ubaStore not available');
     }
-    
-    console.log('
-🔍 VERIFICATION COMPLETE');
+
+    console.log('\n🔍 VERIFICATION COMPLETE');
     console.log('Run this verification by calling: verifyInvoicesSetup()');
 };
 

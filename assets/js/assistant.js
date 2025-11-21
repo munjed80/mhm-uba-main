@@ -128,8 +128,7 @@
 
     const bubble = document.createElement("div");
     bubble.className = `uba-assistant-bubble ${role === "user" ? "user" : "bot"}`;
-    bubble.innerHTML = escapeHtml(payload.text || "").replace(/
-/g, "<br />");
+    bubble.innerHTML = escapeHtml(payload.text || "").replace(/\n/g, "<br />");
 
     wrapper.append(meta, bubble);
 

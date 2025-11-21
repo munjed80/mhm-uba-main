@@ -298,23 +298,15 @@
       return false;
     }
 
-    const confirmed = confirm(
-      `Are you sure you want to delete "${workspace.name}"?
+        const confirmMessage = `Are you sure you want to delete "${workspace.name}"?\n\n`
+          + 'This will permanently delete all data in this workspace including:\n'
+          + '• All clients, projects, and tasks\n'
+          + '• All invoices and financial data\n'
+          + '• All files and documents\n'
+          + '• All settings and customizations\n\n'
+          + 'This action cannot be undone!';
 
-` +
-      'This will permanently delete all data in this workspace including:
-' +
-      '• All clients, projects, and tasks
-' +
-      '• All invoices and financial data
-' +
-      '• All files and documents
-' +
-      '• All settings and customizations
-
-' +
-      'This action cannot be undone!'
-    );
+        const confirmed = confirm(confirmMessage);
 
     if (confirmed) {
       try {

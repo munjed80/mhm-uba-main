@@ -1175,8 +1175,7 @@ function downloadCSV(filename, rows) {
   const headers = Object.keys(rows[0]);
   const csv = [headers.join(",")]
     .concat(rows.map((r) => headers.map((h) => esc(r[h])).join(",")))
-    .join("
-");
+    .join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -3439,8 +3438,7 @@ const renderSmartToolsGrid = () => {
             t("tool.insights.topExpense", "Top expense:") +
               ` ${insights.topExpenseCategory.category} (€${Number(insights.topExpenseCategory.amount || 0).toLocaleString()})`,
           );
-        return lines.join("
-");
+        return lines.join("\n");
       })(),
     });
 
@@ -3453,8 +3451,7 @@ const renderSmartToolsGrid = () => {
         ? actions
             .slice(0, 4)
             .map((a) => `• ${a.title}`)
-            .join("
-")
+            .join("\n")
         : t("tool.actions.empty", "No immediate actions"),
     });
 
@@ -3466,8 +3463,7 @@ const renderSmartToolsGrid = () => {
         badge: "CRM",
         body: topClients
           .map((c) => `• ${c.name}: €${Number(c.amount || 0).toLocaleString()}`)
-          .join("
-"),
+          .join("\n"),
       });
     }
 
@@ -3480,8 +3476,7 @@ const renderSmartToolsGrid = () => {
         body: inactive
           .slice(0, 4)
           .map((c) => `• ${c.name}`)
-          .join("
-"),
+          .join("\n"),
       });
     }
 
@@ -3686,8 +3681,9 @@ function renderQuickInsightsPanel() {
     if (topClients.length) {
       const c = document.createElement("div");
       c.className = "uba-support-card";
-      c.innerHTML = `<div class="uba-support-icon">💰</div><div><h4>${t("tool.insights.topClients", "Top clients")}</h4><p style="color:var(--muted,#6b7280);">${topClients.map((x) => `${escapeHtml(x.name)}: €${Number(x.amount || 0).toLocaleString()}`).join("
-")}</p></div>`;
+      c.innerHTML = `<div class="uba-support-icon">💰</div><div><h4>${t("tool.insights.topClients", "Top clients")}</h4><p style="color:var(--muted,#6b7280);">${topClients
+        .map((x) => `${escapeHtml(x.name)}: €${Number(x.amount || 0).toLocaleString()}`)
+        .join("\n")}</p></div>`;
       container.appendChild(c);
     }
     // overdue tasks
