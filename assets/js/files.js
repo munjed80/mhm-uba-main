@@ -128,7 +128,12 @@
     try {
       const totalStorage = await calculateTotalStorage();
       const subscription = await window.UBA.billing.getCurrentSubscription();
-      const plan = await window.UBA.billing.getPlan(subscription.planId);
+      const plan = window.UBA.billing.PLAN_CATALOG[subscription.planId];
+      
+      if (!plan) {
+        warn('Plan not found for:', subscription.planId);
+        return;
+      }
       
       const maxStorage = plan.limits.maxStorage;
       const percentage = (totalStorage / maxStorage) * 100;
@@ -521,20 +526,35 @@
     let previewHTML = '';
     
     if (category === 'images') {
-      previewHTML = `<img src="${file.contentBase64}" alt="${file.name}" class="preview-image">`;
+      // Validate image type before preview
+      if (file.type && file.type.startsWith('image/')) {
+        previewHTML = `<img src="${file.contentBase64}" alt="${file.name}" class="preview-image">`;
+      } else {
+        previewHTML = `<div class="preview-unsupported"><p>Invalid image file</p></div>`;
+      }
     } else if (category === 'pdfs') {
-      previewHTML = `
-        <div class="preview-pdf">
-          <iframe src="${file.contentBase64}" class="preview-iframe"></iframe>
-        </div>
-      `;
+      // Validate PDF type before preview
+      if (file.type === 'application/pdf') {
+        previewHTML = `
+          <div class="preview-pdf">
+            <iframe src="${file.contentBase64}" class="preview-iframe" sandbox="allow-same-origin"></iframe>
+          </div>
+        `;
+      } else {
+        previewHTML = `<div class="preview-unsupported"><p>Invalid PDF file</p></div>`;
+      }
     } else if (category === 'videos') {
-      previewHTML = `
-        <video controls class="preview-video">
-          <source src="${file.contentBase64}" type="${file.type}">
-          Your browser does not support video playback.
-        </video>
-      `;
+      // Validate video type before preview
+      if (file.type && file.type.startsWith('video/')) {
+        previewHTML = `
+          <video controls class="preview-video">
+            <source src="${file.contentBase64}" type="${file.type}">
+            Your browser does not support video playback.
+          </video>
+        `;
+      } else {
+        previewHTML = `<div class="preview-unsupported"><p>Invalid video file</p></div>`;
+      }
     } else {
       previewHTML = `
         <div class="preview-unsupported">
@@ -745,11 +765,11 @@
       }
       
       // Get current user and role
-      if (window.UBA.auth) {
+      if (window.UBA && window.UBA.auth && typeof window.UBA.auth.getCurrentUser === 'function') {
         currentUser = window.UBA.auth.getCurrentUser();
       }
       
-      if (window.Members) {
+      if (window.Members && typeof window.Members.getCurrentUserRole === 'function') {
         currentRole = window.Members.getCurrentUserRole();
       }
       
