@@ -1,74 +1,45 @@
-// calendar.js — modern calendar page with improved styling and full functionality
+// calendar.js — unified calendar view linked with workspace data
 (function () {
   let currentDate = new Date();
   let currentFilter = "all";
+  let selectedDate = null;
+  let highlightedEventId = null;
+  let eventsCache = [];
 
-  function collectCalendarEvents() {
-    const events = [];
-    const store = window.ubaStore;
-
+  function refreshEvents() {
     try {
-      // Tasks with due dates
-      if (store && store.tasks && typeof store.tasks.getAll === "function") {
-        const tasks = store.tasks.getAll() || [];
-        tasks.forEach((task) => {
-          if (task.due && /^\d{4}-\d{2}-\d{2}/.test(task.due)) {
-            events.push({
-              id: `task-${task.id}`,
-              date: task.due.split('T')[0], // Handle datetime format
-              type: "task",
-              title: task.title || "Task",
-              description: task.description || "",
-              priority: task.priority || "medium",
-              status: task.status || "todo",
-              projectId: task.projectId
-            });
-          }
-        });
+      if (window.UBACalendar && typeof window.UBACalendar.collectEvents === "function") {
+        eventsCache = window.UBACalendar.collectEvents();
+      } else {
+        eventsCache = [];
       }
-
-      // Invoices with due dates
-      if (store && store.invoices && typeof store.invoices.getAll === "function") {
-        const invoices = store.invoices.getAll() || [];
-        invoices.forEach((invoice) => {
-          if (invoice.due && /^\d{4}-\d{2}-\d{2}/.test(invoice.due)) {
-            events.push({
-              id: `invoice-${invoice.id}`,
-              date: invoice.due.split('T')[0],
-              type: "invoice",
-              title: `${invoice.label || "Invoice"} — ${invoice.client || ""}`,
-              amount: invoice.amount,
-              status: invoice.status || "draft",
-              client: invoice.client
-            });
-          }
-        });
-      }
-
-      // Projects with deadlines
-      if (store && store.projects && typeof store.projects.getAll === "function") {
-        const projects = store.projects.getAll() || [];
-        projects.forEach((project) => {
-          const date = project.due || project.deadline || project.date;
-          if (date && /^\d{4}-\d{2}-\d{2}/.test(date)) {
-            events.push({
-              id: `project-${project.id}`,
-              date: date.split('T')[0],
-              type: "project",
-              title: project.title || project.name || "Project",
-              stage: project.stage || "lead",
-              client: project.client,
-              budget: project.budget
-            });
-          }
-        });
-      }
-
     } catch (err) {
-      console.warn("calendar events collection error", err);
+      console.warn("calendar: failed to refresh events", err);
+      eventsCache = [];
     }
+  }
 
-    return events;
+  function ensureEvents() {
+    if (!eventsCache.length) {
+      refreshEvents();
+    }
+    return eventsCache;
+  }
+
+  function getTodayISO() {
+    const now = new Date();
+    return [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, "0"),
+      String(now.getDate()).padStart(2, "0"),
+    ].join("-");
+  }
+
+  function formatMonthYear(date) {
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+    });
   }
 
   function getDaysInMonth(year, month) {
@@ -76,125 +47,98 @@
   }
 
   function getFirstDayOfMonth(year, month) {
-    // Adjust to make Monday = 0
     const firstDay = new Date(year, month, 1).getDay();
     return firstDay === 0 ? 6 : firstDay - 1;
   }
 
-  function formatMonthYear(date) {
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long' 
-    });
-  }
-
   function isToday(year, month, day) {
     const today = new Date();
-    return year === today.getFullYear() && 
-           month === today.getMonth() && 
-           day === today.getDate();
-  }
-
-  function getEventsByDate(events, dateStr) {
-    return events.filter(event => 
-      event.date === dateStr && 
-      (currentFilter === "all" || event.type === currentFilter)
+    return (
+      year === today.getFullYear() &&
+      month === today.getMonth() &&
+      day === today.getDate()
     );
   }
 
   function createEventPill(event) {
     const pill = document.createElement("div");
     pill.className = `uba-calendar-event uba-calendar-event-${event.type}`;
-    
-    let content = "";
-    let icon = "";
-    
-    switch (event.type) {
-      case "task":
-        icon = event.priority === "high" ? "🔥" : event.priority === "low" ? "📝" : "✅";
-        content = `${icon} ${event.title}`;
-        if (event.status === "done") {
-          pill.classList.add("completed");
-        }
-        break;
-      case "invoice":
-        icon = event.status === "paid" ? "💚" : event.status === "overdue" ? "🔴" : "💵";
-        content = `${icon} ${event.client || "Invoice"}`;
-        if (event.amount) {
-          content += ` (€${event.amount})`;
-        }
-        break;
-      case "project":
-        icon = "💼";
-        content = `${icon} ${event.title}`;
-        if (event.stage === "completed") {
-          pill.classList.add("completed");
-        }
-        break;
-    }
-    
-    pill.textContent = content;
-    pill.title = event.title + (event.description ? ` - ${event.description}` : "");
-    
+    pill.textContent = `${event.icon || "•"} ${event.title}`;
+    pill.title = event.title;
+    pill.dataset.eventId = event.id;
+    pill.addEventListener("click", (e) => {
+      e.stopPropagation();
+      selectDate(event.date, event.id);
+    });
     return pill;
+  }
+
+  function getEventsForDate(dateStr) {
+    return ensureEvents().filter(
+      (event) =>
+        event.date === dateStr &&
+        (currentFilter === "all" || event.type === currentFilter),
+    );
   }
 
   function renderCalendar() {
     const grid = document.getElementById("calendar-grid");
     if (!grid) return;
-    
+
     grid.innerHTML = "";
-    
+
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const daysInMonth = getDaysInMonth(year, month);
     const firstDay = getFirstDayOfMonth(year, month);
-    
-    const events = collectCalendarEvents();
-    
-    // Update month title
+
+    const events = ensureEvents();
+
     const monthTitle = document.getElementById("current-month");
     if (monthTitle) {
       monthTitle.textContent = formatMonthYear(currentDate);
     }
 
-    // Add empty cells for days before the first day of the month
     for (let i = 0; i < firstDay; i++) {
       const emptyDay = document.createElement("div");
       emptyDay.className = "uba-calendar-day uba-calendar-day-empty";
       grid.appendChild(emptyDay);
     }
 
-    // Add days of the month
     for (let day = 1; day <= daysInMonth; day++) {
       const dayElement = document.createElement("div");
       dayElement.className = "uba-calendar-day";
-      
+      const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+      dayElement.dataset.date = dateStr;
+
       if (isToday(year, month, day)) {
         dayElement.classList.add("uba-calendar-day-today");
       }
 
-      const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+      if (selectedDate === dateStr) {
+        dayElement.classList.add("selected");
+      }
 
-      // Day number
+      dayElement.addEventListener("click", () => selectDate(dateStr));
+
       const dayNumber = document.createElement("div");
       dayNumber.className = "uba-calendar-day-number";
       dayNumber.textContent = day;
       dayElement.appendChild(dayNumber);
 
-      // Events container
       const eventsContainer = document.createElement("div");
       eventsContainer.className = "uba-calendar-day-events";
+      const dayEvents = events.filter(
+        (event) =>
+          event.date === dateStr &&
+          (currentFilter === "all" || event.type === currentFilter),
+      );
 
-      const dayEvents = getEventsByDate(events, dateStr);
-
-      // Show up to 3 events as pills
       dayEvents.slice(0, 3).forEach((event) => {
-        const eventPill = createEventPill(event);
-        eventsContainer.appendChild(eventPill);
+        const pill = createEventPill(event);
+        eventsContainer.appendChild(pill);
       });
 
-      // Show "more" indicator if there are additional events
       if (dayEvents.length > 3) {
         const moreElement = document.createElement("div");
         moreElement.className = "uba-calendar-event-more";
@@ -207,54 +151,173 @@
     }
   }
 
+  function highlightCalendarCells() {
+    document.querySelectorAll(".uba-calendar-day[data-date]").forEach((cell) => {
+      if (cell.dataset.date === selectedDate) {
+        cell.classList.add("selected");
+      } else {
+        cell.classList.remove("selected");
+      }
+    });
+  }
+
+  function renderDayPanel() {
+    const dateLabel = document.getElementById("calendar-panel-date");
+    const summary = document.getElementById("calendar-panel-summary");
+    const list = document.getElementById("calendar-day-events");
+    if (!dateLabel || !summary || !list) return;
+
+    if (!selectedDate) {
+      dateLabel.textContent = "Choose a date";
+      summary.textContent = "Select a day in the calendar to view linked work.";
+      list.innerHTML = `
+        <div class="calendar-empty-state">
+          <p>No date selected yet</p>
+          <small>Select any day to inspect its linked work.</small>
+        </div>
+      `;
+      return;
+    }
+
+    const readable = new Date(`${selectedDate}T00:00:00`).toLocaleDateString(
+      undefined,
+      { weekday: "long", month: "long", day: "numeric" },
+    );
+    dateLabel.textContent = readable;
+
+    const events = getEventsForDate(selectedDate);
+    if (!events.length) {
+      summary.textContent = "No linked tasks, invoices, or projects on this day.";
+      list.innerHTML = `
+        <div class="calendar-empty-state">
+          <p>No linked work</p>
+          <small>Add a task, invoice, or milestone to populate this date.</small>
+        </div>
+      `;
+      return;
+    }
+
+    summary.textContent = `${events.length} linked ${events.length === 1 ? "item" : "items"}.`;
+    list.innerHTML = events.map((event) => renderLinkedItem(event)).join("");
+
+    list.querySelectorAll("[data-event-link]").forEach((button) => {
+      button.addEventListener("click", (e) => {
+        e.preventDefault();
+        openEventLink(button.getAttribute("data-event-link"));
+      });
+    });
+
+    if (highlightedEventId) {
+      const target = list.querySelector(`[data-event-id="${highlightedEventId}"]`);
+      if (target) {
+        target.classList.add("active");
+        target.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+      highlightedEventId = null;
+    }
+  }
+
+  function renderLinkedItem(event) {
+    const severity = window.UBACalendar?.getEventSeverity?.(event) || "normal";
+    const meta = window.UBACalendar?.formatEventMeta?.(event) || "";
+    return `
+      <div class="calendar-linked-item" data-event-id="${event.id}" data-type="${event.type}" data-severity="${severity}">
+        <div class="calendar-linked-type">${event.icon || "•"}</div>
+        <div class="calendar-linked-body">
+          <p class="calendar-linked-title">${event.title}</p>
+          <p class="calendar-linked-meta">${meta}</p>
+        </div>
+        <div class="calendar-linked-actions">
+          <button class="uba-btn uba-btn-ghost uba-btn-sm" data-event-link="${event.id}">Open</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function openEventLink(eventId) {
+    const event = ensureEvents().find((item) => item.id === eventId);
+    if (!event) return;
+    if (event.url) {
+      window.location.href = event.url;
+    }
+  }
+
+  function selectDate(dateStr, eventId) {
+    selectedDate = dateStr;
+    highlightedEventId = eventId || null;
+    highlightCalendarCells();
+    renderDayPanel();
+  }
+
   function navigateMonth(direction) {
     currentDate.setMonth(currentDate.getMonth() + direction);
     renderCalendar();
+    highlightCalendarCells();
   }
 
   function setFilter(filter) {
     currentFilter = filter;
-    
-    // Update filter button states
-    const filterButtons = document.querySelectorAll("[data-filter]");
-    filterButtons.forEach(btn => {
-      btn.classList.remove("active");
-      if (btn.getAttribute("data-filter") === filter) {
-        btn.classList.add("active");
-      }
+    document.querySelectorAll("[data-filter]").forEach((btn) => {
+      btn.classList.toggle("active", btn.getAttribute("data-filter") === filter);
     });
-    
     renderCalendar();
+    renderDayPanel();
+  }
+
+  function handlePanelAction(action) {
+    switch (action) {
+      case "new-task":
+        window.location.href = "tasks.html#new";
+        break;
+      case "new-invoice":
+        window.location.href = "invoices.html#new";
+        break;
+      case "open-dashboard":
+        window.location.href = "index.html";
+        break;
+      default:
+        break;
+    }
   }
 
   function initCalendarPage() {
-    // Navigation buttons
+    refreshEvents();
+    renderCalendar();
+    selectDate(getTodayISO());
+
     const prevBtn = document.getElementById("prev-month");
     const nextBtn = document.getElementById("next-month");
-    
-    if (prevBtn) {
-      prevBtn.addEventListener("click", () => navigateMonth(-1));
-    }
-    
-    if (nextBtn) {
-      nextBtn.addEventListener("click", () => navigateMonth(1));
-    }
-    
-    // Filter buttons
-    const filterButtons = document.querySelectorAll("[data-filter]");
-    filterButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const filter = button.getAttribute("data-filter") || "all";
-        setFilter(filter);
+    const todayBtn = document.getElementById("calendar-today-btn");
+    const refreshBtn = document.getElementById("calendar-refresh-btn");
+
+    if (prevBtn) prevBtn.addEventListener("click", () => navigateMonth(-1));
+    if (nextBtn) nextBtn.addEventListener("click", () => navigateMonth(1));
+    if (todayBtn) {
+      todayBtn.addEventListener("click", () => {
+        currentDate = new Date();
+        renderCalendar();
+        selectDate(getTodayISO());
       });
+    }
+    if (refreshBtn) {
+      refreshBtn.addEventListener("click", () => {
+        refreshEvents();
+        renderCalendar();
+        renderDayPanel();
+      });
+    }
+
+    document.querySelectorAll("[data-filter]").forEach((button) => {
+      button.addEventListener("click", () => setFilter(button.getAttribute("data-filter") || "all"));
     });
-    
-    // Keyboard navigation
+
+    document.querySelectorAll("[data-panel-action]").forEach((button) => {
+      button.addEventListener("click", () => handlePanelAction(button.getAttribute("data-panel-action")));
+    });
+
     document.addEventListener("keydown", (e) => {
-      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
-        return; // Don't interfere with form inputs
-      }
-      
+      const tag = e.target && e.target.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
       switch (e.key) {
         case "ArrowLeft":
           e.preventDefault();
@@ -266,14 +329,14 @@
           break;
         case "Home":
           e.preventDefault();
-          currentDate = new Date(); // Go to current month
+          currentDate = new Date();
           renderCalendar();
+          selectDate(getTodayISO());
+          break;
+        default:
           break;
       }
     });
-
-    // Initial render
-    renderCalendar();
   }
 
   window.initCalendarPage = initCalendarPage;

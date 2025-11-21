@@ -140,35 +140,68 @@
             <div class="uba-views">
               <section class="uba-view" data-view="calendar">
                 <div class="uba-calendar-container">
-                  <div class="uba-calendar-header">
-                    <div class="uba-calendar-nav">
-                      <button id="prev-month" class="uba-btn uba-btn-ghost">
-                        <span class="icon">‹</span> Previous
-                      </button>
-                      <h2 id="current-month" class="uba-calendar-title">November 2025</h2>
-                      <button id="next-month" class="uba-btn uba-btn-ghost">
-                        Next <span class="icon">›</span>
-                      </button>
-                    </div>
-                    <div class="uba-calendar-filters">
-                      <button class="uba-chip active" data-filter="all">All</button>
-                      <button class="uba-chip" data-filter="task">Tasks</button>
-                      <button class="uba-chip" data-filter="invoice">Invoices</button>
-                      <button class="uba-chip" data-filter="project">Projects</button>
-                    </div>
-                  </div>
+                  <div class="uba-calendar-layout">
+                    <div class="uba-calendar-surface">
+                      <div class="uba-calendar-header">
+                        <div class="uba-calendar-nav">
+                          <button id="prev-month" class="uba-btn uba-btn-ghost">
+                            <span class="icon">‹</span> Previous
+                          </button>
+                          <h2 id="current-month" class="uba-calendar-title">November 2025</h2>
+                          <button id="next-month" class="uba-btn uba-btn-ghost">
+                            Next <span class="icon">›</span>
+                          </button>
+                        </div>
+                        <div class="uba-calendar-filters">
+                          <button class="uba-chip active" data-filter="all">All</button>
+                          <button class="uba-chip" data-filter="task">Tasks</button>
+                          <button class="uba-chip" data-filter="invoice">Invoices</button>
+                          <button class="uba-chip" data-filter="project">Projects</button>
+                        </div>
+                      </div>
 
-                  <div class="uba-calendar">
-                    <div class="uba-calendar-weekdays">
-                      <div class="uba-calendar-weekday">Mon</div>
-                      <div class="uba-calendar-weekday">Tue</div>
-                      <div class="uba-calendar-weekday">Wed</div>
-                      <div class="uba-calendar-weekday">Thu</div>
-                      <div class="uba-calendar-weekday">Fri</div>
-                      <div class="uba-calendar-weekday">Sat</div>
-                      <div class="uba-calendar-weekday">Sun</div>
+                      <div class="uba-calendar">
+                        <div class="uba-calendar-weekdays">
+                          <div class="uba-calendar-weekday">Mon</div>
+                          <div class="uba-calendar-weekday">Tue</div>
+                          <div class="uba-calendar-weekday">Wed</div>
+                          <div class="uba-calendar-weekday">Thu</div>
+                          <div class="uba-calendar-weekday">Fri</div>
+                          <div class="uba-calendar-weekday">Sat</div>
+                          <div class="uba-calendar-weekday">Sun</div>
+                        </div>
+                        <div id="calendar-grid" class="uba-calendar-grid"></div>
+                      </div>
                     </div>
-                    <div id="calendar-grid" class="uba-calendar-grid"></div>
+
+                    <aside class="uba-calendar-panel" aria-live="polite">
+                      <div class="calendar-panel-header">
+                        <div>
+                          <p class="calendar-panel-label">Selected day</p>
+                          <h3 id="calendar-panel-date">Choose a date</h3>
+                          <p id="calendar-panel-summary">
+                            Click a day in the calendar to view linked tasks, invoices, and project milestones.
+                          </p>
+                        </div>
+                        <div class="calendar-panel-actions">
+                          <button class="uba-btn uba-btn-ghost uba-btn-sm" id="calendar-today-btn">Today</button>
+                          <button class="uba-btn uba-btn-ghost uba-btn-sm" id="calendar-refresh-btn" title="Refresh events">⟳</button>
+                        </div>
+                      </div>
+
+                      <div class="calendar-panel-body" id="calendar-day-events">
+                        <div class="calendar-empty-state">
+                          <p>No date selected yet</p>
+                          <small>Select any day to inspect its linked work.</small>
+                        </div>
+                      </div>
+
+                      <div class="calendar-panel-footer">
+                        <button class="uba-btn uba-btn-secondary" data-panel-action="new-task">New Task</button>
+                        <button class="uba-btn uba-btn-secondary" data-panel-action="new-invoice">New Invoice</button>
+                        <button class="uba-btn uba-btn-ghost" data-panel-action="open-dashboard">Open Dashboard</button>
+                      </div>
+                    </aside>
                   </div>
                 </div>
               </section>
@@ -181,6 +214,7 @@
     <script src="assets/js/i18n.js"></script>
     <script src="assets/js/store.js"></script>
     <script src="assets/js/data-layer.js"></script>
+    <script src="assets/js/calendar-utils.js"></script>
     <script src="assets/js/app.js"></script>
     <script src="assets/js/uba-pages-data.js"></script>
     <script src="assets/js/page-loader.js"></script>

@@ -819,6 +819,7 @@ async function loadDashboardData(userId) {
   await loadKPIs(userId);
   await loadTasks(userId);
   await loadPipeline(userId);
+  renderRecentEvents();
 }
 
 /**
@@ -899,6 +900,9 @@ async function loadDemoDashboard() {
 
   // Pipeline
   renderPipelineColumns(demoPipeline);
+
+  // Recent events
+  renderRecentEvents(demoActivity);
 
   // Activity
   const activity = document.getElementById("activity-log");
@@ -1074,6 +1078,119 @@ function renderPipelineColumns(grouped, labels) {
     }
     pipelineColumns.appendChild(col);
   });
+}
+
+function renderRecentEvents(fallback = []) {
+  const container = document.getElementById("events-list");
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="uba-event-item">
+      <div class="uba-event-content">
+        <div class="uba-event-title">Loading activity...</div>
+        <div class="uba-event-meta">Pulling tasks, invoices and projects</div>
+      </div>
+    </div>
+  `;
+
+  try {
+    const events =
+      (window.UBACalendar && typeof window.UBACalendar.collectEvents === "function"
+        ? window.UBACalendar.collectEvents({ sort: "desc", limit: 6 })
+        : []) || [];
+
+    if (!events.length && fallback.length) {
+      container.innerHTML = fallback.map(renderStaticEventFeedItem).join("");
+      return;
+    }
+
+    if (!events.length) {
+      container.innerHTML = `
+        <div class="uba-event-item">
+          <div class="uba-event-content">
+            <div class="uba-event-title">No recent activity</div>
+            <div class="uba-event-meta">Connect your workspace or add data to see live updates.</div>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = events.map(renderEventFeedItem).join("");
+
+    container.querySelectorAll("[data-event-link]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const eventId = button.getAttribute("data-event-link");
+        const target = events.find((item) => item.id === eventId);
+        if (target?.url) {
+          window.location.href = target.url;
+        }
+      });
+    });
+  } catch (error) {
+    console.warn("Failed to render events feed", error);
+    container.innerHTML = `
+      <div class="uba-event-item">
+        <div class="uba-event-content">
+          <div class="uba-event-title">Unable to load activity</div>
+          <div class="uba-event-meta">${error.message || "Please retry"}</div>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function renderEventFeedItem(event) {
+  const severity = window.UBACalendar?.getEventSeverity?.(event) || "normal";
+  const severityClass =
+    severity === "high"
+      ? "uba-event-high"
+      : severity === "success"
+        ? "uba-event-success"
+        : "uba-event-normal";
+  const meta = window.UBACalendar?.formatEventMeta?.(event) || "";
+  const timeframe = window.UBACalendar?.formatRelativeDate?.(event.date) || "";
+  const actionLabel = getEventActionLabel(event);
+
+  return `
+    <div class="uba-event-item ${severityClass}" data-event-id="${event.id}">
+      <div class="uba-event-indicator"></div>
+      <div class="uba-event-content">
+        <div class="uba-event-title">${event.icon || "•"} ${event.title}</div>
+        <div class="uba-event-meta">${meta}</div>
+        <div class="uba-event-time">${timeframe}</div>
+      </div>
+      <div class="uba-event-action">
+        <button class="uba-btn-mini" data-event-link="${event.id}">${actionLabel}</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderStaticEventFeedItem(item) {
+  return `
+    <div class="uba-event-item uba-event-normal">
+      <div class="uba-event-indicator"></div>
+      <div class="uba-event-content">
+        <div class="uba-event-title">${item.text}</div>
+        <div class="uba-event-meta">${item.tag || "Workspace"}</div>
+        <div class="uba-event-time">Demo data</div>
+      </div>
+    </div>
+  `;
+}
+
+function getEventActionLabel(event) {
+  if (event.type === "invoice") {
+    return event.status === "overdue" ? "Send reminder" : "Open invoice";
+  }
+  if (event.type === "task") {
+    return "View task";
+  }
+  if (event.type === "project") {
+    return "View project";
+  }
+  return "Open";
 }
 
 // ======================================================
