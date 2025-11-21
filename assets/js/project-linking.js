@@ -126,4 +126,527 @@
           }
         }
       }
-    });\n    \n    // Only return if confidence is high enough\n    return bestScore > 0.6 ? bestMatch : null;\n  }\n  \n  /**\n   * Get searchable text from an item\n   */\n  function getSearchableText(item) {\n    const parts = [];\n    \n    // Add relevant text fields based on item type\n    ['title', 'name', 'label', 'description', 'notes', 'client'].forEach(field => {\n      if (item[field]) {\n        parts.push(item[field]);\n      }\n    });\n    \n    return parts.join(' ');\n  }\n  \n  /**\n   * Calculate match score between two text strings\n   */\n  function calculateMatchScore(text, pattern) {\n    if (!text || !pattern) return 0;\n    \n    const textLower = text.toLowerCase();\n    const patternLower = pattern.toLowerCase();\n    \n    // Exact substring match\n    if (textLower.includes(patternLower)) {\n      return Math.min(1.0, patternLower.length / textLower.length * 2);\n    }\n    \n    // Word boundary match\n    const words = patternLower.split(' ').filter(w => w.length > 2);\n    let matchedWords = 0;\n    \n    words.forEach(word => {\n      if (textLower.includes(word)) {\n        matchedWords++;\n      }\n    });\n    \n    return words.length > 0 ? matchedWords / words.length * 0.7 : 0;\n  }\n  \n  /**\n   * Find common meaningful words between two texts\n   */\n  function findCommonWords(text1, text2) {\n    const stopWords = new Set(['the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by']);\n    \n    const words1 = text1.toLowerCase().match(/\\b\\w{3,}\\b/g) || [];\n    const words2 = text2.toLowerCase().match(/\\b\\w{3,}\\b/g) || [];\n    \n    const set2 = new Set(words2.filter(w => !stopWords.has(w)));\n    \n    return words1.filter(w => !stopWords.has(w) && set2.has(w));\n  }\n  \n  /**\n   * Link a project to an item\n   */\n  function linkProjectToItem(projectId, collection, itemId) {\n    const store = window.ubaStore;\n    if (!store || !store[collection]) return false;\n    \n    try {\n      const item = store[collection].get(itemId);\n      if (item) {\n        store[collection].update(itemId, {\n          project_id: projectId,\n          linked_at: new Date().toISOString()\n        });\n        \n        // Update project's last activity\n        updateProjectActivity(projectId);\n        \n        return true;\n      }\n    } catch (error) {\n      console.error('Error linking project to item:', error);\n    }\n    \n    return false;\n  }\n  \n  /**\n   * Unlink a project from an item\n   */\n  function unlinkProjectFromItem(collection, itemId) {\n    const store = window.ubaStore;\n    if (!store || !store[collection]) return false;\n    \n    try {\n      const item = store[collection].get(itemId);\n      if (item && item.project_id) {\n        const updates = { ...item };\n        delete updates.project_id;\n        delete updates.linked_at;\n        \n        store[collection].update(itemId, updates);\n        return true;\n      }\n    } catch (error) {\n      console.error('Error unlinking project from item:', error);\n    }\n    \n    return false;\n  }\n  \n  /**\n   * Update project's last activity timestamp\n   */\n  function updateProjectActivity(projectId) {\n    const store = window.ubaStore;\n    if (!store || !store.projects) return;\n    \n    try {\n      const project = store.projects.get(projectId);\n      if (project) {\n        store.projects.update(projectId, {\n          last_activity: new Date().toISOString()\n        });\n      }\n    } catch (error) {\n      console.error('Error updating project activity:', error);\n    }\n  }\n  \n  /**\n   * Get all projects\n   */\n  function getProjects() {\n    const store = window.ubaStore;\n    if (!store || !store.projects) return [];\n    \n    return store.projects.getAll() || [];\n  }\n  \n  /**\n   * Get linked items for a project\n   */\n  function getProjectLinkedItems(projectId) {\n    const store = window.ubaStore;\n    if (!store) return { tasks: [], invoices: [] };\n    \n    const tasks = store.tasks ? store.tasks.getAll().filter(t => t.project_id === projectId) : [];\n    const invoices = store.invoices ? store.invoices.getAll().filter(i => i.project_id === projectId) : [];\n    \n    return { tasks, invoices };\n  }\n  \n  /**\n   * Get project summary with linked data\n   */\n  function getProjectSummary(projectId) {\n    const project = getProjectById(projectId);\n    if (!project) return null;\n    \n    const linked = getProjectLinkedItems(projectId);\n    \n    // Calculate statistics\n    const stats = {\n      totalTasks: linked.tasks.length,\n      completedTasks: linked.tasks.filter(t => t.status === 'done').length,\n      totalInvoices: linked.invoices.length,\n      paidInvoices: linked.invoices.filter(i => i.status === 'paid').length,\n      totalRevenue: linked.invoices.reduce((sum, i) => sum + (i.amount || 0), 0),\n      pendingRevenue: linked.invoices.filter(i => i.status !== 'paid').reduce((sum, i) => sum + (i.amount || 0), 0)\n    };\n    \n    return {\n      project,\n      linked,\n      stats,\n      progress: stats.totalTasks > 0 ? Math.round((stats.completedTasks / stats.totalTasks) * 100) : 0\n    };\n  }\n  \n  /**\n   * Get project by ID\n   */\n  function getProjectById(projectId) {\n    const store = window.ubaStore;\n    if (!store || !store.projects) return null;\n    \n    return store.projects.get(projectId);\n  }\n  \n  /**\n   * Setup project selectors in forms\n   */\n  function setupProjectSelectors() {\n    // Add project selectors to task and invoice forms\n    addProjectSelectorToForms();\n  }\n  \n  /**\n   * Add project selector to forms\n   */\n  function addProjectSelectorToForms() {\n    // Look for task form\n    const taskForm = document.querySelector('#task-form, #new-task-form');\n    if (taskForm && !taskForm.querySelector('#task-project-select')) {\n      addProjectSelectorToForm(taskForm, 'task');\n    }\n    \n    // Look for invoice form\n    const invoiceForm = document.querySelector('#invoice-form, #new-invoice-form');\n    if (invoiceForm && !invoiceForm.querySelector('#invoice-project-select')) {\n      addProjectSelectorToForm(invoiceForm, 'invoice');\n    }\n    \n    // Re-check periodically for dynamically added forms\n    setTimeout(addProjectSelectorToForms, 2000);\n  }\n  \n  /**\n   * Add project selector to a specific form\n   */\n  function addProjectSelectorToForm(form, type) {\n    const projects = getProjects().filter(p => p.stage !== 'completed');\n    if (projects.length === 0) return;\n    \n    const selector = document.createElement('div');\n    selector.className = 'uba-form-group';\n    selector.innerHTML = `\n      <label for=\"${type}-project-select\" class=\"uba-form-label\">Link to Project</label>\n      <select id=\"${type}-project-select\" class=\"uba-select\">\n        <option value=\"\">Select a project (optional)</option>\n        ${projects.map(p => `<option value=\"${p.id}\">${p.name}${p.client ? ` (${p.client})` : ''}</option>`).join('')}\n      </select>\n      <small class=\"uba-form-help\">Link this ${type} to a project for better organization and tracking.</small>\n    `;\n    \n    // Insert near the top of the form, after title/name field\n    const titleField = form.querySelector('input[type=\"text\"]');\n    if (titleField && titleField.parentElement) {\n      titleField.parentElement.insertAdjacentElement('afterend', selector);\n    } else {\n      // Fallback: insert at the beginning\n      form.insertBefore(selector, form.firstElementChild);\n    }\n    \n    // Add form submission handler\n    const selectElement = selector.querySelector('select');\n    addProjectLinkingToFormSubmission(form, selectElement, type);\n  }\n  \n  /**\n   * Add project linking to form submission\n   */\n  function addProjectLinkingToFormSubmission(form, selectElement, type) {\n    const originalOnSubmit = form.onsubmit;\n    \n    form.addEventListener('submit', function(e) {\n      const selectedProjectId = selectElement.value;\n      \n      if (selectedProjectId) {\n        // Store the project ID for later linking\n        form.dataset.selectedProjectId = selectedProjectId;\n        \n        // Wait for the item to be created, then link it\n        setTimeout(() => {\n          const store = window.ubaStore;\n          if (store && store[type + 's']) {\n            const items = store[type + 's'].getAll();\n            const latestItem = items[items.length - 1]; // Assume latest is the one just created\n            \n            if (latestItem && !latestItem.project_id) {\n              linkProjectToItem(selectedProjectId, type + 's', latestItem.id);\n            }\n          }\n        }, 100);\n      }\n      \n      // Call original handler if exists\n      if (originalOnSubmit) {\n        return originalOnSubmit.call(this, e);\n      }\n    });\n  }\n  \n  /**\n   * Setup project-based filtering\n   */\n  function setupProjectFilters() {\n    // Add project filters to pages that show tasks/invoices\n    addProjectFiltersToPages();\n  }\n  \n  /**\n   * Add project filters to relevant pages\n   */\n  function addProjectFiltersToPages() {\n    // Check if we're on tasks or invoices page\n    const pageId = document.querySelector('[data-page]')?.dataset.page;\n    \n    if (pageId === 'tasks-page') {\n      addProjectFilterToTasksPage();\n    } else if (pageId === 'invoices-page') {\n      addProjectFilterToInvoicesPage();\n    }\n  }\n  \n  /**\n   * Add project filter to tasks page\n   */\n  function addProjectFilterToTasksPage() {\n    const controlsRight = document.querySelector('.uba-controls-right');\n    if (!controlsRight || controlsRight.querySelector('#tasks-project-filter')) return;\n    \n    const projects = getProjects();\n    if (projects.length === 0) return;\n    \n    const filter = document.createElement('select');\n    filter.id = 'tasks-project-filter';\n    filter.className = 'uba-select uba-select-compact';\n    filter.innerHTML = `\n      <option value=\"all\">All Projects</option>\n      <option value=\"unlinked\">Unlinked Tasks</option>\n      ${projects.map(p => `<option value=\"${p.id}\">${p.name}</option>`).join('')}\n    `;\n    \n    filter.addEventListener('change', filterTasksByProject);\n    \n    // Insert before the last element (usually add button)\n    const lastChild = controlsRight.lastElementChild;\n    if (lastChild) {\n      controlsRight.insertBefore(filter, lastChild);\n    } else {\n      controlsRight.appendChild(filter);\n    }\n  }\n  \n  /**\n   * Add project filter to invoices page\n   */\n  function addProjectFilterToInvoicesPage() {\n    const controlsRight = document.querySelector('.uba-controls-right');\n    if (!controlsRight || controlsRight.querySelector('#invoices-project-filter')) return;\n    \n    const projects = getProjects();\n    if (projects.length === 0) return;\n    \n    const filter = document.createElement('select');\n    filter.id = 'invoices-project-filter';\n    filter.className = 'uba-select uba-select-compact';\n    filter.innerHTML = `\n      <option value=\"all\">All Projects</option>\n      <option value=\"unlinked\">Unlinked Invoices</option>\n      ${projects.map(p => `<option value=\"${p.id}\">${p.name}</option>`).join('')}\n    `;\n    \n    filter.addEventListener('change', filterInvoicesByProject);\n    \n    // Insert before the last element (usually add button)\n    const lastChild = controlsRight.lastElementChild;\n    if (lastChild) {\n      controlsRight.insertBefore(filter, lastChild);\n    } else {\n      controlsRight.appendChild(filter);\n    }\n  }\n  \n  /**\n   * Filter tasks by project\n   */\n  function filterTasksByProject(e) {\n    const selectedValue = e.target.value;\n    const taskCards = document.querySelectorAll('.uba-task-card, .uba-task-item');\n    \n    taskCards.forEach(card => {\n      const taskId = card.dataset.taskId || card.dataset.id;\n      if (!taskId) return;\n      \n      const store = window.ubaStore;\n      const task = store?.tasks?.get(taskId);\n      if (!task) return;\n      \n      let shouldShow = true;\n      \n      if (selectedValue === 'all') {\n        shouldShow = true;\n      } else if (selectedValue === 'unlinked') {\n        shouldShow = !task.project_id;\n      } else {\n        shouldShow = task.project_id === selectedValue;\n      }\n      \n      card.style.display = shouldShow ? '' : 'none';\n    });\n  }\n  \n  /**\n   * Filter invoices by project\n   */\n  function filterInvoicesByProject(e) {\n    const selectedValue = e.target.value;\n    const invoiceCards = document.querySelectorAll('.uba-invoice-card, .uba-invoice-item');\n    \n    invoiceCards.forEach(card => {\n      const invoiceId = card.dataset.invoiceId || card.dataset.id;\n      if (!invoiceId) return;\n      \n      const store = window.ubaStore;\n      const invoice = store?.invoices?.get(invoiceId);\n      if (!invoice) return;\n      \n      let shouldShow = true;\n      \n      if (selectedValue === 'all') {\n        shouldShow = true;\n      } else if (selectedValue === 'unlinked') {\n        shouldShow = !invoice.project_id;\n      } else {\n        shouldShow = invoice.project_id === selectedValue;\n      }\n      \n      card.style.display = shouldShow ? '' : 'none';\n    });\n  }\n  \n  /**\n   * Suggest project links for existing unlinked items\n   */\n  function suggestProjectLinks() {\n    const store = window.ubaStore;\n    if (!store) return [];\n    \n    const suggestions = [];\n    const projects = getProjects();\n    \n    if (projects.length === 0) return suggestions;\n    \n    // Check unlinked tasks\n    if (store.tasks) {\n      const unlinkedTasks = store.tasks.getAll().filter(t => !t.project_id);\n      unlinkedTasks.forEach(task => {\n        const match = findMatchingProject(task, projects);\n        if (match) {\n          suggestions.push({\n            type: 'task',\n            item: task,\n            project: match,\n            confidence: 'high'\n          });\n        }\n      });\n    }\n    \n    // Check unlinked invoices\n    if (store.invoices) {\n      const unlinkedInvoices = store.invoices.getAll().filter(i => !i.project_id);\n      unlinkedInvoices.forEach(invoice => {\n        const match = findMatchingProject(invoice, projects);\n        if (match) {\n          suggestions.push({\n            type: 'invoice',\n            item: invoice,\n            project: match,\n            confidence: 'high'\n          });\n        }\n      });\n    }\n    \n    return suggestions;\n  }\n  \n  /**\n   * Apply suggested project links\n   */\n  function applySuggestedLinks(suggestions) {\n    if (!suggestions || suggestions.length === 0) return;\n    \n    let applied = 0;\n    \n    suggestions.forEach(suggestion => {\n      const success = linkProjectToItem(\n        suggestion.project.id,\n        suggestion.type + 's',\n        suggestion.item.id\n      );\n      \n      if (success) {\n        applied++;\n      }\n    });\n    \n    if (applied > 0 && window.showToast) {\n      window.showToast(`Applied ${applied} suggested project links`, 'success');\n    }\n    \n    return applied;\n  }\n  \n  // Expose Project Linking API\n  window.UBAProjectLinking = {\n    init: initProjectLinking,\n    link: linkProjectToItem,\n    unlink: unlinkProjectFromItem,\n    getLinkedItems: getProjectLinkedItems,\n    getSummary: getProjectSummary,\n    suggestLinks: suggestProjectLinks,\n    applyLinks: applySuggestedLinks,\n    autoLink: autoLinkProjectToItem\n  };\n  \n  // Auto-initialize\n  if (document.readyState === 'loading') {\n    document.addEventListener('DOMContentLoaded', initProjectLinking);\n  } else {\n    // Delay initialization to ensure store is ready\n    setTimeout(initProjectLinking, 200);\n  }\n  \n  console.log('✓ Project Linking module loaded');\n  \n})();
+    });
+    
+    // Only return if confidence is high enough
+    return bestScore > 0.6 ? bestMatch : null;
+  }
+  
+  /**
+   * Get searchable text from an item
+   */
+  function getSearchableText(item) {
+    const parts = [];
+    
+    // Add relevant text fields based on item type
+    ['title', 'name', 'label', 'description', 'notes', 'client'].forEach(field => {
+      if (item[field]) {
+        parts.push(item[field]);
+      }
+    });
+    
+    return parts.join(' ');
+  }
+  
+  /**
+   * Calculate match score between two text strings
+   */
+  function calculateMatchScore(text, pattern) {
+    if (!text || !pattern) return 0;
+    
+    const textLower = text.toLowerCase();
+    const patternLower = pattern.toLowerCase();
+    
+    // Exact substring match
+    if (textLower.includes(patternLower)) {
+      return Math.min(1.0, patternLower.length / textLower.length * 2);
+    }
+    
+    // Word boundary match
+    const words = patternLower.split(' ').filter(w => w.length > 2);
+    let matchedWords = 0;
+    
+    words.forEach(word => {
+      if (textLower.includes(word)) {
+        matchedWords++;
+      }
+    });
+    
+    return words.length > 0 ? matchedWords / words.length * 0.7 : 0;
+  }
+  
+  /**
+   * Find common meaningful words between two texts
+   */
+  function findCommonWords(text1, text2) {
+    const stopWords = new Set(['the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by']);
+    
+    const words1 = text1.toLowerCase().match(/\\b\\w{3,}\\b/g) || [];
+    const words2 = text2.toLowerCase().match(/\\b\\w{3,}\\b/g) || [];
+    
+    const set2 = new Set(words2.filter(w => !stopWords.has(w)));
+    
+    return words1.filter(w => !stopWords.has(w) && set2.has(w));
+  }
+  
+  /**
+   * Link a project to an item
+   */
+  function linkProjectToItem(projectId, collection, itemId) {
+    const store = window.ubaStore;
+    if (!store || !store[collection]) return false;
+    
+    try {
+      const item = store[collection].get(itemId);
+      if (item) {
+        store[collection].update(itemId, {
+          project_id: projectId,
+          linked_at: new Date().toISOString()
+        });
+        
+        // Update project's last activity
+        updateProjectActivity(projectId);
+        
+        return true;
+      }
+    } catch (error) {
+      console.error('Error linking project to item:', error);
+    }
+    
+    return false;
+  }
+  
+  /**
+   * Unlink a project from an item
+   */
+  function unlinkProjectFromItem(collection, itemId) {
+    const store = window.ubaStore;
+    if (!store || !store[collection]) return false;
+    
+    try {
+      const item = store[collection].get(itemId);
+      if (item && item.project_id) {
+        const updates = { ...item };
+        delete updates.project_id;
+        delete updates.linked_at;
+        
+        store[collection].update(itemId, updates);
+        return true;
+      }
+    } catch (error) {
+      console.error('Error unlinking project from item:', error);
+    }
+    
+    return false;
+  }
+  
+  /**
+   * Update project's last activity timestamp
+   */
+  function updateProjectActivity(projectId) {
+    const store = window.ubaStore;
+    if (!store || !store.projects) return;
+    
+    try {
+      const project = store.projects.get(projectId);
+      if (project) {
+        store.projects.update(projectId, {
+          last_activity: new Date().toISOString()
+        });
+      }
+    } catch (error) {
+      console.error('Error updating project activity:', error);
+    }
+  }
+  
+  /**
+   * Get all projects
+   */
+  function getProjects() {
+    const store = window.ubaStore;
+    if (!store || !store.projects) return [];
+    
+    return store.projects.getAll() || [];
+  }
+  
+  /**
+   * Get linked items for a project
+   */
+  function getProjectLinkedItems(projectId) {
+    const store = window.ubaStore;
+    if (!store) return { tasks: [], invoices: [] };
+    
+    const tasks = store.tasks ? store.tasks.getAll().filter(t => t.project_id === projectId) : [];
+    const invoices = store.invoices ? store.invoices.getAll().filter(i => i.project_id === projectId) : [];
+    
+    return { tasks, invoices };
+  }
+  
+  /**
+   * Get project summary with linked data
+   */
+  function getProjectSummary(projectId) {
+    const project = getProjectById(projectId);
+    if (!project) return null;
+    
+    const linked = getProjectLinkedItems(projectId);
+    
+    // Calculate statistics
+    const stats = {
+      totalTasks: linked.tasks.length,
+      completedTasks: linked.tasks.filter(t => t.status === 'done').length,
+      totalInvoices: linked.invoices.length,
+      paidInvoices: linked.invoices.filter(i => i.status === 'paid').length,
+      totalRevenue: linked.invoices.reduce((sum, i) => sum + (i.amount || 0), 0),
+      pendingRevenue: linked.invoices.filter(i => i.status !== 'paid').reduce((sum, i) => sum + (i.amount || 0), 0)
+    };
+    
+    return {
+      project,
+      linked,
+      stats,
+      progress: stats.totalTasks > 0 ? Math.round((stats.completedTasks / stats.totalTasks) * 100) : 0
+    };
+  }
+  
+  /**
+   * Get project by ID
+   */
+  function getProjectById(projectId) {
+    const store = window.ubaStore;
+    if (!store || !store.projects) return null;
+    
+    return store.projects.get(projectId);
+  }
+  
+  /**
+   * Setup project selectors in forms
+   */
+  function setupProjectSelectors() {
+    // Add project selectors to task and invoice forms
+    addProjectSelectorToForms();
+  }
+  
+  /**
+   * Add project selector to forms
+   */
+  function addProjectSelectorToForms() {
+    // Look for task form
+    const taskForm = document.querySelector('#task-form, #new-task-form');
+    if (taskForm && !taskForm.querySelector('#task-project-select')) {
+      addProjectSelectorToForm(taskForm, 'task');
+    }
+    
+    // Look for invoice form
+    const invoiceForm = document.querySelector('#invoice-form, #new-invoice-form');
+    if (invoiceForm && !invoiceForm.querySelector('#invoice-project-select')) {
+      addProjectSelectorToForm(invoiceForm, 'invoice');
+    }
+    
+    // Re-check periodically for dynamically added forms
+    setTimeout(addProjectSelectorToForms, 2000);
+  }
+  
+  /**
+   * Add project selector to a specific form
+   */
+  function addProjectSelectorToForm(form, type) {
+    const projects = getProjects().filter(p => p.stage !== 'completed');
+    if (projects.length === 0) return;
+    
+    const selector = document.createElement('div');
+    selector.className = 'uba-form-group';
+    selector.innerHTML = `
+      <label for=\"${type}-project-select\" class=\"uba-form-label\">Link to Project</label>
+      <select id=\"${type}-project-select\" class=\"uba-select\">
+        <option value=\"\">Select a project (optional)</option>
+        ${projects.map(p => `<option value=\"${p.id}\">${p.name}${p.client ? ` (${p.client})` : ''}</option>`).join('')}
+      </select>
+      <small class=\"uba-form-help\">Link this ${type} to a project for better organization and tracking.</small>
+    `;
+    
+    // Insert near the top of the form, after title/name field
+    const titleField = form.querySelector('input[type=\"text\"]');
+    if (titleField && titleField.parentElement) {
+      titleField.parentElement.insertAdjacentElement('afterend', selector);
+    } else {
+      // Fallback: insert at the beginning
+      form.insertBefore(selector, form.firstElementChild);
+    }
+    
+    // Add form submission handler
+    const selectElement = selector.querySelector('select');
+    addProjectLinkingToFormSubmission(form, selectElement, type);
+  }
+  
+  /**
+   * Add project linking to form submission
+   */
+  function addProjectLinkingToFormSubmission(form, selectElement, type) {
+    const originalOnSubmit = form.onsubmit;
+    
+    form.addEventListener('submit', function(e) {
+      const selectedProjectId = selectElement.value;
+      
+      if (selectedProjectId) {
+        // Store the project ID for later linking
+        form.dataset.selectedProjectId = selectedProjectId;
+        
+        // Wait for the item to be created, then link it
+        setTimeout(() => {
+          const store = window.ubaStore;
+          if (store && store[type + 's']) {
+            const items = store[type + 's'].getAll();
+            const latestItem = items[items.length - 1]; // Assume latest is the one just created
+            
+            if (latestItem && !latestItem.project_id) {
+              linkProjectToItem(selectedProjectId, type + 's', latestItem.id);
+            }
+          }
+        }, 100);
+      }
+      
+      // Call original handler if exists
+      if (originalOnSubmit) {
+        return originalOnSubmit.call(this, e);
+      }
+    });
+  }
+  
+  /**
+   * Setup project-based filtering
+   */
+  function setupProjectFilters() {
+    // Add project filters to pages that show tasks/invoices
+    addProjectFiltersToPages();
+  }
+  
+  /**
+   * Add project filters to relevant pages
+   */
+  function addProjectFiltersToPages() {
+    // Check if we're on tasks or invoices page
+    const pageId = document.querySelector('[data-page]')?.dataset.page;
+    
+    if (pageId === 'tasks-page') {
+      addProjectFilterToTasksPage();
+    } else if (pageId === 'invoices-page') {
+      addProjectFilterToInvoicesPage();
+    }
+  }
+  
+  /**
+   * Add project filter to tasks page
+   */
+  function addProjectFilterToTasksPage() {
+    const controlsRight = document.querySelector('.uba-controls-right');
+    if (!controlsRight || controlsRight.querySelector('#tasks-project-filter')) return;
+    
+    const projects = getProjects();
+    if (projects.length === 0) return;
+    
+    const filter = document.createElement('select');
+    filter.id = 'tasks-project-filter';
+    filter.className = 'uba-select uba-select-compact';
+    filter.innerHTML = `
+      <option value=\"all\">All Projects</option>
+      <option value=\"unlinked\">Unlinked Tasks</option>
+      ${projects.map(p => `<option value=\"${p.id}\">${p.name}</option>`).join('')}
+    `;
+    
+    filter.addEventListener('change', filterTasksByProject);
+    
+    // Insert before the last element (usually add button)
+    const lastChild = controlsRight.lastElementChild;
+    if (lastChild) {
+      controlsRight.insertBefore(filter, lastChild);
+    } else {
+      controlsRight.appendChild(filter);
+    }
+  }
+  
+  /**
+   * Add project filter to invoices page
+   */
+  function addProjectFilterToInvoicesPage() {
+    const controlsRight = document.querySelector('.uba-controls-right');
+    if (!controlsRight || controlsRight.querySelector('#invoices-project-filter')) return;
+    
+    const projects = getProjects();
+    if (projects.length === 0) return;
+    
+    const filter = document.createElement('select');
+    filter.id = 'invoices-project-filter';
+    filter.className = 'uba-select uba-select-compact';
+    filter.innerHTML = `
+      <option value=\"all\">All Projects</option>
+      <option value=\"unlinked\">Unlinked Invoices</option>
+      ${projects.map(p => `<option value=\"${p.id}\">${p.name}</option>`).join('')}
+    `;
+    
+    filter.addEventListener('change', filterInvoicesByProject);
+    
+    // Insert before the last element (usually add button)
+    const lastChild = controlsRight.lastElementChild;
+    if (lastChild) {
+      controlsRight.insertBefore(filter, lastChild);
+    } else {
+      controlsRight.appendChild(filter);
+    }
+  }
+  
+  /**
+   * Filter tasks by project
+   */
+  function filterTasksByProject(e) {
+    const selectedValue = e.target.value;
+    const taskCards = document.querySelectorAll('.uba-task-card, .uba-task-item');
+    
+    taskCards.forEach(card => {
+      const taskId = card.dataset.taskId || card.dataset.id;
+      if (!taskId) return;
+      
+      const store = window.ubaStore;
+      const task = store?.tasks?.get(taskId);
+      if (!task) return;
+      
+      let shouldShow = true;
+      
+      if (selectedValue === 'all') {
+        shouldShow = true;
+      } else if (selectedValue === 'unlinked') {
+        shouldShow = !task.project_id;
+      } else {
+        shouldShow = task.project_id === selectedValue;
+      }
+      
+      card.style.display = shouldShow ? '' : 'none';
+    });
+  }
+  
+  /**
+   * Filter invoices by project
+   */
+  function filterInvoicesByProject(e) {
+    const selectedValue = e.target.value;
+    const invoiceCards = document.querySelectorAll('.uba-invoice-card, .uba-invoice-item');
+    
+    invoiceCards.forEach(card => {
+      const invoiceId = card.dataset.invoiceId || card.dataset.id;
+      if (!invoiceId) return;
+      
+      const store = window.ubaStore;
+      const invoice = store?.invoices?.get(invoiceId);
+      if (!invoice) return;
+      
+      let shouldShow = true;
+      
+      if (selectedValue === 'all') {
+        shouldShow = true;
+      } else if (selectedValue === 'unlinked') {
+        shouldShow = !invoice.project_id;
+      } else {
+        shouldShow = invoice.project_id === selectedValue;
+      }
+      
+      card.style.display = shouldShow ? '' : 'none';
+    });
+  }
+  
+  /**
+   * Suggest project links for existing unlinked items
+   */
+  function suggestProjectLinks() {
+    const store = window.ubaStore;
+    if (!store) return [];
+    
+    const suggestions = [];
+    const projects = getProjects();
+    
+    if (projects.length === 0) return suggestions;
+    
+    // Check unlinked tasks
+    if (store.tasks) {
+      const unlinkedTasks = store.tasks.getAll().filter(t => !t.project_id);
+      unlinkedTasks.forEach(task => {
+        const match = findMatchingProject(task, projects);
+        if (match) {
+          suggestions.push({
+            type: 'task',
+            item: task,
+            project: match,
+            confidence: 'high'
+          });
+        }
+      });
+    }
+    
+    // Check unlinked invoices
+    if (store.invoices) {
+      const unlinkedInvoices = store.invoices.getAll().filter(i => !i.project_id);
+      unlinkedInvoices.forEach(invoice => {
+        const match = findMatchingProject(invoice, projects);
+        if (match) {
+          suggestions.push({
+            type: 'invoice',
+            item: invoice,
+            project: match,
+            confidence: 'high'
+          });
+        }
+      });
+    }
+    
+    return suggestions;
+  }
+  
+  /**
+   * Apply suggested project links
+   */
+  function applySuggestedLinks(suggestions) {
+    if (!suggestions || suggestions.length === 0) return;
+    
+    let applied = 0;
+    
+    suggestions.forEach(suggestion => {
+      const success = linkProjectToItem(
+        suggestion.project.id,
+        suggestion.type + 's',
+        suggestion.item.id
+      );
+      
+      if (success) {
+        applied++;
+      }
+    });
+    
+    if (applied > 0 && window.showToast) {
+      window.showToast(`Applied ${applied} suggested project links`, 'success');
+    }
+    
+    return applied;
+  }
+  
+  // Expose Project Linking API
+  window.UBAProjectLinking = {
+    init: initProjectLinking,
+    link: linkProjectToItem,
+    unlink: unlinkProjectFromItem,
+    getLinkedItems: getProjectLinkedItems,
+    getSummary: getProjectSummary,
+    suggestLinks: suggestProjectLinks,
+    applyLinks: applySuggestedLinks,
+    autoLink: autoLinkProjectToItem
+  };
+  
+  // Auto-initialize
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initProjectLinking);
+  } else {
+    // Delay initialization to ensure store is ready
+    setTimeout(initProjectLinking, 200);
+  }
+  
+  console.log('✓ Project Linking module loaded');
+  
+})();

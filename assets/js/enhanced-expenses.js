@@ -194,4 +194,1253 @@
      * Add category management button
      */
     addCategoryManagementButton() {
-      const expensesHeader = document.querySelector('#expenses-page .uba-card-header');\n      if (expensesHeader) {\n        const buttonContainer = expensesHeader.querySelector('div:last-child');\n        if (buttonContainer) {\n          // Add category management button\n          const categoryBtn = document.createElement('button');\n          categoryBtn.className = 'uba-btn uba-btn-ghost';\n          categoryBtn.innerHTML = '<span class=\"icon\">🏷️</span> Categories';\n          categoryBtn.onclick = () => this.openCategoryManagement();\n          \n          // Insert before the Add Expense button\n          const addBtn = buttonContainer.querySelector('.uba-btn-primary');\n          if (addBtn) {\n            buttonContainer.insertBefore(categoryBtn, addBtn);\n          }\n        }\n      }\n    },\n    \n    /**\n     * Create category management modal\n     */\n    createCategoryModal() {\n      const modal = document.createElement('div');\n      modal.id = 'category-management-modal';\n      modal.className = 'uba-modal category-modal';\n      modal.innerHTML = `\n        <div class=\"uba-modal-overlay\" onclick=\"window.UBAEnhancedExpenses.closeCategoryManagement()\"></div>\n        <div class=\"uba-modal-dialog category-dialog\">\n          <div class=\"uba-modal-header\">\n            <h3><span class=\"icon\">🏷️</span> إدارة فئات الصرف (Expense Categories Management)</h3>\n            <button class=\"uba-modal-close\" onclick=\"window.UBAEnhancedExpenses.closeCategoryManagement()\">×</button>\n          </div>\n          <div class=\"uba-modal-body category-body\">\n            <!-- Category form -->\n            <div class=\"category-form-section\">\n              <h4>Add/Edit Category</h4>\n              <form id=\"category-form\" class=\"category-form\">\n                <input type=\"hidden\" id=\"category-edit-id\" />\n                <div class=\"category-form-grid\">\n                  <div class=\"form-group\">\n                    <label for=\"category-name\">Name *</label>\n                    <input type=\"text\" id=\"category-name\" class=\"uba-input\" placeholder=\"Category name\" required />\n                  </div>\n                  <div class=\"form-group\">\n                    <label for=\"category-name-ar\">Arabic Name</label>\n                    <input type=\"text\" id=\"category-name-ar\" class=\"uba-input\" placeholder=\"الاسم بالعربية\" />\n                  </div>\n                  <div class=\"form-group\">\n                    <label for=\"category-icon\">Icon</label>\n                    <div class=\"icon-selector\">\n                      <input type=\"text\" id=\"category-icon\" class=\"uba-input icon-input\" placeholder=\"📎\" maxlength=\"2\" />\n                      <div class=\"icon-suggestions\">\n                        <span class=\"icon-option\" onclick=\"window.UBAEnhancedExpenses.selectIcon('📎')\">📎</span>\n                        <span class=\"icon-option\" onclick=\"window.UBAEnhancedExpenses.selectIcon('💻')\">💻</span>\n                        <span class=\"icon-option\" onclick=\"window.UBAEnhancedExpenses.selectIcon('✈️')\">✈️</span>\n                        <span class=\"icon-option\" onclick=\"window.UBAEnhancedExpenses.selectIcon('📢')\">📢</span>\n                        <span class=\"icon-option\" onclick=\"window.UBAEnhancedExpenses.selectIcon('🔧')\">🔧</span>\n                        <span class=\"icon-option\" onclick=\"window.UBAEnhancedExpenses.selectIcon('💡')\">💡</span>\n                        <span class=\"icon-option\" onclick=\"window.UBAEnhancedExpenses.selectIcon('🏢')\">🏢</span>\n                        <span class=\"icon-option\" onclick=\"window.UBAEnhancedExpenses.selectIcon('🛡️')\">🛡️</span>\n                      </div>\n                    </div>\n                  </div>\n                  <div class=\"form-group\">\n                    <label for=\"category-color\">Color</label>\n                    <input type=\"color\" id=\"category-color\" class=\"uba-input color-picker\" value=\"#3b82f6\" />\n                  </div>\n                  <div class=\"form-group full-width\">\n                    <label for=\"category-description\">Description</label>\n                    <input type=\"text\" id=\"category-description\" class=\"uba-input\" placeholder=\"Brief description\" />\n                  </div>\n                  <div class=\"form-group\">\n                    <label for=\"category-budget\">Monthly Budget (€)</label>\n                    <input type=\"number\" id=\"category-budget\" class=\"uba-input\" min=\"0\" step=\"0.01\" placeholder=\"0.00\" />\n                  </div>\n                  <div class=\"form-group\">\n                    <label class=\"checkbox-label\">\n                      <input type=\"checkbox\" id=\"category-active\" checked />\n                      <span class=\"checkmark\"></span>\n                      Active\n                    </label>\n                  </div>\n                </div>\n                <div class=\"category-form-actions\">\n                  <button type=\"button\" class=\"uba-btn uba-btn-ghost\" onclick=\"window.UBAEnhancedExpenses.clearCategoryForm()\">Clear</button>\n                  <button type=\"submit\" class=\"uba-btn uba-btn-primary\">Save Category</button>\n                </div>\n              </form>\n            </div>\n            \n            <!-- Categories list -->\n            <div class=\"category-list-section\">\n              <h4>Existing Categories</h4>\n              <div id=\"categories-list\" class=\"categories-grid\">\n                <!-- Categories will be rendered here -->\n              </div>\n            </div>\n          </div>\n        </div>\n      `;\n      \n      document.body.appendChild(modal);\n      \n      // Setup form submission\n      const form = modal.querySelector('#category-form');\n      form.addEventListener('submit', (e) => {\n        e.preventDefault();\n        this.saveCategoryFromForm();\n      });\n    },\n    \n    /**\n     * Open category management modal\n     */\n    openCategoryManagement() {\n      const modal = document.getElementById('category-management-modal');\n      if (modal) {\n        modal.classList.add('is-visible');\n        document.body.style.overflow = 'hidden';\n        this.renderCategoriesList();\n      }\n    },\n    \n    /**\n     * Close category management modal\n     */\n    closeCategoryManagement() {\n      const modal = document.getElementById('category-management-modal');\n      if (modal) {\n        modal.classList.remove('is-visible');\n        document.body.style.overflow = '';\n        this.clearCategoryForm();\n      }\n    },\n    \n    /**\n     * Render categories list in modal\n     */\n    renderCategoriesList() {\n      const container = document.getElementById('categories-list');\n      if (!container) return;\n      \n      container.innerHTML = this.categories.map(category => `\n        <div class=\"category-item ${category.active ? 'active' : 'inactive'}\" style=\"border-left: 4px solid ${category.color}\">\n          <div class=\"category-header\">\n            <div class=\"category-icon-name\">\n              <span class=\"category-icon\">${category.icon}</span>\n              <div class=\"category-names\">\n                <strong class=\"category-name\">${category.name}</strong>\n                ${category.nameAr ? `<small class=\"category-name-ar\">${category.nameAr}</small>` : ''}\n              </div>\n            </div>\n            <div class=\"category-actions\">\n              <button class=\"uba-btn uba-btn-sm uba-btn-ghost\" onclick=\"window.UBAEnhancedExpenses.editCategory('${category.id}')\" title=\"Edit category\">\n                ✏️\n              </button>\n              <button class=\"uba-btn uba-btn-sm uba-btn-danger\" onclick=\"window.UBAEnhancedExpenses.deleteCategory('${category.id}')\" title=\"Delete category\">\n                🗑️\n              </button>\n            </div>\n          </div>\n          <div class=\"category-details\">\n            <p class=\"category-description\">${category.description}</p>\n            <div class=\"category-meta\">\n              <span class=\"category-budget\">Budget: €${category.budget || 0}/month</span>\n              <span class=\"category-status ${category.active ? 'active' : 'inactive'}\">\n                ${category.active ? 'Active' : 'Inactive'}\n              </span>\n            </div>\n          </div>\n        </div>\n      `).join('');\n    },\n    \n    /**\n     * Clear category form\n     */\n    clearCategoryForm() {\n      document.getElementById('category-edit-id').value = '';\n      document.getElementById('category-name').value = '';\n      document.getElementById('category-name-ar').value = '';\n      document.getElementById('category-icon').value = '';\n      document.getElementById('category-color').value = '#3b82f6';\n      document.getElementById('category-description').value = '';\n      document.getElementById('category-budget').value = '';\n      document.getElementById('category-active').checked = true;\n    },\n    \n    /**\n     * Select icon for category\n     */\n    selectIcon(icon) {\n      document.getElementById('category-icon').value = icon;\n    },\n    \n    /**\n     * Save category from form\n     */\n    saveCategoryFromForm() {\n      const editId = document.getElementById('category-edit-id').value;\n      const categoryData = {\n        name: document.getElementById('category-name').value.trim(),\n        nameAr: document.getElementById('category-name-ar').value.trim(),\n        icon: document.getElementById('category-icon').value.trim() || '📋',\n        color: document.getElementById('category-color').value,\n        description: document.getElementById('category-description').value.trim(),\n        budget: parseFloat(document.getElementById('category-budget').value) || 0,\n        active: document.getElementById('category-active').checked\n      };\n      \n      // Validate required fields\n      if (!categoryData.name) {\n        this.showNotification('Category name is required', 'error');\n        return;\n      }\n      \n      if (editId) {\n        // Update existing category\n        const index = this.categories.findIndex(cat => cat.id === editId);\n        if (index !== -1) {\n          this.categories[index] = { ...this.categories[index], ...categoryData };\n          this.showNotification(`Category \"${categoryData.name}\" updated successfully`, 'success');\n        }\n      } else {\n        // Create new category\n        const newCategory = {\n          id: 'cat-' + Date.now(),\n          ...categoryData,\n          createdAt: new Date().toISOString()\n        };\n        this.categories.push(newCategory);\n        this.showNotification(`Category \"${categoryData.name}\" created successfully`, 'success');\n      }\n      \n      this.saveCategories();\n      this.renderCategoriesList();\n      this.updateExpenseFormCategories();\n      this.clearCategoryForm();\n    },\n    \n    /**\n     * Edit category\n     */\n    editCategory(categoryId) {\n      const category = this.categories.find(cat => cat.id === categoryId);\n      if (!category) return;\n      \n      document.getElementById('category-edit-id').value = category.id;\n      document.getElementById('category-name').value = category.name;\n      document.getElementById('category-name-ar').value = category.nameAr || '';\n      document.getElementById('category-icon').value = category.icon;\n      document.getElementById('category-color').value = category.color;\n      document.getElementById('category-description').value = category.description || '';\n      document.getElementById('category-budget').value = category.budget || '';\n      document.getElementById('category-active').checked = category.active;\n    },\n    \n    /**\n     * Delete category\n     */\n    deleteCategory(categoryId) {\n      const category = this.categories.find(cat => cat.id === categoryId);\n      if (!category) return;\n      \n      if (confirm(`Are you sure you want to delete the category \"${category.name}\"?\\n\\nThis action cannot be undone.`)) {\n        this.categories = this.categories.filter(cat => cat.id !== categoryId);\n        this.saveCategories();\n        this.renderCategoriesList();\n        this.updateExpenseFormCategories();\n        this.showNotification(`Category \"${category.name}\" deleted`, 'info');\n      }\n    },\n    \n    /**\n     * Update expense form categories dropdown\n     */\n    updateExpenseFormCategories() {\n      const categorySelect = document.getElementById('expense-category');\n      if (!categorySelect) return;\n      \n      // Clear existing options except the first one\n      categorySelect.innerHTML = '<option value=\"\">Select Category</option>';\n      \n      // Add active categories\n      this.categories\n        .filter(category => category.active)\n        .forEach(category => {\n          const option = document.createElement('option');\n          option.value = category.name;\n          option.textContent = `${category.icon} ${category.name}`;\n          option.setAttribute('data-category-id', category.id);\n          categorySelect.appendChild(option);\n        });\n    },\n    \n    /**\n     * Setup charts functionality\n     */\n    setupCharts() {\n      console.log('📊 Setting up expense charts');\n      \n      // Add charts section to expenses page\n      this.addChartsSection();\n      \n      // Initialize charts\n      this.initializeCharts();\n    },\n    \n    /**\n     * Add charts section to expenses page\n     */\n    addChartsSection() {\n      const expensesView = document.querySelector('[data-view=\"expenses\"]');\n      if (!expensesView) return;\n      \n      const chartsSection = document.createElement('div');\n      chartsSection.className = 'uba-grid';\n      chartsSection.style.marginBottom = '20px';\n      chartsSection.innerHTML = `\n        <div class=\"uba-grid-col\">\n          <div class=\"charts-container\">\n            <!-- Pie Chart -->\n            <div class=\"uba-card chart-card\">\n              <div class=\"uba-card-header\">\n                <div>\n                  <div class=\"uba-card-title\">📊 Expense Distribution</div>\n                  <p class=\"uba-card-sub\">Breakdown by category</p>\n                </div>\n                <div class=\"chart-controls\">\n                  <select id=\"pie-chart-period\" class=\"uba-select enhanced-dropdown\">\n                    <option value=\"current-month\">This Month</option>\n                    <option value=\"last-month\">Last Month</option>\n                    <option value=\"last-3-months\">Last 3 Months</option>\n                    <option value=\"last-6-months\">Last 6 Months</option>\n                  </select>\n                </div>\n              </div>\n              <div class=\"chart-content\">\n                <canvas id=\"expense-pie-chart\" width=\"400\" height=\"300\"></canvas>\n                <div id=\"pie-chart-legend\" class=\"chart-legend\"></div>\n              </div>\n            </div>\n            \n            <!-- Monthly Trend Chart -->\n            <div class=\"uba-card chart-card\">\n              <div class=\"uba-card-header\">\n                <div>\n                  <div class=\"uba-card-title\">📈 Monthly Trend</div>\n                  <p class=\"uba-card-sub\">Expense trends over time</p>\n                </div>\n                <div class=\"chart-controls\">\n                  <select id=\"trend-chart-period\" class=\"uba-select enhanced-dropdown\">\n                    <option value=\"6-months\">Last 6 Months</option>\n                    <option value=\"12-months\">Last 12 Months</option>\n                    <option value=\"24-months\">Last 24 Months</option>\n                  </select>\n                </div>\n              </div>\n              <div class=\"chart-content\">\n                <canvas id=\"expense-trend-chart\" width=\"600\" height=\"300\"></canvas>\n                <div id=\"trend-chart-summary\" class=\"chart-summary\"></div>\n              </div>\n            </div>\n          </div>\n        </div>\n      `;\n      \n      // Insert charts before the main expenses table\n      const expensesTable = expensesView.querySelector('.uba-grid');\n      if (expensesTable) {\n        expensesView.insertBefore(chartsSection, expensesTable);\n      }\n      \n      // Setup chart period change handlers\n      const pieSelect = document.getElementById('pie-chart-period');\n      const trendSelect = document.getElementById('trend-chart-period');\n      \n      if (pieSelect) {\n        pieSelect.addEventListener('change', () => this.updatePieChart());\n      }\n      \n      if (trendSelect) {\n        trendSelect.addEventListener('change', () => this.updateTrendChart());\n      }\n    },\n    \n    /**\n     * Initialize charts\n     */\n    initializeCharts() {\n      // Load Chart.js if not already loaded\n      this.loadChartJS().then(() => {\n        this.createPieChart();\n        this.createTrendChart();\n      }).catch(error => {\n        console.warn('Charts not available:', error);\n        this.createFallbackCharts();\n      });\n    },\n    \n    /**\n     * Load Chart.js library\n     */\n    async loadChartJS() {\n      if (window.Chart) return;\n      \n      return new Promise((resolve, reject) => {\n        const script = document.createElement('script');\n        script.src = 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js';\n        script.onload = resolve;\n        script.onerror = reject;\n        document.head.appendChild(script);\n      });\n    },\n    \n    /**\n     * Create pie chart\n     */\n    createPieChart() {\n      const ctx = document.getElementById('expense-pie-chart');\n      if (!ctx || !window.Chart) return;\n      \n      const data = this.getPieChartData();\n      \n      this.charts.pie = new Chart(ctx, {\n        type: 'doughnut',\n        data: {\n          labels: data.labels,\n          datasets: [{\n            data: data.values,\n            backgroundColor: data.colors,\n            borderWidth: 2,\n            borderColor: '#ffffff'\n          }]\n        },\n        options: {\n          responsive: true,\n          maintainAspectRatio: false,\n          plugins: {\n            legend: {\n              display: false // We'll create custom legend\n            },\n            tooltip: {\n              callbacks: {\n                label: (context) => {\n                  const label = context.label;\n                  const value = this.formatAmount(context.parsed);\n                  const percentage = ((context.parsed / data.total) * 100).toFixed(1);\n                  return `${label}: ${value} (${percentage}%)`;\n                }\n              }\n            }\n          }\n        }\n      });\n      \n      // Create custom legend\n      this.createPieChartLegend(data);\n    },\n    \n    /**\n     * Get pie chart data\n     */\n    getPieChartData() {\n      const period = document.getElementById('pie-chart-period')?.value || 'current-month';\n      const expenses = this.getExpensesForPeriod(period);\n      \n      // Group by category\n      const categoryTotals = {};\n      expenses.forEach(expense => {\n        const category = expense.category || 'Other';\n        categoryTotals[category] = (categoryTotals[category] || 0) + (expense.amount || 0);\n      });\n      \n      const labels = Object.keys(categoryTotals);\n      const values = Object.values(categoryTotals);\n      const total = values.reduce((sum, val) => sum + val, 0);\n      \n      // Get colors for categories\n      const colors = labels.map(label => {\n        const category = this.categories.find(cat => cat.name === label);\n        return category ? category.color : '#64748b';\n      });\n      \n      return { labels, values, colors, total };\n    },\n    \n    /**\n     * Create pie chart legend\n     */\n    createPieChartLegend(data) {\n      const legend = document.getElementById('pie-chart-legend');\n      if (!legend) return;\n      \n      legend.innerHTML = data.labels.map((label, index) => {\n        const value = data.values[index];\n        const percentage = ((value / data.total) * 100).toFixed(1);\n        const color = data.colors[index];\n        const category = this.categories.find(cat => cat.name === label);\n        const icon = category ? category.icon : '📋';\n        \n        return `\n          <div class=\"legend-item\">\n            <span class=\"legend-color\" style=\"background-color: ${color}\"></span>\n            <span class=\"legend-icon\">${icon}</span>\n            <span class=\"legend-label\">${label}</span>\n            <span class=\"legend-value\">${this.formatAmount(value)} (${percentage}%)</span>\n          </div>\n        `;\n      }).join('');\n    },\n    \n    /**\n     * Create trend chart\n     */\n    createTrendChart() {\n      const ctx = document.getElementById('expense-trend-chart');\n      if (!ctx || !window.Chart) return;\n      \n      const data = this.getTrendChartData();\n      \n      this.charts.trend = new Chart(ctx, {\n        type: 'line',\n        data: {\n          labels: data.labels,\n          datasets: [{\n            label: 'Total Expenses',\n            data: data.values,\n            borderColor: '#3b82f6',\n            backgroundColor: 'rgba(59, 130, 246, 0.1)',\n            borderWidth: 3,\n            fill: true,\n            tension: 0.4\n          }]\n        },\n        options: {\n          responsive: true,\n          maintainAspectRatio: false,\n          scales: {\n            y: {\n              beginAtZero: true,\n              ticks: {\n                callback: (value) => '€' + value.toFixed(0)\n              }\n            }\n          },\n          plugins: {\n            legend: {\n              display: false\n            },\n            tooltip: {\n              callbacks: {\n                label: (context) => {\n                  return `Total: ${this.formatAmount(context.parsed.y)}`;\n                }\n              }\n            }\n          }\n        }\n      });\n      \n      // Create trend summary\n      this.createTrendSummary(data);\n    },\n    \n    /**\n     * Get trend chart data\n     */\n    getTrendChartData() {\n      const period = document.getElementById('trend-chart-period')?.value || '6-months';\n      const monthsCount = period === '12-months' ? 12 : period === '24-months' ? 24 : 6;\n      \n      const labels = [];\n      const values = [];\n      const now = new Date();\n      \n      // Generate labels and calculate values for each month\n      for (let i = monthsCount - 1; i >= 0; i--) {\n        const date = new Date(now.getFullYear(), now.getMonth() - i, 1);\n        const monthKey = date.toISOString().slice(0, 7);\n        const monthLabel = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });\n        \n        labels.push(monthLabel);\n        \n        // Calculate total expenses for this month\n        const monthExpenses = this.getExpensesData().filter(expense => \n          expense.date && expense.date.startsWith(monthKey)\n        );\n        const monthTotal = monthExpenses.reduce((sum, expense) => sum + (expense.amount || 0), 0);\n        \n        values.push(monthTotal);\n      }\n      \n      return { labels, values };\n    },\n    \n    /**\n     * Create trend summary\n     */\n    createTrendSummary(data) {\n      const summary = document.getElementById('trend-chart-summary');\n      if (!summary) return;\n      \n      const total = data.values.reduce((sum, val) => sum + val, 0);\n      const average = total / data.values.length;\n      const max = Math.max(...data.values);\n      const min = Math.min(...data.values);\n      \n      summary.innerHTML = `\n        <div class=\"summary-grid\">\n          <div class=\"summary-item\">\n            <span class=\"summary-label\">Total</span>\n            <span class=\"summary-value\">${this.formatAmount(total)}</span>\n          </div>\n          <div class=\"summary-item\">\n            <span class=\"summary-label\">Average</span>\n            <span class=\"summary-value\">${this.formatAmount(average)}</span>\n          </div>\n          <div class=\"summary-item\">\n            <span class=\"summary-label\">Highest</span>\n            <span class=\"summary-value\">${this.formatAmount(max)}</span>\n          </div>\n          <div class=\"summary-item\">\n            <span class=\"summary-label\">Lowest</span>\n            <span class=\"summary-value\">${this.formatAmount(min)}</span>\n          </div>\n        </div>\n      `;\n    },\n    \n    /**\n     * Update pie chart\n     */\n    updatePieChart() {\n      if (this.charts.pie) {\n        const data = this.getPieChartData();\n        this.charts.pie.data.labels = data.labels;\n        this.charts.pie.data.datasets[0].data = data.values;\n        this.charts.pie.data.datasets[0].backgroundColor = data.colors;\n        this.charts.pie.update();\n        this.createPieChartLegend(data);\n      }\n    },\n    \n    /**\n     * Update trend chart\n     */\n    updateTrendChart() {\n      if (this.charts.trend) {\n        const data = this.getTrendChartData();\n        this.charts.trend.data.labels = data.labels;\n        this.charts.trend.data.datasets[0].data = data.values;\n        this.charts.trend.update();\n        this.createTrendSummary(data);\n      }\n    },\n    \n    /**\n     * Create fallback charts (for when Chart.js is not available)\n     */\n    createFallbackCharts() {\n      // Create simple HTML-based charts\n      this.createFallbackPieChart();\n      this.createFallbackTrendChart();\n    },\n    \n    /**\n     * Create fallback pie chart\n     */\n    createFallbackPieChart() {\n      const canvas = document.getElementById('expense-pie-chart');\n      if (!canvas) return;\n      \n      const data = this.getPieChartData();\n      const fallback = document.createElement('div');\n      fallback.className = 'fallback-pie-chart';\n      \n      let cumulativePercentage = 0;\n      fallback.innerHTML = `\n        <div class=\"pie-chart-fallback\">\n          ${data.labels.map((label, index) => {\n            const value = data.values[index];\n            const percentage = ((value / data.total) * 100);\n            const color = data.colors[index];\n            \n            const segment = `\n              <div class=\"pie-segment\" style=\"\n                background: ${color};\n                transform: rotate(${cumulativePercentage * 3.6}deg);\n                clip-path: polygon(50% 50%, 50% 0%, ${50 + percentage}% 0%);\n              \"></div>\n            `;\n            \n            cumulativePercentage += percentage;\n            return segment;\n          }).join('')}\n        </div>\n        <div class=\"pie-chart-center\">\n          <strong>${this.formatAmount(data.total)}</strong>\n          <small>Total</small>\n        </div>\n      `;\n      \n      canvas.parentNode.replaceChild(fallback, canvas);\n      this.createPieChartLegend(data);\n    },\n    \n    /**\n     * Create fallback trend chart\n     */\n    createFallbackTrendChart() {\n      const canvas = document.getElementById('expense-trend-chart');\n      if (!canvas) return;\n      \n      const data = this.getTrendChartData();\n      const maxValue = Math.max(...data.values);\n      \n      const fallback = document.createElement('div');\n      fallback.className = 'fallback-trend-chart';\n      fallback.innerHTML = `\n        <div class=\"trend-chart-bars\">\n          ${data.labels.map((label, index) => {\n            const value = data.values[index];\n            const height = maxValue > 0 ? (value / maxValue) * 100 : 0;\n            \n            return `\n              <div class=\"trend-bar\" title=\"${label}: ${this.formatAmount(value)}\">\n                <div class=\"bar\" style=\"height: ${height}%;\"></div>\n                <span class=\"bar-label\">${label}</span>\n              </div>\n            `;\n          }).join('')}\n        </div>\n      `;\n      \n      canvas.parentNode.replaceChild(fallback, canvas);\n      this.createTrendSummary(data);\n    },\n    \n    /**\n     * Setup receipt upload functionality\n     */\n    setupReceiptUpload() {\n      console.log('📎 Setting up receipt upload integration');\n      \n      // Enhance expense form with receipt upload\n      this.enhanceExpenseFormWithUpload();\n      \n      // Setup file upload handlers\n      this.setupFileUploadHandlers();\n    },\n    \n    /**\n     * Enhance expense form with receipt upload\n     */\n    enhanceExpenseFormWithUpload() {\n      const receiptField = document.getElementById('expense-receipt');\n      if (!receiptField) return;\n      \n      // Replace textarea with enhanced upload section\n      const uploadSection = document.createElement('div');\n      uploadSection.className = 'receipt-upload-section';\n      uploadSection.innerHTML = `\n        <div class=\"upload-tabs\">\n          <button type=\"button\" class=\"upload-tab active\" data-tab=\"file\">📎 Upload File</button>\n          <button type=\"button\" class=\"upload-tab\" data-tab=\"notes\">📝 Notes</button>\n        </div>\n        \n        <div class=\"upload-content\">\n          <!-- File Upload Tab -->\n          <div class=\"upload-tab-content active\" data-tab=\"file\">\n            <div class=\"file-upload-area\" id=\"receipt-upload-area\">\n              <input type=\"file\" id=\"receipt-file-input\" class=\"file-input\" accept=\".pdf,.png,.jpg,.jpeg,.gif\" multiple />\n              <div class=\"upload-prompt\">\n                <span class=\"upload-icon\">📎</span>\n                <p>Drop receipt files here or <button type=\"button\" class=\"upload-link\" onclick=\"document.getElementById('receipt-file-input').click()\">browse files</button></p>\n                <small>Supports: PDF, PNG, JPG, GIF (max 5MB each)</small>\n              </div>\n              <div id=\"uploaded-files\" class=\"uploaded-files\"></div>\n            </div>\n          </div>\n          \n          <!-- Notes Tab -->\n          <div class=\"upload-tab-content\" data-tab=\"notes\">\n            <textarea id=\"expense-receipt\" name=\"receipt\" rows=\"3\" class=\"uba-textarea\" placeholder=\"Receipt number, notes, or additional details\"></textarea>\n          </div>\n        </div>\n      `;\n      \n      // Replace the original textarea's parent\n      const parentGroup = receiptField.closest('.uba-form-group');\n      if (parentGroup) {\n        const label = parentGroup.querySelector('label');\n        label.textContent = 'Receipt & Files (الإيصال والملفات)';\n        \n        // Replace textarea with upload section\n        receiptField.parentNode.replaceChild(uploadSection, receiptField);\n      }\n      \n      // Setup tab switching\n      this.setupUploadTabs();\n      \n      // Setup drag and drop\n      this.setupDragAndDrop();\n    },\n    \n    /**\n     * Setup upload tabs\n     */\n    setupUploadTabs() {\n      const tabs = document.querySelectorAll('.upload-tab');\n      const contents = document.querySelectorAll('.upload-tab-content');\n      \n      tabs.forEach(tab => {\n        tab.addEventListener('click', () => {\n          const targetTab = tab.getAttribute('data-tab');\n          \n          // Update tab states\n          tabs.forEach(t => t.classList.remove('active'));\n          tab.classList.add('active');\n          \n          // Update content states\n          contents.forEach(content => {\n            content.classList.remove('active');\n            if (content.getAttribute('data-tab') === targetTab) {\n              content.classList.add('active');\n            }\n          });\n        });\n      });\n    },\n    \n    /**\n     * Setup drag and drop\n     */\n    setupDragAndDrop() {\n      const uploadArea = document.getElementById('receipt-upload-area');\n      if (!uploadArea) return;\n      \n      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {\n        uploadArea.addEventListener(eventName, (e) => {\n          e.preventDefault();\n          e.stopPropagation();\n        });\n      });\n      \n      ['dragenter', 'dragover'].forEach(eventName => {\n        uploadArea.addEventListener(eventName, () => {\n          uploadArea.classList.add('drag-over');\n        });\n      });\n      \n      ['dragleave', 'drop'].forEach(eventName => {\n        uploadArea.addEventListener(eventName, () => {\n          uploadArea.classList.remove('drag-over');\n        });\n      });\n      \n      uploadArea.addEventListener('drop', (e) => {\n        const files = e.dataTransfer.files;\n        this.handleFileUpload(files);\n      });\n    },\n    \n    /**\n     * Setup file upload handlers\n     */\n    setupFileUploadHandlers() {\n      const fileInput = document.getElementById('receipt-file-input');\n      if (fileInput) {\n        fileInput.addEventListener('change', (e) => {\n          this.handleFileUpload(e.target.files);\n        });\n      }\n    },\n    \n    /**\n     * Handle file upload\n     */\n    handleFileUpload(files) {\n      const maxSize = 5 * 1024 * 1024; // 5MB\n      const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'application/pdf'];\n      \n      Array.from(files).forEach(file => {\n        // Validate file size\n        if (file.size > maxSize) {\n          this.showNotification(`File \"${file.name}\" is too large. Maximum size is 5MB.`, 'error');\n          return;\n        }\n        \n        // Validate file type\n        if (!allowedTypes.includes(file.type)) {\n          this.showNotification(`File \"${file.name}\" is not a supported format.`, 'error');\n          return;\n        }\n        \n        // Process file\n        this.processUploadedFile(file);\n      });\n    },\n    \n    /**\n     * Process uploaded file\n     */\n    processUploadedFile(file) {\n      const fileId = 'file-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);\n      \n      // Create file object\n      const fileObj = {\n        id: fileId,\n        name: file.name,\n        size: file.size,\n        type: file.type,\n        uploadedAt: new Date().toISOString(),\n        file: file // Store the actual file object\n      };\n      \n      // Store in files collection (integrate with files section)\n      this.storeFileInFilesSection(fileObj);\n      \n      // Add to current uploads\n      if (!this.fileUploads.currentExpense) {\n        this.fileUploads.currentExpense = [];\n      }\n      this.fileUploads.currentExpense.push(fileObj);\n      \n      // Update UI\n      this.updateUploadedFilesDisplay();\n      \n      this.showNotification(`File \"${file.name}\" uploaded successfully`, 'success');\n    },\n    \n    /**\n     * Store file in files section\n     */\n    storeFileInFilesSection(fileObj) {\n      // Create file entry for files section\n      const fileEntry = {\n        id: fileObj.id,\n        name: fileObj.name,\n        type: 'receipt',\n        category: 'expense',\n        size: fileObj.size,\n        mimeType: fileObj.type,\n        uploadedAt: fileObj.uploadedAt,\n        tags: ['receipt', 'expense'],\n        description: 'Expense receipt upload'\n      };\n      \n      // Store in localStorage (files section integration)\n      const existingFiles = JSON.parse(localStorage.getItem('uba-files') || '[]');\n      existingFiles.push(fileEntry);\n      localStorage.setItem('uba-files', JSON.stringify(existingFiles));\n    },\n    \n    /**\n     * Update uploaded files display\n     */\n    updateUploadedFilesDisplay() {\n      const container = document.getElementById('uploaded-files');\n      if (!container || !this.fileUploads.currentExpense) return;\n      \n      container.innerHTML = this.fileUploads.currentExpense.map(file => `\n        <div class=\"uploaded-file\" data-file-id=\"${file.id}\">\n          <div class=\"file-info\">\n            <span class=\"file-icon\">${this.getFileIcon(file.type)}</span>\n            <div class=\"file-details\">\n              <strong class=\"file-name\">${file.name}</strong>\n              <small class=\"file-size\">${this.formatFileSize(file.size)}</small>\n            </div>\n          </div>\n          <div class=\"file-actions\">\n            <button type=\"button\" class=\"uba-btn uba-btn-sm uba-btn-ghost\" onclick=\"window.UBAEnhancedExpenses.previewFile('${file.id}')\" title=\"Preview\">\n              👁️\n            </button>\n            <button type=\"button\" class=\"uba-btn uba-btn-sm uba-btn-danger\" onclick=\"window.UBAEnhancedExpenses.removeFile('${file.id}')\" title=\"Remove\">\n              🗑️\n            </button>\n          </div>\n        </div>\n      `).join('');\n    },\n    \n    /**\n     * Get file icon based on type\n     */\n    getFileIcon(mimeType) {\n      if (mimeType.startsWith('image/')) return '🖼️';\n      if (mimeType === 'application/pdf') return '📄';\n      return '📎';\n    },\n    \n    /**\n     * Format file size\n     */\n    formatFileSize(bytes) {\n      if (bytes === 0) return '0 Bytes';\n      const k = 1024;\n      const sizes = ['Bytes', 'KB', 'MB', 'GB'];\n      const i = Math.floor(Math.log(bytes) / Math.log(k));\n      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];\n    },\n    \n    /**\n     * Preview file\n     */\n    previewFile(fileId) {\n      const file = this.fileUploads.currentExpense?.find(f => f.id === fileId);\n      if (!file) return;\n      \n      if (file.type.startsWith('image/')) {\n        // Show image preview\n        const reader = new FileReader();\n        reader.onload = (e) => {\n          this.showImagePreview(file.name, e.target.result);\n        };\n        reader.readAsDataURL(file.file);\n      } else if (file.type === 'application/pdf') {\n        // Open PDF in new tab\n        const url = URL.createObjectURL(file.file);\n        window.open(url, '_blank');\n      } else {\n        this.showNotification('Preview not available for this file type', 'info');\n      }\n    },\n    \n    /**\n     * Show image preview\n     */\n    showImagePreview(fileName, dataUrl) {\n      const modal = document.createElement('div');\n      modal.className = 'uba-modal image-preview-modal is-visible';\n      modal.innerHTML = `\n        <div class=\"uba-modal-overlay\"></div>\n        <div class=\"uba-modal-dialog image-preview-dialog\">\n          <div class=\"uba-modal-header\">\n            <h3>${fileName}</h3>\n            <button class=\"uba-modal-close\">×</button>\n          </div>\n          <div class=\"uba-modal-body\">\n            <img src=\"${dataUrl}\" alt=\"${fileName}\" class=\"preview-image\" />\n          </div>\n        </div>\n      `;\n      \n      document.body.appendChild(modal);\n      document.body.style.overflow = 'hidden';\n      \n      // Setup close handlers\n      const closeBtn = modal.querySelector('.uba-modal-close');\n      const overlay = modal.querySelector('.uba-modal-overlay');\n      \n      const closeModal = () => {\n        document.body.removeChild(modal);\n        document.body.style.overflow = '';\n      };\n      \n      closeBtn.addEventListener('click', closeModal);\n      overlay.addEventListener('click', closeModal);\n    },\n    \n    /**\n     * Remove file\n     */\n    removeFile(fileId) {\n      if (!this.fileUploads.currentExpense) return;\n      \n      this.fileUploads.currentExpense = this.fileUploads.currentExpense.filter(f => f.id !== fileId);\n      this.updateUploadedFilesDisplay();\n      \n      // Also remove from files section\n      const existingFiles = JSON.parse(localStorage.getItem('uba-files') || '[]');\n      const updatedFiles = existingFiles.filter(f => f.id !== fileId);\n      localStorage.setItem('uba-files', JSON.stringify(updatedFiles));\n      \n      this.showNotification('File removed', 'info');\n    },\n    \n    /**\n     * Setup enhanced dropdown design\n     */\n    enhanceDropdownDesign() {\n      console.log('🎨 Enhancing dropdown design');\n      \n      // Apply enhanced styling to all dropdowns\n      this.applyEnhancedDropdownStyles();\n      \n      // Setup dropdown interactions\n      this.setupDropdownInteractions();\n    },\n    \n    /**\n     * Apply enhanced dropdown styles\n     */\n    applyEnhancedDropdownStyles() {\n      // Add enhanced class to all select elements\n      document.querySelectorAll('select').forEach(select => {\n        select.classList.add('enhanced-dropdown');\n      });\n      \n      // Enhance expense category dropdown specifically\n      const categorySelect = document.getElementById('expense-category');\n      if (categorySelect) {\n        this.enhanceCategoryDropdown(categorySelect);\n      }\n    },\n    \n    /**\n     * Enhance category dropdown\n     */\n    enhanceCategoryDropdown(select) {\n      // Update category options with icons and colors\n      const options = select.querySelectorAll('option[data-category-id]');\n      options.forEach(option => {\n        const categoryId = option.getAttribute('data-category-id');\n        const category = this.categories.find(cat => cat.id === categoryId);\n        if (category) {\n          option.textContent = `${category.icon} ${category.name}`;\n          option.setAttribute('data-color', category.color);\n        }\n      });\n    },\n    \n    /**\n     * Setup dropdown interactions\n     */\n    setupDropdownInteractions() {\n      // Enhanced focus and hover effects are handled via CSS\n      // Add any additional JavaScript interactions here\n    },\n    \n    /**\n     * Initialize UI components\n     */\n    initializeUI() {\n      // Update category dropdown when page loads\n      setTimeout(() => {\n        this.updateExpenseFormCategories();\n      }, 500);\n    },\n    \n    // Utility methods\n    \n    /**\n     * Get expenses data\n     */\n    getExpensesData() {\n      if (window.ubaStore?.expenses) {\n        return window.ubaStore.expenses.getAll() || [];\n      }\n      // Fallback to demo data\n      return this.getDemoExpenses();\n    },\n    \n    /**\n     * Get demo expenses for chart testing\n     */\n    getDemoExpenses() {\n      const now = new Date();\n      return [\n        {\n          id: 'demo-1',\n          date: now.toISOString().slice(0, 10),\n          category: 'Software',\n          amount: 299,\n          description: 'Design software subscription'\n        },\n        {\n          id: 'demo-2',\n          date: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 5).toISOString().slice(0, 10),\n          category: 'Office Supplies',\n          amount: 156,\n          description: 'Office equipment'\n        },\n        {\n          id: 'demo-3',\n          date: new Date(now.getFullYear(), now.getMonth() - 1, 15).toISOString().slice(0, 10),\n          category: 'Marketing',\n          amount: 850,\n          description: 'Social media ads'\n        }\n      ];\n    },\n    \n    /**\n     * Get expenses for specific period\n     */\n    getExpensesForPeriod(period) {\n      const expenses = this.getExpensesData();\n      const now = new Date();\n      \n      switch (period) {\n        case 'current-month':\n          const currentMonth = now.toISOString().slice(0, 7);\n          return expenses.filter(e => e.date && e.date.startsWith(currentMonth));\n          \n        case 'last-month':\n          const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().slice(0, 7);\n          return expenses.filter(e => e.date && e.date.startsWith(lastMonth));\n          \n        case 'last-3-months':\n          const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1);\n          return expenses.filter(e => e.date && new Date(e.date) >= threeMonthsAgo);\n          \n        case 'last-6-months':\n          const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, 1);\n          return expenses.filter(e => e.date && new Date(e.date) >= sixMonthsAgo);\n          \n        default:\n          return expenses;\n      }\n    },\n    \n    /**\n     * Format amount with currency\n     */\n    formatAmount(amount) {\n      return new Intl.NumberFormat('en-US', {\n        style: 'currency',\n        currency: 'EUR'\n      }).format(amount || 0);\n    },\n    \n    /**\n     * Show notification\n     */\n    showNotification(message, type = 'info', options = {}) {\n      if (window.showToast) {\n        window.showToast(message, type, options);\n      } else {\n        console.log(`${type.toUpperCase()}: ${message}`);\n      }\n    }\n  };\n  \n  // Auto-initialize when DOM is ready\n  if (document.readyState === 'loading') {\n    document.addEventListener('DOMContentLoaded', () => {\n      setTimeout(() => window.UBAEnhancedExpenses.init(), 1000);\n    });\n  } else {\n    setTimeout(() => window.UBAEnhancedExpenses.init(), 1000);\n  }\n  \n  console.log('✅ Enhanced Expenses module loaded');\n  \n})();
+      const expensesHeader = document.querySelector('#expenses-page .uba-card-header');
+      if (expensesHeader) {
+        const buttonContainer = expensesHeader.querySelector('div:last-child');
+        if (buttonContainer) {
+          // Add category management button
+          const categoryBtn = document.createElement('button');
+          categoryBtn.className = 'uba-btn uba-btn-ghost';
+          categoryBtn.innerHTML = '<span class=\"icon\">🏷️</span> Categories';
+          categoryBtn.onclick = () => this.openCategoryManagement();
+          
+          // Insert before the Add Expense button
+          const addBtn = buttonContainer.querySelector('.uba-btn-primary');
+          if (addBtn) {
+            buttonContainer.insertBefore(categoryBtn, addBtn);
+          }
+        }
+      }
+    },
+    
+    /**
+     * Create category management modal
+     */
+    createCategoryModal() {
+      const modal = document.createElement('div');
+      modal.id = 'category-management-modal';
+      modal.className = 'uba-modal category-modal';
+      modal.innerHTML = `
+        <div class=\"uba-modal-overlay\" onclick=\"window.UBAEnhancedExpenses.closeCategoryManagement()\"></div>
+        <div class=\"uba-modal-dialog category-dialog\">
+          <div class=\"uba-modal-header\">
+            <h3><span class=\"icon\">🏷️</span> إدارة فئات الصرف (Expense Categories Management)</h3>
+            <button class=\"uba-modal-close\" onclick=\"window.UBAEnhancedExpenses.closeCategoryManagement()\">×</button>
+          </div>
+          <div class=\"uba-modal-body category-body\">
+            <!-- Category form -->
+            <div class=\"category-form-section\">
+              <h4>Add/Edit Category</h4>
+              <form id=\"category-form\" class=\"category-form\">
+                <input type=\"hidden\" id=\"category-edit-id\" />
+                <div class=\"category-form-grid\">
+                  <div class=\"form-group\">
+                    <label for=\"category-name\">Name *</label>
+                    <input type=\"text\" id=\"category-name\" class=\"uba-input\" placeholder=\"Category name\" required />
+                  </div>
+                  <div class=\"form-group\">
+                    <label for=\"category-name-ar\">Arabic Name</label>
+                    <input type=\"text\" id=\"category-name-ar\" class=\"uba-input\" placeholder=\"الاسم بالعربية\" />
+                  </div>
+                  <div class=\"form-group\">
+                    <label for=\"category-icon\">Icon</label>
+                    <div class=\"icon-selector\">
+                      <input type=\"text\" id=\"category-icon\" class=\"uba-input icon-input\" placeholder=\"📎\" maxlength=\"2\" />
+                      <div class=\"icon-suggestions\">
+                        <span class=\"icon-option\" onclick=\"window.UBAEnhancedExpenses.selectIcon('📎')\">📎</span>
+                        <span class=\"icon-option\" onclick=\"window.UBAEnhancedExpenses.selectIcon('💻')\">💻</span>
+                        <span class=\"icon-option\" onclick=\"window.UBAEnhancedExpenses.selectIcon('✈️')\">✈️</span>
+                        <span class=\"icon-option\" onclick=\"window.UBAEnhancedExpenses.selectIcon('📢')\">📢</span>
+                        <span class=\"icon-option\" onclick=\"window.UBAEnhancedExpenses.selectIcon('🔧')\">🔧</span>
+                        <span class=\"icon-option\" onclick=\"window.UBAEnhancedExpenses.selectIcon('💡')\">💡</span>
+                        <span class=\"icon-option\" onclick=\"window.UBAEnhancedExpenses.selectIcon('🏢')\">🏢</span>
+                        <span class=\"icon-option\" onclick=\"window.UBAEnhancedExpenses.selectIcon('🛡️')\">🛡️</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class=\"form-group\">
+                    <label for=\"category-color\">Color</label>
+                    <input type=\"color\" id=\"category-color\" class=\"uba-input color-picker\" value=\"#3b82f6\" />
+                  </div>
+                  <div class=\"form-group full-width\">
+                    <label for=\"category-description\">Description</label>
+                    <input type=\"text\" id=\"category-description\" class=\"uba-input\" placeholder=\"Brief description\" />
+                  </div>
+                  <div class=\"form-group\">
+                    <label for=\"category-budget\">Monthly Budget (€)</label>
+                    <input type=\"number\" id=\"category-budget\" class=\"uba-input\" min=\"0\" step=\"0.01\" placeholder=\"0.00\" />
+                  </div>
+                  <div class=\"form-group\">
+                    <label class=\"checkbox-label\">
+                      <input type=\"checkbox\" id=\"category-active\" checked />
+                      <span class=\"checkmark\"></span>
+                      Active
+                    </label>
+                  </div>
+                </div>
+                <div class=\"category-form-actions\">
+                  <button type=\"button\" class=\"uba-btn uba-btn-ghost\" onclick=\"window.UBAEnhancedExpenses.clearCategoryForm()\">Clear</button>
+                  <button type=\"submit\" class=\"uba-btn uba-btn-primary\">Save Category</button>
+                </div>
+              </form>
+            </div>
+            
+            <!-- Categories list -->
+            <div class=\"category-list-section\">
+              <h4>Existing Categories</h4>
+              <div id=\"categories-list\" class=\"categories-grid\">
+                <!-- Categories will be rendered here -->
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Setup form submission
+      const form = modal.querySelector('#category-form');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.saveCategoryFromForm();
+      });
+    },
+    
+    /**
+     * Open category management modal
+     */
+    openCategoryManagement() {
+      const modal = document.getElementById('category-management-modal');
+      if (modal) {
+        modal.classList.add('is-visible');
+        document.body.style.overflow = 'hidden';
+        this.renderCategoriesList();
+      }
+    },
+    
+    /**
+     * Close category management modal
+     */
+    closeCategoryManagement() {
+      const modal = document.getElementById('category-management-modal');
+      if (modal) {
+        modal.classList.remove('is-visible');
+        document.body.style.overflow = '';
+        this.clearCategoryForm();
+      }
+    },
+    
+    /**
+     * Render categories list in modal
+     */
+    renderCategoriesList() {
+      const container = document.getElementById('categories-list');
+      if (!container) return;
+      
+      container.innerHTML = this.categories.map(category => `
+        <div class=\"category-item ${category.active ? 'active' : 'inactive'}\" style=\"border-left: 4px solid ${category.color}\">
+          <div class=\"category-header\">
+            <div class=\"category-icon-name\">
+              <span class=\"category-icon\">${category.icon}</span>
+              <div class=\"category-names\">
+                <strong class=\"category-name\">${category.name}</strong>
+                ${category.nameAr ? `<small class=\"category-name-ar\">${category.nameAr}</small>` : ''}
+              </div>
+            </div>
+            <div class=\"category-actions\">
+              <button class=\"uba-btn uba-btn-sm uba-btn-ghost\" onclick=\"window.UBAEnhancedExpenses.editCategory('${category.id}')\" title=\"Edit category\">
+                ✏️
+              </button>
+              <button class=\"uba-btn uba-btn-sm uba-btn-danger\" onclick=\"window.UBAEnhancedExpenses.deleteCategory('${category.id}')\" title=\"Delete category\">
+                🗑️
+              </button>
+            </div>
+          </div>
+          <div class=\"category-details\">
+            <p class=\"category-description\">${category.description}</p>
+            <div class=\"category-meta\">
+              <span class=\"category-budget\">Budget: €${category.budget || 0}/month</span>
+              <span class=\"category-status ${category.active ? 'active' : 'inactive'}\">
+                ${category.active ? 'Active' : 'Inactive'}
+              </span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    },
+    
+    /**
+     * Clear category form
+     */
+    clearCategoryForm() {
+      document.getElementById('category-edit-id').value = '';
+      document.getElementById('category-name').value = '';
+      document.getElementById('category-name-ar').value = '';
+      document.getElementById('category-icon').value = '';
+      document.getElementById('category-color').value = '#3b82f6';
+      document.getElementById('category-description').value = '';
+      document.getElementById('category-budget').value = '';
+      document.getElementById('category-active').checked = true;
+    },
+    
+    /**
+     * Select icon for category
+     */
+    selectIcon(icon) {
+      document.getElementById('category-icon').value = icon;
+    },
+    
+    /**
+     * Save category from form
+     */
+    saveCategoryFromForm() {
+      const editId = document.getElementById('category-edit-id').value;
+      const categoryData = {
+        name: document.getElementById('category-name').value.trim(),
+        nameAr: document.getElementById('category-name-ar').value.trim(),
+        icon: document.getElementById('category-icon').value.trim() || '📋',
+        color: document.getElementById('category-color').value,
+        description: document.getElementById('category-description').value.trim(),
+        budget: parseFloat(document.getElementById('category-budget').value) || 0,
+        active: document.getElementById('category-active').checked
+      };
+      
+      // Validate required fields
+      if (!categoryData.name) {
+        this.showNotification('Category name is required', 'error');
+        return;
+      }
+      
+      if (editId) {
+        // Update existing category
+        const index = this.categories.findIndex(cat => cat.id === editId);
+        if (index !== -1) {
+          this.categories[index] = { ...this.categories[index], ...categoryData };
+          this.showNotification(`Category \"${categoryData.name}\" updated successfully`, 'success');
+        }
+      } else {
+        // Create new category
+        const newCategory = {
+          id: 'cat-' + Date.now(),
+          ...categoryData,
+          createdAt: new Date().toISOString()
+        };
+        this.categories.push(newCategory);
+        this.showNotification(`Category \"${categoryData.name}\" created successfully`, 'success');
+      }
+      
+      this.saveCategories();
+      this.renderCategoriesList();
+      this.updateExpenseFormCategories();
+      this.clearCategoryForm();
+    },
+    
+    /**
+     * Edit category
+     */
+    editCategory(categoryId) {
+      const category = this.categories.find(cat => cat.id === categoryId);
+      if (!category) return;
+      
+      document.getElementById('category-edit-id').value = category.id;
+      document.getElementById('category-name').value = category.name;
+      document.getElementById('category-name-ar').value = category.nameAr || '';
+      document.getElementById('category-icon').value = category.icon;
+      document.getElementById('category-color').value = category.color;
+      document.getElementById('category-description').value = category.description || '';
+      document.getElementById('category-budget').value = category.budget || '';
+      document.getElementById('category-active').checked = category.active;
+    },
+    
+    /**
+     * Delete category
+     */
+    deleteCategory(categoryId) {
+      const category = this.categories.find(cat => cat.id === categoryId);
+      if (!category) return;
+      
+      if (confirm(`Are you sure you want to delete the category \"${category.name}\"?\
+\
+This action cannot be undone.`)) {
+        this.categories = this.categories.filter(cat => cat.id !== categoryId);
+        this.saveCategories();
+        this.renderCategoriesList();
+        this.updateExpenseFormCategories();
+        this.showNotification(`Category \"${category.name}\" deleted`, 'info');
+      }
+    },
+    
+    /**
+     * Update expense form categories dropdown
+     */
+    updateExpenseFormCategories() {
+      const categorySelect = document.getElementById('expense-category');
+      if (!categorySelect) return;
+      
+      // Clear existing options except the first one
+      categorySelect.innerHTML = '<option value=\"\">Select Category</option>';
+      
+      // Add active categories
+      this.categories
+        .filter(category => category.active)
+        .forEach(category => {
+          const option = document.createElement('option');
+          option.value = category.name;
+          option.textContent = `${category.icon} ${category.name}`;
+          option.setAttribute('data-category-id', category.id);
+          categorySelect.appendChild(option);
+        });
+    },
+    
+    /**
+     * Setup charts functionality
+     */
+    setupCharts() {
+      console.log('📊 Setting up expense charts');
+      
+      // Add charts section to expenses page
+      this.addChartsSection();
+      
+      // Initialize charts
+      this.initializeCharts();
+    },
+    
+    /**
+     * Add charts section to expenses page
+     */
+    addChartsSection() {
+      const expensesView = document.querySelector('[data-view=\"expenses\"]');
+      if (!expensesView) return;
+      
+      const chartsSection = document.createElement('div');
+      chartsSection.className = 'uba-grid';
+      chartsSection.style.marginBottom = '20px';
+      chartsSection.innerHTML = `
+        <div class=\"uba-grid-col\">
+          <div class=\"charts-container\">
+            <!-- Pie Chart -->
+            <div class=\"uba-card chart-card\">
+              <div class=\"uba-card-header\">
+                <div>
+                  <div class=\"uba-card-title\">📊 Expense Distribution</div>
+                  <p class=\"uba-card-sub\">Breakdown by category</p>
+                </div>
+                <div class=\"chart-controls\">
+                  <select id=\"pie-chart-period\" class=\"uba-select enhanced-dropdown\">
+                    <option value=\"current-month\">This Month</option>
+                    <option value=\"last-month\">Last Month</option>
+                    <option value=\"last-3-months\">Last 3 Months</option>
+                    <option value=\"last-6-months\">Last 6 Months</option>
+                  </select>
+                </div>
+              </div>
+              <div class=\"chart-content\">
+                <canvas id=\"expense-pie-chart\" width=\"400\" height=\"300\"></canvas>
+                <div id=\"pie-chart-legend\" class=\"chart-legend\"></div>
+              </div>
+            </div>
+            
+            <!-- Monthly Trend Chart -->
+            <div class=\"uba-card chart-card\">
+              <div class=\"uba-card-header\">
+                <div>
+                  <div class=\"uba-card-title\">📈 Monthly Trend</div>
+                  <p class=\"uba-card-sub\">Expense trends over time</p>
+                </div>
+                <div class=\"chart-controls\">
+                  <select id=\"trend-chart-period\" class=\"uba-select enhanced-dropdown\">
+                    <option value=\"6-months\">Last 6 Months</option>
+                    <option value=\"12-months\">Last 12 Months</option>
+                    <option value=\"24-months\">Last 24 Months</option>
+                  </select>
+                </div>
+              </div>
+              <div class=\"chart-content\">
+                <canvas id=\"expense-trend-chart\" width=\"600\" height=\"300\"></canvas>
+                <div id=\"trend-chart-summary\" class=\"chart-summary\"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Insert charts before the main expenses table
+      const expensesTable = expensesView.querySelector('.uba-grid');
+      if (expensesTable) {
+        expensesView.insertBefore(chartsSection, expensesTable);
+      }
+      
+      // Setup chart period change handlers
+      const pieSelect = document.getElementById('pie-chart-period');
+      const trendSelect = document.getElementById('trend-chart-period');
+      
+      if (pieSelect) {
+        pieSelect.addEventListener('change', () => this.updatePieChart());
+      }
+      
+      if (trendSelect) {
+        trendSelect.addEventListener('change', () => this.updateTrendChart());
+      }
+    },
+    
+    /**
+     * Initialize charts
+     */
+    initializeCharts() {
+      // Load Chart.js if not already loaded
+      this.loadChartJS().then(() => {
+        this.createPieChart();
+        this.createTrendChart();
+      }).catch(error => {
+        console.warn('Charts not available:', error);
+        this.createFallbackCharts();
+      });
+    },
+    
+    /**
+     * Load Chart.js library
+     */
+    async loadChartJS() {
+      if (window.Chart) return;
+      
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js';
+        script.onload = resolve;
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    },
+    
+    /**
+     * Create pie chart
+     */
+    createPieChart() {
+      const ctx = document.getElementById('expense-pie-chart');
+      if (!ctx || !window.Chart) return;
+      
+      const data = this.getPieChartData();
+      
+      this.charts.pie = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: data.labels,
+          datasets: [{
+            data: data.values,
+            backgroundColor: data.colors,
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false // We'll create custom legend
+            },
+            tooltip: {
+              callbacks: {
+                label: (context) => {
+                  const label = context.label;
+                  const value = this.formatAmount(context.parsed);
+                  const percentage = ((context.parsed / data.total) * 100).toFixed(1);
+                  return `${label}: ${value} (${percentage}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+      
+      // Create custom legend
+      this.createPieChartLegend(data);
+    },
+    
+    /**
+     * Get pie chart data
+     */
+    getPieChartData() {
+      const period = document.getElementById('pie-chart-period')?.value || 'current-month';
+      const expenses = this.getExpensesForPeriod(period);
+      
+      // Group by category
+      const categoryTotals = {};
+      expenses.forEach(expense => {
+        const category = expense.category || 'Other';
+        categoryTotals[category] = (categoryTotals[category] || 0) + (expense.amount || 0);
+      });
+      
+      const labels = Object.keys(categoryTotals);
+      const values = Object.values(categoryTotals);
+      const total = values.reduce((sum, val) => sum + val, 0);
+      
+      // Get colors for categories
+      const colors = labels.map(label => {
+        const category = this.categories.find(cat => cat.name === label);
+        return category ? category.color : '#64748b';
+      });
+      
+      return { labels, values, colors, total };
+    },
+    
+    /**
+     * Create pie chart legend
+     */
+    createPieChartLegend(data) {
+      const legend = document.getElementById('pie-chart-legend');
+      if (!legend) return;
+      
+      legend.innerHTML = data.labels.map((label, index) => {
+        const value = data.values[index];
+        const percentage = ((value / data.total) * 100).toFixed(1);
+        const color = data.colors[index];
+        const category = this.categories.find(cat => cat.name === label);
+        const icon = category ? category.icon : '📋';
+        
+        return `
+          <div class=\"legend-item\">
+            <span class=\"legend-color\" style=\"background-color: ${color}\"></span>
+            <span class=\"legend-icon\">${icon}</span>
+            <span class=\"legend-label\">${label}</span>
+            <span class=\"legend-value\">${this.formatAmount(value)} (${percentage}%)</span>
+          </div>
+        `;
+      }).join('');
+    },
+    
+    /**
+     * Create trend chart
+     */
+    createTrendChart() {
+      const ctx = document.getElementById('expense-trend-chart');
+      if (!ctx || !window.Chart) return;
+      
+      const data = this.getTrendChartData();
+      
+      this.charts.trend = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: data.labels,
+          datasets: [{
+            label: 'Total Expenses',
+            data: data.values,
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: (value) => '€' + value.toFixed(0)
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: (context) => {
+                  return `Total: ${this.formatAmount(context.parsed.y)}`;
+                }
+              }
+            }
+          }
+        }
+      });
+      
+      // Create trend summary
+      this.createTrendSummary(data);
+    },
+    
+    /**
+     * Get trend chart data
+     */
+    getTrendChartData() {
+      const period = document.getElementById('trend-chart-period')?.value || '6-months';
+      const monthsCount = period === '12-months' ? 12 : period === '24-months' ? 24 : 6;
+      
+      const labels = [];
+      const values = [];
+      const now = new Date();
+      
+      // Generate labels and calculate values for each month
+      for (let i = monthsCount - 1; i >= 0; i--) {
+        const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const monthKey = date.toISOString().slice(0, 7);
+        const monthLabel = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+        
+        labels.push(monthLabel);
+        
+        // Calculate total expenses for this month
+        const monthExpenses = this.getExpensesData().filter(expense => 
+          expense.date && expense.date.startsWith(monthKey)
+        );
+        const monthTotal = monthExpenses.reduce((sum, expense) => sum + (expense.amount || 0), 0);
+        
+        values.push(monthTotal);
+      }
+      
+      return { labels, values };
+    },
+    
+    /**
+     * Create trend summary
+     */
+    createTrendSummary(data) {
+      const summary = document.getElementById('trend-chart-summary');
+      if (!summary) return;
+      
+      const total = data.values.reduce((sum, val) => sum + val, 0);
+      const average = total / data.values.length;
+      const max = Math.max(...data.values);
+      const min = Math.min(...data.values);
+      
+      summary.innerHTML = `
+        <div class=\"summary-grid\">
+          <div class=\"summary-item\">
+            <span class=\"summary-label\">Total</span>
+            <span class=\"summary-value\">${this.formatAmount(total)}</span>
+          </div>
+          <div class=\"summary-item\">
+            <span class=\"summary-label\">Average</span>
+            <span class=\"summary-value\">${this.formatAmount(average)}</span>
+          </div>
+          <div class=\"summary-item\">
+            <span class=\"summary-label\">Highest</span>
+            <span class=\"summary-value\">${this.formatAmount(max)}</span>
+          </div>
+          <div class=\"summary-item\">
+            <span class=\"summary-label\">Lowest</span>
+            <span class=\"summary-value\">${this.formatAmount(min)}</span>
+          </div>
+        </div>
+      `;
+    },
+    
+    /**
+     * Update pie chart
+     */
+    updatePieChart() {
+      if (this.charts.pie) {
+        const data = this.getPieChartData();
+        this.charts.pie.data.labels = data.labels;
+        this.charts.pie.data.datasets[0].data = data.values;
+        this.charts.pie.data.datasets[0].backgroundColor = data.colors;
+        this.charts.pie.update();
+        this.createPieChartLegend(data);
+      }
+    },
+    
+    /**
+     * Update trend chart
+     */
+    updateTrendChart() {
+      if (this.charts.trend) {
+        const data = this.getTrendChartData();
+        this.charts.trend.data.labels = data.labels;
+        this.charts.trend.data.datasets[0].data = data.values;
+        this.charts.trend.update();
+        this.createTrendSummary(data);
+      }
+    },
+    
+    /**
+     * Create fallback charts (for when Chart.js is not available)
+     */
+    createFallbackCharts() {
+      // Create simple HTML-based charts
+      this.createFallbackPieChart();
+      this.createFallbackTrendChart();
+    },
+    
+    /**
+     * Create fallback pie chart
+     */
+    createFallbackPieChart() {
+      const canvas = document.getElementById('expense-pie-chart');
+      if (!canvas) return;
+      
+      const data = this.getPieChartData();
+      const fallback = document.createElement('div');
+      fallback.className = 'fallback-pie-chart';
+      
+      let cumulativePercentage = 0;
+      fallback.innerHTML = `
+        <div class=\"pie-chart-fallback\">
+          ${data.labels.map((label, index) => {
+            const value = data.values[index];
+            const percentage = ((value / data.total) * 100);
+            const color = data.colors[index];
+            
+            const segment = `
+              <div class=\"pie-segment\" style=\"
+                background: ${color};
+                transform: rotate(${cumulativePercentage * 3.6}deg);
+                clip-path: polygon(50% 50%, 50% 0%, ${50 + percentage}% 0%);
+              \"></div>
+            `;
+            
+            cumulativePercentage += percentage;
+            return segment;
+          }).join('')}
+        </div>
+        <div class=\"pie-chart-center\">
+          <strong>${this.formatAmount(data.total)}</strong>
+          <small>Total</small>
+        </div>
+      `;
+      
+      canvas.parentNode.replaceChild(fallback, canvas);
+      this.createPieChartLegend(data);
+    },
+    
+    /**
+     * Create fallback trend chart
+     */
+    createFallbackTrendChart() {
+      const canvas = document.getElementById('expense-trend-chart');
+      if (!canvas) return;
+      
+      const data = this.getTrendChartData();
+      const maxValue = Math.max(...data.values);
+      
+      const fallback = document.createElement('div');
+      fallback.className = 'fallback-trend-chart';
+      fallback.innerHTML = `
+        <div class=\"trend-chart-bars\">
+          ${data.labels.map((label, index) => {
+            const value = data.values[index];
+            const height = maxValue > 0 ? (value / maxValue) * 100 : 0;
+            
+            return `
+              <div class=\"trend-bar\" title=\"${label}: ${this.formatAmount(value)}\">
+                <div class=\"bar\" style=\"height: ${height}%;\"></div>
+                <span class=\"bar-label\">${label}</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+      
+      canvas.parentNode.replaceChild(fallback, canvas);
+      this.createTrendSummary(data);
+    },
+    
+    /**
+     * Setup receipt upload functionality
+     */
+    setupReceiptUpload() {
+      console.log('📎 Setting up receipt upload integration');
+      
+      // Enhance expense form with receipt upload
+      this.enhanceExpenseFormWithUpload();
+      
+      // Setup file upload handlers
+      this.setupFileUploadHandlers();
+    },
+    
+    /**
+     * Enhance expense form with receipt upload
+     */
+    enhanceExpenseFormWithUpload() {
+      const receiptField = document.getElementById('expense-receipt');
+      if (!receiptField) return;
+      
+      // Replace textarea with enhanced upload section
+      const uploadSection = document.createElement('div');
+      uploadSection.className = 'receipt-upload-section';
+      uploadSection.innerHTML = `
+        <div class=\"upload-tabs\">
+          <button type=\"button\" class=\"upload-tab active\" data-tab=\"file\">📎 Upload File</button>
+          <button type=\"button\" class=\"upload-tab\" data-tab=\"notes\">📝 Notes</button>
+        </div>
+        
+        <div class=\"upload-content\">
+          <!-- File Upload Tab -->
+          <div class=\"upload-tab-content active\" data-tab=\"file\">
+            <div class=\"file-upload-area\" id=\"receipt-upload-area\">
+              <input type=\"file\" id=\"receipt-file-input\" class=\"file-input\" accept=\".pdf,.png,.jpg,.jpeg,.gif\" multiple />
+              <div class=\"upload-prompt\">
+                <span class=\"upload-icon\">📎</span>
+                <p>Drop receipt files here or <button type=\"button\" class=\"upload-link\" onclick=\"document.getElementById('receipt-file-input').click()\">browse files</button></p>
+                <small>Supports: PDF, PNG, JPG, GIF (max 5MB each)</small>
+              </div>
+              <div id=\"uploaded-files\" class=\"uploaded-files\"></div>
+            </div>
+          </div>
+          
+          <!-- Notes Tab -->
+          <div class=\"upload-tab-content\" data-tab=\"notes\">
+            <textarea id=\"expense-receipt\" name=\"receipt\" rows=\"3\" class=\"uba-textarea\" placeholder=\"Receipt number, notes, or additional details\"></textarea>
+          </div>
+        </div>
+      `;
+      
+      // Replace the original textarea's parent
+      const parentGroup = receiptField.closest('.uba-form-group');
+      if (parentGroup) {
+        const label = parentGroup.querySelector('label');
+        label.textContent = 'Receipt & Files (الإيصال والملفات)';
+        
+        // Replace textarea with upload section
+        receiptField.parentNode.replaceChild(uploadSection, receiptField);
+      }
+      
+      // Setup tab switching
+      this.setupUploadTabs();
+      
+      // Setup drag and drop
+      this.setupDragAndDrop();
+    },
+    
+    /**
+     * Setup upload tabs
+     */
+    setupUploadTabs() {
+      const tabs = document.querySelectorAll('.upload-tab');
+      const contents = document.querySelectorAll('.upload-tab-content');
+      
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const targetTab = tab.getAttribute('data-tab');
+          
+          // Update tab states
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          
+          // Update content states
+          contents.forEach(content => {
+            content.classList.remove('active');
+            if (content.getAttribute('data-tab') === targetTab) {
+              content.classList.add('active');
+            }
+          });
+        });
+      });
+    },
+    
+    /**
+     * Setup drag and drop
+     */
+    setupDragAndDrop() {
+      const uploadArea = document.getElementById('receipt-upload-area');
+      if (!uploadArea) return;
+      
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+      });
+      
+      ['dragenter', 'dragover'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, () => {
+          uploadArea.classList.add('drag-over');
+        });
+      });
+      
+      ['dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, () => {
+          uploadArea.classList.remove('drag-over');
+        });
+      });
+      
+      uploadArea.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        this.handleFileUpload(files);
+      });
+    },
+    
+    /**
+     * Setup file upload handlers
+     */
+    setupFileUploadHandlers() {
+      const fileInput = document.getElementById('receipt-file-input');
+      if (fileInput) {
+        fileInput.addEventListener('change', (e) => {
+          this.handleFileUpload(e.target.files);
+        });
+      }
+    },
+    
+    /**
+     * Handle file upload
+     */
+    handleFileUpload(files) {
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'application/pdf'];
+      
+      Array.from(files).forEach(file => {
+        // Validate file size
+        if (file.size > maxSize) {
+          this.showNotification(`File \"${file.name}\" is too large. Maximum size is 5MB.`, 'error');
+          return;
+        }
+        
+        // Validate file type
+        if (!allowedTypes.includes(file.type)) {
+          this.showNotification(`File \"${file.name}\" is not a supported format.`, 'error');
+          return;
+        }
+        
+        // Process file
+        this.processUploadedFile(file);
+      });
+    },
+    
+    /**
+     * Process uploaded file
+     */
+    processUploadedFile(file) {
+      const fileId = 'file-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+      
+      // Create file object
+      const fileObj = {
+        id: fileId,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        uploadedAt: new Date().toISOString(),
+        file: file // Store the actual file object
+      };
+      
+      // Store in files collection (integrate with files section)
+      this.storeFileInFilesSection(fileObj);
+      
+      // Add to current uploads
+      if (!this.fileUploads.currentExpense) {
+        this.fileUploads.currentExpense = [];
+      }
+      this.fileUploads.currentExpense.push(fileObj);
+      
+      // Update UI
+      this.updateUploadedFilesDisplay();
+      
+      this.showNotification(`File \"${file.name}\" uploaded successfully`, 'success');
+    },
+    
+    /**
+     * Store file in files section
+     */
+    storeFileInFilesSection(fileObj) {
+      // Create file entry for files section
+      const fileEntry = {
+        id: fileObj.id,
+        name: fileObj.name,
+        type: 'receipt',
+        category: 'expense',
+        size: fileObj.size,
+        mimeType: fileObj.type,
+        uploadedAt: fileObj.uploadedAt,
+        tags: ['receipt', 'expense'],
+        description: 'Expense receipt upload'
+      };
+      
+      // Store in localStorage (files section integration)
+      const existingFiles = JSON.parse(localStorage.getItem('uba-files') || '[]');
+      existingFiles.push(fileEntry);
+      localStorage.setItem('uba-files', JSON.stringify(existingFiles));
+    },
+    
+    /**
+     * Update uploaded files display
+     */
+    updateUploadedFilesDisplay() {
+      const container = document.getElementById('uploaded-files');
+      if (!container || !this.fileUploads.currentExpense) return;
+      
+      container.innerHTML = this.fileUploads.currentExpense.map(file => `
+        <div class=\"uploaded-file\" data-file-id=\"${file.id}\">
+          <div class=\"file-info\">
+            <span class=\"file-icon\">${this.getFileIcon(file.type)}</span>
+            <div class=\"file-details\">
+              <strong class=\"file-name\">${file.name}</strong>
+              <small class=\"file-size\">${this.formatFileSize(file.size)}</small>
+            </div>
+          </div>
+          <div class=\"file-actions\">
+            <button type=\"button\" class=\"uba-btn uba-btn-sm uba-btn-ghost\" onclick=\"window.UBAEnhancedExpenses.previewFile('${file.id}')\" title=\"Preview\">
+              👁️
+            </button>
+            <button type=\"button\" class=\"uba-btn uba-btn-sm uba-btn-danger\" onclick=\"window.UBAEnhancedExpenses.removeFile('${file.id}')\" title=\"Remove\">
+              🗑️
+            </button>
+          </div>
+        </div>
+      `).join('');
+    },
+    
+    /**
+     * Get file icon based on type
+     */
+    getFileIcon(mimeType) {
+      if (mimeType.startsWith('image/')) return '🖼️';
+      if (mimeType === 'application/pdf') return '📄';
+      return '📎';
+    },
+    
+    /**
+     * Format file size
+     */
+    formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    },
+    
+    /**
+     * Preview file
+     */
+    previewFile(fileId) {
+      const file = this.fileUploads.currentExpense?.find(f => f.id === fileId);
+      if (!file) return;
+      
+      if (file.type.startsWith('image/')) {
+        // Show image preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.showImagePreview(file.name, e.target.result);
+        };
+        reader.readAsDataURL(file.file);
+      } else if (file.type === 'application/pdf') {
+        // Open PDF in new tab
+        const url = URL.createObjectURL(file.file);
+        window.open(url, '_blank');
+      } else {
+        this.showNotification('Preview not available for this file type', 'info');
+      }
+    },
+    
+    /**
+     * Show image preview
+     */
+    showImagePreview(fileName, dataUrl) {
+      const modal = document.createElement('div');
+      modal.className = 'uba-modal image-preview-modal is-visible';
+      modal.innerHTML = `
+        <div class=\"uba-modal-overlay\"></div>
+        <div class=\"uba-modal-dialog image-preview-dialog\">
+          <div class=\"uba-modal-header\">
+            <h3>${fileName}</h3>
+            <button class=\"uba-modal-close\">×</button>
+          </div>
+          <div class=\"uba-modal-body\">
+            <img src=\"${dataUrl}\" alt=\"${fileName}\" class=\"preview-image\" />
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      document.body.style.overflow = 'hidden';
+      
+      // Setup close handlers
+      const closeBtn = modal.querySelector('.uba-modal-close');
+      const overlay = modal.querySelector('.uba-modal-overlay');
+      
+      const closeModal = () => {
+        document.body.removeChild(modal);
+        document.body.style.overflow = '';
+      };
+      
+      closeBtn.addEventListener('click', closeModal);
+      overlay.addEventListener('click', closeModal);
+    },
+    
+    /**
+     * Remove file
+     */
+    removeFile(fileId) {
+      if (!this.fileUploads.currentExpense) return;
+      
+      this.fileUploads.currentExpense = this.fileUploads.currentExpense.filter(f => f.id !== fileId);
+      this.updateUploadedFilesDisplay();
+      
+      // Also remove from files section
+      const existingFiles = JSON.parse(localStorage.getItem('uba-files') || '[]');
+      const updatedFiles = existingFiles.filter(f => f.id !== fileId);
+      localStorage.setItem('uba-files', JSON.stringify(updatedFiles));
+      
+      this.showNotification('File removed', 'info');
+    },
+    
+    /**
+     * Setup enhanced dropdown design
+     */
+    enhanceDropdownDesign() {
+      console.log('🎨 Enhancing dropdown design');
+      
+      // Apply enhanced styling to all dropdowns
+      this.applyEnhancedDropdownStyles();
+      
+      // Setup dropdown interactions
+      this.setupDropdownInteractions();
+    },
+    
+    /**
+     * Apply enhanced dropdown styles
+     */
+    applyEnhancedDropdownStyles() {
+      // Add enhanced class to all select elements
+      document.querySelectorAll('select').forEach(select => {
+        select.classList.add('enhanced-dropdown');
+      });
+      
+      // Enhance expense category dropdown specifically
+      const categorySelect = document.getElementById('expense-category');
+      if (categorySelect) {
+        this.enhanceCategoryDropdown(categorySelect);
+      }
+    },
+    
+    /**
+     * Enhance category dropdown
+     */
+    enhanceCategoryDropdown(select) {
+      // Update category options with icons and colors
+      const options = select.querySelectorAll('option[data-category-id]');
+      options.forEach(option => {
+        const categoryId = option.getAttribute('data-category-id');
+        const category = this.categories.find(cat => cat.id === categoryId);
+        if (category) {
+          option.textContent = `${category.icon} ${category.name}`;
+          option.setAttribute('data-color', category.color);
+        }
+      });
+    },
+    
+    /**
+     * Setup dropdown interactions
+     */
+    setupDropdownInteractions() {
+      // Enhanced focus and hover effects are handled via CSS
+      // Add any additional JavaScript interactions here
+    },
+    
+    /**
+     * Initialize UI components
+     */
+    initializeUI() {
+      // Update category dropdown when page loads
+      setTimeout(() => {
+        this.updateExpenseFormCategories();
+      }, 500);
+    },
+    
+    // Utility methods
+    
+    /**
+     * Get expenses data
+     */
+    getExpensesData() {
+      if (window.ubaStore?.expenses) {
+        return window.ubaStore.expenses.getAll() || [];
+      }
+      // Fallback to demo data
+      return this.getDemoExpenses();
+    },
+    
+    /**
+     * Get demo expenses for chart testing
+     */
+    getDemoExpenses() {
+      const now = new Date();
+      return [
+        {
+          id: 'demo-1',
+          date: now.toISOString().slice(0, 10),
+          category: 'Software',
+          amount: 299,
+          description: 'Design software subscription'
+        },
+        {
+          id: 'demo-2',
+          date: new Date(now.getFullYear(), now.getMonth(), now.getDate() - 5).toISOString().slice(0, 10),
+          category: 'Office Supplies',
+          amount: 156,
+          description: 'Office equipment'
+        },
+        {
+          id: 'demo-3',
+          date: new Date(now.getFullYear(), now.getMonth() - 1, 15).toISOString().slice(0, 10),
+          category: 'Marketing',
+          amount: 850,
+          description: 'Social media ads'
+        }
+      ];
+    },
+    
+    /**
+     * Get expenses for specific period
+     */
+    getExpensesForPeriod(period) {
+      const expenses = this.getExpensesData();
+      const now = new Date();
+      
+      switch (period) {
+        case 'current-month':
+          const currentMonth = now.toISOString().slice(0, 7);
+          return expenses.filter(e => e.date && e.date.startsWith(currentMonth));
+          
+        case 'last-month':
+          const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().slice(0, 7);
+          return expenses.filter(e => e.date && e.date.startsWith(lastMonth));
+          
+        case 'last-3-months':
+          const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1);
+          return expenses.filter(e => e.date && new Date(e.date) >= threeMonthsAgo);
+          
+        case 'last-6-months':
+          const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 6, 1);
+          return expenses.filter(e => e.date && new Date(e.date) >= sixMonthsAgo);
+          
+        default:
+          return expenses;
+      }
+    },
+    
+    /**
+     * Format amount with currency
+     */
+    formatAmount(amount) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'EUR'
+      }).format(amount || 0);
+    },
+    
+    /**
+     * Show notification
+     */
+    showNotification(message, type = 'info', options = {}) {
+      if (window.showToast) {
+        window.showToast(message, type, options);
+      } else {
+        console.log(`${type.toUpperCase()}: ${message}`);
+      }
+    }
+  };
+  
+  // Auto-initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => window.UBAEnhancedExpenses.init(), 1000);
+    });
+  } else {
+    setTimeout(() => window.UBAEnhancedExpenses.init(), 1000);
+  }
+  
+  console.log('✅ Enhanced Expenses module loaded');
+  
+})();

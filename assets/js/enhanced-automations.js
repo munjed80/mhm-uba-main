@@ -195,4 +195,1110 @@
     },
     
     /**
-     * Initialize enhanced automation system\n     */\n    init() {\n      console.log('🤖 Initializing Enhanced Automation System');\n      \n      this.loadAutomations();\n      this.setupRealTriggers();\n      this.enhanceAutomationModal();\n      this.setupValidationRules();\n      this.addToggleControls();\n      this.enhanceDesign();\n      this.initializeEventSystem();\n      \n      console.log('✅ Enhanced Automation System initialized');\n    },\n    \n    /**\n     * Load automations from storage\n     */\n    loadAutomations() {\n      try {\n        const saved = localStorage.getItem('uba-enhanced-automations');\n        this.automations = saved ? JSON.parse(saved) : this.getDefaultAutomations();\n        \n        const savedLogs = localStorage.getItem('uba-automation-logs');\n        this.logs = savedLogs ? JSON.parse(savedLogs) : [];\n        \n        console.log('✅ Automations loaded:', this.automations.length);\n      } catch (error) {\n        console.warn('⚠️ Failed to load automations:', error);\n        this.automations = this.getDefaultAutomations();\n      }\n    },\n    \n    /**\n     * Get default automations\n     */\n    getDefaultAutomations() {\n      return [\n        {\n          id: 'auto-1',\n          name: 'Welcome New Clients',\n          description: 'Send welcome notification when new client is added',\n          trigger: 'onClientCreated',\n          triggerConfig: {},\n          actions: [\n            {\n              type: 'sendNotification',\n              config: {\n                message: 'New client {{client.name}} has been added to the system',\n                type: 'success',\n                persistent: false\n              }\n            },\n            {\n              type: 'createTask',\n              config: {\n                title: 'Follow up with {{client.name}}',\n                description: 'Schedule initial consultation call',\n                priority: 'high',\n                dueDate: '+3days'\n              }\n            }\n          ],\n          enabled: true,\n          createdAt: new Date().toISOString(),\n          lastTriggered: null,\n          triggerCount: 0\n        },\n        {\n          id: 'auto-2',\n          name: 'Invoice Due Reminder',\n          description: 'Create follow-up task when invoice is due',\n          trigger: 'onInvoiceDue',\n          triggerConfig: {\n            daysBeforeDue: 3\n          },\n          actions: [\n            {\n              type: 'createTask',\n              config: {\n                title: 'Follow up on invoice {{invoice.label}}',\n                description: 'Invoice for {{client.name}} is due in 3 days',\n                priority: 'medium',\n                dueDate: 'today'\n              }\n            },\n            {\n              type: 'addLogEntry',\n              config: {\n                message: 'Invoice {{invoice.label}} due reminder created',\n                level: 'info',\n                category: 'invoices'\n              }\n            }\n          ],\n          enabled: true,\n          createdAt: new Date().toISOString(),\n          lastTriggered: null,\n          triggerCount: 0\n        }\n      ];\n    },\n    \n    /**\n     * Setup real trigger system\n     */\n    setupRealTriggers() {\n      console.log('🎯 Setting up real trigger system');\n      \n      // Hook into existing systems\n      this.hookIntoTaskSystem();\n      this.hookIntoInvoiceSystem();\n      this.hookIntoLeadSystem();\n      this.hookIntoProjectSystem();\n      this.hookIntoClientSystem();\n      \n      // Setup periodic checks\n      this.setupPeriodicTriggers();\n    },\n    \n    /**\n     * Hook into task system\n     */\n    hookIntoTaskSystem() {\n      if (window.ubaStore?.tasks) {\n        const originalCreate = window.ubaStore.tasks.create;\n        const originalUpdate = window.ubaStore.tasks.update;\n        \n        // Override task creation\n        window.ubaStore.tasks.create = (taskData) => {\n          const result = originalCreate.call(window.ubaStore.tasks, taskData);\n          this.triggerEvent('task.created', taskData);\n          return result;\n        };\n        \n        // Override task updates\n        window.ubaStore.tasks.update = (taskId, taskData) => {\n          const oldTask = window.ubaStore.tasks.getById(taskId);\n          const result = originalUpdate.call(window.ubaStore.tasks, taskId, taskData);\n          \n          if (oldTask && taskData.status !== oldTask.status && taskData.status === 'completed') {\n            this.triggerEvent('task.completed', { ...taskData, id: taskId, oldStatus: oldTask.status });\n          }\n          \n          return result;\n        };\n        \n        console.log('✅ Task system hooked');\n      }\n    },\n    \n    /**\n     * Hook into invoice system\n     */\n    hookIntoInvoiceSystem() {\n      if (window.ubaStore?.invoices) {\n        const originalCreate = window.ubaStore.invoices.create;\n        const originalUpdate = window.ubaStore.invoices.update;\n        \n        // Override invoice creation\n        window.ubaStore.invoices.create = (invoiceData) => {\n          const result = originalCreate.call(window.ubaStore.invoices, invoiceData);\n          this.triggerEvent('invoice.created', invoiceData);\n          return result;\n        };\n        \n        // Override invoice updates\n        window.ubaStore.invoices.update = (invoiceId, invoiceData) => {\n          const oldInvoice = window.ubaStore.invoices.getById(invoiceId);\n          const result = originalUpdate.call(window.ubaStore.invoices, invoiceId, invoiceData);\n          \n          if (oldInvoice && invoiceData.status !== oldInvoice.status) {\n            this.triggerEvent('invoice.status_changed', { \n              ...invoiceData, \n              id: invoiceId, \n              oldStatus: oldInvoice.status,\n              newStatus: invoiceData.status\n            });\n          }\n          \n          return result;\n        };\n        \n        console.log('✅ Invoice system hooked');\n      }\n    },\n    \n    /**\n     * Hook into lead system\n     */\n    hookIntoLeadSystem() {\n      if (window.ubaStore?.leads) {\n        const originalUpdate = window.ubaStore.leads.update;\n        \n        // Override lead updates\n        window.ubaStore.leads.update = (leadId, leadData) => {\n          const oldLead = window.ubaStore.leads.getById(leadId);\n          const result = originalUpdate.call(window.ubaStore.leads, leadId, leadData);\n          \n          this.triggerEvent('lead.updated', { \n            ...leadData, \n            id: leadId, \n            oldData: oldLead\n          });\n          \n          if (oldLead && leadData.status !== oldLead.status) {\n            this.triggerEvent('lead.status_changed', {\n              ...leadData,\n              id: leadId,\n              oldStatus: oldLead.status,\n              newStatus: leadData.status\n            });\n          }\n          \n          return result;\n        };\n        \n        console.log('✅ Lead system hooked');\n      }\n    },\n    \n    /**\n     * Hook into project system\n     */\n    hookIntoProjectSystem() {\n      if (window.ubaStore?.projects) {\n        const originalUpdate = window.ubaStore.projects.update;\n        \n        // Override project updates\n        window.ubaStore.projects.update = (projectId, projectData) => {\n          const oldProject = window.ubaStore.projects.getById(projectId);\n          const result = originalUpdate.call(window.ubaStore.projects, projectId, projectData);\n          \n          if (oldProject && projectData.stage !== oldProject.stage) {\n            this.triggerEvent('project.stage_changed', {\n              ...projectData,\n              id: projectId,\n              oldStage: oldProject.stage,\n              newStage: projectData.stage\n            });\n          }\n          \n          if (oldProject && projectData.status !== oldProject.status) {\n            this.triggerEvent('project.status_changed', {\n              ...projectData,\n              id: projectId,\n              oldStatus: oldProject.status,\n              newStatus: projectData.status\n            });\n          }\n          \n          return result;\n        };\n        \n        console.log('✅ Project system hooked');\n      }\n    },\n    \n    /**\n     * Hook into client system\n     */\n    hookIntoClientSystem() {\n      if (window.ubaStore?.clients) {\n        const originalCreate = window.ubaStore.clients.create;\n        \n        // Override client creation\n        window.ubaStore.clients.create = (clientData) => {\n          const result = originalCreate.call(window.ubaStore.clients, clientData);\n          this.triggerEvent('client.created', clientData);\n          return result;\n        };\n        \n        console.log('✅ Client system hooked');\n      }\n    },\n    \n    /**\n     * Setup periodic triggers (for due dates, deadlines, etc.)\n     */\n    setupPeriodicTriggers() {\n      // Check for due invoices every hour\n      setInterval(() => {\n        this.checkInvoiceDueDates();\n        this.checkApproachingDeadlines();\n      }, 60 * 60 * 1000); // Every hour\n      \n      // Initial check\n      setTimeout(() => {\n        this.checkInvoiceDueDates();\n        this.checkApproachingDeadlines();\n      }, 5000);\n    },\n    \n    /**\n     * Check invoice due dates\n     */\n    checkInvoiceDueDates() {\n      if (!window.ubaStore?.invoices) return;\n      \n      const invoices = window.ubaStore.invoices.getAll() || [];\n      const now = new Date();\n      \n      invoices.forEach(invoice => {\n        if (invoice.due && invoice.status !== 'paid') {\n          const dueDate = new Date(invoice.due);\n          const daysDiff = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));\n          \n          if (daysDiff <= 0 && invoice.status !== 'overdue') {\n            this.triggerEvent('invoice.overdue', invoice);\n          } else if (daysDiff > 0 && daysDiff <= 7) {\n            this.triggerEvent('invoice.due', { ...invoice, daysUntilDue: daysDiff });\n          }\n        }\n      });\n    },\n    \n    /**\n     * Check approaching deadlines\n     */\n    checkApproachingDeadlines() {\n      const now = new Date();\n      \n      // Check tasks\n      if (window.ubaStore?.tasks) {\n        const tasks = window.ubaStore.tasks.getAll() || [];\n        tasks.forEach(task => {\n          if (task.due && task.status !== 'completed') {\n            const dueDate = new Date(task.due);\n            const daysDiff = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));\n            \n            if (daysDiff > 0 && daysDiff <= 3) {\n              this.triggerEvent('deadline.approaching', {\n                ...task,\n                type: 'task',\n                daysUntilDeadline: daysDiff\n              });\n            }\n          }\n        });\n      }\n      \n      // Check projects\n      if (window.ubaStore?.projects) {\n        const projects = window.ubaStore.projects.getAll() || [];\n        projects.forEach(project => {\n          const deadline = project.due || project.deadline;\n          if (deadline && project.status === 'active') {\n            const deadlineDate = new Date(deadline);\n            const daysDiff = Math.ceil((deadlineDate - now) / (1000 * 60 * 60 * 24));\n            \n            if (daysDiff > 0 && daysDiff <= 7) {\n              this.triggerEvent('deadline.approaching', {\n                ...project,\n                type: 'project',\n                daysUntilDeadline: daysDiff\n              });\n            }\n          }\n        });\n      }\n    },\n    \n    /**\n     * Trigger an automation event\n     */\n    triggerEvent(eventType, eventData) {\n      console.log(`🎯 Triggering event: ${eventType}`, eventData);\n      \n      // Find matching automations\n      const matchingAutomations = this.automations.filter(automation => {\n        if (!automation.enabled) return false;\n        \n        const trigger = this.triggers[automation.trigger];\n        if (!trigger) return false;\n        \n        return trigger.events.includes(eventType);\n      });\n      \n      // Execute matching automations\n      matchingAutomations.forEach(automation => {\n        this.executeAutomation(automation, eventType, eventData);\n      });\n    },\n    \n    /**\n     * Execute an automation\n     */\n    async executeAutomation(automation, eventType, eventData) {\n      console.log(`🚀 Executing automation: ${automation.name}`);\n      \n      try {\n        // Check conditions\n        if (!this.checkConditions(automation, eventData)) {\n          this.logExecution(automation, 'skipped', 'Conditions not met', eventData);\n          return;\n        }\n        \n        // Execute actions\n        const results = [];\n        for (const action of automation.actions) {\n          try {\n            const result = await this.executeAction(action, eventData, automation);\n            results.push({ action: action.type, success: true, result });\n          } catch (error) {\n            console.error(`❌ Action ${action.type} failed:`, error);\n            results.push({ action: action.type, success: false, error: error.message });\n          }\n        }\n        \n        // Update automation stats\n        automation.lastTriggered = new Date().toISOString();\n        automation.triggerCount = (automation.triggerCount || 0) + 1;\n        this.saveAutomations();\n        \n        // Log successful execution\n        this.logExecution(automation, 'success', `Executed ${results.length} actions`, eventData, results);\n        \n      } catch (error) {\n        console.error(`❌ Automation ${automation.name} failed:`, error);\n        this.logExecution(automation, 'error', error.message, eventData);\n      }\n    },\n    \n    /**\n     * Check automation conditions\n     */\n    checkConditions(automation, eventData) {\n      const triggerConfig = automation.triggerConfig || {};\n      const trigger = this.triggers[automation.trigger];\n      \n      if (!trigger || !trigger.conditions) return true;\n      \n      // Check each configured condition\n      for (const [conditionKey, conditionValue] of Object.entries(triggerConfig)) {\n        if (!this.evaluateCondition(conditionKey, conditionValue, eventData, trigger.conditions)) {\n          return false;\n        }\n      }\n      \n      return true;\n    },\n    \n    /**\n     * Evaluate a single condition\n     */\n    evaluateCondition(key, expectedValue, eventData, triggerConditions) {\n      const actualValue = this.getValueFromData(key, eventData);\n      const conditionDef = triggerConditions[key];\n      \n      if (!conditionDef) return true;\n      \n      if (Array.isArray(conditionDef)) {\n        return conditionDef.includes(actualValue);\n      }\n      \n      if (typeof conditionDef === 'object' && conditionDef.min !== undefined) {\n        const numValue = parseFloat(actualValue);\n        return numValue >= conditionDef.min && numValue <= conditionDef.max;\n      }\n      \n      return actualValue === expectedValue;\n    },\n    \n    /**\n     * Get value from event data using dot notation\n     */\n    getValueFromData(path, data) {\n      return path.split('.').reduce((obj, key) => obj && obj[key], data);\n    },\n    \n    /**\n     * Execute an action\n     */\n    async executeAction(action, eventData, automation) {\n      const actionDef = this.actions[action.type];\n      if (!actionDef) {\n        throw new Error(`Unknown action type: ${action.type}`);\n      }\n      \n      // Process config with variable substitution\n      const processedConfig = this.processActionConfig(action.config, eventData);\n      \n      switch (action.type) {\n        case 'sendNotification':\n          return this.executeSendNotification(processedConfig);\n        \n        case 'createTask':\n          return this.executeCreateTask(processedConfig);\n        \n        case 'addLogEntry':\n          return this.executeAddLogEntry(processedConfig, eventData);\n        \n        case 'updateRecord':\n          return this.executeUpdateRecord(processedConfig, eventData);\n        \n        case 'sendEmail':\n          return this.executeSendEmail(processedConfig);\n        \n        case 'webhook':\n          return this.executeWebhook(processedConfig, eventData);\n        \n        default:\n          throw new Error(`Action type ${action.type} not implemented`);\n      }\n    },\n    \n    /**\n     * Process action config with variable substitution\n     */\n    processActionConfig(config, eventData) {\n      const processed = {};\n      \n      for (const [key, value] of Object.entries(config)) {\n        if (typeof value === 'string') {\n          processed[key] = this.substituteVariables(value, eventData);\n        } else {\n          processed[key] = value;\n        }\n      }\n      \n      return processed;\n    },\n    \n    /**\n     * Substitute variables in string\n     */\n    substituteVariables(template, data) {\n      return template.replace(/\\{\\{([^}]+)\\}\\}/g, (match, path) => {\n        const value = this.getValueFromData(path.trim(), data);\n        return value !== undefined ? value : match;\n      });\n    },\n    \n    /**\n     * Execute send notification action\n     */\n    executeSendNotification(config) {\n      if (window.showToast) {\n        window.showToast(config.message, config.type || 'info', {\n          persistent: config.persistent || false\n        });\n      } else {\n        console.log(`📢 Notification: ${config.message}`);\n      }\n      \n      return { message: config.message, type: config.type };\n    },\n    \n    /**\n     * Execute create task action\n     */\n    executeCreateTask(config) {\n      if (!window.ubaStore?.tasks) {\n        throw new Error('Task store not available');\n      }\n      \n      const taskData = {\n        id: 'task-auto-' + Date.now(),\n        title: config.title,\n        description: config.description || '',\n        priority: config.priority || 'medium',\n        status: 'todo',\n        createdAt: new Date().toISOString(),\n        due: this.calculateDueDate(config.dueDate),\n        assignee: config.assignee,\n        projectId: config.project,\n        automationGenerated: true\n      };\n      \n      window.ubaStore.tasks.create(taskData);\n      \n      return { taskId: taskData.id, title: taskData.title };\n    },\n    \n    /**\n     * Calculate due date from config\n     */\n    calculateDueDate(dueDateConfig) {\n      if (!dueDateConfig) return null;\n      \n      const now = new Date();\n      \n      switch (dueDateConfig) {\n        case 'today':\n          return now.toISOString().slice(0, 10);\n        case 'tomorrow':\n          const tomorrow = new Date(now);\n          tomorrow.setDate(tomorrow.getDate() + 1);\n          return tomorrow.toISOString().slice(0, 10);\n        case '+3days':\n          const threeDays = new Date(now);\n          threeDays.setDate(threeDays.getDate() + 3);\n          return threeDays.toISOString().slice(0, 10);\n        case '+1week':\n          const oneWeek = new Date(now);\n          oneWeek.setDate(oneWeek.getDate() + 7);\n          return oneWeek.toISOString().slice(0, 10);\n        case '+2weeks':\n          const twoWeeks = new Date(now);\n          twoWeeks.setDate(twoWeeks.getDate() + 14);\n          return twoWeeks.toISOString().slice(0, 10);\n        default:\n          return dueDateConfig; // Custom date\n      }\n    },\n    \n    /**\n     * Execute add log entry action\n     */\n    executeAddLogEntry(config, eventData) {\n      const logEntry = {\n        id: 'log-auto-' + Date.now(),\n        message: config.message,\n        level: config.level || 'info',\n        category: config.category || 'automation',\n        timestamp: new Date().toISOString(),\n        associatedRecord: config.associatedRecord ? eventData : null,\n        automationGenerated: true\n      };\n      \n      this.logs.push(logEntry);\n      this.saveLogs();\n      \n      return { logId: logEntry.id, message: logEntry.message };\n    },\n    \n    /**\n     * Execute update record action\n     */\n    executeUpdateRecord(config, eventData) {\n      // This would update the record that triggered the automation\n      // Implementation depends on the specific record type and field\n      return { field: config.field, value: config.value };\n    },\n    \n    /**\n     * Execute send email action\n     */\n    executeSendEmail(config) {\n      // Email functionality would be implemented here\n      console.log(`📧 Email to ${config.to}: ${config.subject}`);\n      return { to: config.to, subject: config.subject };\n    },\n    \n    /**\n     * Execute webhook action\n     */\n    async executeWebhook(config, eventData) {\n      try {\n        const response = await fetch(config.url, {\n          method: config.method || 'POST',\n          headers: {\n            'Content-Type': 'application/json',\n            ...JSON.parse(config.headers || '{}')\n          },\n          body: config.payload ? \n            this.substituteVariables(config.payload, eventData) : \n            JSON.stringify(eventData)\n        });\n        \n        return { status: response.status, ok: response.ok };\n      } catch (error) {\n        throw new Error(`Webhook failed: ${error.message}`);\n      }\n    },\n    \n    /**\n     * Log automation execution\n     */\n    logExecution(automation, status, message, eventData, results = null) {\n      const logEntry = {\n        id: 'exec-' + Date.now(),\n        automationId: automation.id,\n        automationName: automation.name,\n        status: status, // 'success', 'error', 'skipped'\n        message: message,\n        timestamp: new Date().toISOString(),\n        eventData: eventData,\n        results: results\n      };\n      \n      this.logs.push(logEntry);\n      this.saveLogs();\n      \n      // Limit log size\n      if (this.logs.length > 1000) {\n        this.logs = this.logs.slice(-500);\n        this.saveLogs();\n      }\n    },\n    \n    /**\n     * Enhance automation modal\n     */\n    enhanceAutomationModal() {\n      console.log('🎨 Enhancing automation modal');\n      \n      this.replaceAutomationModal();\n      this.setupModalEventHandlers();\n    },\n    \n    /**\n     * Replace existing automation modal with enhanced version\n     */\n    replaceAutomationModal() {\n      // Remove existing modal\n      const existingModal = document.getElementById('automation-modal');\n      if (existingModal) {\n        existingModal.remove();\n      }\n      \n      // Create enhanced modal\n      const modal = document.createElement('div');\n      modal.id = 'automation-modal';\n      modal.className = 'uba-modal enhanced-automation-modal';\n      modal.innerHTML = this.getEnhancedModalHTML();\n      \n      document.body.appendChild(modal);\n    },\n    \n    /**\n     * Get enhanced modal HTML\n     */\n    getEnhancedModalHTML() {\n      return `\n        <div class=\"uba-modal-overlay\" onclick=\"window.UBAEnhancedAutomations.closeModal()\"></div>\n        <div class=\"uba-modal-dialog enhanced-automation-dialog\">\n          <div class=\"uba-modal-header automation-header\">\n            <h3 id=\"automation-modal-title\">\n              <span class=\"icon\">🤖</span> \n              إنشاء أتمتة جديدة (Create New Automation)\n            </h3>\n            <button class=\"uba-modal-close\" onclick=\"window.UBAEnhancedAutomations.closeModal()\">×</button>\n          </div>\n          \n          <div class=\"uba-modal-body automation-body\">\n            <form id=\"enhanced-automation-form\" class=\"automation-form\">\n              <input type=\"hidden\" id=\"automation-edit-id\" />\n              \n              <!-- Basic Information -->\n              <div class=\"form-section\">\n                <div class=\"section-header\">\n                  <h4><span class=\"icon\">📋</span> Basic Information</h4>\n                  <p>Define the automation name and description</p>\n                </div>\n                \n                <div class=\"form-grid\">\n                  <div class=\"form-group\">\n                    <label for=\"automation-name\">Automation Name *</label>\n                    <input type=\"text\" id=\"automation-name\" class=\"uba-input\" placeholder=\"e.g., Welcome New Clients\" required />\n                  </div>\n                  \n                  <div class=\"form-group\">\n                    <label class=\"toggle-label\">\n                      <input type=\"checkbox\" id=\"automation-enabled\" checked />\n                      <span class=\"toggle-slider\"></span>\n                      Enabled\n                    </label>\n                  </div>\n                </div>\n                \n                <div class=\"form-group\">\n                  <label for=\"automation-description\">Description</label>\n                  <textarea id=\"automation-description\" class=\"uba-textarea\" rows=\"2\" \n                           placeholder=\"Brief description of what this automation does\"></textarea>\n                </div>\n              </div>\n              \n              <!-- Trigger Configuration -->\n              <div class=\"form-section\">\n                <div class=\"section-header\">\n                  <h4><span class=\"icon\">🎯</span> Trigger (المحفز)</h4>\n                  <p>What event should trigger this automation?</p>\n                </div>\n                \n                <div class=\"form-group\">\n                  <label for=\"automation-trigger\">Select Trigger *</label>\n                  <select id=\"automation-trigger\" class=\"uba-select enhanced-dropdown\" required \n                          onchange=\"window.UBAEnhancedAutomations.onTriggerChange()\">\n                    <option value=\"\">Choose a trigger...</option>\n                    ${Object.entries(this.triggers).map(([id, trigger]) => \n                      `<option value=\"${id}\">${trigger.icon} ${trigger.name}</option>`\n                    ).join('')}\n                  </select>\n                </div>\n                \n                <div id=\"trigger-config\" class=\"trigger-config hidden\">\n                  <!-- Dynamic trigger configuration will be loaded here -->\n                </div>\n              </div>\n              \n              <!-- Actions Configuration -->\n              <div class=\"form-section\">\n                <div class=\"section-header\">\n                  <h4><span class=\"icon\">⚡</span> Actions (الإجراءات)</h4>\n                  <p>What should happen when the trigger fires?</p>\n                  <button type=\"button\" class=\"uba-btn uba-btn-sm uba-btn-primary\" \n                          onclick=\"window.UBAEnhancedAutomations.addAction()\">\n                    + Add Action\n                  </button>\n                </div>\n                \n                <div id=\"actions-container\" class=\"actions-container\">\n                  <!-- Actions will be dynamically added here -->\n                </div>\n                \n                <div id=\"no-actions\" class=\"no-actions\">\n                  <p>📝 No actions configured. Click \"Add Action\" to get started.</p>\n                </div>\n              </div>\n            </form>\n          </div>\n          \n          <div class=\"uba-modal-footer automation-footer\">\n            <div class=\"footer-info\">\n              <small id=\"validation-message\" class=\"validation-message\"></small>\n            </div>\n            <div class=\"footer-actions\">\n              <button type=\"button\" class=\"uba-btn uba-btn-ghost\" \n                      onclick=\"window.UBAEnhancedAutomations.closeModal()\">Cancel</button>\n              <button type=\"button\" class=\"uba-btn uba-btn-danger\" id=\"delete-automation-btn\" \n                      onclick=\"window.UBAEnhancedAutomations.deleteAutomation()\" style=\"display: none;\">Delete</button>\n              <button type=\"button\" class=\"uba-btn uba-btn-primary\" \n                      onclick=\"window.UBAEnhancedAutomations.saveAutomation()\">Save Automation</button>\n            </div>\n          </div>\n        </div>\n      `;\n    },\n    \n    /**\n     * Setup validation rules\n     */\n    setupValidationRules() {\n      console.log('✅ Setting up validation rules');\n      \n      this.validationRules = {\n        name: {\n          required: true,\n          minLength: 3,\n          maxLength: 100,\n          message: 'Automation name must be between 3-100 characters'\n        },\n        trigger: {\n          required: true,\n          message: 'Please select a trigger'\n        },\n        actions: {\n          minLength: 1,\n          message: 'At least one action is required'\n        }\n      };\n    },\n    \n    /**\n     * Validate automation\n     */\n    validateAutomation(automationData) {\n      const errors = [];\n      \n      // Validate name\n      if (!automationData.name || automationData.name.length < 3) {\n        errors.push('Automation name is required (minimum 3 characters)');\n      }\n      \n      // Validate trigger\n      if (!automationData.trigger) {\n        errors.push('Please select a trigger');\n      }\n      \n      // Validate actions\n      if (!automationData.actions || automationData.actions.length === 0) {\n        errors.push('At least one action is required');\n      }\n      \n      // Validate each action\n      if (automationData.actions) {\n        automationData.actions.forEach((action, index) => {\n          if (!action.type) {\n            errors.push(`Action ${index + 1}: Action type is required`);\n          }\n          \n          const actionDef = this.actions[action.type];\n          if (actionDef && actionDef.config) {\n            Object.entries(actionDef.config).forEach(([key, configDef]) => {\n              if (configDef.required && (!action.config || !action.config[key])) {\n                errors.push(`Action ${index + 1}: ${key} is required`);\n              }\n            });\n          }\n        });\n      }\n      \n      return errors;\n    },\n    \n    /**\n     * Add toggle controls to existing automations\n     */\n    addToggleControls() {\n      console.log('🎛️ Adding toggle controls');\n      \n      // This will enhance the existing table with toggle switches\n      this.enhanceAutomationsTable();\n    },\n    \n    /**\n     * Enhance existing automations table\n     */\n    enhanceAutomationsTable() {\n      // Override the existing renderAutomationsTable function\n      const originalRender = window.renderAutomationsTable;\n      \n      window.renderAutomationsTable = () => {\n        // Call original if exists\n        if (originalRender) {\n          originalRender();\n        }\n        \n        // Enhance with our data and controls\n        this.renderEnhancedAutomationsTable();\n      };\n    },\n    \n    /**\n     * Render enhanced automations table\n     */\n    renderEnhancedAutomationsTable() {\n      const tableBody = document.getElementById('automations-body');\n      if (!tableBody) return;\n      \n      tableBody.innerHTML = this.automations.map(automation => {\n        const trigger = this.triggers[automation.trigger];\n        const lastTriggered = automation.lastTriggered ? \n          new Date(automation.lastTriggered).toLocaleDateString() : 'Never';\n        \n        return `\n          <tr class=\"automation-row ${automation.enabled ? 'enabled' : 'disabled'}\" \n              data-automation-id=\"${automation.id}\">\n            <td class=\"automation-name-cell\">\n              <div class=\"automation-info\">\n                <strong class=\"automation-name\">${automation.name}</strong>\n                <small class=\"automation-description\">${automation.description || 'No description'}</small>\n              </div>\n            </td>\n            <td class=\"automation-trigger-cell\">\n              <div class=\"trigger-display\">\n                <span class=\"trigger-icon\">${trigger?.icon || '🤖'}</span>\n                <span class=\"trigger-name\">${trigger?.name || 'Unknown Trigger'}</span>\n              </div>\n            </td>\n            <td class=\"automation-actions-cell\">\n              <div class=\"actions-summary\">\n                ${automation.actions.map(action => {\n                  const actionDef = this.actions[action.type];\n                  return `<span class=\"action-badge\">${actionDef?.icon || '⚡'} ${actionDef?.name || action.type}</span>`;\n                }).join('')}\n              </div>\n            </td>\n            <td class=\"automation-stats-cell\">\n              <div class=\"stats-info\">\n                <div class=\"trigger-count\">${automation.triggerCount || 0} executions</div>\n                <div class=\"last-triggered\">Last: ${lastTriggered}</div>\n              </div>\n            </td>\n            <td class=\"automation-status-cell\">\n              <label class=\"toggle-switch\">\n                <input type=\"checkbox\" ${automation.enabled ? 'checked' : ''} \n                       onchange=\"window.UBAEnhancedAutomations.toggleAutomation('${automation.id}')\" />\n                <span class=\"toggle-slider\"></span>\n              </label>\n            </td>\n            <td class=\"automation-actions-cell\">\n              <div class=\"action-buttons\">\n                <button class=\"uba-btn uba-btn-sm uba-btn-ghost\" \n                        onclick=\"window.UBAEnhancedAutomations.editAutomation('${automation.id}')\" \n                        title=\"Edit automation\">\n                  ✏️\n                </button>\n                <button class=\"uba-btn uba-btn-sm uba-btn-danger\" \n                        onclick=\"window.UBAEnhancedAutomations.deleteAutomationFromTable('${automation.id}')\" \n                        title=\"Delete automation\">\n                  🗑️\n                </button>\n                <button class=\"uba-btn uba-btn-sm uba-btn-primary\" \n                        onclick=\"window.UBAEnhancedAutomations.testAutomation('${automation.id}')\" \n                        title=\"Test automation\">\n                  🧪\n                </button>\n              </div>\n            </td>\n          </tr>\n        `;\n      }).join('');\n    },\n    \n    /**\n     * Toggle automation enabled/disabled\n     */\n    toggleAutomation(automationId) {\n      const automation = this.automations.find(a => a.id === automationId);\n      if (automation) {\n        automation.enabled = !automation.enabled;\n        this.saveAutomations();\n        \n        this.showNotification(\n          `Automation \"${automation.name}\" ${automation.enabled ? 'enabled' : 'disabled'}`,\n          automation.enabled ? 'success' : 'info'\n        );\n      }\n    },\n    \n    /**\n     * Enhance design\n     */\n    enhanceDesign() {\n      console.log('🎨 Enhancing design');\n      \n      // Add enhanced styles to the page\n      this.addEnhancedStyles();\n      \n      // Update the create button\n      this.enhanceCreateButton();\n    },\n    \n    /**\n     * Add enhanced styles\n     */\n    addEnhancedStyles() {\n      // Enhanced styles will be loaded via CSS file\n      const existingStyles = document.querySelector('link[href*=\"enhanced-automations\"]');\n      if (existingStyles) return;\n      \n      const link = document.createElement('link');\n      link.rel = 'stylesheet';\n      link.href = 'assets/css/enhanced-automations.css';\n      document.head.appendChild(link);\n    },\n    \n    /**\n     * Enhance create button\n     */\n    enhanceCreateButton() {\n      const createBtn = document.getElementById('new-automation-btn');\n      if (createBtn) {\n        createBtn.innerHTML = '<span class=\"icon\">➕</span> Create Automation';\n        createBtn.onclick = () => this.openModal();\n      }\n    },\n    \n    /**\n     * Initialize event system\n     */\n    initializeEventSystem() {\n      // Load existing automations and start monitoring\n      setTimeout(() => {\n        this.renderEnhancedAutomationsTable();\n      }, 1000);\n    },\n    \n    /**\n     * Save automations to storage\n     */\n    saveAutomations() {\n      try {\n        localStorage.setItem('uba-enhanced-automations', JSON.stringify(this.automations));\n      } catch (error) {\n        console.error('Failed to save automations:', error);\n      }\n    },\n    \n    /**\n     * Save logs to storage\n     */\n    saveLogs() {\n      try {\n        localStorage.setItem('uba-automation-logs', JSON.stringify(this.logs));\n      } catch (error) {\n        console.error('Failed to save logs:', error);\n      }\n    },\n    \n    /**\n     * Show notification\n     */\n    showNotification(message, type = 'info') {\n      if (window.showToast) {\n        window.showToast(message, type);\n      } else {\n        console.log(`${type.toUpperCase()}: ${message}`);\n      }\n    }\n  };\n  \n  // Auto-initialize when DOM is ready\n  if (document.readyState === 'loading') {\n    document.addEventListener('DOMContentLoaded', () => {\n      setTimeout(() => window.UBAEnhancedAutomations.init(), 1000);\n    });\n  } else {\n    setTimeout(() => window.UBAEnhancedAutomations.init(), 1000);\n  }\n  \n  console.log('✅ Enhanced Automations module loaded');\n  \n})();
+     * Initialize enhanced automation system
+     */
+    init() {
+      console.log('🤖 Initializing Enhanced Automation System');
+      
+      this.loadAutomations();
+      this.setupRealTriggers();
+      this.enhanceAutomationModal();
+      this.setupValidationRules();
+      this.addToggleControls();
+      this.enhanceDesign();
+      this.initializeEventSystem();
+      
+      console.log('✅ Enhanced Automation System initialized');
+    },
+    
+    /**
+     * Load automations from storage
+     */
+    loadAutomations() {
+      try {
+        const saved = localStorage.getItem('uba-enhanced-automations');
+        this.automations = saved ? JSON.parse(saved) : this.getDefaultAutomations();
+        
+        const savedLogs = localStorage.getItem('uba-automation-logs');
+        this.logs = savedLogs ? JSON.parse(savedLogs) : [];
+        
+        console.log('✅ Automations loaded:', this.automations.length);
+      } catch (error) {
+        console.warn('⚠️ Failed to load automations:', error);
+        this.automations = this.getDefaultAutomations();
+      }
+    },
+    
+    /**
+     * Get default automations
+     */
+    getDefaultAutomations() {
+      return [
+        {
+          id: 'auto-1',
+          name: 'Welcome New Clients',
+          description: 'Send welcome notification when new client is added',
+          trigger: 'onClientCreated',
+          triggerConfig: {},
+          actions: [
+            {
+              type: 'sendNotification',
+              config: {
+                message: 'New client {{client.name}} has been added to the system',
+                type: 'success',
+                persistent: false
+              }
+            },
+            {
+              type: 'createTask',
+              config: {
+                title: 'Follow up with {{client.name}}',
+                description: 'Schedule initial consultation call',
+                priority: 'high',
+                dueDate: '+3days'
+              }
+            }
+          ],
+          enabled: true,
+          createdAt: new Date().toISOString(),
+          lastTriggered: null,
+          triggerCount: 0
+        },
+        {
+          id: 'auto-2',
+          name: 'Invoice Due Reminder',
+          description: 'Create follow-up task when invoice is due',
+          trigger: 'onInvoiceDue',
+          triggerConfig: {
+            daysBeforeDue: 3
+          },
+          actions: [
+            {
+              type: 'createTask',
+              config: {
+                title: 'Follow up on invoice {{invoice.label}}',
+                description: 'Invoice for {{client.name}} is due in 3 days',
+                priority: 'medium',
+                dueDate: 'today'
+              }
+            },
+            {
+              type: 'addLogEntry',
+              config: {
+                message: 'Invoice {{invoice.label}} due reminder created',
+                level: 'info',
+                category: 'invoices'
+              }
+            }
+          ],
+          enabled: true,
+          createdAt: new Date().toISOString(),
+          lastTriggered: null,
+          triggerCount: 0
+        }
+      ];
+    },
+    
+    /**
+     * Setup real trigger system
+     */
+    setupRealTriggers() {
+      console.log('🎯 Setting up real trigger system');
+      
+      // Hook into existing systems
+      this.hookIntoTaskSystem();
+      this.hookIntoInvoiceSystem();
+      this.hookIntoLeadSystem();
+      this.hookIntoProjectSystem();
+      this.hookIntoClientSystem();
+      
+      // Setup periodic checks
+      this.setupPeriodicTriggers();
+    },
+    
+    /**
+     * Hook into task system
+     */
+    hookIntoTaskSystem() {
+      if (window.ubaStore?.tasks) {
+        const originalCreate = window.ubaStore.tasks.create;
+        const originalUpdate = window.ubaStore.tasks.update;
+        
+        // Override task creation
+        window.ubaStore.tasks.create = (taskData) => {
+          const result = originalCreate.call(window.ubaStore.tasks, taskData);
+          this.triggerEvent('task.created', taskData);
+          return result;
+        };
+        
+        // Override task updates
+        window.ubaStore.tasks.update = (taskId, taskData) => {
+          const oldTask = window.ubaStore.tasks.getById(taskId);
+          const result = originalUpdate.call(window.ubaStore.tasks, taskId, taskData);
+          
+          if (oldTask && taskData.status !== oldTask.status && taskData.status === 'completed') {
+            this.triggerEvent('task.completed', { ...taskData, id: taskId, oldStatus: oldTask.status });
+          }
+          
+          return result;
+        };
+        
+        console.log('✅ Task system hooked');
+      }
+    },
+    
+    /**
+     * Hook into invoice system
+     */
+    hookIntoInvoiceSystem() {
+      if (window.ubaStore?.invoices) {
+        const originalCreate = window.ubaStore.invoices.create;
+        const originalUpdate = window.ubaStore.invoices.update;
+        
+        // Override invoice creation
+        window.ubaStore.invoices.create = (invoiceData) => {
+          const result = originalCreate.call(window.ubaStore.invoices, invoiceData);
+          this.triggerEvent('invoice.created', invoiceData);
+          return result;
+        };
+        
+        // Override invoice updates
+        window.ubaStore.invoices.update = (invoiceId, invoiceData) => {
+          const oldInvoice = window.ubaStore.invoices.getById(invoiceId);
+          const result = originalUpdate.call(window.ubaStore.invoices, invoiceId, invoiceData);
+          
+          if (oldInvoice && invoiceData.status !== oldInvoice.status) {
+            this.triggerEvent('invoice.status_changed', { 
+              ...invoiceData, 
+              id: invoiceId, 
+              oldStatus: oldInvoice.status,
+              newStatus: invoiceData.status
+            });
+          }
+          
+          return result;
+        };
+        
+        console.log('✅ Invoice system hooked');
+      }
+    },
+    
+    /**
+     * Hook into lead system
+     */
+    hookIntoLeadSystem() {
+      if (window.ubaStore?.leads) {
+        const originalUpdate = window.ubaStore.leads.update;
+        
+        // Override lead updates
+        window.ubaStore.leads.update = (leadId, leadData) => {
+          const oldLead = window.ubaStore.leads.getById(leadId);
+          const result = originalUpdate.call(window.ubaStore.leads, leadId, leadData);
+          
+          this.triggerEvent('lead.updated', { 
+            ...leadData, 
+            id: leadId, 
+            oldData: oldLead
+          });
+          
+          if (oldLead && leadData.status !== oldLead.status) {
+            this.triggerEvent('lead.status_changed', {
+              ...leadData,
+              id: leadId,
+              oldStatus: oldLead.status,
+              newStatus: leadData.status
+            });
+          }
+          
+          return result;
+        };
+        
+        console.log('✅ Lead system hooked');
+      }
+    },
+    
+    /**
+     * Hook into project system
+     */
+    hookIntoProjectSystem() {
+      if (window.ubaStore?.projects) {
+        const originalUpdate = window.ubaStore.projects.update;
+        
+        // Override project updates
+        window.ubaStore.projects.update = (projectId, projectData) => {
+          const oldProject = window.ubaStore.projects.getById(projectId);
+          const result = originalUpdate.call(window.ubaStore.projects, projectId, projectData);
+          
+          if (oldProject && projectData.stage !== oldProject.stage) {
+            this.triggerEvent('project.stage_changed', {
+              ...projectData,
+              id: projectId,
+              oldStage: oldProject.stage,
+              newStage: projectData.stage
+            });
+          }
+          
+          if (oldProject && projectData.status !== oldProject.status) {
+            this.triggerEvent('project.status_changed', {
+              ...projectData,
+              id: projectId,
+              oldStatus: oldProject.status,
+              newStatus: projectData.status
+            });
+          }
+          
+          return result;
+        };
+        
+        console.log('✅ Project system hooked');
+      }
+    },
+    
+    /**
+     * Hook into client system
+     */
+    hookIntoClientSystem() {
+      if (window.ubaStore?.clients) {
+        const originalCreate = window.ubaStore.clients.create;
+        
+        // Override client creation
+        window.ubaStore.clients.create = (clientData) => {
+          const result = originalCreate.call(window.ubaStore.clients, clientData);
+          this.triggerEvent('client.created', clientData);
+          return result;
+        };
+        
+        console.log('✅ Client system hooked');
+      }
+    },
+    
+    /**
+     * Setup periodic triggers (for due dates, deadlines, etc.)
+     */
+    setupPeriodicTriggers() {
+      // Check for due invoices every hour
+      setInterval(() => {
+        this.checkInvoiceDueDates();
+        this.checkApproachingDeadlines();
+      }, 60 * 60 * 1000); // Every hour
+      
+      // Initial check
+      setTimeout(() => {
+        this.checkInvoiceDueDates();
+        this.checkApproachingDeadlines();
+      }, 5000);
+    },
+    
+    /**
+     * Check invoice due dates
+     */
+    checkInvoiceDueDates() {
+      if (!window.ubaStore?.invoices) return;
+      
+      const invoices = window.ubaStore.invoices.getAll() || [];
+      const now = new Date();
+      
+      invoices.forEach(invoice => {
+        if (invoice.due && invoice.status !== 'paid') {
+          const dueDate = new Date(invoice.due);
+          const daysDiff = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));
+          
+          if (daysDiff <= 0 && invoice.status !== 'overdue') {
+            this.triggerEvent('invoice.overdue', invoice);
+          } else if (daysDiff > 0 && daysDiff <= 7) {
+            this.triggerEvent('invoice.due', { ...invoice, daysUntilDue: daysDiff });
+          }
+        }
+      });
+    },
+    
+    /**
+     * Check approaching deadlines
+     */
+    checkApproachingDeadlines() {
+      const now = new Date();
+      
+      // Check tasks
+      if (window.ubaStore?.tasks) {
+        const tasks = window.ubaStore.tasks.getAll() || [];
+        tasks.forEach(task => {
+          if (task.due && task.status !== 'completed') {
+            const dueDate = new Date(task.due);
+            const daysDiff = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));
+            
+            if (daysDiff > 0 && daysDiff <= 3) {
+              this.triggerEvent('deadline.approaching', {
+                ...task,
+                type: 'task',
+                daysUntilDeadline: daysDiff
+              });
+            }
+          }
+        });
+      }
+      
+      // Check projects
+      if (window.ubaStore?.projects) {
+        const projects = window.ubaStore.projects.getAll() || [];
+        projects.forEach(project => {
+          const deadline = project.due || project.deadline;
+          if (deadline && project.status === 'active') {
+            const deadlineDate = new Date(deadline);
+            const daysDiff = Math.ceil((deadlineDate - now) / (1000 * 60 * 60 * 24));
+            
+            if (daysDiff > 0 && daysDiff <= 7) {
+              this.triggerEvent('deadline.approaching', {
+                ...project,
+                type: 'project',
+                daysUntilDeadline: daysDiff
+              });
+            }
+          }
+        });
+      }
+    },
+    
+    /**
+     * Trigger an automation event
+     */
+    triggerEvent(eventType, eventData) {
+      console.log(`🎯 Triggering event: ${eventType}`, eventData);
+      
+      // Find matching automations
+      const matchingAutomations = this.automations.filter(automation => {
+        if (!automation.enabled) return false;
+        
+        const trigger = this.triggers[automation.trigger];
+        if (!trigger) return false;
+        
+        return trigger.events.includes(eventType);
+      });
+      
+      // Execute matching automations
+      matchingAutomations.forEach(automation => {
+        this.executeAutomation(automation, eventType, eventData);
+      });
+    },
+    
+    /**
+     * Execute an automation
+     */
+    async executeAutomation(automation, eventType, eventData) {
+      console.log(`🚀 Executing automation: ${automation.name}`);
+      
+      try {
+        // Check conditions
+        if (!this.checkConditions(automation, eventData)) {
+          this.logExecution(automation, 'skipped', 'Conditions not met', eventData);
+          return;
+        }
+        
+        // Execute actions
+        const results = [];
+        for (const action of automation.actions) {
+          try {
+            const result = await this.executeAction(action, eventData, automation);
+            results.push({ action: action.type, success: true, result });
+          } catch (error) {
+            console.error(`❌ Action ${action.type} failed:`, error);
+            results.push({ action: action.type, success: false, error: error.message });
+          }
+        }
+        
+        // Update automation stats
+        automation.lastTriggered = new Date().toISOString();
+        automation.triggerCount = (automation.triggerCount || 0) + 1;
+        this.saveAutomations();
+        
+        // Log successful execution
+        this.logExecution(automation, 'success', `Executed ${results.length} actions`, eventData, results);
+        
+      } catch (error) {
+        console.error(`❌ Automation ${automation.name} failed:`, error);
+        this.logExecution(automation, 'error', error.message, eventData);
+      }
+    },
+    
+    /**
+     * Check automation conditions
+     */
+    checkConditions(automation, eventData) {
+      const triggerConfig = automation.triggerConfig || {};
+      const trigger = this.triggers[automation.trigger];
+      
+      if (!trigger || !trigger.conditions) return true;
+      
+      // Check each configured condition
+      for (const [conditionKey, conditionValue] of Object.entries(triggerConfig)) {
+        if (!this.evaluateCondition(conditionKey, conditionValue, eventData, trigger.conditions)) {
+          return false;
+        }
+      }
+      
+      return true;
+    },
+    
+    /**
+     * Evaluate a single condition
+     */
+    evaluateCondition(key, expectedValue, eventData, triggerConditions) {
+      const actualValue = this.getValueFromData(key, eventData);
+      const conditionDef = triggerConditions[key];
+      
+      if (!conditionDef) return true;
+      
+      if (Array.isArray(conditionDef)) {
+        return conditionDef.includes(actualValue);
+      }
+      
+      if (typeof conditionDef === 'object' && conditionDef.min !== undefined) {
+        const numValue = parseFloat(actualValue);
+        return numValue >= conditionDef.min && numValue <= conditionDef.max;
+      }
+      
+      return actualValue === expectedValue;
+    },
+    
+    /**
+     * Get value from event data using dot notation
+     */
+    getValueFromData(path, data) {
+      return path.split('.').reduce((obj, key) => obj && obj[key], data);
+    },
+    
+    /**
+     * Execute an action
+     */
+    async executeAction(action, eventData, automation) {
+      const actionDef = this.actions[action.type];
+      if (!actionDef) {
+        throw new Error(`Unknown action type: ${action.type}`);
+      }
+      
+      // Process config with variable substitution
+      const processedConfig = this.processActionConfig(action.config, eventData);
+      
+      switch (action.type) {
+        case 'sendNotification':
+          return this.executeSendNotification(processedConfig);
+        
+        case 'createTask':
+          return this.executeCreateTask(processedConfig);
+        
+        case 'addLogEntry':
+          return this.executeAddLogEntry(processedConfig, eventData);
+        
+        case 'updateRecord':
+          return this.executeUpdateRecord(processedConfig, eventData);
+        
+        case 'sendEmail':
+          return this.executeSendEmail(processedConfig);
+        
+        case 'webhook':
+          return this.executeWebhook(processedConfig, eventData);
+        
+        default:
+          throw new Error(`Action type ${action.type} not implemented`);
+      }
+    },
+    
+    /**
+     * Process action config with variable substitution
+     */
+    processActionConfig(config, eventData) {
+      const processed = {};
+      
+      for (const [key, value] of Object.entries(config)) {
+        if (typeof value === 'string') {
+          processed[key] = this.substituteVariables(value, eventData);
+        } else {
+          processed[key] = value;
+        }
+      }
+      
+      return processed;
+    },
+    
+    /**
+     * Substitute variables in string
+     */
+    substituteVariables(template, data) {
+      return template.replace(/\\{\\{([^}]+)\\}\\}/g, (match, path) => {
+        const value = this.getValueFromData(path.trim(), data);
+        return value !== undefined ? value : match;
+      });
+    },
+    
+    /**
+     * Execute send notification action
+     */
+    executeSendNotification(config) {
+      if (window.showToast) {
+        window.showToast(config.message, config.type || 'info', {
+          persistent: config.persistent || false
+        });
+      } else {
+        console.log(`📢 Notification: ${config.message}`);
+      }
+      
+      return { message: config.message, type: config.type };
+    },
+    
+    /**
+     * Execute create task action
+     */
+    executeCreateTask(config) {
+      if (!window.ubaStore?.tasks) {
+        throw new Error('Task store not available');
+      }
+      
+      const taskData = {
+        id: 'task-auto-' + Date.now(),
+        title: config.title,
+        description: config.description || '',
+        priority: config.priority || 'medium',
+        status: 'todo',
+        createdAt: new Date().toISOString(),
+        due: this.calculateDueDate(config.dueDate),
+        assignee: config.assignee,
+        projectId: config.project,
+        automationGenerated: true
+      };
+      
+      window.ubaStore.tasks.create(taskData);
+      
+      return { taskId: taskData.id, title: taskData.title };
+    },
+    
+    /**
+     * Calculate due date from config
+     */
+    calculateDueDate(dueDateConfig) {
+      if (!dueDateConfig) return null;
+      
+      const now = new Date();
+      
+      switch (dueDateConfig) {
+        case 'today':
+          return now.toISOString().slice(0, 10);
+        case 'tomorrow':
+          const tomorrow = new Date(now);
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          return tomorrow.toISOString().slice(0, 10);
+        case '+3days':
+          const threeDays = new Date(now);
+          threeDays.setDate(threeDays.getDate() + 3);
+          return threeDays.toISOString().slice(0, 10);
+        case '+1week':
+          const oneWeek = new Date(now);
+          oneWeek.setDate(oneWeek.getDate() + 7);
+          return oneWeek.toISOString().slice(0, 10);
+        case '+2weeks':
+          const twoWeeks = new Date(now);
+          twoWeeks.setDate(twoWeeks.getDate() + 14);
+          return twoWeeks.toISOString().slice(0, 10);
+        default:
+          return dueDateConfig; // Custom date
+      }
+    },
+    
+    /**
+     * Execute add log entry action
+     */
+    executeAddLogEntry(config, eventData) {
+      const logEntry = {
+        id: 'log-auto-' + Date.now(),
+        message: config.message,
+        level: config.level || 'info',
+        category: config.category || 'automation',
+        timestamp: new Date().toISOString(),
+        associatedRecord: config.associatedRecord ? eventData : null,
+        automationGenerated: true
+      };
+      
+      this.logs.push(logEntry);
+      this.saveLogs();
+      
+      return { logId: logEntry.id, message: logEntry.message };
+    },
+    
+    /**
+     * Execute update record action
+     */
+    executeUpdateRecord(config, eventData) {
+      // This would update the record that triggered the automation
+      // Implementation depends on the specific record type and field
+      return { field: config.field, value: config.value };
+    },
+    
+    /**
+     * Execute send email action
+     */
+    executeSendEmail(config) {
+      // Email functionality would be implemented here
+      console.log(`📧 Email to ${config.to}: ${config.subject}`);
+      return { to: config.to, subject: config.subject };
+    },
+    
+    /**
+     * Execute webhook action
+     */
+    async executeWebhook(config, eventData) {
+      try {
+        const response = await fetch(config.url, {
+          method: config.method || 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...JSON.parse(config.headers || '{}')
+          },
+          body: config.payload ? 
+            this.substituteVariables(config.payload, eventData) : 
+            JSON.stringify(eventData)
+        });
+        
+        return { status: response.status, ok: response.ok };
+      } catch (error) {
+        throw new Error(`Webhook failed: ${error.message}`);
+      }
+    },
+    
+    /**
+     * Log automation execution
+     */
+    logExecution(automation, status, message, eventData, results = null) {
+      const logEntry = {
+        id: 'exec-' + Date.now(),
+        automationId: automation.id,
+        automationName: automation.name,
+        status: status, // 'success', 'error', 'skipped'
+        message: message,
+        timestamp: new Date().toISOString(),
+        eventData: eventData,
+        results: results
+      };
+      
+      this.logs.push(logEntry);
+      this.saveLogs();
+      
+      // Limit log size
+      if (this.logs.length > 1000) {
+        this.logs = this.logs.slice(-500);
+        this.saveLogs();
+      }
+    },
+    
+    /**
+     * Enhance automation modal
+     */
+    enhanceAutomationModal() {
+      console.log('🎨 Enhancing automation modal');
+      
+      this.replaceAutomationModal();
+      this.setupModalEventHandlers();
+    },
+    
+    /**
+     * Replace existing automation modal with enhanced version
+     */
+    replaceAutomationModal() {
+      // Remove existing modal
+      const existingModal = document.getElementById('automation-modal');
+      if (existingModal) {
+        existingModal.remove();
+      }
+      
+      // Create enhanced modal
+      const modal = document.createElement('div');
+      modal.id = 'automation-modal';
+      modal.className = 'uba-modal enhanced-automation-modal';
+      modal.innerHTML = this.getEnhancedModalHTML();
+      
+      document.body.appendChild(modal);
+    },
+    
+    /**
+     * Get enhanced modal HTML
+     */
+    getEnhancedModalHTML() {
+      return `
+        <div class=\"uba-modal-overlay\" onclick=\"window.UBAEnhancedAutomations.closeModal()\"></div>
+        <div class=\"uba-modal-dialog enhanced-automation-dialog\">
+          <div class=\"uba-modal-header automation-header\">
+            <h3 id=\"automation-modal-title\">
+              <span class=\"icon\">🤖</span> 
+              إنشاء أتمتة جديدة (Create New Automation)
+            </h3>
+            <button class=\"uba-modal-close\" onclick=\"window.UBAEnhancedAutomations.closeModal()\">×</button>
+          </div>
+          
+          <div class=\"uba-modal-body automation-body\">
+            <form id=\"enhanced-automation-form\" class=\"automation-form\">
+              <input type=\"hidden\" id=\"automation-edit-id\" />
+              
+              <!-- Basic Information -->
+              <div class=\"form-section\">
+                <div class=\"section-header\">
+                  <h4><span class=\"icon\">📋</span> Basic Information</h4>
+                  <p>Define the automation name and description</p>
+                </div>
+                
+                <div class=\"form-grid\">
+                  <div class=\"form-group\">
+                    <label for=\"automation-name\">Automation Name *</label>
+                    <input type=\"text\" id=\"automation-name\" class=\"uba-input\" placeholder=\"e.g., Welcome New Clients\" required />
+                  </div>
+                  
+                  <div class=\"form-group\">
+                    <label class=\"toggle-label\">
+                      <input type=\"checkbox\" id=\"automation-enabled\" checked />
+                      <span class=\"toggle-slider\"></span>
+                      Enabled
+                    </label>
+                  </div>
+                </div>
+                
+                <div class=\"form-group\">
+                  <label for=\"automation-description\">Description</label>
+                  <textarea id=\"automation-description\" class=\"uba-textarea\" rows=\"2\" 
+                           placeholder=\"Brief description of what this automation does\"></textarea>
+                </div>
+              </div>
+              
+              <!-- Trigger Configuration -->
+              <div class=\"form-section\">
+                <div class=\"section-header\">
+                  <h4><span class=\"icon\">🎯</span> Trigger (المحفز)</h4>
+                  <p>What event should trigger this automation?</p>
+                </div>
+                
+                <div class=\"form-group\">
+                  <label for=\"automation-trigger\">Select Trigger *</label>
+                  <select id=\"automation-trigger\" class=\"uba-select enhanced-dropdown\" required 
+                          onchange=\"window.UBAEnhancedAutomations.onTriggerChange()\">
+                    <option value=\"\">Choose a trigger...</option>
+                    ${Object.entries(this.triggers).map(([id, trigger]) => 
+                      `<option value=\"${id}\">${trigger.icon} ${trigger.name}</option>`
+                    ).join('')}
+                  </select>
+                </div>
+                
+                <div id=\"trigger-config\" class=\"trigger-config hidden\">
+                  <!-- Dynamic trigger configuration will be loaded here -->
+                </div>
+              </div>
+              
+              <!-- Actions Configuration -->
+              <div class=\"form-section\">
+                <div class=\"section-header\">
+                  <h4><span class=\"icon\">⚡</span> Actions (الإجراءات)</h4>
+                  <p>What should happen when the trigger fires?</p>
+                  <button type=\"button\" class=\"uba-btn uba-btn-sm uba-btn-primary\" 
+                          onclick=\"window.UBAEnhancedAutomations.addAction()\">
+                    + Add Action
+                  </button>
+                </div>
+                
+                <div id=\"actions-container\" class=\"actions-container\">
+                  <!-- Actions will be dynamically added here -->
+                </div>
+                
+                <div id=\"no-actions\" class=\"no-actions\">
+                  <p>📝 No actions configured. Click \"Add Action\" to get started.</p>
+                </div>
+              </div>
+            </form>
+          </div>
+          
+          <div class=\"uba-modal-footer automation-footer\">
+            <div class=\"footer-info\">
+              <small id=\"validation-message\" class=\"validation-message\"></small>
+            </div>
+            <div class=\"footer-actions\">
+              <button type=\"button\" class=\"uba-btn uba-btn-ghost\" 
+                      onclick=\"window.UBAEnhancedAutomations.closeModal()\">Cancel</button>
+              <button type=\"button\" class=\"uba-btn uba-btn-danger\" id=\"delete-automation-btn\" 
+                      onclick=\"window.UBAEnhancedAutomations.deleteAutomation()\" style=\"display: none;\">Delete</button>
+              <button type=\"button\" class=\"uba-btn uba-btn-primary\" 
+                      onclick=\"window.UBAEnhancedAutomations.saveAutomation()\">Save Automation</button>
+            </div>
+          </div>
+        </div>
+      `;
+    },
+    
+    /**
+     * Setup validation rules
+     */
+    setupValidationRules() {
+      console.log('✅ Setting up validation rules');
+      
+      this.validationRules = {
+        name: {
+          required: true,
+          minLength: 3,
+          maxLength: 100,
+          message: 'Automation name must be between 3-100 characters'
+        },
+        trigger: {
+          required: true,
+          message: 'Please select a trigger'
+        },
+        actions: {
+          minLength: 1,
+          message: 'At least one action is required'
+        }
+      };
+    },
+    
+    /**
+     * Validate automation
+     */
+    validateAutomation(automationData) {
+      const errors = [];
+      
+      // Validate name
+      if (!automationData.name || automationData.name.length < 3) {
+        errors.push('Automation name is required (minimum 3 characters)');
+      }
+      
+      // Validate trigger
+      if (!automationData.trigger) {
+        errors.push('Please select a trigger');
+      }
+      
+      // Validate actions
+      if (!automationData.actions || automationData.actions.length === 0) {
+        errors.push('At least one action is required');
+      }
+      
+      // Validate each action
+      if (automationData.actions) {
+        automationData.actions.forEach((action, index) => {
+          if (!action.type) {
+            errors.push(`Action ${index + 1}: Action type is required`);
+          }
+          
+          const actionDef = this.actions[action.type];
+          if (actionDef && actionDef.config) {
+            Object.entries(actionDef.config).forEach(([key, configDef]) => {
+              if (configDef.required && (!action.config || !action.config[key])) {
+                errors.push(`Action ${index + 1}: ${key} is required`);
+              }
+            });
+          }
+        });
+      }
+      
+      return errors;
+    },
+    
+    /**
+     * Add toggle controls to existing automations
+     */
+    addToggleControls() {
+      console.log('🎛️ Adding toggle controls');
+      
+      // This will enhance the existing table with toggle switches
+      this.enhanceAutomationsTable();
+    },
+    
+    /**
+     * Enhance existing automations table
+     */
+    enhanceAutomationsTable() {
+      // Override the existing renderAutomationsTable function
+      const originalRender = window.renderAutomationsTable;
+      
+      window.renderAutomationsTable = () => {
+        // Call original if exists
+        if (originalRender) {
+          originalRender();
+        }
+        
+        // Enhance with our data and controls
+        this.renderEnhancedAutomationsTable();
+      };
+    },
+    
+    /**
+     * Render enhanced automations table
+     */
+    renderEnhancedAutomationsTable() {
+      const tableBody = document.getElementById('automations-body');
+      if (!tableBody) return;
+      
+      tableBody.innerHTML = this.automations.map(automation => {
+        const trigger = this.triggers[automation.trigger];
+        const lastTriggered = automation.lastTriggered ? 
+          new Date(automation.lastTriggered).toLocaleDateString() : 'Never';
+        
+        return `
+          <tr class=\"automation-row ${automation.enabled ? 'enabled' : 'disabled'}\" 
+              data-automation-id=\"${automation.id}\">
+            <td class=\"automation-name-cell\">
+              <div class=\"automation-info\">
+                <strong class=\"automation-name\">${automation.name}</strong>
+                <small class=\"automation-description\">${automation.description || 'No description'}</small>
+              </div>
+            </td>
+            <td class=\"automation-trigger-cell\">
+              <div class=\"trigger-display\">
+                <span class=\"trigger-icon\">${trigger?.icon || '🤖'}</span>
+                <span class=\"trigger-name\">${trigger?.name || 'Unknown Trigger'}</span>
+              </div>
+            </td>
+            <td class=\"automation-actions-cell\">
+              <div class=\"actions-summary\">
+                ${automation.actions.map(action => {
+                  const actionDef = this.actions[action.type];
+                  return `<span class=\"action-badge\">${actionDef?.icon || '⚡'} ${actionDef?.name || action.type}</span>`;
+                }).join('')}
+              </div>
+            </td>
+            <td class=\"automation-stats-cell\">
+              <div class=\"stats-info\">
+                <div class=\"trigger-count\">${automation.triggerCount || 0} executions</div>
+                <div class=\"last-triggered\">Last: ${lastTriggered}</div>
+              </div>
+            </td>
+            <td class=\"automation-status-cell\">
+              <label class=\"toggle-switch\">
+                <input type=\"checkbox\" ${automation.enabled ? 'checked' : ''} 
+                       onchange=\"window.UBAEnhancedAutomations.toggleAutomation('${automation.id}')\" />
+                <span class=\"toggle-slider\"></span>
+              </label>
+            </td>
+            <td class=\"automation-actions-cell\">
+              <div class=\"action-buttons\">
+                <button class=\"uba-btn uba-btn-sm uba-btn-ghost\" 
+                        onclick=\"window.UBAEnhancedAutomations.editAutomation('${automation.id}')\" 
+                        title=\"Edit automation\">
+                  ✏️
+                </button>
+                <button class=\"uba-btn uba-btn-sm uba-btn-danger\" 
+                        onclick=\"window.UBAEnhancedAutomations.deleteAutomationFromTable('${automation.id}')\" 
+                        title=\"Delete automation\">
+                  🗑️
+                </button>
+                <button class=\"uba-btn uba-btn-sm uba-btn-primary\" 
+                        onclick=\"window.UBAEnhancedAutomations.testAutomation('${automation.id}')\" 
+                        title=\"Test automation\">
+                  🧪
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    },
+    
+    /**
+     * Toggle automation enabled/disabled
+     */
+    toggleAutomation(automationId) {
+      const automation = this.automations.find(a => a.id === automationId);
+      if (automation) {
+        automation.enabled = !automation.enabled;
+        this.saveAutomations();
+        
+        this.showNotification(
+          `Automation \"${automation.name}\" ${automation.enabled ? 'enabled' : 'disabled'}`,
+          automation.enabled ? 'success' : 'info'
+        );
+      }
+    },
+    
+    /**
+     * Enhance design
+     */
+    enhanceDesign() {
+      console.log('🎨 Enhancing design');
+      
+      // Add enhanced styles to the page
+      this.addEnhancedStyles();
+      
+      // Update the create button
+      this.enhanceCreateButton();
+    },
+    
+    /**
+     * Add enhanced styles
+     */
+    addEnhancedStyles() {
+      // Enhanced styles will be loaded via CSS file
+      const existingStyles = document.querySelector('link[href*=\"enhanced-automations\"]');
+      if (existingStyles) return;
+      
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = 'assets/css/enhanced-automations.css';
+      document.head.appendChild(link);
+    },
+    
+    /**
+     * Enhance create button
+     */
+    enhanceCreateButton() {
+      const createBtn = document.getElementById('new-automation-btn');
+      if (createBtn) {
+        createBtn.innerHTML = '<span class=\"icon\">➕</span> Create Automation';
+        createBtn.onclick = () => this.openModal();
+      }
+    },
+    
+    /**
+     * Initialize event system
+     */
+    initializeEventSystem() {
+      // Load existing automations and start monitoring
+      setTimeout(() => {
+        this.renderEnhancedAutomationsTable();
+      }, 1000);
+    },
+    
+    /**
+     * Save automations to storage
+     */
+    saveAutomations() {
+      try {
+        localStorage.setItem('uba-enhanced-automations', JSON.stringify(this.automations));
+      } catch (error) {
+        console.error('Failed to save automations:', error);
+      }
+    },
+    
+    /**
+     * Save logs to storage
+     */
+    saveLogs() {
+      try {
+        localStorage.setItem('uba-automation-logs', JSON.stringify(this.logs));
+      } catch (error) {
+        console.error('Failed to save logs:', error);
+      }
+    },
+    
+    /**
+     * Show notification
+     */
+    showNotification(message, type = 'info') {
+      if (window.showToast) {
+        window.showToast(message, type);
+      } else {
+        console.log(`${type.toUpperCase()}: ${message}`);
+      }
+    }
+  };
+  
+  // Auto-initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => window.UBAEnhancedAutomations.init(), 1000);
+    });
+  } else {
+    setTimeout(() => window.UBAEnhancedAutomations.init(), 1000);
+  }
+  
+  console.log('✅ Enhanced Automations module loaded');
+  
+})();

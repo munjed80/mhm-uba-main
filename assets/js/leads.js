@@ -314,7 +314,9 @@ function deleteLead(id) {
         return;
     }
     
-    const confirmMessage = `Are you sure you want to delete the lead "${lead.name}" from ${lead.company || 'Unknown Company'}?\n\nThis action cannot be undone.`;
+    const confirmMessage = `Are you sure you want to delete the lead "${lead.name}" from ${lead.company || 'Unknown Company'}?
+
+This action cannot be undone.`;
     
     if (confirm(confirmMessage)) {
         try {

@@ -407,7 +407,9 @@ function deleteExpense(expenseId) {
     const expense = expensesData.find(l => l.id === expenseId);
     if (!expense) return;
     
-    if (!confirm(`Are you sure you want to delete the expense "${expense.description || expense.category}"?\n\nThis action cannot be undone.`)) {
+    if (!confirm(`Are you sure you want to delete the expense "${expense.description || expense.category}"?
+
+This action cannot be undone.`)) {
         return;
     }
     

@@ -3,8 +3,7 @@
 let currentPage = 1;
 let pageSize = 20;
 let filteredClients = [];
-let clientsFormBound = false;
-let clientsEditingId = null;
+// Note: clientsFormBound and clientsEditingId are defined in app.js
 
 // Validation schema for clients
 const clientValidationSchema = {
