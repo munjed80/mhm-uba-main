@@ -5,6 +5,8 @@
   let selectedDate = null;
   let highlightedEventId = null;
   let eventsCache = [];
+  let searchQuery = "";
+  let currentViewMode = "month";
 
   function refreshEvents() {
     try {
@@ -51,6 +53,53 @@
     return firstDay === 0 ? 6 : firstDay - 1;
   }
 
+  function toISODate(date) {
+    return [
+      date.getFullYear(),
+      String(date.getMonth() + 1).padStart(2, "0"),
+      String(date.getDate()).padStart(2, "0"),
+    ].join("-");
+  }
+
+  function getMonthRange(date) {
+    const start = new Date(date.getFullYear(), date.getMonth(), 1);
+    const end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    return { startISO: toISODate(start), endISO: toISODate(end) };
+  }
+
+  function parseISODate(dateStr) {
+    if (!dateStr) return null;
+    const [y, m, d] = dateStr.split("-").map(Number);
+    if ([y, m, d].some((value) => Number.isNaN(value))) return null;
+    return new Date(y, m - 1, d);
+  }
+
+  function formatAgendaLabels(dateStr) {
+    const date = parseISODate(dateStr);
+    if (!date) {
+      return { primary: dateStr || "", secondary: "" };
+    }
+    return {
+      primary: date.toLocaleDateString(undefined, { day: "numeric", month: "short" }),
+      secondary: date.toLocaleDateString(undefined, { weekday: "short" }),
+    };
+  }
+
+  function matchesSearch(event) {
+    if (!searchQuery) return true;
+    const haystack = [event.title, event.clientName, event.projectName, event.sourceLabel]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+    return haystack.includes(searchQuery);
+  }
+
+  function includeEvent(event) {
+    if (!event) return false;
+    if (currentFilter !== "all" && event.type !== currentFilter) return false;
+    return matchesSearch(event);
+  }
+
   function isToday(year, month, day) {
     const today = new Date();
     return (
@@ -75,9 +124,7 @@
 
   function getEventsForDate(dateStr) {
     return ensureEvents().filter(
-      (event) =>
-        event.date === dateStr &&
-        (currentFilter === "all" || event.type === currentFilter),
+      (event) => event.date === dateStr && includeEvent(event),
     );
   }
 
@@ -92,7 +139,7 @@
     const daysInMonth = getDaysInMonth(year, month);
     const firstDay = getFirstDayOfMonth(year, month);
 
-    const events = ensureEvents();
+    const events = ensureEvents().filter(includeEvent);
 
     const monthTitle = document.getElementById("current-month");
     if (monthTitle) {
@@ -128,11 +175,7 @@
 
       const eventsContainer = document.createElement("div");
       eventsContainer.className = "uba-calendar-day-events";
-      const dayEvents = events.filter(
-        (event) =>
-          event.date === dateStr &&
-          (currentFilter === "all" || event.type === currentFilter),
-      );
+      const dayEvents = events.filter((event) => event.date === dateStr);
 
       dayEvents.slice(0, 3).forEach((event) => {
         const pill = createEventPill(event);
@@ -146,9 +189,12 @@
         eventsContainer.appendChild(moreElement);
       }
 
-      dayElement.appendChild(eventsContainer);
-      grid.appendChild(dayElement);
-    }
+        dayElement.appendChild(eventsContainer);
+        grid.appendChild(dayElement);
+      }
+
+      updateHeroStats();
+      updateViewModeUI();
   }
 
   function highlightCalendarCells() {
@@ -213,8 +259,111 @@
         target.classList.add("active");
         target.scrollIntoView({ block: "nearest", behavior: "smooth" });
       }
-      highlightedEventId = null;
     }
+  }
+
+  function updateHeroStats() {
+    const totalEl = document.getElementById("calendar-stat-total");
+    const weekEl = document.getElementById("calendar-stat-week");
+    const overdueEl = document.getElementById("calendar-stat-overdue");
+    if (!totalEl && !weekEl && !overdueEl) return;
+
+    const events = ensureEvents();
+    const { startISO, endISO } = getMonthRange(currentDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const weekAhead = new Date(today);
+    weekAhead.setDate(weekAhead.getDate() + 7);
+
+    const monthEvents = events.filter((event) => event.date >= startISO && event.date <= endISO);
+    const weekEvents = events.filter((event) => {
+      const date = parseISODate(event.date);
+      if (!date) return false;
+      return date >= today && date <= weekAhead;
+    });
+
+    const overdueEvents = events.filter((event) => {
+      const date = parseISODate(event.date);
+      if (!date) return false;
+      const inPast = date < today;
+      if (event.type === "invoice") {
+        return event.status === "overdue" || (inPast && event.status !== "paid");
+      }
+      if (event.type === "task") {
+        return inPast && !["done", "completed"].includes((event.status || "").toLowerCase());
+      }
+      return false;
+    });
+
+    if (totalEl) totalEl.textContent = monthEvents.length.toLocaleString();
+    if (weekEl) weekEl.textContent = weekEvents.length.toLocaleString();
+    if (overdueEl) overdueEl.textContent = overdueEvents.length.toLocaleString();
+  }
+
+  function renderAgenda() {
+    const agendaEl = document.getElementById("calendar-agenda");
+    const monthView = document.querySelector(".uba-calendar");
+    if (!agendaEl || !monthView) return;
+
+    const isAgenda = currentViewMode === "agenda";
+    agendaEl.hidden = !isAgenda;
+    monthView.classList.toggle("is-hidden", isAgenda);
+
+    if (!isAgenda) return;
+
+    const { startISO, endISO } = getMonthRange(currentDate);
+    const events = ensureEvents()
+      .filter((event) => event.date >= startISO && event.date <= endISO)
+      .filter(includeEvent)
+      .sort((a, b) => a.timestamp - b.timestamp);
+
+    if (!events.length) {
+      agendaEl.innerHTML = `
+        <div class="calendar-agenda-empty">
+          <p>No linked work</p>
+          <small>Add a task, invoice, or milestone to populate this month.</small>
+        </div>
+      `;
+      return;
+    }
+
+    agendaEl.innerHTML = events
+      .map((event) => {
+        const labels = formatAgendaLabels(event.date);
+        const meta = window.UBACalendar?.formatEventMeta?.(event) || "";
+        const isActive = event.id === highlightedEventId || event.date === selectedDate;
+        const pillLabel = window.UBACalendar?.capitalize?.(event.type) || event.type;
+        return `
+          <article class="calendar-agenda-item${isActive ? " active" : ""}" data-event-id="${event.id}" data-date="${event.date}">
+            <div class="agenda-date">
+              <span>${labels.primary}</span>
+              <small>${labels.secondary}</small>
+            </div>
+            <div class="agenda-body">
+              <p class="agenda-title">${event.title}</p>
+              <p class="agenda-meta">${meta}</p>
+            </div>
+            <span class="agenda-pill agenda-pill-${event.type}">${pillLabel}</span>
+          </article>
+        `;
+      })
+      .join("");
+
+    agendaEl.querySelectorAll(".calendar-agenda-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        selectDate(item.dataset.date, item.getAttribute("data-event-id"));
+      });
+    });
+  }
+
+  function updateViewModeUI() {
+    document.querySelectorAll("[data-calendar-view]").forEach((button) => {
+      const mode = button.getAttribute("data-calendar-view");
+      const isActive = mode === currentViewMode;
+      button.classList.toggle("active", isActive);
+      button.setAttribute("aria-pressed", isActive ? "true" : "false");
+    });
+    renderAgenda();
   }
 
   function renderLinkedItem(event) {
@@ -247,6 +396,8 @@
     highlightedEventId = eventId || null;
     highlightCalendarCells();
     renderDayPanel();
+    renderAgenda();
+    highlightedEventId = null;
   }
 
   function navigateMonth(direction) {
@@ -264,6 +415,13 @@
     renderDayPanel();
   }
 
+  function setViewMode(mode) {
+    if (!mode || mode === currentViewMode) return;
+    currentViewMode = mode;
+    updateViewModeUI();
+    highlightCalendarCells();
+  }
+
   function handlePanelAction(action) {
     switch (action) {
       case "new-task":
@@ -278,6 +436,14 @@
       default:
         break;
     }
+  }
+
+  function handleSearchInput(value) {
+    const next = (value || "").trim().toLowerCase();
+    if (next === searchQuery) return;
+    searchQuery = next;
+    renderCalendar();
+    renderDayPanel();
   }
 
   function initCalendarPage() {
@@ -309,6 +475,15 @@
 
     document.querySelectorAll("[data-filter]").forEach((button) => {
       button.addEventListener("click", () => setFilter(button.getAttribute("data-filter") || "all"));
+    });
+
+    const searchInput = document.getElementById("calendar-search");
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => handleSearchInput(e.target.value));
+    }
+
+    document.querySelectorAll("[data-calendar-view]").forEach((button) => {
+      button.addEventListener("click", () => setViewMode(button.getAttribute("data-calendar-view")));
     });
 
     document.querySelectorAll("[data-panel-action]").forEach((button) => {
