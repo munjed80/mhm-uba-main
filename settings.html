@@ -1861,6 +1861,75 @@
                   </div>
                 </div>
 
+                <!-- AI Preferences -->
+                <div class="uba-card uba-settings-section" style="padding: 20px; margin-bottom: 16px;">
+                  <div class="uba-settings-header">
+                    <h3 class="uba-settings-title">
+                      <span class="uba-settings-icon">🤖</span>
+                      <span>AI Preferences</span>
+                    </h3>
+                    <p class="uba-settings-desc">
+                      Configure AI assistant behavior and features
+                    </p>
+                  </div>
+                  
+                  <div style="margin-bottom: 24px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">AI Tone</label>
+                    <select id="setting-ai-tone" class="uba-select" style="width: 100%; max-width: 300px;">
+                      <option value="professional">Professional</option>
+                      <option value="friendly">Friendly</option>
+                      <option value="formal">Formal</option>
+                    </select>
+                    <p style="font-size: 13px; color: var(--muted); margin-top: 4px;">
+                      How the AI should communicate with you
+                    </p>
+                  </div>
+                  
+                  <div style="margin-bottom: 24px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 500;">AI Verbosity</label>
+                    <select id="setting-ai-verbosity" class="uba-select" style="width: 100%; max-width: 300px;">
+                      <option value="short">Short & Concise</option>
+                      <option value="medium">Medium</option>
+                      <option value="long">Detailed & Thorough</option>
+                    </select>
+                    <p style="font-size: 13px; color: var(--muted); margin-top: 4px;">
+                      How detailed AI responses should be
+                    </p>
+                  </div>
+                  
+                  <div class="uba-settings-toggles">
+                    <label class="uba-setting-item">
+                      <input id="setting-ai-voice-mode" type="checkbox" class="uba-checkbox" />
+                      <div class="uba-setting-info">
+                        <span class="uba-setting-label">Enable voice mode</span>
+                        <span class="uba-setting-help">
+                          Allow voice input for AI chat
+                        </span>
+                      </div>
+                    </label>
+                    
+                    <label class="uba-setting-item">
+                      <input id="setting-ai-auto-actions" type="checkbox" class="uba-checkbox" />
+                      <div class="uba-setting-info">
+                        <span class="uba-setting-label">Enable auto-actions</span>
+                        <span class="uba-setting-help">
+                          Run daily and weekly AI checks automatically
+                        </span>
+                      </div>
+                    </label>
+                    
+                    <label class="uba-setting-item">
+                      <input id="setting-ai-embedded-buttons" type="checkbox" class="uba-checkbox" checked />
+                      <div class="uba-setting-info">
+                        <span class="uba-setting-label">Show embedded AI buttons</span>
+                        <span class="uba-setting-help">
+                          Display AI assistant buttons throughout the interface
+                        </span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
                 <!-- Actions -->
                 <div class="uba-card uba-settings-section" style="padding: 20px; margin-bottom: 16px;">
                   <div class="uba-settings-actions">

@@ -241,6 +241,25 @@
                   </div>
                 </div>
 
+                <!-- AI Quick Actions -->
+                <div style="margin: 24px 0;">
+                  <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+                    <h3 style="font-size: 16px; font-weight: 600; margin: 0;">AI Actions:</h3>
+                    <button class="uba-btn-secondary" onclick="UBA.ai.workflow.showBuilder()" style="display: inline-flex; align-items: center; gap: 6px;">
+                      🤖 Build Workflow
+                    </button>
+                    <button class="uba-btn-secondary" onclick="generateAIReport()" style="display: inline-flex; align-items: center; gap: 6px;">
+                      📄 Generate Report
+                    </button>
+                    <button class="uba-btn-secondary" onclick="showAIEmailModal()" style="display: inline-flex; align-items: center; gap: 6px;">
+                      ✉️ Compose Email
+                    </button>
+                    <button class="uba-btn-secondary" onclick="runDailyAIChecks()" style="display: inline-flex; align-items: center; gap: 6px;">
+                      ⚡ Run AI Checks
+                    </button>
+                  </div>
+                </div>
+
                 <div class="uba-grid">
                   <!-- Top row - Key metrics -->
                   <div class="uba-dashboard-row">
@@ -664,6 +683,11 @@
     <script src="assets/js/data-layer.js"></script>
     <script src="assets/js/ai-agent.js"></script>
     <script src="assets/js/ai-chat-ui.js"></script>
+    <script src="assets/js/ai-auto.js"></script>
+    <script src="assets/js/ai-reports.js"></script>
+    <script src="assets/js/ai-email.js"></script>
+    <script src="assets/js/ai-workflow.js"></script>
+    <script src="assets/js/ai-embedded.js"></script>
     <script src="assets/js/unified-metrics.js"></script>
     <script src="assets/js/sparkline.js"></script>
     <script src="assets/js/enhanced-dashboard.js"></script>
@@ -681,6 +705,98 @@
       // Set default language to English
       localStorage.setItem("uba-lang", "en");
       document.documentElement.dir = "ltr";
+    </script>
+    <script>
+      // AI Quick Action Helpers
+      async function generateAIReport() {
+        if (!window.UBA || !UBA.ai || !UBA.ai.reports) {
+          alert('AI Reports module not loaded');
+          return;
+        }
+        
+        const reportType = prompt('Select report type:\n1. Financial Summary\n2. Monthly Activities\n3. Client Overview\n4. Project Progress\n\nEnter 1-4:');
+        
+        const types = {
+          '1': 'financial-summary',
+          '2': 'monthly-activities',
+          '3': 'client-overview',
+          '4': 'project-progress'
+        };
+        
+        const selectedType = types[reportType];
+        
+        if (!selectedType) {
+          alert('Invalid selection');
+          return;
+        }
+        
+        const result = await UBA.ai.reports.generatePDFReport(selectedType, {});
+        
+        if (result.success) {
+          alert('Report generated successfully! Opening preview...');
+          const win = window.open('', '_blank');
+          win.document.write(result.html);
+          win.document.close();
+        } else {
+          alert('Failed to generate report: ' + result.error);
+        }
+      }
+      
+      async function showAIEmailModal() {
+        if (!window.UBA || !UBA.ai || !UBA.ai.email) {
+          alert('AI Email module not loaded');
+          return;
+        }
+        
+        const emailType = prompt('Select email type:\n1. Follow-up\n2. Invoice Reminder\n3. Project Update\n4. Quotation\n5. Welcome\n\nEnter 1-5:');
+        
+        const types = {
+          '1': 'follow-up',
+          '2': 'invoice-reminder',
+          '3': 'project-update',
+          '4': 'quotation',
+          '5': 'welcome'
+        };
+        
+        const selectedType = types[emailType];
+        
+        if (!selectedType) {
+          alert('Invalid selection');
+          return;
+        }
+        
+        const result = await UBA.ai.email.generateEmail(selectedType, {
+          clientName: 'Customer'
+        });
+        
+        if (result.success) {
+          UBA.ai.email.showEmailModal(result.email);
+        } else {
+          alert('Failed to generate email: ' + result.error);
+        }
+      }
+      
+      async function runDailyAIChecks() {
+        if (!window.UBA || !UBA.ai || !UBA.ai.auto) {
+          alert('AI Auto module not loaded');
+          return;
+        }
+        
+        const confirmed = confirm('Run daily AI checks now? This will analyze tasks, leads, projects, and billing.');
+        
+        if (!confirmed) return;
+        
+        const result = await UBA.ai.auto.dailyRun();
+        
+        if (result.success) {
+          alert('Daily AI checks completed! Check the AI chat panel for results.');
+          if (window.AIUI) {
+            window.AIUI.togglePanel();
+          }
+        } else {
+          alert('Failed to run AI checks: ' + result.error);
+        }
+      }
     </script>
     <script>
       try {
