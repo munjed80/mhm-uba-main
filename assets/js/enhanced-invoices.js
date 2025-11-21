@@ -376,6 +376,42 @@
       // Add preview button to invoice form
       this.addPreviewButtonToForm();
     },
+
+    /**
+     * Scoped helpers so invoice modals reuse the global overlay lifecycle
+     */
+    showModuleModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+
+      if (typeof window.showModal === 'function') {
+        window.showModal(modalId);
+      } else {
+        modal.classList.remove('is-hidden');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+
+      modal.classList.remove('is-hidden');
+      modal.classList.add('is-visible');
+      modal.setAttribute('aria-hidden', 'false');
+    },
+
+    hideModuleModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+
+      if (typeof window.hideModal === 'function') {
+        window.hideModal(modalId);
+      } else {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+      }
+
+      modal.classList.remove('is-visible');
+      modal.classList.add('is-hidden');
+      modal.setAttribute('aria-hidden', 'true');
+    },
     
     /**
      * Create invoice preview modal
@@ -383,7 +419,7 @@
     createInvoicePreviewModal() {
       const previewModal = document.createElement('div');
       previewModal.id = 'invoice-preview-modal';
-      previewModal.className = 'uba-modal invoice-preview-modal';
+      previewModal.className = 'uba-modal invoice-preview-modal is-hidden';
       previewModal.innerHTML = `
         <div class=\"uba-modal-overlay\" onclick=\"window.UBAEnhancedInvoices.closePreview()\"></div>
         <div class=\"uba-modal-dialog invoice-preview-dialog\">
@@ -408,6 +444,8 @@
       `;
       
       document.body.appendChild(previewModal);
+      previewModal.style.display = 'none';
+      previewModal.setAttribute('aria-hidden', 'true');
     },
     
     /**
@@ -457,11 +495,7 @@
       }
       
       // Show modal
-      const modal = document.getElementById('invoice-preview-modal');
-      if (modal) {
-        modal.classList.add('is-visible');
-        document.body.style.overflow = 'hidden';
-      }
+      this.showModuleModal('invoice-preview-modal');
     },
     
     /**
@@ -499,11 +533,7 @@
      * Close preview modal
      */
     closePreview() {
-      const modal = document.getElementById('invoice-preview-modal');
-      if (modal) {
-        modal.classList.remove('is-visible');
-        document.body.style.overflow = '';
-      }
+      this.hideModuleModal('invoice-preview-modal');
       this.currentInvoice = null;
     },
     
@@ -1194,11 +1224,9 @@
       
       // Show modal
       const modal = document.getElementById('branding-settings-modal');
-      if (modal) {
-        modal.classList.add('is-visible');
-        document.body.style.overflow = 'hidden';
-        this.populateBrandingForm();
-      }
+      if (!modal) return;
+      this.populateBrandingForm();
+      this.showModuleModal('branding-settings-modal');
     },
     
     /**
@@ -1207,7 +1235,7 @@
     createBrandingModal() {
       const modal = document.createElement('div');
       modal.id = 'branding-settings-modal';
-      modal.className = 'uba-modal branding-settings-modal';
+      modal.className = 'uba-modal branding-settings-modal is-hidden';
       modal.innerHTML = `
         <div class=\"uba-modal-overlay\" onclick=\"window.UBAEnhancedInvoices.closeBrandingSettings()\"></div>
         <div class=\"uba-modal-dialog\">
@@ -1312,6 +1340,8 @@
       `;
       
       document.body.appendChild(modal);
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden', 'true');
     },
     
     /**
@@ -1370,11 +1400,7 @@
      * Close branding settings modal
      */
     closeBrandingSettings() {
-      const modal = document.getElementById('branding-settings-modal');
-      if (modal) {
-        modal.classList.remove('is-visible');
-        document.body.style.overflow = '';
-      }
+      this.hideModuleModal('branding-settings-modal');
     },
     
     // Utility methods

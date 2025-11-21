@@ -19,8 +19,16 @@
      */
     init() {
       console.log('💸 Initializing Enhanced Expense System');
-      
+
       this.loadExpenseCategories();
+
+      const isExpensesContext = this.isExpensesPage();
+      if (!isExpensesContext) {
+        this.teardownDetachedUI();
+        console.log('↩️ Skipping Enhanced Expense UI wiring – no expenses view on this page');
+        return;
+      }
+      
       this.setupCategoryManagement();
       this.setupCharts();
       this.setupReceiptUpload();
@@ -28,6 +36,39 @@
       this.initializeUI();
       
       console.log('✅ Enhanced Expense System initialized');
+    },
+
+    /**
+     * Detect if current page contains the expenses experience
+     */
+    isExpensesPage() {
+      const pageMarker = document.getElementById('page-id');
+      if (pageMarker?.dataset?.page) {
+        return pageMarker.dataset.page === 'expenses-page';
+      }
+
+      if (document.body?.dataset?.activeView === 'expenses') {
+        return true;
+      }
+
+      if (document.querySelector('[data-view="expenses"]')) {
+        return true;
+      }
+
+      return window.location.pathname.includes('expenses');
+    },
+
+    /**
+     * Remove stray modals/overlays when not on the expenses page
+     */
+    teardownDetachedUI() {
+      const modal = document.getElementById('category-management-modal');
+      if (modal) {
+        if (!modal.classList.contains('is-hidden')) {
+          document.body.style.overflow = '';
+        }
+        modal.remove();
+      }
     },
     
     /**
@@ -189,6 +230,42 @@
       // Update expense form dropdown with categories
       this.updateExpenseFormCategories();
     },
+
+    /**
+     * Scoped modal helpers so overlays never linger between pages
+     */
+    showModuleModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+
+      if (typeof window.showModal === 'function') {
+        window.showModal(modalId);
+      } else {
+        modal.classList.remove('is-hidden');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+
+      modal.classList.remove('is-hidden');
+      modal.classList.add('is-visible');
+      modal.setAttribute('aria-hidden', 'false');
+    },
+
+    hideModuleModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (!modal) return;
+
+      if (typeof window.hideModal === 'function') {
+        window.hideModal(modalId);
+      } else {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+      }
+
+      modal.classList.remove('is-visible');
+      modal.classList.add('is-hidden');
+      modal.setAttribute('aria-hidden', 'true');
+    },
     
     /**
      * Add category management button
@@ -219,7 +296,7 @@
     createCategoryModal() {
       const modal = document.createElement('div');
       modal.id = 'category-management-modal';
-      modal.className = 'uba-modal category-modal';
+      modal.className = 'uba-modal category-modal is-hidden';
       modal.innerHTML = `
         <div class=\"uba-modal-overlay\" onclick=\"window.UBAEnhancedExpenses.closeCategoryManagement()\"></div>
         <div class=\"uba-modal-dialog category-dialog\">
@@ -297,6 +374,8 @@
       `;
       
       document.body.appendChild(modal);
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden', 'true');
       
       // Setup form submission
       const form = modal.querySelector('#category-form');
@@ -311,23 +390,17 @@
      */
     openCategoryManagement() {
       const modal = document.getElementById('category-management-modal');
-      if (modal) {
-        modal.classList.add('is-visible');
-        document.body.style.overflow = 'hidden';
-        this.renderCategoriesList();
-      }
+      if (!modal) return;
+      this.renderCategoriesList();
+      this.showModuleModal('category-management-modal');
     },
     
     /**
      * Close category management modal
      */
     closeCategoryManagement() {
-      const modal = document.getElementById('category-management-modal');
-      if (modal) {
-        modal.classList.remove('is-visible');
-        document.body.style.overflow = '';
-        this.clearCategoryForm();
-      }
+      this.hideModuleModal('category-management-modal');
+      this.clearCategoryForm();
     },
     
     /**
