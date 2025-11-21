@@ -2,6 +2,60 @@
 (function() {
   'use strict';
 
+  const REPORT_STATE = {
+    exportControls: null,
+    charts: new Set(),
+    kpiHandlersBound: false,
+  };
+
+  function isReportsPage() {
+    const pageMarker = document.getElementById('page-id');
+    if (pageMarker?.dataset?.page) {
+      return pageMarker.dataset.page === 'reports-page';
+    }
+    if (document.body?.dataset?.activeView === 'reports') {
+      return true;
+    }
+    if (document.querySelector('[data-view="reports"]')) {
+      return true;
+    }
+    return window.location.pathname.includes('reports');
+  }
+
+  function teardownReportsUI() {
+    REPORT_STATE.charts.forEach((chart) => {
+      if (chart?.destroy) chart.destroy();
+    });
+    REPORT_STATE.charts.clear();
+
+    document.querySelectorAll('.enhanced-reports-modal').forEach((modal) => modal.remove());
+
+    if (REPORT_STATE.exportControls) {
+      REPORT_STATE.exportControls.remove();
+      REPORT_STATE.exportControls = null;
+    }
+
+    REPORT_STATE.kpiHandlersBound = false;
+  }
+
+  function registerChartInstance(canvas, chart) {
+    if (!chart || !canvas) return;
+    if (canvas.chart) {
+      REPORT_STATE.charts.delete(canvas.chart);
+      canvas.chart.destroy();
+    }
+    canvas.chart = chart;
+    REPORT_STATE.charts.add(chart);
+  }
+
+  function ensureReportsContext() {
+    const isContext = isReportsPage();
+    if (!isContext) {
+      teardownReportsUI();
+    }
+    return isContext;
+  }
+
   // Chart.js Configuration
   const CHART_CONFIG = {
     responsive: true,
