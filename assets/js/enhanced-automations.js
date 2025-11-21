@@ -199,8 +199,16 @@
      */
     init() {
       console.log('🤖 Initializing Enhanced Automation System');
-      
+
       this.loadAutomations();
+
+      const isAutomationsContext = this.isAutomationsPage();
+      if (!isAutomationsContext) {
+        this.teardownDetachedUI();
+        console.log('↩️ Skipping Enhanced Automation UI wiring – no automations view on this page');
+        return;
+      }
+      
       this.setupRealTriggers();
       this.enhanceAutomationModal();
       this.setupValidationRules();
@@ -209,6 +217,50 @@
       this.initializeEventSystem();
       
       console.log('✅ Enhanced Automation System initialized');
+    },
+
+    /**
+     * Detect if current page contains the automations experience
+     */
+    isAutomationsPage() {
+      const pageMarker = document.getElementById('page-id');
+      if (pageMarker?.dataset?.page) {
+        return pageMarker.dataset.page === 'automations-page';
+      }
+
+      if (document.body?.dataset?.activeView === 'automations') {
+        return true;
+      }
+
+      if (document.querySelector('[data-view="automations"]')) {
+        return true;
+      }
+
+      return window.location.pathname.includes('automations');
+    },
+
+    /**
+     * Remove stray modals/overlays when not on the automations page
+     */
+    teardownDetachedUI() {
+      const modal = document.getElementById('automation-modal');
+      if (modal) {
+        if (!modal.classList.contains('is-hidden') && modal.style.display !== 'none') {
+          document.body.style.overflow = '';
+          document.body.classList.remove('modal-open');
+        }
+        modal.remove();
+      }
+
+      // Clear any automation-related event listeners
+      this.eventListeners.forEach((listener, element) => {
+        try {
+          element.removeEventListener('click', listener);
+        } catch (e) {
+          // Ignore errors for removed elements
+        }
+      });
+      this.eventListeners.clear();
     },
     
     /**
