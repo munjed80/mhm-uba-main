@@ -121,6 +121,13 @@
   position: relative;
   cursor: pointer;
   transition: all 0.2s ease;
+  background: rgba(15, 23, 42, 0.6);
+  min-height: 100px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-radius: 8px;
 }
 
 .uba-calendar-day:hover {
@@ -267,8 +274,7 @@
   margin-right: 4px;
 }
 
-/* Calendar Day Numbers */
-.day-number,
+/* Calendar Day Numbers - use consistent naming */
 .uba-calendar-day-number {
   font-weight: 600;
   color: #e2e8f0;
@@ -276,20 +282,8 @@
   margin-bottom: 6px;
 }
 
-.uba-calendar-day.other-month .day-number,
 .uba-calendar-day.other-month .uba-calendar-day-number {
   color: #64748b;
-}
-
-.uba-calendar-day.today {
-  background-color: #eff6ff;
-  border: 1px solid #3b82f6;
-  border-radius: 8px;
-}
-
-.uba-calendar-day.today .day-number {
-  color: #3b82f6;
-  font-weight: 700;
 }
 
 /* Event Modal Header */
@@ -469,17 +463,6 @@
   border-radius: 12px;
   overflow: hidden;
   padding: 2px;
-}
-
-.uba-calendar-day {
-  background: rgba(15, 23, 42, 0.6);
-  min-height: 100px;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  transition: all 0.2s ease;
-  border-radius: 8px;
 }
 
 .uba-calendar-weekdays {
