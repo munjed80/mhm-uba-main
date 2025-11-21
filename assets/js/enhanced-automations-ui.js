@@ -41,11 +41,11 @@ Object.assign(window.UBAEnhancedAutomations, {
     if (automationId) {
       this.populateFormForEdit(automationId);
       document.getElementById('automation-modal-title').innerHTML = 
-        '<span class="icon">✏️</span> تعديل الأتمتة (Edit Automation)';
+        '<span class="icon">✏️</span> Edit Automation';
       document.getElementById('delete-automation-btn').style.display = 'inline-block';
     } else {
       document.getElementById('automation-modal-title').innerHTML = 
-        '<span class="icon">🤖</span> إنشاء أتمتة جديدة (Create New Automation)';
+        '<span class="icon">🤖</span> Create New Automation';
       document.getElementById('delete-automation-btn').style.display = 'none';
     }
     

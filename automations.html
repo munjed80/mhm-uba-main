@@ -143,112 +143,264 @@
 
             <div class="uba-views">
               <section class="uba-view" data-view="automations">
-                <div class="uba-grid">
-                  <div class="uba-grid-col">
-                    <section class="uba-card" id="automations-page">
-                      <div class="uba-card-header">
-                        <div>
-                          <div
-                            class="uba-card-title"
-                            data-i18n="view.automations.title"
-                          >
-                            Automations
-                          </div>
-                          <p
-                            class="uba-card-sub"
-                            data-i18n="view.automations.desc"
-                          >
-                            Create automation rules to streamline your workflow
-                          </p>
-                        </div>
-                        <button id="new-automation-btn" class="uba-btn uba-btn-primary enhanced-create">
-                          <span class="icon">➕</span>
-                          <span data-i18n="automations.new">Create Automation</span>
+                <div class="automation-hero-surface">
+                  <div class="automation-hero">
+                    <div class="automation-hero-content">
+                      <p class="hero-eyebrow">Automation Control Center</p>
+                      <h2>Orchestrate every client, finance, and ops workflow</h2>
+                      <p>
+                        Launch dependable automations that watch your CRM, billing, and delivery data
+                        in real time. Every rule is fully auditable, uses safe defaults, and can be
+                        extended with advanced triggers or outbound actions.
+                      </p>
+                      <div class="automation-hero-actions">
+                        <button
+                          id="new-automation-btn"
+                          class="uba-btn uba-btn-primary uba-btn-lg"
+                          type="button"
+                        >
+                          <span class="icon">⚡</span>
+                          <span>Launch Automation Builder</span>
+                        </button>
+                        <button class="uba-btn uba-btn-ghost uba-btn-lg" type="button">
+                          <span class="icon">📚</span>
+                          <span>Browse playbooks</span>
                         </button>
                       </div>
-
-                      <div class="automations-meta">
-                        <div>
-                          <p class="label" data-i18n="automations.meta.count">
-                            Active rules
-                          </p>
-                          <strong id="automation-count">0</strong>
+                      <ul class="automation-promise-list">
+                        <li>Real triggers mapped to tasks, invoices, leads, and projects</li>
+                        <li>Multiple actions per rule with validation and safe rollbacks</li>
+                        <li>Centralized audit log with export-ready history</li>
+                      </ul>
+                    </div>
+                    <div class="automation-hero-panel" aria-label="Automation activity overview">
+                      <div class="hero-panel-header">
+                        <span>Latest orchestration</span>
+                        <span class="status-live">Live</span>
+                      </div>
+                      <div class="hero-panel-body">
+                        <div class="hero-flow-step">
+                          <span>Trigger</span>
+                          <strong>Invoice Due &middot; Enterprise Retainer</strong>
+                          <small>Queued 2 min ago</small>
                         </div>
-                        <div>
-                          <p class="label" data-i18n="automations.meta.runs">
-                            Total runs
-                          </p>
-                          <strong id="automation-runs">0</strong>
+                        <div class="hero-flow-step">
+                          <span>Condition</span>
+                          <strong>Amount &gt; 5,000 · Client tagged VIP</strong>
+                          <small>Ruleset matched</small>
                         </div>
-                        <div class="mini-chip" data-i18n="view.automations.local">
-                          Local only
+                        <div class="hero-flow-step">
+                          <span>Actions</span>
+                          <strong>Task + Slack notification + Ledger note</strong>
+                          <small>Executed in 420ms</small>
                         </div>
                       </div>
-
-                      <div class="uba-table-wrap">
-                        <table class="uba-table enhanced-automations-table">
-                          <thead>
-                            <tr>
-                              <th data-i18n="table.name">Name</th>
-                              <th data-i18n="automations.trigger">Trigger</th>
-                              <th data-i18n="automations.action">Actions</th>
-                              <th data-i18n="automations.stats">Statistics</th>
-                              <th data-i18n="table.status">Status</th>
-                              <th style="width: 140px" data-i18n="table.actions">
-                                Actions
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody id="automations-body">
-                            <tr>
-                              <td colspan="6" data-i18n="automations.empty">
-                                No automations yet. Create your first rule.
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
+                      <div class="hero-panel-footer">
+                        <span>Next review</span>
+                        <strong>Weekly automation audit · Friday 09:00</strong>
                       </div>
-                    </section>
+                    </div>
+                  </div>
 
-                    <!-- Recent Runs Section -->
-                    <section class="uba-card">
-                      <div class="uba-card-header">
-                        <div>
-                          <div class="uba-card-title" data-i18n="automations.recentRuns">
-                            Recent Runs
-                          </div>
-                          <p class="uba-card-sub" data-i18n="automations.recentRunsDesc">
-                            History of automation executions
-                          </p>
-                        </div>
-                        <button id="clear-logs-btn" class="uba-btn-ghost">
-                          <span data-i18n="automations.clearLogs">Clear Logs</span>
-                        </button>
-                      </div>
-
-                      <div class="uba-table-wrap">
-                        <table class="uba-table">
-                          <thead>
-                            <tr>
-                              <th data-i18n="automations.logRule">Rule Name</th>
-                              <th data-i18n="automations.logTrigger">Trigger Type</th>
-                              <th data-i18n="automations.logResult">Status</th>
-                              <th data-i18n="automations.logPayload">Details</th>
-                              <th data-i18n="automations.logTime">Time</th>
-                            </tr>
-                          </thead>
-                          <tbody id="automation-logs-body">
-                            <tr>
-                              <td colspan="5" data-i18n="automations.noLogs">
-                                No automation runs yet.
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </section>
+                  <div class="automation-hero-metrics">
+                    <div class="hero-metric">
+                      <p>Active automations</p>
+                      <strong id="automation-count">0</strong>
+                      <small>Live safeguards</small>
+                    </div>
+                    <div class="hero-metric">
+                      <p>Total runs</p>
+                      <strong id="automation-runs">0</strong>
+                      <small>Last 30 days</small>
+                    </div>
+                    <div class="hero-metric">
+                      <p>On-time routing</p>
+                      <strong>99.4%</strong>
+                      <small>Measured across all flows</small>
+                    </div>
+                    <div class="hero-metric">
+                      <p>Blueprints ready</p>
+                      <strong>24</strong>
+                      <small>Prebuilt client journeys</small>
+                    </div>
                   </div>
                 </div>
+
+                <section id="automations-page" class="automation-core">
+                  <div class="automation-panels">
+                    <article class="automation-panel automation-command-center">
+                      <div class="automation-panel-header">
+                        <div>
+                          <p class="eyebrow">Command panel</p>
+                          <h3>Build dependable flows in minutes</h3>
+                          <p>
+                            Define structured triggers, stack unlimited actions, and set guardrails for
+                            data updates or external notifications. Everything you configure is versioned
+                            and can be tested against sandbox data before going live.
+                          </p>
+                        </div>
+                      </div>
+                      <ul class="automation-checklist">
+                        <li>
+                          <span class="icon">🎯</span>
+                          <div>
+                            <strong>Precise trigger conditions</strong>
+                            <small>Filter on priority, monetary thresholds, project stages, or custom fields.</small>
+                          </div>
+                        </li>
+                        <li>
+                          <span class="icon">🧩</span>
+                          <div>
+                            <strong>Composable action stack</strong>
+                            <small>Mix tasks, notifications, updates, and webhooks per rule.</small>
+                          </div>
+                        </li>
+                        <li>
+                          <span class="icon">🛡️</span>
+                          <div>
+                            <strong>Safety controls</strong>
+                            <small>Enable approvals, dry-runs, and automatic throttling.</small>
+                          </div>
+                        </li>
+                      </ul>
+                      <div class="automation-command-footer">
+                        <button class="uba-btn uba-btn-secondary" type="button">
+                          Preview sandbox data
+                        </button>
+                        <button class="uba-btn uba-btn-ghost" type="button">
+                          View change history
+                        </button>
+                      </div>
+                    </article>
+
+                    <article class="automation-panel automation-signal-card">
+                      <header>
+                        <p class="eyebrow">Signal board</p>
+                        <h3>Real-time guardrails</h3>
+                        <p>Monitor execution health, failure retries, and approvals waiting on you.</p>
+                      </header>
+                      <ul class="signal-grid">
+                        <li>
+                          <span>Pending approvals</span>
+                          <strong>3</strong>
+                          <small>Finance follow-ups awaiting sign-off</small>
+                        </li>
+                        <li>
+                          <span>Retries scheduled</span>
+                          <strong>1</strong>
+                          <small>Webhook endpoint slowed down</small>
+                        </li>
+                        <li>
+                          <span>Muted rules</span>
+                          <strong>2</strong>
+                          <small>Paused during pricing experiment</small>
+                        </li>
+                        <li>
+                          <span>Success streak</span>
+                          <strong>47</strong>
+                          <small>Runs without manual intervention</small>
+                        </li>
+                      </ul>
+                    </article>
+                  </div>
+
+                  <section class="automation-data-card" aria-labelledby="automation-table-title">
+                    <div class="automation-data-card-header">
+                      <div>
+                        <p class="eyebrow">Automation library</p>
+                        <h3 id="automation-table-title">Active and draft automations</h3>
+                        <p>Every rule shows its trigger, action stack, health, and last execution time.</p>
+                      </div>
+                    </div>
+                    <div class="uba-table-wrap">
+                      <table class="uba-table enhanced-automations-table">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Trigger</th>
+                            <th>Actions</th>
+                            <th>Status</th>
+                            <th>Last run</th>
+                            <th style="width: 140px">Controls</th>
+                          </tr>
+                        </thead>
+                        <tbody id="automations-body">
+                          <tr>
+                            <td colspan="6">
+                              No automations yet. Create your first rule.
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+
+                  <section class="automation-data-card" aria-labelledby="automation-log-title">
+                    <div class="automation-data-card-header">
+                      <div>
+                        <p class="eyebrow">Operational telemetry</p>
+                        <h3 id="automation-log-title">Execution log</h3>
+                        <p>Chronological record of rule runs, payload summaries, and success signals.</p>
+                      </div>
+                      <button id="clear-logs-btn" class="uba-btn-ghost" type="button">
+                        Clear logs
+                      </button>
+                    </div>
+                    <div class="uba-table-wrap">
+                      <table class="uba-table">
+                        <thead>
+                          <tr>
+                            <th>Rule</th>
+                            <th>Trigger</th>
+                            <th>Result</th>
+                            <th>Details</th>
+                            <th>Timestamp</th>
+                          </tr>
+                        </thead>
+                        <tbody id="automation-logs-body">
+                          <tr>
+                            <td colspan="5">No automation runs yet.</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+
+                  <section class="automation-catalog">
+                    <article>
+                      <p class="eyebrow">Trigger catalog</p>
+                      <h3>Events you can listen to</h3>
+                      <p>
+                        Mix and match granular filters to decide when each automation fires. Every trigger
+                        supports optional constraints so you never spam your teams.
+                      </p>
+                      <ul class="catalog-list">
+                        <li><strong>Task Created</strong> &middot; react instantly when work is scheduled.</li>
+                        <li><strong>Invoice Due</strong> &middot; escalate billing risk before it grows.</li>
+                        <li><strong>Lead Updated</strong> &middot; sync follow-up cadences with sales.</li>
+                        <li><strong>Project Stage Changed</strong> &middot; align stakeholders as work moves.</li>
+                        <li><strong>Client Created</strong> &middot; onboard consistently every time.</li>
+                        <li><strong>Deadline Approaching</strong> &middot; remind the right owner ahead of time.</li>
+                      </ul>
+                    </article>
+                    <article>
+                      <p class="eyebrow">Action catalog</p>
+                      <h3>Responses you can stack</h3>
+                      <p>
+                        Combine unlimited actions per rule to keep clients informed, teams aligned, and
+                        systems in sync.
+                      </p>
+                      <ul class="catalog-list">
+                        <li><strong>Send Notification</strong> to inboxes or in-app alerts.</li>
+                        <li><strong>Create Task</strong> with prefilled context and deadlines.</li>
+                        <li><strong>Add Log Entry</strong> for your compliance or success teams.</li>
+                        <li><strong>Update Record</strong> fields when data requirements change.</li>
+                        <li><strong>Send Email</strong> using branded templates.</li>
+                        <li><strong>Webhook</strong> any payload to external platforms.</li>
+                      </ul>
+                    </article>
+                  </section>
+                </section>
               </section>
             </div>
 

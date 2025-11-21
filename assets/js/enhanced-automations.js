@@ -17,7 +17,7 @@
     triggers: {
       onTaskCreated: {
         id: 'onTaskCreated',
-        name: 'Task Created (عند إنشاء مهمة)',
+        name: 'Task Created',
         description: 'Triggered when a new task is created',
         icon: '✅',
         category: 'tasks',
@@ -32,7 +32,7 @@
       },
       onInvoiceDue: {
         id: 'onInvoiceDue',
-        name: 'Invoice Due (عند استحقاق فاتورة)',
+        name: 'Invoice Due',
         description: 'Triggered when an invoice becomes due or overdue',
         icon: '💵',
         category: 'invoices',
@@ -47,7 +47,7 @@
       },
       onLeadUpdated: {
         id: 'onLeadUpdated',
-        name: 'Lead Updated (عند تحديث عميل محتمل)',
+        name: 'Lead Updated',
         description: 'Triggered when a lead status or information is updated',
         icon: '🧲',
         category: 'leads',
@@ -62,7 +62,7 @@
       },
       onProjectMoved: {
         id: 'onProjectMoved',
-        name: 'Project Stage Changed (عند تغيير مرحلة المشروع)',
+        name: 'Project Stage Changed',
         description: 'Triggered when a project moves to a different stage',
         icon: '💼',
         category: 'projects',
@@ -77,7 +77,7 @@
       },
       onClientCreated: {
         id: 'onClientCreated',
-        name: 'Client Created (عند إضافة عميل)',
+        name: 'Client Created',
         description: 'Triggered when a new client is added',
         icon: '👤',
         category: 'clients',
@@ -91,7 +91,7 @@
       },
       onDeadlineApproaching: {
         id: 'onDeadlineApproaching',
-        name: 'Deadline Approaching (عند اقتراب الموعد النهائي)',
+        name: 'Deadline Approaching',
         description: 'Triggered when any deadline is approaching',
         icon: '⏰',
         category: 'deadlines',
@@ -109,7 +109,7 @@
     actions: {
       sendNotification: {
         id: 'sendNotification',
-        name: 'Send Notification (إرسال تنبيه)',
+        name: 'Send Notification',
         description: 'Send a notification message',
         icon: '🔔',
         category: 'notifications',
@@ -123,7 +123,7 @@
       },
       createTask: {
         id: 'createTask',
-        name: 'Create Task (إنشاء مهمة)',
+        name: 'Create Task',
         description: 'Create a new task automatically',
         icon: '✅',
         category: 'tasks',
@@ -139,7 +139,7 @@
       },
       addLogEntry: {
         id: 'addLogEntry',
-        name: 'Add Log Entry (إضافة سجل)',
+        name: 'Add Log Entry',
         description: 'Add an entry to the activity log',
         icon: '📝',
         category: 'logging',
@@ -153,7 +153,7 @@
       },
       updateRecord: {
         id: 'updateRecord',
-        name: 'Update Record (تحديث سجل)',
+        name: 'Update Record',
         description: 'Update the record that triggered this automation',
         icon: '✏️',
         category: 'data',
@@ -166,7 +166,7 @@
       },
       sendEmail: {
         id: 'sendEmail',
-        name: 'Send Email (إرسال بريد إلكتروني)',
+        name: 'Send Email',
         description: 'Send an email notification',
         icon: '📧',
         category: 'communications',
@@ -180,7 +180,7 @@
       },
       webhook: {
         id: 'webhook',
-        name: 'Webhook (ويب هوك)',
+        name: 'Webhook',
         description: 'Send data to external webhook URL',
         icon: '🔗',
         category: 'integrations',
@@ -978,7 +978,7 @@
           <div class=\"uba-modal-header automation-header\">
             <h3 id=\"automation-modal-title\">
               <span class=\"icon\">🤖</span> 
-              إنشاء أتمتة جديدة (Create New Automation)
+                Create New Automation
             </h3>
             <button class=\"uba-modal-close\" onclick=\"window.UBAEnhancedAutomations.closeModal()\">×</button>
           </div>
@@ -1019,7 +1019,7 @@
               <!-- Trigger Configuration -->
               <div class=\"form-section\">
                 <div class=\"section-header\">
-                  <h4><span class=\"icon\">🎯</span> Trigger (المحفز)</h4>
+                  <h4><span class=\"icon\">🎯</span> Trigger</h4>
                   <p>What event should trigger this automation?</p>
                 </div>
                 
@@ -1042,7 +1042,7 @@
               <!-- Actions Configuration -->
               <div class=\"form-section\">
                 <div class=\"section-header\">
-                  <h4><span class=\"icon\">⚡</span> Actions (الإجراءات)</h4>
+                  <h4><span class=\"icon\">⚡</span> Actions</h4>
                   <p>What should happen when the trigger fires?</p>
                   <button type=\"button\" class=\"uba-btn uba-btn-sm uba-btn-primary\" 
                           onclick=\"window.UBAEnhancedAutomations.addAction()\">
