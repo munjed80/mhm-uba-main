@@ -1,74 +1,253 @@
-// files.js — comprehensive local file manager
+// files.js — Production-ready SaaS File Manager for MHM UBA
+// Integrates with UBA.data, UBA.billing, and UBA.members
 (function () {
+  'use strict';
+
+  // ===============================
+  // State Management
+  // ===============================
+  let allFiles = [];
+  let filteredFiles = [];
+  let currentCategory = 'all';
+  let currentSort = 'date-desc';
+  let searchQuery = '';
+  let currentUser = null;
+  let currentRole = null;
+  let renameFileId = null;
+
+  // ===============================
+  // Utilities
+  // ===============================
   
-  // File management utilities
+  function log(...args) {
+    console.log('[Files]', ...args);
+  }
+
+  function warn(...args) {
+    console.warn('[Files]', ...args);
+  }
+
+  function generateId() {
+    if (window.crypto && crypto.randomUUID) {
+      return `file-${crypto.randomUUID()}`;
+    }
+    return `file-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+  }
+
   function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return '0 B';
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
-  function getFileType(mimeType) {
-    if (!mimeType) return 'other';
-    const mainType = mimeType.split('/')[0];
-    return ['image', 'audio', 'video', 'text', 'application'].includes(mainType) 
-      ? mainType 
-      : 'document';
-  }
-
-  function getFileIcon(mimeType) {
-    const type = getFileType(mimeType);
-    const iconMap = {
-      image: '🖼️',
-      audio: '🎵',
-      video: '🎥',
-      text: '📝',
-      application: '📋',
-      document: '📄',
-      other: '📎'
-    };
-    return iconMap[type] || '📎';
-  }
-
   function formatDate(timestamp) {
-    return new Date(timestamp).toLocaleDateString('en-US', {
-      year: 'numeric',
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins} min ago`;
+    if (diffMins < 1440) return `${Math.floor(diffMins / 60)} hr ago`;
+    
+    return date.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
     });
   }
 
-  // File storage functions
-  function saveFileToStore(fileData) {
-    const store = window.ubaStore;
-    if (store && store.files && typeof store.files.create === 'function') {
-      return store.files.create(fileData);
+  function getFileCategory(type) {
+    if (!type) return 'other';
+    const lowerType = type.toLowerCase();
+    
+    if (lowerType.includes('image') || lowerType.includes('jpg') || lowerType.includes('png') || lowerType.includes('gif') || lowerType.includes('webp')) {
+      return 'images';
     }
-    return null;
+    if (lowerType.includes('pdf')) {
+      return 'pdfs';
+    }
+    if (lowerType.includes('video') || lowerType.includes('mp4') || lowerType.includes('webm')) {
+      return 'videos';
+    }
+    if (lowerType.includes('word') || lowerType.includes('document') || lowerType.includes('text') || 
+        lowerType.includes('spreadsheet') || lowerType.includes('presentation')) {
+      return 'documents';
+    }
+    return 'other';
   }
 
-  function getAllFiles() {
-    const store = window.ubaStore;
-    if (store && store.files && typeof store.files.getAll === 'function') {
-      return store.files.getAll();
-    }
-    return [];
+  function getFileIcon(type) {
+    const category = getFileCategory(type);
+    const icons = {
+      images: '🖼️',
+      pdfs: '📕',
+      videos: '🎥',
+      documents: '📄',
+      other: '📎'
+    };
+    return icons[category] || '📎';
   }
 
-  function deleteFile(fileId) {
-    const store = window.ubaStore;
-    if (store && store.files && typeof store.files.delete === 'function') {
-      store.files.delete(fileId);
+  function canUpload() {
+    if (!currentRole) return false;
+    // Viewer cannot upload
+    return currentRole !== 'viewer';
+  }
+
+  function canDelete() {
+    if (!currentRole) return false;
+    // Only Editor, Admin, Owner can delete
+    return ['editor', 'admin', 'owner'].includes(currentRole);
+  }
+
+  function canRename() {
+    if (!currentRole) return false;
+    // Only Editor, Admin, Owner can rename
+    return ['editor', 'admin', 'owner'].includes(currentRole);
+  }
+
+  // ===============================
+  // Storage & Billing Integration
+  // ===============================
+
+  async function calculateTotalStorage() {
+    let totalBytes = 0;
+    allFiles.forEach(file => {
+      totalBytes += file.size || 0;
+    });
+    return totalBytes;
+  }
+
+  async function updateStorageWidget() {
+    const widget = document.getElementById('storage-usage-widget');
+    if (!widget) return;
+
+    try {
+      const totalStorage = await calculateTotalStorage();
+      const subscription = await window.UBA.billing.getCurrentSubscription();
+      const plan = window.UBA.billing.PLAN_CATALOG[subscription.planId];
+      
+      if (!plan) {
+        warn('Plan not found for:', subscription.planId);
+        return;
+      }
+      
+      const maxStorage = plan.limits.maxStorage;
+      const percentage = (totalStorage / maxStorage) * 100;
+      
+      let statusClass = 'normal';
+      if (percentage >= 90) statusClass = 'critical';
+      else if (percentage >= 75) statusClass = 'warning';
+      
+      widget.innerHTML = `
+        <div class="storage-bar">
+          <div class="storage-fill storage-${statusClass}" style="width: ${Math.min(percentage, 100)}%"></div>
+        </div>
+        <div class="storage-text">${formatFileSize(totalStorage)} / ${formatFileSize(maxStorage)}</div>
+      `;
+    } catch (error) {
+      warn('Error updating storage widget:', error);
+    }
+  }
+
+  async function checkStorageLimit(additionalBytes) {
+    try {
+      const totalStorage = await calculateTotalStorage();
+      const newTotal = totalStorage + additionalBytes;
+      
+      const check = await window.UBA.billing.checkLimits('storage', additionalBytes);
+      
+      if (!check.allowed) {
+        window.UBA.billing.showPaywall({
+          entityType: 'storage',
+          current: totalStorage,
+          limit: check.limit,
+          reason: 'Storage limit reached'
+        });
+        return false;
+      }
+      
       return true;
+    } catch (error) {
+      warn('Error checking storage limit:', error);
+      return true; // Fail open in local mode
     }
-    return false;
   }
 
-  // File processing functions
+  async function trackStorageUsage(bytes) {
+    try {
+      await window.UBA.billing.trackUsage('storage', bytes);
+      await updateStorageWidget();
+    } catch (error) {
+      warn('Error tracking storage usage:', error);
+    }
+  }
+
+  // ===============================
+  // Data Operations
+  // ===============================
+
+  async function loadFiles() {
+    try {
+      const files = await window.UBA.data.list('files');
+      allFiles = files || [];
+      log('Loaded files:', allFiles.length);
+      return allFiles;
+    } catch (error) {
+      warn('Error loading files:', error);
+      allFiles = [];
+      return [];
+    }
+  }
+
+  async function saveFile(fileData) {
+    try {
+      const newFile = await window.UBA.data.create('files', fileData);
+      log('File saved:', newFile.id);
+      return newFile;
+    } catch (error) {
+      warn('Error saving file:', error);
+      throw error;
+    }
+  }
+
+  async function updateFile(fileId, updates) {
+    try {
+      const updated = await window.UBA.data.update('files', fileId, updates);
+      log('File updated:', fileId);
+      return updated;
+    } catch (error) {
+      warn('Error updating file:', error);
+      throw error;
+    }
+  }
+
+  async function deleteFile(fileId) {
+    try {
+      // Find file to get size for storage tracking
+      const file = allFiles.find(f => f.id === fileId);
+      await window.UBA.data.remove('files', fileId);
+      
+      // Track storage decrease
+      if (file && file.size) {
+        await trackStorageUsage(-file.size);
+      }
+      
+      log('File deleted:', fileId);
+      return true;
+    } catch (error) {
+      warn('Error deleting file:', error);
+      throw error;
+    }
+  }
+
+  // ===============================
+  // File Processing
+  // ===============================
+
   function readFileAsBase64(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -78,14 +257,14 @@
     });
   }
 
-  async function processFiles(files) {
+  async function processAndUploadFiles(files) {
     const uploadProgress = document.getElementById('upload-progress');
     const progressFill = document.getElementById('progress-fill');
     const progressText = document.getElementById('progress-text');
     
     uploadProgress.style.display = 'block';
     
-    const processedFiles = [];
+    const uploadedFiles = [];
     const total = files.length;
     
     for (let i = 0; i < total; i++) {
@@ -93,47 +272,212 @@
       const progress = ((i + 1) / total) * 100;
       
       progressFill.style.width = `${progress}%`;
-      progressText.textContent = `Processing ${i + 1} of ${total}...`;
+      progressText.textContent = `Uploading ${i + 1} of ${total}...`;
       
       try {
+        // Check storage limit before processing
+        const canUploadFile = await checkStorageLimit(file.size);
+        if (!canUploadFile) {
+          showNotification(`Storage limit reached. Cannot upload ${file.name}`, 'error');
+          continue;
+        }
+        
         // Read file content as base64
-        const content = await readFileAsBase64(file);
+        const contentBase64 = await readFileAsBase64(file);
         
         // Create file data object
         const fileData = {
+          id: generateId(),
           name: file.name,
-          size: file.size,
           type: file.type,
-          mimeType: file.type,
-          content: content,
-          uploadedAt: Date.now(),
-          lastModified: file.lastModified
+          size: file.size,
+          contentBase64: contentBase64,
+          category: getFileCategory(file.type),
+          uploadedAt: new Date().toISOString(),
+          uploadedBy: currentUser?.id || 'unknown'
         };
         
-        // Save to store
-        const savedFile = saveFileToStore(fileData);
-        if (savedFile) {
-          processedFiles.push(savedFile);
-        }
+        // Save to data layer
+        const saved = await saveFile(fileData);
+        uploadedFiles.push(saved);
         
-        // Small delay to show progress
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Track storage usage
+        await trackStorageUsage(file.size);
         
       } catch (error) {
-        console.error('Error processing file:', file.name, error);
+        warn('Error processing file:', file.name, error);
+        showNotification(`Failed to upload ${file.name}`, 'error');
       }
     }
     
     uploadProgress.style.display = 'none';
-    return processedFiles;
+    return uploadedFiles;
   }
 
-  // Download functionality
-  function downloadFile(fileData) {
+  // ===============================
+  // UI Rendering
+  // ===============================
+
+  function applyFilters() {
+    let results = [...allFiles];
+    
+    // Apply category filter
+    if (currentCategory !== 'all') {
+      results = results.filter(file => file.category === currentCategory);
+    }
+    
+    // Apply search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      results = results.filter(file => 
+        file.name.toLowerCase().includes(query)
+      );
+    }
+    
+    // Apply sorting
+    results.sort((a, b) => {
+      switch (currentSort) {
+        case 'name-asc':
+          return a.name.localeCompare(b.name);
+        case 'name-desc':
+          return b.name.localeCompare(a.name);
+        case 'date-asc':
+          return new Date(a.uploadedAt) - new Date(b.uploadedAt);
+        case 'date-desc':
+          return new Date(b.uploadedAt) - new Date(a.uploadedAt);
+        case 'size-asc':
+          return (a.size || 0) - (b.size || 0);
+        case 'size-desc':
+          return (b.size || 0) - (a.size || 0);
+        default:
+          return 0;
+      }
+    });
+    
+    filteredFiles = results;
+    return results;
+  }
+
+  function updateCategoryCounts() {
+    const counts = {
+      all: allFiles.length,
+      images: 0,
+      documents: 0,
+      pdfs: 0,
+      videos: 0,
+      other: 0
+    };
+    
+    allFiles.forEach(file => {
+      const category = file.category || 'other';
+      if (counts.hasOwnProperty(category)) {
+        counts[category]++;
+      }
+    });
+    
+    Object.keys(counts).forEach(category => {
+      const countEl = document.getElementById(`count-${category}`);
+      if (countEl) {
+        countEl.textContent = counts[category];
+      }
+    });
+    
+    // Update files count
+    const filesCount = document.getElementById('files-count');
+    if (filesCount) {
+      filesCount.textContent = `${allFiles.length} file${allFiles.length !== 1 ? 's' : ''}`;
+    }
+  }
+
+  function renderFileCard(file) {
+    const canEdit = canRename();
+    const canRemove = canDelete();
+    
+    return `
+      <div class="file-card" data-file-id="${file.id}">
+        <div class="file-card-preview" onclick="window.FilesManager.openPreview('${file.id}')">
+          ${file.category === 'images' ? 
+            `<img src="${file.contentBase64}" alt="${file.name}" class="file-thumbnail">` :
+            `<div class="file-icon-large">${getFileIcon(file.type)}</div>`
+          }
+        </div>
+        <div class="file-card-info">
+          <div class="file-card-name" title="${file.name}">${file.name}</div>
+          <div class="file-card-meta">
+            <span>${formatFileSize(file.size)}</span>
+            <span>•</span>
+            <span>${formatDate(file.uploadedAt)}</span>
+          </div>
+        </div>
+        <div class="file-card-actions">
+          <button class="file-action-btn" onclick="window.FilesManager.openPreview('${file.id}')" title="Preview">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+          <button class="file-action-btn" onclick="window.FilesManager.downloadFile('${file.id}')" title="Download">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+          </button>
+          ${canEdit ? `
+            <button class="file-action-btn" onclick="window.FilesManager.openRename('${file.id}')" title="Rename">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
+          ` : ''}
+          ${canRemove ? `
+            <button class="file-action-btn file-action-delete" onclick="window.FilesManager.confirmDelete('${file.id}')" title="Delete">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderFiles() {
+    const files = applyFilters();
+    const grid = document.getElementById('files-grid');
+    const emptyState = document.getElementById('empty-state');
+    
+    if (!grid) return;
+    
+    if (files.length === 0) {
+      grid.style.display = 'none';
+      if (emptyState) emptyState.style.display = 'flex';
+    } else {
+      grid.style.display = 'grid';
+      if (emptyState) emptyState.style.display = 'none';
+      grid.innerHTML = files.map(file => renderFileCard(file)).join('');
+    }
+    
+    updateCategoryCounts();
+  }
+
+  // ===============================
+  // File Operations
+  // ===============================
+
+  function downloadFile(fileId) {
     try {
-      // Create a blob from the base64 content
-      const base64Content = fileData.content.split(',')[1];
-      const byteCharacters = atob(base64Content);
+      const file = allFiles.find(f => f.id === fileId);
+      if (!file) {
+        showNotification('File not found', 'error');
+        return;
+      }
+      
+      // Convert base64 to blob
+      const base64Data = file.contentBase64.split(',')[1];
+      const byteCharacters = atob(base64Data);
       const byteNumbers = new Array(byteCharacters.length);
       
       for (let i = 0; i < byteCharacters.length; i++) {
@@ -141,202 +485,422 @@
       }
       
       const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: fileData.type });
+      const blob = new Blob([byteArray], { type: file.type });
       
       // Create download link
-      const url = window.URL.createObjectURL(blob);
+      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.style.display = 'none';
       a.href = url;
-      a.download = fileData.name;
+      a.download = file.name;
       
       document.body.appendChild(a);
       a.click();
       
       // Cleanup
-      window.URL.revokeObjectURL(url);
+      URL.revokeObjectURL(url);
       document.body.removeChild(a);
       
+      showNotification('File downloaded', 'success');
     } catch (error) {
-      console.error('Error downloading file:', error);
-      alert('Error downloading file. Please try again.');
+      warn('Error downloading file:', error);
+      showNotification('Failed to download file', 'error');
     }
   }
 
-  // Render functions
-  function renderFilesList(filteredFiles = null) {
-    const files = filteredFiles || getAllFiles();
-    const table = document.getElementById('files-table');
-    const emptyState = document.getElementById('empty-state');
-    const filesCount = document.getElementById('files-count');
+  function openPreview(fileId) {
+    const file = allFiles.find(f => f.id === fileId);
+    if (!file) return;
     
-    // Update count
-    if (filesCount) {
-      filesCount.textContent = `${files.length} file${files.length !== 1 ? 's' : ''}`;
+    const modal = document.getElementById('preview-modal');
+    const fileName = document.getElementById('preview-file-name');
+    const content = document.getElementById('preview-content');
+    const downloadBtn = document.getElementById('preview-download-btn');
+    
+    if (!modal || !content) return;
+    
+    fileName.textContent = file.name;
+    
+    // Render preview based on file type
+    const category = file.category;
+    let previewHTML = '';
+    
+    if (category === 'images') {
+      // Validate image type before preview
+      if (file.type && file.type.startsWith('image/')) {
+        previewHTML = `<img src="${file.contentBase64}" alt="${file.name}" class="preview-image">`;
+      } else {
+        previewHTML = `<div class="preview-unsupported"><p>Invalid image file</p></div>`;
+      }
+    } else if (category === 'pdfs') {
+      // Validate PDF type before preview
+      if (file.type === 'application/pdf') {
+        previewHTML = `
+          <div class="preview-pdf">
+            <iframe src="${file.contentBase64}" class="preview-iframe" sandbox="allow-same-origin"></iframe>
+          </div>
+        `;
+      } else {
+        previewHTML = `<div class="preview-unsupported"><p>Invalid PDF file</p></div>`;
+      }
+    } else if (category === 'videos') {
+      // Validate video type before preview
+      if (file.type && file.type.startsWith('video/')) {
+        previewHTML = `
+          <video controls class="preview-video">
+            <source src="${file.contentBase64}" type="${file.type}">
+            Your browser does not support video playback.
+          </video>
+        `;
+      } else {
+        previewHTML = `<div class="preview-unsupported"><p>Invalid video file</p></div>`;
+      }
+    } else {
+      previewHTML = `
+        <div class="preview-unsupported">
+          <div class="preview-icon">${getFileIcon(file.type)}</div>
+          <h3>${file.name}</h3>
+          <p>${formatFileSize(file.size)}</p>
+          <p class="preview-note">Preview not available for this file type</p>
+          <button class="uba-btn-primary" onclick="window.FilesManager.downloadFile('${file.id}')">Download File</button>
+        </div>
+      `;
     }
     
-    if (files.length === 0) {
-      table.innerHTML = '';
-      if (emptyState) emptyState.style.display = 'block';
+    content.innerHTML = previewHTML;
+    
+    // Set download button handler
+    downloadBtn.onclick = () => downloadFile(fileId);
+    
+    modal.style.display = 'flex';
+  }
+
+  function closePreview() {
+    const modal = document.getElementById('preview-modal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  function openRename(fileId) {
+    if (!canRename()) {
+      showNotification('You do not have permission to rename files', 'error');
       return;
     }
     
-    if (emptyState) emptyState.style.display = 'none';
+    const file = allFiles.find(f => f.id === fileId);
+    if (!file) return;
     
-    table.innerHTML = files.map(file => `
-      <tr>
-        <td>
-          <div class="files-name-cell">
-            <span class="files-icon">${getFileIcon(file.mimeType)}</span>
-            <span class="files-name">${file.name}</span>
-          </div>
-        </td>
-        <td>${formatFileSize(file.size)}</td>
-        <td>
-          <span class="files-type-badge">${getFileType(file.mimeType)}</span>
-        </td>
-        <td>${formatDate(file.uploadedAt)}</td>
-        <td>
-          <div class="files-actions">
-            <button class="uba-btn-link" onclick="downloadFileById('${file.id}')">
-              📥 Download
-            </button>
-            <button class="uba-btn-link files-delete-btn" onclick="confirmDeleteFile('${file.id}')">
-              🗑️ Delete
-            </button>
-          </div>
-        </td>
-      </tr>
-    `).join('');
+    renameFileId = fileId;
+    const modal = document.getElementById('rename-modal');
+    const input = document.getElementById('rename-input');
+    
+    if (!modal || !input) return;
+    
+    input.value = file.name;
+    modal.style.display = 'flex';
+    input.focus();
+    input.select();
   }
 
-  function filterFiles() {
-    const searchTerm = document.getElementById('search-files').value.toLowerCase();
-    const typeFilter = document.getElementById('filter-type').value;
-    const allFiles = getAllFiles();
-    
-    const filtered = allFiles.filter(file => {
-      const matchesSearch = file.name.toLowerCase().includes(searchTerm);
-      const matchesType = !typeFilter || getFileType(file.mimeType) === typeFilter;
-      return matchesSearch && matchesType;
-    });
-    
-    renderFilesList(filtered);
+  function closeRename() {
+    const modal = document.getElementById('rename-modal');
+    if (modal) modal.style.display = 'none';
+    renameFileId = null;
   }
 
-  // Event handlers
+  async function saveRename() {
+    if (!renameFileId) return;
+    
+    const input = document.getElementById('rename-input');
+    const newName = input.value.trim();
+    
+    if (!newName) {
+      showNotification('Please enter a file name', 'error');
+      return;
+    }
+    
+    try {
+      await updateFile(renameFileId, { name: newName });
+      await loadFiles();
+      renderFiles();
+      closeRename();
+      showNotification('File renamed successfully', 'success');
+    } catch (error) {
+      warn('Error renaming file:', error);
+      showNotification('Failed to rename file', 'error');
+    }
+  }
+
+  async function confirmDelete(fileId) {
+    if (!canDelete()) {
+      showNotification('You do not have permission to delete files', 'error');
+      return;
+    }
+    
+    const file = allFiles.find(f => f.id === fileId);
+    if (!file) return;
+    
+    if (!confirm(`Are you sure you want to delete "${file.name}"?`)) {
+      return;
+    }
+    
+    try {
+      await deleteFile(fileId);
+      await loadFiles();
+      renderFiles();
+      showNotification('File deleted successfully', 'success');
+    } catch (error) {
+      warn('Error deleting file:', error);
+      showNotification('Failed to delete file', 'error');
+    }
+  }
+
+  // ===============================
+  // Event Handlers
+  // ===============================
+
   function handleFileSelection(files) {
     if (files.length === 0) return;
     
-    processFiles(Array.from(files)).then(processedFiles => {
-      if (processedFiles.length > 0) {
-        renderFilesList();
-        
-        // Show success message
-        const successMsg = document.createElement('div');
-        successMsg.className = 'files-success-message';
-        successMsg.textContent = `Successfully uploaded ${processedFiles.length} file(s)`;
-        successMsg.style.cssText = `
-          position: fixed; top: 20px; right: 20px; z-index: 1000;
-          background: var(--good); color: white; padding: 12px 20px;
-          border-radius: 8px; font-weight: 500;
-        `;
-        
-        document.body.appendChild(successMsg);
-        setTimeout(() => {
-          document.body.removeChild(successMsg);
-        }, 3000);
+    if (!canUpload()) {
+      showNotification('You do not have permission to upload files', 'error');
+      return;
+    }
+    
+    processAndUploadFiles(Array.from(files)).then(uploadedFiles => {
+      if (uploadedFiles.length > 0) {
+        loadFiles().then(() => {
+          renderFiles();
+          showNotification(`Successfully uploaded ${uploadedFiles.length} file(s)`, 'success');
+        });
       }
     });
   }
 
-  function handleDragOver(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    event.currentTarget.classList.add('files-drag-over');
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.classList.add('drag-over');
   }
 
-  function handleDragLeave(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    event.currentTarget.classList.remove('files-drag-over');
+  function handleDragLeave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.classList.remove('drag-over');
   }
 
-  function handleDrop(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    event.currentTarget.classList.remove('files-drag-over');
+  function handleDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.classList.remove('drag-over');
     
-    const files = event.dataTransfer.files;
+    const files = e.dataTransfer.files;
     handleFileSelection(files);
   }
 
-  // Global functions (needed for onclick handlers)
-  window.downloadFileById = function(fileId) {
-    const files = getAllFiles();
-    const file = files.find(f => f.id === fileId);
-    if (file) {
-      downloadFile(file);
-    }
-  };
-
-  window.confirmDeleteFile = function(fileId) {
-    const files = getAllFiles();
-    const file = files.find(f => f.id === fileId);
-    if (file && confirm(`Are you sure you want to delete "${file.name}"?`)) {
-      deleteFile(fileId);
-      renderFilesList();
-    }
-  };
-
-  // Main initialization function
-  function initFilesPage() {
-    // Initialize store if needed
-    const store = window.ubaStore;
-    if (store && store.files) {
-      // Ensure files collection exists
-      store.ensureSeed('files', []);
-    }
-
-    // Set up file input
-    const fileInput = document.getElementById('file-input');
-    const uploadBtn = document.getElementById('upload-btn');
-    const uploadArea = document.getElementById('upload-area');
+  function handleCategoryClick(category) {
+    currentCategory = category;
     
-    if (uploadBtn && fileInput) {
-      uploadBtn.addEventListener('click', () => fileInput.click());
-    }
+    // Update active state
+    document.querySelectorAll('.files-category-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    document.querySelector(`[data-category="${category}"]`)?.classList.add('active');
     
-    if (fileInput) {
-      fileInput.addEventListener('change', (e) => {
-        handleFileSelection(e.target.files);
-        e.target.value = ''; // Reset input
-      });
-    }
-    
-    // Set up drag and drop
-    if (uploadArea) {
-      uploadArea.addEventListener('dragover', handleDragOver);
-      uploadArea.addEventListener('dragleave', handleDragLeave);
-      uploadArea.addEventListener('drop', handleDrop);
-      uploadArea.addEventListener('click', () => fileInput.click());
-    }
-    
-    // Set up search and filter
-    const searchInput = document.getElementById('search-files');
-    const typeFilter = document.getElementById('filter-type');
-    
-    if (searchInput) {
-      searchInput.addEventListener('input', filterFiles);
-    }
-    
-    if (typeFilter) {
-      typeFilter.addEventListener('change', filterFiles);
-    }
-    
-    // Initial render
-    renderFilesList();
+    renderFiles();
   }
 
-  window.initFilesPage = initFilesPage;
+  function handleSearch(query) {
+    searchQuery = query;
+    renderFiles();
+  }
+
+  function handleSort(sortValue) {
+    currentSort = sortValue;
+    renderFiles();
+  }
+
+  function showNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.className = `files-notification files-notification-${type}`;
+    notification.textContent = message;
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10000;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      background: ${type === 'success' ? '#10b981' : '#dc2626'};
+      color: white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.style.opacity = '0';
+      notification.style.transition = 'opacity 0.3s';
+      setTimeout(() => {
+        if (notification.parentNode) {
+          document.body.removeChild(notification);
+        }
+      }, 300);
+    }, 3000);
+  }
+
+  // ===============================
+  // Initialization
+  // ===============================
+
+  let initRetryCount = 0;
+  const MAX_INIT_RETRIES = 50; // 5 seconds max wait time
+
+  async function init() {
+    log('Initializing Files Manager');
+    
+    try {
+      // Wait for UBA to be ready
+      if (!window.UBA || !window.UBA.data || !window.UBA.billing) {
+        initRetryCount++;
+        if (initRetryCount >= MAX_INIT_RETRIES) {
+          warn('Failed to initialize Files Manager: UBA dependencies not available after', MAX_INIT_RETRIES, 'retries');
+          return;
+        }
+        warn('UBA not ready, retrying...', initRetryCount, '/', MAX_INIT_RETRIES);
+        setTimeout(init, 100);
+        return;
+      }
+      
+      // Get current user and role
+      if (window.UBA && window.UBA.auth && typeof window.UBA.auth.getCurrentUser === 'function') {
+        currentUser = window.UBA.auth.getCurrentUser();
+      }
+      
+      if (window.Members && typeof window.Members.getCurrentUserRole === 'function') {
+        currentRole = window.Members.getCurrentUserRole();
+      }
+      
+      // Load files
+      await loadFiles();
+      renderFiles();
+      await updateStorageWidget();
+      
+      // Set up file input
+      const fileInput = document.getElementById('file-input');
+      const uploadBtn = document.getElementById('upload-btn');
+      const uploadArea = document.getElementById('upload-area');
+      
+      if (uploadBtn && fileInput) {
+        uploadBtn.addEventListener('click', () => {
+          if (!canUpload()) {
+            showNotification('You do not have permission to upload files', 'error');
+            return;
+          }
+          fileInput.click();
+        });
+      }
+      
+      if (fileInput) {
+        fileInput.addEventListener('change', (e) => {
+          handleFileSelection(e.target.files);
+          e.target.value = ''; // Reset
+        });
+      }
+      
+      // Set up drag and drop
+      if (uploadArea) {
+        uploadArea.addEventListener('dragover', handleDragOver);
+        uploadArea.addEventListener('dragleave', handleDragLeave);
+        uploadArea.addEventListener('drop', handleDrop);
+      }
+      
+      // Set up category buttons
+      document.querySelectorAll('.files-category-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const category = btn.getAttribute('data-category');
+          handleCategoryClick(category);
+        });
+      });
+      
+      // Set up search
+      const searchInput = document.getElementById('search-files');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => handleSearch(e.target.value));
+      }
+      
+      // Set up sort
+      const sortSelect = document.getElementById('sort-files');
+      if (sortSelect) {
+        sortSelect.addEventListener('change', (e) => handleSort(e.target.value));
+      }
+      
+      // Set up preview modal
+      const previewCloseBtn = document.getElementById('preview-close-btn');
+      const previewModal = document.getElementById('preview-modal');
+      if (previewCloseBtn) {
+        previewCloseBtn.addEventListener('click', closePreview);
+      }
+      if (previewModal) {
+        previewModal.querySelector('.files-modal-overlay')?.addEventListener('click', closePreview);
+      }
+      
+      // Set up rename modal
+      const renameCloseBtn = document.getElementById('rename-close-btn');
+      const renameCancelBtn = document.getElementById('rename-cancel-btn');
+      const renameSaveBtn = document.getElementById('rename-save-btn');
+      const renameModal = document.getElementById('rename-modal');
+      const renameInput = document.getElementById('rename-input');
+      
+      if (renameCloseBtn) renameCloseBtn.addEventListener('click', closeRename);
+      if (renameCancelBtn) renameCancelBtn.addEventListener('click', closeRename);
+      if (renameSaveBtn) renameSaveBtn.addEventListener('click', saveRename);
+      if (renameModal) {
+        renameModal.querySelector('.files-modal-overlay')?.addEventListener('click', closeRename);
+      }
+      if (renameInput) {
+        renameInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') saveRename();
+        });
+      }
+      
+      // Hide upload section if viewer
+      if (!canUpload()) {
+        const uploadSection = document.getElementById('upload-section');
+        if (uploadSection) {
+          uploadSection.style.display = 'none';
+        }
+      }
+      
+      log('Files Manager initialized');
+    } catch (error) {
+      warn('Error initializing Files Manager:', error);
+    }
+  }
+
+  // ===============================
+  // Public API
+  // ===============================
+
+  window.FilesManager = {
+    init,
+    loadFiles,
+    renderFiles,
+    downloadFile,
+    openPreview,
+    closePreview,
+    openRename,
+    closeRename,
+    saveRename,
+    confirmDelete
+  };
+
+  // Auto-initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  log('Files module loaded');
 })();

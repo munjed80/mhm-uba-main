@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>UBA Files</title>
     <link rel="stylesheet" href="assets/css/style.css" />
-    <link rel="stylesheet" href="assets/css/enhanced-files.css" />
+    <link rel="stylesheet" href="assets/css/files.css" />
   </head>
   <body>
     <section id="uba-dashboard">
@@ -122,10 +122,11 @@
             <header class="uba-topbar">
               <div class="uba-top-left">
                 <p class="uba-top-kicker">Files • الملفات</p>
-                <h1 id="uba-view-title">Enhanced File Manager</h1>
-                <p id="uba-view-desc">Professional file management with folders, previews and storage control</p>
+                <h1 id="uba-view-title">File Manager</h1>
+                <p id="uba-view-desc">Professional file management with previews and storage control</p>
               </div>
               <div class="uba-top-right">
+                <div id="storage-usage-widget" class="storage-widget"></div>
                 <div class="uba-pill" id="files-count">0 files</div>
               </div>
             </header>
@@ -133,87 +134,101 @@
             <div class="uba-views">
               <section class="uba-view" data-view="files">
                 
-                <!-- File Upload Section -->
-                <div class="uba-card" style="margin-bottom: 20px;">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title">📤 Upload Files (رفع الملفات)</div>
-                      <p class="uba-card-sub">Drag & drop files or click to browse • Multiple files supported • Auto-organized by type</p>
+                <!-- Category Sidebar & File Grid Layout -->
+                <div class="files-layout">
+                  
+                  <!-- Category Sidebar -->
+                  <aside class="files-sidebar">
+                    <div class="files-sidebar-header">
+                      <h3>Categories</h3>
                     </div>
-                    <div class="upload-stats">
-                      <span id="upload-limit-info">Max 10MB per file</span>
-                    </div>
-                  </div>
-                  <div style="padding: 20px;">
-                    <div class="files-upload-area" id="upload-area">
-                      <input type="file" id="file-input" multiple style="display: none;" accept="*/*">
-                      <div class="files-upload-content">
-                        <div class="files-upload-icon">📁</div>
-                        <h3>Drop files here or click to upload</h3>
-                        <p>Supports all file types • Multiple files allowed</p>
+                    <nav class="files-categories">
+                      <button class="files-category-btn active" data-category="all">
+                        <span class="category-icon">📁</span>
+                        <span class="category-label">All Files</span>
+                        <span class="category-count" id="count-all">0</span>
+                      </button>
+                      <button class="files-category-btn" data-category="images">
+                        <span class="category-icon">🖼️</span>
+                        <span class="category-label">Images</span>
+                        <span class="category-count" id="count-images">0</span>
+                      </button>
+                      <button class="files-category-btn" data-category="documents">
+                        <span class="category-icon">📄</span>
+                        <span class="category-label">Documents</span>
+                        <span class="category-count" id="count-documents">0</span>
+                      </button>
+                      <button class="files-category-btn" data-category="pdfs">
+                        <span class="category-icon">📕</span>
+                        <span class="category-label">PDFs</span>
+                        <span class="category-count" id="count-pdfs">0</span>
+                      </button>
+                      <button class="files-category-btn" data-category="videos">
+                        <span class="category-icon">🎥</span>
+                        <span class="category-label">Videos</span>
+                        <span class="category-count" id="count-videos">0</span>
+                      </button>
+                      <button class="files-category-btn" data-category="other">
+                        <span class="category-icon">📎</span>
+                        <span class="category-label">Other</span>
+                        <span class="category-count" id="count-other">0</span>
+                      </button>
+                    </nav>
+                  </aside>
+
+                  <!-- Main Content Area -->
+                  <div class="files-main-content">
+                    
+                    <!-- Upload Area -->
+                    <div class="files-upload-section" id="upload-section">
+                      <div class="files-upload-area" id="upload-area">
+                        <input type="file" id="file-input" multiple style="display: none;" accept="*/*">
+                        <div class="files-upload-icon">
+                          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                          </svg>
+                        </div>
+                        <h3>Drag & drop files here</h3>
+                        <p>or click to browse • Supports all file types</p>
                         <button class="uba-btn-primary" id="upload-btn">Choose Files</button>
                       </div>
                       <div class="files-upload-progress" id="upload-progress" style="display: none;">
-                        <div class="files-progress-bar">
-                          <div class="files-progress-fill" id="progress-fill"></div>
+                        <div class="progress-bar">
+                          <div class="progress-fill" id="progress-fill"></div>
                         </div>
-                        <span id="progress-text">Uploading...</span>
+                        <span class="progress-text" id="progress-text">Uploading...</span>
                       </div>
                     </div>
-                  </div>
-                </div>
 
-                <!-- Files List Section -->
-                <div class="uba-card">
-                  <div class="uba-card-header">
-                    <div>
-                      <div class="uba-card-title">📁 File Library (مكتبة الملفات)</div>
-                      <p class="uba-card-sub">Browse, preview and manage your files with advanced organization</p>
-                    </div>
-                    <div class="files-header-actions">
-                      <input type="text" id="search-files" placeholder="Search files..." class="files-search">
-                      <select id="filter-type" class="files-filter">
-                        <option value="">All types</option>
-                        <option value="image">Images 🖼️</option>
-                        <option value="document">Documents 📄</option>
-                        <option value="text">Text Files 📝</option>
-                        <option value="video">Videos 🎥</option>
-                        <option value="audio">Audio 🎵</option>
-                        <option value="other">Other 📎</option>
-                      </select>
+                    <!-- Toolbar -->
+                    <div class="files-toolbar">
+                      <div class="files-search-box">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="11" cy="11" r="8"></circle>
+                          <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input type="text" id="search-files" placeholder="Search files...">
+                      </div>
                       <select id="sort-files" class="files-sort">
-                        <option value="name-asc">Name A-Z</option>
-                        <option value="name-desc">Name Z-A</option>
                         <option value="date-desc">Newest First</option>
                         <option value="date-asc">Oldest First</option>
+                        <option value="name-asc">Name A-Z</option>
+                        <option value="name-desc">Name Z-A</option>
                         <option value="size-desc">Largest First</option>
                         <option value="size-asc">Smallest First</option>
                       </select>
                     </div>
-                  </div>
 
-                  <div style="padding: 12px;">
-                    <div class="uba-table-wrap">
-                      <table class="uba-table">
-                        <thead>
-                          <tr>
-                            <th style="width: 40%;">Name & Details</th>
-                            <th style="width: 10%;">Size</th>
-                            <th style="width: 12%;">Type</th>
-                            <th style="width: 15%;">Date</th>
-                            <th style="width: 23%;">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody id="files-table"></tbody>
-                      </table>
-                    </div>
-                    
-                    <!-- Empty state -->
+                    <!-- Files Grid -->
+                    <div class="files-grid" id="files-grid"></div>
+
+                    <!-- Empty State -->
                     <div class="files-empty-state" id="empty-state">
-                      <div class="files-empty-icon">📂</div>
-                      <h3>No files in this location</h3>
-                      <p>Drag & drop files here or use the upload button above</p>
-                      <p><small>Supported: Images, Documents, Videos, Audio, Archives and more</small></p>
+                      <div class="empty-icon">📂</div>
+                      <h3>No files yet</h3>
+                      <p>Upload your first file to get started</p>
                     </div>
                   </div>
                 </div>
@@ -224,13 +239,51 @@
       </div>
     </section>
 
+    <!-- Preview Modal -->
+    <div class="files-modal" id="preview-modal" style="display: none;">
+      <div class="files-modal-overlay"></div>
+      <div class="files-modal-content">
+        <div class="files-modal-header">
+          <h3 id="preview-file-name">File Preview</h3>
+          <div class="modal-actions">
+            <button class="modal-btn" id="preview-download-btn" title="Download">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+            </button>
+            <button class="modal-btn modal-close" id="preview-close-btn" title="Close">×</button>
+          </div>
+        </div>
+        <div class="files-modal-body" id="preview-content"></div>
+      </div>
+    </div>
+
+    <!-- Rename Modal -->
+    <div class="files-modal" id="rename-modal" style="display: none;">
+      <div class="files-modal-overlay"></div>
+      <div class="files-modal-content files-modal-small">
+        <div class="files-modal-header">
+          <h3>Rename File</h3>
+          <button class="modal-btn modal-close" id="rename-close-btn">×</button>
+        </div>
+        <div class="files-modal-body">
+          <input type="text" id="rename-input" class="files-input" placeholder="Enter new name">
+          <div class="modal-actions-row">
+            <button class="uba-btn-secondary" id="rename-cancel-btn">Cancel</button>
+            <button class="uba-btn-primary" id="rename-save-btn">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="assets/js/i18n.js"></script>
     <script src="assets/js/store.js"></script>
     <script src="assets/js/data-layer.js"></script>
     <script src="assets/js/app.js"></script>
-    <script src="assets/js/uba-pages-data.js"></script>
-    <script src="assets/js/page-loader.js"></script>
+    <script src="assets/js/billing.js"></script>
+    <script src="assets/js/members.js"></script>
     <script src="assets/js/files.js"></script>
-    <script src="assets/js/enhanced-files.js"></script>
   </body>
 </html>
