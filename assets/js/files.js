@@ -11,9 +11,14 @@
   let currentCategory = 'all';
   let currentSort = 'date-desc';
   let searchQuery = '';
+  let currentSmartFilter = 'all';
+  let currentViewMode = 'grid';
   let currentUser = null;
   let currentRole = null;
   let renameFileId = null;
+
+  const RECENT_DAYS = 7;
+  const LARGE_FILE_THRESHOLD = 25 * 1024 * 1024; // 25 MB
 
   // ===============================
   // Utilities
@@ -89,6 +94,25 @@
       other: '📎'
     };
     return icons[category] || '📎';
+  }
+
+  function normalizeFileRecord(file) {
+    if (!file) return null;
+    const normalized = { ...file };
+    normalized.category = normalized.category || getFileCategory(normalized.type || normalized.name);
+    normalized.uploadedAt = normalized.uploadedAt || normalized.created_at || new Date().toISOString();
+    if (typeof normalized.isFavorite !== 'boolean') {
+      normalized.isFavorite = false;
+    }
+    return normalized;
+  }
+
+  function isRecent(uploadedAt, days = RECENT_DAYS) {
+    if (!uploadedAt) return false;
+    const date = new Date(uploadedAt);
+    if (Number.isNaN(date.getTime())) return false;
+    const threshold = days * 24 * 60 * 60 * 1000;
+    return (Date.now() - date.getTime()) <= threshold;
   }
 
   function canUpload() {
@@ -193,7 +217,7 @@
   async function loadFiles() {
     try {
       const files = await window.UBA.data.list('files');
-      allFiles = files || [];
+      allFiles = (files || []).map(normalizeFileRecord).filter(Boolean);
       log('Loaded files:', allFiles.length);
       return allFiles;
     } catch (error) {
@@ -294,7 +318,8 @@
           contentBase64: contentBase64,
           category: getFileCategory(file.type),
           uploadedAt: new Date().toISOString(),
-          uploadedBy: currentUser?.id || 'unknown'
+          uploadedBy: currentUser?.id || 'unknown',
+          isFavorite: false
         };
         
         // Save to data layer
@@ -332,6 +357,21 @@
       results = results.filter(file => 
         file.name.toLowerCase().includes(query)
       );
+    }
+
+    // Apply smart filters
+    switch (currentSmartFilter) {
+      case 'recent':
+        results = results.filter(file => isRecent(file.uploadedAt, RECENT_DAYS));
+        break;
+      case 'large':
+        results = results.filter(file => (file.size || 0) >= LARGE_FILE_THRESHOLD);
+        break;
+      case 'favorite':
+        results = results.filter(file => file.isFavorite);
+        break;
+      default:
+        break;
     }
     
     // Apply sorting
@@ -389,12 +429,32 @@
     }
   }
 
+  function updateHeroStats() {
+    const totalEl = document.getElementById('files-stat-total');
+    const recentEl = document.getElementById('files-stat-recent');
+    const imagesEl = document.getElementById('files-stat-images');
+
+    if (totalEl) {
+      totalEl.textContent = allFiles.length.toLocaleString();
+    }
+    if (recentEl) {
+      const recentCount = allFiles.filter(file => isRecent(file.uploadedAt, RECENT_DAYS)).length;
+      recentEl.textContent = recentCount.toLocaleString();
+    }
+    if (imagesEl) {
+      const imageCount = allFiles.filter(file => file.category === 'images').length;
+      imagesEl.textContent = imageCount.toLocaleString();
+    }
+  }
+
   function renderFileCard(file) {
     const canEdit = canRename();
     const canRemove = canDelete();
+    const favoriteClass = file.isFavorite ? 'active' : '';
     
     return `
       <div class="file-card" data-file-id="${file.id}">
+        <button class="file-favorite-btn ${favoriteClass}" type="button" title="Toggle favorite" onclick="window.FilesManager.toggleFavorite('${file.id}', event)">★</button>
         <div class="file-card-preview" onclick="window.FilesManager.openPreview('${file.id}')">
           ${file.category === 'images' ? 
             `<img src="${file.contentBase64}" alt="${file.name}" class="file-thumbnail">` :
@@ -404,7 +464,7 @@
         <div class="file-card-info">
           <div class="file-card-name" title="${file.name}">${file.name}</div>
           <div class="file-card-meta">
-            <span>${formatFileSize(file.size)}</span>
+            <span>${formatFileSize(file.size || 0)}</span>
             <span>•</span>
             <span>${formatDate(file.uploadedAt)}</span>
           </div>
@@ -450,17 +510,20 @@
     const emptyState = document.getElementById('empty-state');
     
     if (!grid) return;
-    
+    grid.dataset.view = currentViewMode;
+
     if (files.length === 0) {
-      grid.style.display = 'none';
+      grid.innerHTML = '';
+      grid.hidden = true;
       if (emptyState) emptyState.style.display = 'flex';
     } else {
-      grid.style.display = 'grid';
+      grid.hidden = false;
       if (emptyState) emptyState.style.display = 'none';
       grid.innerHTML = files.map(file => renderFileCard(file)).join('');
     }
     
     updateCategoryCounts();
+    updateHeroStats();
   }
 
   // ===============================
@@ -719,6 +782,74 @@
     renderFiles();
   }
 
+  function setActiveSmartFilter(filter) {
+    document.querySelectorAll('[data-smart-filter]').forEach(chip => {
+      chip.classList.toggle('active', chip.getAttribute('data-smart-filter') === filter);
+    });
+  }
+
+  function handleSmartFilter(filter) {
+    currentSmartFilter = filter;
+    setActiveSmartFilter(filter);
+    renderFiles();
+  }
+
+  function handleViewToggle(viewMode) {
+    currentViewMode = viewMode;
+    document.querySelectorAll('.view-toggle-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-view-mode') === viewMode);
+    });
+    renderFiles();
+  }
+
+  async function handleRefreshFiles() {
+    const refreshBtn = document.getElementById('refresh-files-btn');
+    const originalLabel = refreshBtn ? refreshBtn.textContent : '';
+    if (refreshBtn) {
+      refreshBtn.disabled = true;
+      refreshBtn.textContent = 'Refreshing...';
+    }
+    
+    try {
+      await loadFiles();
+      renderFiles();
+      await updateStorageWidget();
+      showNotification('Files refreshed');
+    } catch (error) {
+      warn('Error refreshing files:', error);
+      showNotification('Unable to refresh files', 'error');
+    } finally {
+      if (refreshBtn) {
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = originalLabel || 'Refresh';
+      }
+    }
+  }
+
+  async function toggleFavorite(fileId, event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    const file = allFiles.find(f => f.id === fileId);
+    if (!file) return;
+
+    const nextValue = !file.isFavorite;
+    file.isFavorite = nextValue;
+    renderFiles();
+
+    try {
+      await updateFile(fileId, { isFavorite: nextValue });
+      showNotification(nextValue ? 'Added to favorites' : 'Removed from favorites');
+    } catch (error) {
+      file.isFavorite = !nextValue;
+      renderFiles();
+      warn('Favorite toggle failed:', error);
+      showNotification('Could not update favorite', 'error');
+    }
+  }
+
   function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
     notification.className = `files-notification files-notification-${type}`;
@@ -834,6 +965,29 @@
       if (sortSelect) {
         sortSelect.addEventListener('change', (e) => handleSort(e.target.value));
       }
+
+      // Smart filters
+      document.querySelectorAll('[data-smart-filter]').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const filter = chip.getAttribute('data-smart-filter');
+          handleSmartFilter(filter);
+        });
+      });
+      setActiveSmartFilter(currentSmartFilter);
+
+      // View toggle
+      document.querySelectorAll('.view-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const mode = btn.getAttribute('data-view-mode');
+          handleViewToggle(mode);
+        });
+      });
+
+      // Manual refresh
+      const refreshFilesBtn = document.getElementById('refresh-files-btn');
+      if (refreshFilesBtn) {
+        refreshFilesBtn.addEventListener('click', handleRefreshFiles);
+      }
       
       // Set up preview modal
       const previewCloseBtn = document.getElementById('preview-close-btn');
@@ -892,7 +1046,8 @@
     openRename,
     closeRename,
     saveRename,
-    confirmDelete
+    confirmDelete,
+    toggleFavorite
   };
 
   // Auto-initialize when DOM is ready

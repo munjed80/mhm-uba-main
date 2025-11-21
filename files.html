@@ -178,7 +178,48 @@
 
                   <!-- Main Content Area -->
                   <div class="files-main-content">
-                    
+
+                    <!-- Hero Surface -->
+                    <section class="files-hero">
+                      <div class="files-hero-copy">
+                        <p class="files-hero-overline">Workspace vault</p>
+                        <h2>Organize brand assets with confidence</h2>
+                        <p>
+                          Curated previews, instant filters, and secure storage controls keep your creative work in one elegant hub.
+                        </p>
+                        <div class="files-hero-tags">
+                          <span>Versioned uploads</span>
+                          <span>AI-ready previews</span>
+                          <span>Team permissions</span>
+                        </div>
+                      </div>
+                      <div class="files-hero-metrics">
+                        <article class="files-metric-card">
+                          <p>Total files</p>
+                          <h3 id="files-stat-total">0</h3>
+                          <small>Across every category</small>
+                        </article>
+                        <article class="files-metric-card">
+                          <p>New this week</p>
+                          <h3 id="files-stat-recent">0</h3>
+                          <small>Uploads in last 7 days</small>
+                        </article>
+                        <article class="files-metric-card">
+                          <p>Image library</p>
+                          <h3 id="files-stat-images">0</h3>
+                          <small>Ready for campaigns</small>
+                        </article>
+                      </div>
+                    </section>
+
+                    <!-- Smart Filters -->
+                    <div class="files-quick-filters" role="group" aria-label="Smart file filters">
+                      <button class="filter-chip active" data-smart-filter="all">All files</button>
+                      <button class="filter-chip" data-smart-filter="recent">Recent uploads</button>
+                      <button class="filter-chip" data-smart-filter="large">Large files</button>
+                      <button class="filter-chip" data-smart-filter="favorite">Starred</button>
+                    </div>
+
                     <!-- Upload Area -->
                     <div class="files-upload-section" id="upload-section">
                       <div class="files-upload-area" id="upload-area">
@@ -204,25 +245,34 @@
 
                     <!-- Toolbar -->
                     <div class="files-toolbar">
-                      <div class="files-search-box">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <circle cx="11" cy="11" r="8"></circle>
-                          <path d="m21 21-4.35-4.35"></path>
-                        </svg>
-                        <input type="text" id="search-files" placeholder="Search files...">
+                      <div class="files-toolbar-left">
+                        <div class="files-search-box">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                          </svg>
+                          <input type="text" id="search-files" placeholder="Search files...">
+                        </div>
                       </div>
-                      <select id="sort-files" class="files-sort">
-                        <option value="date-desc">Newest First</option>
-                        <option value="date-asc">Oldest First</option>
-                        <option value="name-asc">Name A-Z</option>
-                        <option value="name-desc">Name Z-A</option>
-                        <option value="size-desc">Largest First</option>
-                        <option value="size-asc">Smallest First</option>
-                      </select>
+                      <div class="files-toolbar-right">
+                        <select id="sort-files" class="files-sort">
+                          <option value="date-desc">Newest First</option>
+                          <option value="date-asc">Oldest First</option>
+                          <option value="name-asc">Name A-Z</option>
+                          <option value="name-desc">Name Z-A</option>
+                          <option value="size-desc">Largest First</option>
+                          <option value="size-asc">Smallest First</option>
+                        </select>
+                        <div class="files-view-toggle" role="group" aria-label="View mode">
+                          <button class="view-toggle-btn active" data-view-mode="grid" title="Grid view">▦</button>
+                          <button class="view-toggle-btn" data-view-mode="list" title="List view">☰</button>
+                        </div>
+                        <button class="uba-btn-ghost files-refresh-btn" id="refresh-files-btn">Refresh</button>
+                      </div>
                     </div>
 
                     <!-- Files Grid -->
-                    <div class="files-grid" id="files-grid"></div>
+                    <div class="files-grid" id="files-grid" data-view="grid"></div>
 
                     <!-- Empty State -->
                     <div class="files-empty-state" id="empty-state">
@@ -242,7 +292,7 @@
     <!-- Preview Modal -->
     <div class="files-modal" id="preview-modal" style="display: none;">
       <div class="files-modal-overlay"></div>
-      <div class="files-modal-content">
+        <div class="files-modal-content">
         <div class="files-modal-header">
           <h3 id="preview-file-name">File Preview</h3>
           <div class="modal-actions">
