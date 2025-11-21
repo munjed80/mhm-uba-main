@@ -462,7 +462,9 @@ function deleteAutomation(id) {
         return;
     }
     
-    const confirmMessage = `Are you sure you want to delete the automation "${automation.name}"?\n\nThis action cannot be undone.`;
+    const confirmMessage = `Are you sure you want to delete the automation "${automation.name}"?
+
+This action cannot be undone.`;
     
     if (confirm(confirmMessage)) {
         try {
@@ -956,7 +958,8 @@ function executeAddNoteToClient(config, payload) {
         
         const notes = client.notes || '';
         const timestamp = new Date().toLocaleString();
-        const newNotes = notes + (notes ? '\n' : '') + `[${timestamp}] ${noteText}`;
+        const newNotes = notes + (notes ? '
+' : '') + `[${timestamp}] ${noteText}`;
         
         const success = window.ubaStore.clients.update(clientId, { 
             notes: newNotes,

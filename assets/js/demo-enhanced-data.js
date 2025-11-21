@@ -349,4 +349,63 @@
    */
   function generateDemoReminders() {
     // Trigger enhanced tasks to check for demo reminders
-    if (window.UBAEnhancedTasks && window.UBAEnhancedTasks.checkReminders) {\n      setTimeout(() => {\n        window.UBAEnhancedTasks.checkReminders();\n      }, 2000);\n    }\n    \n    // Create some demo notifications\n    if (window.showToast) {\n      setTimeout(() => {\n        window.showToast('Demo: Task \"Implement Shopping Cart\" is overdue!', 'error', { title: 'Overdue Task' });\n      }, 3000);\n      \n      setTimeout(() => {\n        window.showToast('Demo: Task \"App Architecture Planning\" is due today', 'warning', { title: 'Due Today' });\n      }, 4000);\n      \n      setTimeout(() => {\n        window.showToast('Demo: Task \"Setup Payment Gateway\" is due tomorrow', 'warning', { title: 'Due Tomorrow' });\n      }, 5000);\n    }\n  }\n  \n  /**\n   * Auto-create demo data if no existing data\n   */\n  function autoCreateDemoData() {\n    const store = window.ubaStore;\n    if (!store) return;\n    \n    // Check if we already have data\n    const hasProjects = store.projects && store.projects.getAll().length > 0;\n    const hasTasks = store.tasks && store.tasks.getAll().length > 0;\n    \n    // Only create demo data if we don't have existing data\n    if (!hasProjects && !hasTasks) {\n      console.log('No existing data found, creating enhanced demo data...');\n      setTimeout(createEnhancedDemoData, 1000);\n      setTimeout(generateDemoReminders, 3000);\n    }\n  }\n  \n  // Expose demo data functions\n  window.UBADemoData = {\n    create: createEnhancedDemoData,\n    generateReminders: generateDemoReminders,\n    autoCreate: autoCreateDemoData\n  };\n  \n  // Auto-create demo data when page loads\n  if (document.readyState === 'loading') {\n    document.addEventListener('DOMContentLoaded', () => {\n      setTimeout(autoCreateDemoData, 2000);\n    });\n  } else {\n    setTimeout(autoCreateDemoData, 2000);\n  }\n  \n  console.log('✓ Enhanced Demo Data module loaded');\n  \n})();
+    if (window.UBAEnhancedTasks && window.UBAEnhancedTasks.checkReminders) {
+      setTimeout(() => {
+        window.UBAEnhancedTasks.checkReminders();
+      }, 2000);
+    }
+    
+    // Create some demo notifications
+    if (window.showToast) {
+      setTimeout(() => {
+        window.showToast('Demo: Task \"Implement Shopping Cart\" is overdue!', 'error', { title: 'Overdue Task' });
+      }, 3000);
+      
+      setTimeout(() => {
+        window.showToast('Demo: Task \"App Architecture Planning\" is due today', 'warning', { title: 'Due Today' });
+      }, 4000);
+      
+      setTimeout(() => {
+        window.showToast('Demo: Task \"Setup Payment Gateway\" is due tomorrow', 'warning', { title: 'Due Tomorrow' });
+      }, 5000);
+    }
+  }
+  
+  /**
+   * Auto-create demo data if no existing data
+   */
+  function autoCreateDemoData() {
+    const store = window.ubaStore;
+    if (!store) return;
+    
+    // Check if we already have data
+    const hasProjects = store.projects && store.projects.getAll().length > 0;
+    const hasTasks = store.tasks && store.tasks.getAll().length > 0;
+    
+    // Only create demo data if we don't have existing data
+    if (!hasProjects && !hasTasks) {
+      console.log('No existing data found, creating enhanced demo data...');
+      setTimeout(createEnhancedDemoData, 1000);
+      setTimeout(generateDemoReminders, 3000);
+    }
+  }
+  
+  // Expose demo data functions
+  window.UBADemoData = {
+    create: createEnhancedDemoData,
+    generateReminders: generateDemoReminders,
+    autoCreate: autoCreateDemoData
+  };
+  
+  // Auto-create demo data when page loads
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(autoCreateDemoData, 2000);
+    });
+  } else {
+    setTimeout(autoCreateDemoData, 2000);
+  }
+  
+  console.log('✓ Enhanced Demo Data module loaded');
+  
+})();

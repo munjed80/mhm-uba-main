@@ -320,7 +320,9 @@
 
   async function deleteWorkspace(workspaceId, workspaceName) {
     try {
-      const confirmed = confirm(`Are you sure you want to delete "${workspaceName}"?\n\nThis will permanently delete all data in this workspace.`);
+      const confirmed = confirm(`Are you sure you want to delete "${workspaceName}"?
+
+This will permanently delete all data in this workspace.`);
       
       if (!confirmed) return false;
 

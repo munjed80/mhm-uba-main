@@ -878,19 +878,30 @@
       }
       
       const insights = analysis.insights;
-      let response = "Here's what I found:\n\n";
+      let response = "Here's what I found:
+
+";
       
-      response += `📊 **Workspace Overview:**\n`;
-      response += `- ${insights.summary.totalTasks} tasks (${insights.tasks.overdue} overdue)\n`;
-      response += `- ${insights.summary.totalClients} clients\n`;
-      response += `- ${insights.summary.totalProjects} projects\n`;
-      response += `- ${insights.summary.totalInvoices} invoices\n`;
-      response += `- Activity score: ${insights.summary.activityScore}/100\n\n`;
+      response += `📊 **Workspace Overview:**
+`;
+      response += `- ${insights.summary.totalTasks} tasks (${insights.tasks.overdue} overdue)
+`;
+      response += `- ${insights.summary.totalClients} clients
+`;
+      response += `- ${insights.summary.totalProjects} projects
+`;
+      response += `- ${insights.summary.totalInvoices} invoices
+`;
+      response += `- Activity score: ${insights.summary.activityScore}/100
+
+`;
       
       if (insights.recommendations.length > 0) {
-        response += `💡 **Recommendations:**\n`;
+        response += `💡 **Recommendations:**
+`;
         insights.recommendations.slice(0, 3).forEach((rec, i) => {
-          response += `${i + 1}. ${rec.message}\n`;
+          response += `${i + 1}. ${rec.message}
+`;
         });
       }
       
@@ -901,14 +912,18 @@
       const entity = parsed.entity || 'tasks';
       const items = await UBA.data.list(entity === 'task' ? 'tasks' : entity === 'client' ? 'clients' : entity === 'project' ? 'projects' : 'tasks');
       
-      let response = `Found ${items.length} ${entity}${items.length !== 1 ? 's' : ''}:\n\n`;
+      let response = `Found ${items.length} ${entity}${items.length !== 1 ? 's' : ''}:
+
+`;
       
       items.slice(0, 5).forEach((item, i) => {
-        response += `${i + 1}. ${item.name || item.title || item.description || 'Untitled'}\n`;
+        response += `${i + 1}. ${item.name || item.title || item.description || 'Untitled'}
+`;
       });
       
       if (items.length > 5) {
-        response += `\n...and ${items.length - 5} more.`;
+        response += `
+...and ${items.length - 5} more.`;
       }
       
       return response;
@@ -932,10 +947,14 @@
         return "I couldn't generate a summary. Please try again.";
       }
       
-      return `**Quick Summary:**\n` +
-             `Tasks: ${analysis.insights.tasks.total} (${analysis.insights.tasks.completed} done)\n` +
-             `Clients: ${analysis.insights.clients.active} active\n` +
-             `Revenue: €${analysis.insights.financial.revenue.toFixed(2)}\n` +
+      return `**Quick Summary:**
+` +
+             `Tasks: ${analysis.insights.tasks.total} (${analysis.insights.tasks.completed} done)
+` +
+             `Clients: ${analysis.insights.clients.active} active
+` +
+             `Revenue: €${analysis.insights.financial.revenue.toFixed(2)}
+` +
              `Activity: ${analysis.insights.summary.activityScore}/100`;
     },
 
@@ -944,12 +963,20 @@
     },
 
     _handleHelpQuery(parsed) {
-      return `I can help you with:\n\n` +
-             `📊 **Analysis:** "Analyze workspace", "Show insights"\n` +
-             `📝 **Tasks:** "Create task", "Show overdue tasks"\n` +
-             `👥 **Clients:** "List clients", "Show top clients"\n` +
-             `💰 **Invoices:** "Show unpaid invoices", "Generate report"\n` +
-             `🎯 **Predictions:** "Predict revenue", "Estimate deadlines"\n\n` +
+      return `I can help you with:
+
+` +
+             `📊 **Analysis:** "Analyze workspace", "Show insights"
+` +
+             `📝 **Tasks:** "Create task", "Show overdue tasks"
+` +
+             `👥 **Clients:** "List clients", "Show top clients"
+` +
+             `💰 **Invoices:** "Show unpaid invoices", "Generate report"
+` +
+             `🎯 **Predictions:** "Predict revenue", "Estimate deadlines"
+
+` +
              `You can also use quick commands like /task, /client, /analyze`;
     },
 
@@ -981,21 +1008,37 @@
 
     _generateProjectDescription(payload) {
       const project = payload.project || {};
-      return `**Project: ${project.name || 'Untitled Project'}**\n\n` +
-             `**Objective:** ${project.objective || 'Define project goals and deliverables'}\n\n` +
-             `**Scope:** ${project.scope || 'Outline key milestones and requirements'}\n\n` +
-             `**Timeline:** ${project.timeline || 'Estimate duration and deadlines'}\n\n` +
+      return `**Project: ${project.name || 'Untitled Project'}**
+
+` +
+             `**Objective:** ${project.objective || 'Define project goals and deliverables'}
+
+` +
+             `**Scope:** ${project.scope || 'Outline key milestones and requirements'}
+
+` +
+             `**Timeline:** ${project.timeline || 'Estimate duration and deadlines'}
+
+` +
              `**Resources:** ${project.resources || 'Identify team members and tools needed'}`;
     },
 
     _generateClientSummary(payload) {
       const client = payload.client || {};
-      return `**Client Profile: ${client.name || 'Unknown Client'}**\n\n` +
-             `📧 ${client.email || 'No email'}\n` +
-             `📱 ${client.phone || 'No phone'}\n` +
-             `🏢 ${client.company || 'No company'}\n` +
-             `📍 ${client.address || 'No address'}\n\n` +
-             `**Status:** ${client.status || 'Active'}\n` +
+      return `**Client Profile: ${client.name || 'Unknown Client'}**
+
+` +
+             `📧 ${client.email || 'No email'}
+` +
+             `📱 ${client.phone || 'No phone'}
+` +
+             `🏢 ${client.company || 'No company'}
+` +
+             `📍 ${client.address || 'No address'}
+
+` +
+             `**Status:** ${client.status || 'Active'}
+` +
              `**Since:** ${client.createdAt ? new Date(client.createdAt).toLocaleDateString() : 'Unknown'}`;
     },
 
@@ -1215,11 +1258,18 @@
       const completedTasks = projectTasks.filter(t => t.status === 'done');
       const progress = projectTasks.length > 0 ? (completedTasks.length / projectTasks.length * 100).toFixed(1) : 0;
       
-      const content = `**Project: ${project.name}**\n\n` +
-        `📊 Progress: ${progress}%\n` +
-        `✅ ${completedTasks.length}/${projectTasks.length} tasks completed\n` +
-        `📅 Stage: ${project.stage}\n\n` +
-        `**Recommendations:**\n`;
+      const content = `**Project: ${project.name}**
+
+` +
+        `📊 Progress: ${progress}%
+` +
+        `✅ ${completedTasks.length}/${projectTasks.length} tasks completed
+` +
+        `📅 Stage: ${project.stage}
+
+` +
+        `**Recommendations:**
+`;
       
       const recommendations = [];
       if (progress < 50) {
@@ -1230,7 +1280,8 @@
       }
       
       return {
-        content: content + (recommendations.length > 0 ? recommendations.join('\n') : '- Project is on track'),
+        content: content + (recommendations.length > 0 ? recommendations.join('
+') : '- Project is on track'),
         data: { project, progress, tasks: projectTasks.length, completed: completedTasks.length },
         recommendations
       };
@@ -1257,11 +1308,18 @@
       const totalRevenue = clientInvoices.filter(i => i.status === 'paid')
         .reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0);
       
-      const content = `**Client: ${client.name}**\n\n` +
-        `💰 Total Revenue: €${totalRevenue.toFixed(2)}\n` +
-        `💼 Projects: ${clientProjects.length}\n` +
-        `💵 Invoices: ${clientInvoices.length}\n\n` +
-        `**Recommendations:**\n`;
+      const content = `**Client: ${client.name}**
+
+` +
+        `💰 Total Revenue: €${totalRevenue.toFixed(2)}
+` +
+        `💼 Projects: ${clientProjects.length}
+` +
+        `💵 Invoices: ${clientInvoices.length}
+
+` +
+        `**Recommendations:**
+`;
       
       const recommendations = [];
       if (clientProjects.length === 0) {
@@ -1273,7 +1331,8 @@
       }
       
       return {
-        content: content + (recommendations.length > 0 ? recommendations.join('\n') : '- Client relationship is healthy'),
+        content: content + (recommendations.length > 0 ? recommendations.join('
+') : '- Client relationship is healthy'),
         data: { client, revenue: totalRevenue, projects: clientProjects.length, invoices: clientInvoices.length },
         recommendations
       };
@@ -1294,13 +1353,22 @@
       const completed = tasks.filter(t => t.status === 'done');
       const highPriority = tasks.filter(t => t.priority === 'high' && t.status !== 'done');
       
-      const content = `**Task Overview**\n\n` +
-        `📝 Total Tasks: ${tasks.length}\n` +
-        `✅ Completed: ${completed.length}\n` +
-        `⚠️ Overdue: ${overdue.length}\n` +
-        `📅 Due Today: ${dueToday.length}\n` +
-        `🔴 High Priority: ${highPriority.length}\n\n` +
-        `**Recommendations:**\n`;
+      const content = `**Task Overview**
+
+` +
+        `📝 Total Tasks: ${tasks.length}
+` +
+        `✅ Completed: ${completed.length}
+` +
+        `⚠️ Overdue: ${overdue.length}
+` +
+        `📅 Due Today: ${dueToday.length}
+` +
+        `🔴 High Priority: ${highPriority.length}
+
+` +
+        `**Recommendations:**
+`;
       
       const recommendations = [];
       if (overdue.length > 0) {
@@ -1314,7 +1382,8 @@
       }
       
       return {
-        content: content + (recommendations.length > 0 ? recommendations.join('\n') : '- You\'re all caught up!'),
+        content: content + (recommendations.length > 0 ? recommendations.join('
+') : '- You\'re all caught up!'),
         data: { total: tasks.length, completed: completed.length, overdue: overdue.length, dueToday: dueToday.length },
         recommendations
       };
@@ -1333,12 +1402,20 @@
       const totalRevenue = paid.reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0);
       const outstanding = unpaid.reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0);
       
-      const content = `**Invoice Overview**\n\n` +
-        `💵 Total Invoices: ${invoices.length}\n` +
-        `✅ Paid: ${paid.length} (€${totalRevenue.toFixed(2)})\n` +
-        `⏳ Unpaid: ${unpaid.length} (€${outstanding.toFixed(2)})\n` +
-        `⚠️ Overdue: ${overdue.length}\n\n` +
-        `**Recommendations:**\n`;
+      const content = `**Invoice Overview**
+
+` +
+        `💵 Total Invoices: ${invoices.length}
+` +
+        `✅ Paid: ${paid.length} (€${totalRevenue.toFixed(2)})
+` +
+        `⏳ Unpaid: ${unpaid.length} (€${outstanding.toFixed(2)})
+` +
+        `⚠️ Overdue: ${overdue.length}
+
+` +
+        `**Recommendations:**
+`;
       
       const recommendations = [];
       if (overdue.length > 0) {
@@ -1352,7 +1429,8 @@
       }
       
       return {
-        content: content + (recommendations.length > 0 ? recommendations.join('\n') : '- Invoice management is on track'),
+        content: content + (recommendations.length > 0 ? recommendations.join('
+') : '- Invoice management is on track'),
         data: { total: invoices.length, paid: paid.length, unpaid: unpaid.length, revenue: totalRevenue, outstanding },
         recommendations
       };
@@ -1370,18 +1448,28 @@
       
       const insights = analysis.insights;
       
-      const content = `**Workspace Activity Summary**\n\n` +
-        `📊 Activity Score: ${insights.summary.activityScore}/100\n` +
-        `📝 Tasks: ${insights.tasks.total} (${insights.tasks.overdue} overdue)\n` +
-        `👥 Clients: ${insights.clients.total}\n` +
-        `💼 Projects: ${insights.projects.total}\n` +
-        `💰 Revenue: €${insights.financial.revenue.toFixed(2)}\n\n` +
-        `**Recommendations:**\n`;
+      const content = `**Workspace Activity Summary**
+
+` +
+        `📊 Activity Score: ${insights.summary.activityScore}/100
+` +
+        `📝 Tasks: ${insights.tasks.total} (${insights.tasks.overdue} overdue)
+` +
+        `👥 Clients: ${insights.clients.total}
+` +
+        `💼 Projects: ${insights.projects.total}
+` +
+        `💰 Revenue: €${insights.financial.revenue.toFixed(2)}
+
+` +
+        `**Recommendations:**
+`;
       
       const recommendations = insights.recommendations.slice(0, 3).map(r => `- ${r.message}`);
       
       return {
-        content: content + (recommendations.length > 0 ? recommendations.join('\n') : '- Workspace is performing well'),
+        content: content + (recommendations.length > 0 ? recommendations.join('
+') : '- Workspace is performing well'),
         data: insights.summary,
         recommendations: insights.recommendations
       };
@@ -1396,7 +1484,9 @@
       
       if (!subscription || !usage) {
         return {
-          content: '**Billing Usage**\n\nNo subscription data available.',
+          content: '**Billing Usage**
+
+No subscription data available.',
           data: {},
           recommendations: []
         };
@@ -1405,13 +1495,22 @@
       const plan = UBA.billing?.PLAN_CATALOG?.find(p => p.id === subscription.planId);
       const limits = plan?.limits || {};
       
-      const content = `**Billing Usage Summary**\n\n` +
-        `📦 Plan: ${plan?.name || subscription.planId}\n` +
-        `👥 Members: ${usage.members || 0}/${limits.maxMembers || '∞'}\n` +
-        `🧑‍💻 Clients: ${usage.clients || 0}/${limits.maxClients || '∞'}\n` +
-        `💼 Projects: ${usage.projects || 0}/${limits.maxProjects || '∞'}\n` +
-        `📝 Tasks: ${usage.tasks || 0}/${limits.maxTasks || '∞'}\n\n` +
-        `**Recommendations:**\n`;
+      const content = `**Billing Usage Summary**
+
+` +
+        `📦 Plan: ${plan?.name || subscription.planId}
+` +
+        `👥 Members: ${usage.members || 0}/${limits.maxMembers || '∞'}
+` +
+        `🧑‍💻 Clients: ${usage.clients || 0}/${limits.maxClients || '∞'}
+` +
+        `💼 Projects: ${usage.projects || 0}/${limits.maxProjects || '∞'}
+` +
+        `📝 Tasks: ${usage.tasks || 0}/${limits.maxTasks || '∞'}
+
+` +
+        `**Recommendations:**
+`;
       
       const recommendations = [];
       Object.keys(usage).forEach(key => {
@@ -1422,7 +1521,8 @@
       });
       
       return {
-        content: content + (recommendations.length > 0 ? recommendations.join('\n') : '- Usage is within limits'),
+        content: content + (recommendations.length > 0 ? recommendations.join('
+') : '- Usage is within limits'),
         data: { plan: plan?.name, usage, limits },
         recommendations
       };

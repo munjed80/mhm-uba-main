@@ -310,11 +310,17 @@
           if (response.success) {
             const insights = response.insights;
             this.addMessage('ai', 
-              `📊 **Workspace Analysis**\n\n` +
-              `Tasks: ${insights.tasks.total} (${insights.tasks.overdue} overdue)\n` +
-              `Clients: ${insights.clients.total}\n` +
-              `Projects: ${insights.projects.total}\n` +
-              `Revenue: €${insights.financial.revenue.toFixed(2)}\n` +
+              `📊 **Workspace Analysis**
+
+` +
+              `Tasks: ${insights.tasks.total} (${insights.tasks.overdue} overdue)
+` +
+              `Clients: ${insights.clients.total}
+` +
+              `Projects: ${insights.projects.total}
+` +
+              `Revenue: €${insights.financial.revenue.toFixed(2)}
+` +
               `Activity Score: ${insights.summary.activityScore}/100`
             );
           }
@@ -323,12 +329,20 @@
         case 'help':
           this.hideTyping();
           this.addMessage('ai', 
-            `**Available Commands:**\n\n` +
-            `/task [title] - Create a task\n` +
-            `/client - Show clients\n` +
-            `/invoice - Show invoices\n` +
-            `/analyze - Analyze workspace\n` +
-            `/help - Show this help\n\n` +
+            `**Available Commands:**
+
+` +
+            `/task [title] - Create a task
+` +
+            `/client - Show clients
+` +
+            `/invoice - Show invoices
+` +
+            `/analyze - Analyze workspace
+` +
+            `/help - Show this help
+
+` +
             `Or just ask me anything in natural language!`
           );
           break;
@@ -417,7 +431,8 @@
       formatted = formatted.replace(/\*(.+?)\*/g, '<em>$1</em>');
 
       // Line breaks
-      formatted = formatted.replace(/\n/g, '<br>');
+      formatted = formatted.replace(/
+/g, '<br>');
 
       // Code blocks
       formatted = formatted.replace(/`(.+?)`/g, '<code>$1</code>');

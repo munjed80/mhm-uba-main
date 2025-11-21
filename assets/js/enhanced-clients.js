@@ -43,4 +43,476 @@
   /**
    * Load custom fields configuration
    */
-  function loadCustomFields() {\n    const saved = localStorage.getItem('uba-client-custom-fields');\n    enhancedClientsState.customFields = saved ? JSON.parse(saved) : getDefaultCustomFields();\n  }\n  \n  /**\n   * Get default custom fields\n   */\n  function getDefaultCustomFields() {\n    return [\n      { id: 'industry', label: 'Industry', type: 'select', options: ['Technology', 'Healthcare', 'Finance', 'Education', 'Other'], required: false },\n      { id: 'priority', label: 'Priority', type: 'select', options: ['High', 'Medium', 'Low'], required: false },\n      { id: 'source', label: 'Lead Source', type: 'select', options: ['Website', 'Referral', 'Social Media', 'Direct', 'Other'], required: false },\n      { id: 'budget', label: 'Budget Range', type: 'select', options: ['< €1K', '€1K - €5K', '€5K - €10K', '€10K+'], required: false },\n      { id: 'website', label: 'Website', type: 'url', required: false },\n      { id: 'linkedin', label: 'LinkedIn', type: 'url', required: false }\n    ];\n  }\n  \n  /**\n   * Setup enhanced form validation with real-time feedback\n   */\n  function setupEnhancedValidation() {\n    const form = document.getElementById('clients-page-form');\n    if (!form) return;\n    \n    // Real-time validation on input\n    const inputs = form.querySelectorAll('input, textarea, select');\n    inputs.forEach(input => {\n      input.addEventListener('blur', () => {\n        validateClientField(input);\n      });\n      \n      input.addEventListener('input', () => {\n        // Clear previous errors on input\n        window.UBAValidation.clearFieldError(input.id);\n        \n        // Real-time duplicate detection for name, email, phone\n        if (['clients-name', 'clients-email', 'clients-phone'].includes(input.id)) {\n          setTimeout(() => checkForDuplicates(), 500);\n        }\n      });\n    });\n    \n    // Enhanced form submission\n    form.addEventListener('submit', handleEnhancedSubmit);\n  }\n  \n  /**\n   * Validate individual client field\n   */\n  function validateClientField(field) {\n    const clientData = getCurrentFormData();\n    const existingClients = window.ubaStore?.clients?.getAll() || [];\n    \n    if (window.UBAValidation && window.UBAValidation.validateClient) {\n      const validation = window.UBAValidation.validateClient(\n        clientData, \n        existingClients, \n        enhancedClientsState.editingId\n      );\n      \n      // Show field-specific errors\n      const fieldName = field.id.replace('clients-', '');\n      if (validation.errors[fieldName]) {\n        window.UBAValidation.showFieldError(field.id, validation.errors[fieldName]);\n      }\n      \n      // Show warnings\n      if (validation.warnings.length > 0) {\n        showValidationWarnings(validation.warnings);\n      }\n    }\n  }\n  \n  /**\n   * Check for duplicates in real-time\n   */\n  function checkForDuplicates() {\n    const clientData = getCurrentFormData();\n    const existingClients = window.ubaStore?.clients?.getAll() || [];\n    \n    if (window.UBAValidation && window.UBAValidation.findClientDuplicates) {\n      const duplicates = window.UBAValidation.findClientDuplicates(\n        clientData, \n        existingClients, \n        enhancedClientsState.editingId\n      );\n      \n      if (duplicates.length > 0) {\n        showDuplicateWarning(duplicates[0]);\n      } else {\n        hideDuplicateWarning();\n      }\n    }\n  }\n  \n  /**\n   * Show duplicate warning\n   */\n  function showDuplicateWarning(duplicate) {\n    enhancedClientsState.showDuplicateWarning = true;\n    \n    // Create warning element if it doesn't exist\n    let warningEl = document.getElementById('duplicate-warning');\n    if (!warningEl) {\n      warningEl = document.createElement('div');\n      warningEl.id = 'duplicate-warning';\n      warningEl.className = 'uba-warning-banner';\n      \n      const form = document.getElementById('clients-page-form');\n      if (form) {\n        form.insertBefore(warningEl, form.firstChild);\n      }\n    }\n    \n    warningEl.innerHTML = `\n      <div class=\"uba-warning-content\">\n        <span class=\"uba-warning-icon\">⚠️</span>\n        <div>\n          <strong>Potential Duplicate Client</strong>\n          <p>Similar client found: ${duplicate.name} (${duplicate.email || duplicate.phone || 'no contact info'})</p>\n        </div>\n        <button type=\"button\" class=\"uba-btn-sm uba-btn-ghost\" onclick=\"viewSimilarClient('${duplicate.id}')\">\n          View Similar\n        </button>\n      </div>\n    `;\n    \n    warningEl.style.display = 'block';\n  }\n  \n  /**\n   * Hide duplicate warning\n   */\n  function hideDuplicateWarning() {\n    enhancedClientsState.showDuplicateWarning = false;\n    const warningEl = document.getElementById('duplicate-warning');\n    if (warningEl) {\n      warningEl.style.display = 'none';\n    }\n  }\n  \n  /**\n   * View similar client\n   */\n  function viewSimilarClient(clientId) {\n    const clients = window.ubaStore?.clients?.getAll() || [];\n    const client = clients.find(c => c.id === clientId);\n    \n    if (client) {\n      // Show client details in a modal or sidebar\n      showClientDetails(client);\n    }\n  }\n  \n  /**\n   * Get current form data\n   */\n  function getCurrentFormData() {\n    const form = document.getElementById('clients-page-form');\n    if (!form) return {};\n    \n    const formData = new FormData(form);\n    const data = {};\n    \n    // Standard fields\n    data.name = document.getElementById('clients-name')?.value?.trim() || '';\n    data.email = document.getElementById('clients-email')?.value?.trim() || '';\n    data.company = document.getElementById('clients-company')?.value?.trim() || '';\n    data.phone = document.getElementById('clients-phone')?.value?.trim() || '';\n    data.notes = document.getElementById('clients-notes')?.value?.trim() || '';\n    \n    // Custom fields\n    enhancedClientsState.customFields.forEach(field => {\n      const fieldEl = document.getElementById(`custom-${field.id}`);\n      if (fieldEl) {\n        data[field.id] = fieldEl.value?.trim() || '';\n      }\n    });\n    \n    return data;\n  }\n  \n  /**\n   * Setup advanced pagination with better UX\n   */\n  function setupAdvancedPagination() {\n    // Search functionality\n    const searchInput = document.getElementById('clients-search');\n    if (searchInput) {\n      searchInput.addEventListener('input', (e) => {\n        enhancedClientsState.searchTerm = e.target.value;\n        enhancedClientsState.currentPage = 1;\n        applyFiltersAndRender();\n      });\n    }\n    \n    // Sort functionality\n    const sortSelect = document.getElementById('clients-sort');\n    if (sortSelect) {\n      sortSelect.addEventListener('change', (e) => {\n        const [sortBy, sortOrder] = e.target.value.split('_');\n        enhancedClientsState.sortBy = sortBy;\n        enhancedClientsState.sortOrder = sortOrder;\n        applyFiltersAndRender();\n      });\n    }\n    \n    // Page size selector\n    const pageSizeSelect = document.getElementById('clients-page-size');\n    if (pageSizeSelect) {\n      pageSizeSelect.addEventListener('change', (e) => {\n        enhancedClientsState.pageSize = parseInt(e.target.value);\n        enhancedClientsState.currentPage = 1;\n        applyFiltersAndRender();\n      });\n    }\n  }\n  \n  /**\n   * Setup cross-linking with projects and invoices\n   */\n  function setupCrossLinking() {\n    // This will be implemented to show related projects and invoices\n    // when viewing or editing a client\n  }\n  \n  /**\n   * Apply filters and re-render\n   */\n  function applyFiltersAndRender() {\n    const allClients = window.ubaStore?.clients?.getAll() || [];\n    \n    // Apply search filter\n    let filtered = allClients.filter(client => {\n      if (!enhancedClientsState.searchTerm) return true;\n      \n      const searchLower = enhancedClientsState.searchTerm.toLowerCase();\n      return (\n        client.name?.toLowerCase().includes(searchLower) ||\n        client.email?.toLowerCase().includes(searchLower) ||\n        client.company?.toLowerCase().includes(searchLower) ||\n        client.phone?.toLowerCase().includes(searchLower)\n      );\n    });\n    \n    // Apply sorting\n    filtered.sort((a, b) => {\n      const aVal = a[enhancedClientsState.sortBy] || '';\n      const bVal = b[enhancedClientsState.sortBy] || '';\n      \n      if (enhancedClientsState.sortOrder === 'asc') {\n        return aVal.toString().localeCompare(bVal.toString());\n      } else {\n        return bVal.toString().localeCompare(aVal.toString());\n      }\n    });\n    \n    enhancedClientsState.filteredClients = filtered;\n    renderEnhancedClientsPage();\n  }\n  \n  /**\n   * Render enhanced clients page\n   */\n  function renderEnhancedClientsPage() {\n    renderClientsToolbar();\n    renderClientsTable();\n    renderPaginationControls();\n  }\n  \n  /**\n   * Render clients toolbar with search and filters\n   */\n  function renderClientsToolbar() {\n    // Implementation will be added to render the enhanced toolbar\n  }\n  \n  /**\n   * Enhanced form submission handler\n   */\n  function handleEnhancedSubmit(e) {\n    e.preventDefault();\n    \n    const clientData = getCurrentFormData();\n    const existingClients = window.ubaStore?.clients?.getAll() || [];\n    \n    // Comprehensive validation\n    if (window.UBAValidation && window.UBAValidation.validateClient) {\n      const validation = window.UBAValidation.validateClient(\n        clientData, \n        existingClients, \n        enhancedClientsState.editingId\n      );\n      \n      if (!validation.isValid) {\n        // Show all errors\n        Object.keys(validation.errors).forEach(field => {\n          const fieldId = field === 'name' ? 'clients-name' : \n                         field === 'email' ? 'clients-email' :\n                         field === 'phone' ? 'clients-phone' :\n                         field === 'company' ? 'clients-company' :\n                         field === 'notes' ? 'clients-notes' : \n                         `custom-${field}`;\n          \n          if (fieldId !== 'duplicate') {\n            window.UBAValidation.showFieldError(fieldId, validation.errors[field]);\n          }\n        });\n        \n        // Handle duplicate error specially\n        if (validation.errors.duplicate) {\n          showDuplicateError(validation.errors.duplicate);\n        }\n        \n        return;\n      }\n      \n      // Show warnings but allow submission\n      if (validation.warnings.length > 0) {\n        showValidationWarnings(validation.warnings);\n      }\n    }\n    \n    // Proceed with saving\n    saveEnhancedClient(clientData);\n  }\n  \n  /**\n   * Save enhanced client with custom fields\n   */\n  function saveEnhancedClient(clientData) {\n    try {\n      const store = window.ubaStore;\n      if (!store || !store.clients) {\n        throw new Error('Client store not available');\n      }\n      \n      if (enhancedClientsState.isEditing && enhancedClientsState.editingId) {\n        // Update existing client\n        store.clients.update(enhancedClientsState.editingId, clientData);\n        console.log('✓ Client updated successfully');\n      } else {\n        // Create new client\n        const newClient = {\n          ...clientData,\n          id: generateClientId(),\n          created_at: new Date().toISOString(),\n          updated_at: new Date().toISOString()\n        };\n        \n        store.clients.add(newClient);\n        console.log('✓ New client created successfully');\n      }\n      \n      // Reset form and state\n      resetClientForm();\n      applyFiltersAndRender();\n      \n      // Show success message\n      showSuccessMessage(enhancedClientsState.isEditing ? 'Client updated successfully' : 'Client created successfully');\n      \n    } catch (error) {\n      console.error('Error saving client:', error);\n      showErrorMessage('Failed to save client. Please try again.');\n    }\n  }\n  \n  /**\n   * Generate unique client ID\n   */\n  function generateClientId() {\n    return 'client_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);\n  }\n  \n  /**\n   * Reset client form and editing state\n   */\n  function resetClientForm() {\n    enhancedClientsState.isEditing = false;\n    enhancedClientsState.editingId = null;\n    \n    const form = document.getElementById('clients-page-form');\n    if (form) {\n      form.reset();\n    }\n    \n    // Clear all validation errors\n    const errorElements = document.querySelectorAll('.uba-field-error');\n    errorElements.forEach(el => el.remove());\n    \n    const inputElements = document.querySelectorAll('.uba-input-error');\n    inputElements.forEach(el => el.classList.remove('uba-input-error'));\n    \n    hideDuplicateWarning();\n  }\n  \n  /**\n   * Show success message\n   */\n  function showSuccessMessage(message) {\n    // Implementation to show success notification\n    if (window.UBANotifications) {\n      window.UBANotifications.show(message, 'success');\n    }\n  }\n  \n  /**\n   * Show error message\n   */\n  function showErrorMessage(message) {\n    // Implementation to show error notification\n    if (window.UBANotifications) {\n      window.UBANotifications.show(message, 'error');\n    }\n  }\n  \n  /**\n   * Show validation warnings\n   */\n  function showValidationWarnings(warnings) {\n    warnings.forEach(warning => {\n      if (window.UBANotifications) {\n        window.UBANotifications.show(warning, 'warning');\n      }\n    });\n  }\n  \n  /**\n   * Show duplicate error\n   */\n  function showDuplicateError(message) {\n    const form = document.getElementById('clients-page-form');\n    if (form) {\n      let errorEl = document.getElementById('duplicate-error');\n      if (!errorEl) {\n        errorEl = document.createElement('div');\n        errorEl.id = 'duplicate-error';\n        errorEl.className = 'uba-error-banner';\n        form.insertBefore(errorEl, form.firstChild);\n      }\n      \n      errorEl.innerHTML = `\n        <span class=\"uba-error-icon\">❌</span>\n        <span>${message}</span>\n        <button type=\"button\" onclick=\"this.parentElement.style.display='none'\">×</button>\n      `;\n      errorEl.style.display = 'block';\n    }\n  }\n  \n  // Expose enhanced clients API\n  window.UBAEnhancedClients = {\n    init: initEnhancedClients,\n    viewSimilarClient: viewSimilarClient,\n    resetForm: resetClientForm\n  };\n  \n  // Auto-initialize if on clients page\n  if (document.readyState === 'loading') {\n    document.addEventListener('DOMContentLoaded', () => {\n      if (document.getElementById('clients-page-form')) {\n        initEnhancedClients();\n      }\n    });\n  } else if (document.getElementById('clients-page-form')) {\n    initEnhancedClients();\n  }\n  \n  console.log('✓ Enhanced Clients module loaded');\n  \n})();
+  function loadCustomFields() {
+    const saved = localStorage.getItem('uba-client-custom-fields');
+    enhancedClientsState.customFields = saved ? JSON.parse(saved) : getDefaultCustomFields();
+  }
+  
+  /**
+   * Get default custom fields
+   */
+  function getDefaultCustomFields() {
+    return [
+      { id: 'industry', label: 'Industry', type: 'select', options: ['Technology', 'Healthcare', 'Finance', 'Education', 'Other'], required: false },
+      { id: 'priority', label: 'Priority', type: 'select', options: ['High', 'Medium', 'Low'], required: false },
+      { id: 'source', label: 'Lead Source', type: 'select', options: ['Website', 'Referral', 'Social Media', 'Direct', 'Other'], required: false },
+      { id: 'budget', label: 'Budget Range', type: 'select', options: ['< €1K', '€1K - €5K', '€5K - €10K', '€10K+'], required: false },
+      { id: 'website', label: 'Website', type: 'url', required: false },
+      { id: 'linkedin', label: 'LinkedIn', type: 'url', required: false }
+    ];
+  }
+  
+  /**
+   * Setup enhanced form validation with real-time feedback
+   */
+  function setupEnhancedValidation() {
+    const form = document.getElementById('clients-page-form');
+    if (!form) return;
+    
+    // Real-time validation on input
+    const inputs = form.querySelectorAll('input, textarea, select');
+    inputs.forEach(input => {
+      input.addEventListener('blur', () => {
+        validateClientField(input);
+      });
+      
+      input.addEventListener('input', () => {
+        // Clear previous errors on input
+        window.UBAValidation.clearFieldError(input.id);
+        
+        // Real-time duplicate detection for name, email, phone
+        if (['clients-name', 'clients-email', 'clients-phone'].includes(input.id)) {
+          setTimeout(() => checkForDuplicates(), 500);
+        }
+      });
+    });
+    
+    // Enhanced form submission
+    form.addEventListener('submit', handleEnhancedSubmit);
+  }
+  
+  /**
+   * Validate individual client field
+   */
+  function validateClientField(field) {
+    const clientData = getCurrentFormData();
+    const existingClients = window.ubaStore?.clients?.getAll() || [];
+    
+    if (window.UBAValidation && window.UBAValidation.validateClient) {
+      const validation = window.UBAValidation.validateClient(
+        clientData, 
+        existingClients, 
+        enhancedClientsState.editingId
+      );
+      
+      // Show field-specific errors
+      const fieldName = field.id.replace('clients-', '');
+      if (validation.errors[fieldName]) {
+        window.UBAValidation.showFieldError(field.id, validation.errors[fieldName]);
+      }
+      
+      // Show warnings
+      if (validation.warnings.length > 0) {
+        showValidationWarnings(validation.warnings);
+      }
+    }
+  }
+  
+  /**
+   * Check for duplicates in real-time
+   */
+  function checkForDuplicates() {
+    const clientData = getCurrentFormData();
+    const existingClients = window.ubaStore?.clients?.getAll() || [];
+    
+    if (window.UBAValidation && window.UBAValidation.findClientDuplicates) {
+      const duplicates = window.UBAValidation.findClientDuplicates(
+        clientData, 
+        existingClients, 
+        enhancedClientsState.editingId
+      );
+      
+      if (duplicates.length > 0) {
+        showDuplicateWarning(duplicates[0]);
+      } else {
+        hideDuplicateWarning();
+      }
+    }
+  }
+  
+  /**
+   * Show duplicate warning
+   */
+  function showDuplicateWarning(duplicate) {
+    enhancedClientsState.showDuplicateWarning = true;
+    
+    // Create warning element if it doesn't exist
+    let warningEl = document.getElementById('duplicate-warning');
+    if (!warningEl) {
+      warningEl = document.createElement('div');
+      warningEl.id = 'duplicate-warning';
+      warningEl.className = 'uba-warning-banner';
+      
+      const form = document.getElementById('clients-page-form');
+      if (form) {
+        form.insertBefore(warningEl, form.firstChild);
+      }
+    }
+    
+    warningEl.innerHTML = `
+      <div class=\"uba-warning-content\">
+        <span class=\"uba-warning-icon\">⚠️</span>
+        <div>
+          <strong>Potential Duplicate Client</strong>
+          <p>Similar client found: ${duplicate.name} (${duplicate.email || duplicate.phone || 'no contact info'})</p>
+        </div>
+        <button type=\"button\" class=\"uba-btn-sm uba-btn-ghost\" onclick=\"viewSimilarClient('${duplicate.id}')\">
+          View Similar
+        </button>
+      </div>
+    `;
+    
+    warningEl.style.display = 'block';
+  }
+  
+  /**
+   * Hide duplicate warning
+   */
+  function hideDuplicateWarning() {
+    enhancedClientsState.showDuplicateWarning = false;
+    const warningEl = document.getElementById('duplicate-warning');
+    if (warningEl) {
+      warningEl.style.display = 'none';
+    }
+  }
+  
+  /**
+   * View similar client
+   */
+  function viewSimilarClient(clientId) {
+    const clients = window.ubaStore?.clients?.getAll() || [];
+    const client = clients.find(c => c.id === clientId);
+    
+    if (client) {
+      // Show client details in a modal or sidebar
+      showClientDetails(client);
+    }
+  }
+  
+  /**
+   * Get current form data
+   */
+  function getCurrentFormData() {
+    const form = document.getElementById('clients-page-form');
+    if (!form) return {};
+    
+    const formData = new FormData(form);
+    const data = {};
+    
+    // Standard fields
+    data.name = document.getElementById('clients-name')?.value?.trim() || '';
+    data.email = document.getElementById('clients-email')?.value?.trim() || '';
+    data.company = document.getElementById('clients-company')?.value?.trim() || '';
+    data.phone = document.getElementById('clients-phone')?.value?.trim() || '';
+    data.notes = document.getElementById('clients-notes')?.value?.trim() || '';
+    
+    // Custom fields
+    enhancedClientsState.customFields.forEach(field => {
+      const fieldEl = document.getElementById(`custom-${field.id}`);
+      if (fieldEl) {
+        data[field.id] = fieldEl.value?.trim() || '';
+      }
+    });
+    
+    return data;
+  }
+  
+  /**
+   * Setup advanced pagination with better UX
+   */
+  function setupAdvancedPagination() {
+    // Search functionality
+    const searchInput = document.getElementById('clients-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        enhancedClientsState.searchTerm = e.target.value;
+        enhancedClientsState.currentPage = 1;
+        applyFiltersAndRender();
+      });
+    }
+    
+    // Sort functionality
+    const sortSelect = document.getElementById('clients-sort');
+    if (sortSelect) {
+      sortSelect.addEventListener('change', (e) => {
+        const [sortBy, sortOrder] = e.target.value.split('_');
+        enhancedClientsState.sortBy = sortBy;
+        enhancedClientsState.sortOrder = sortOrder;
+        applyFiltersAndRender();
+      });
+    }
+    
+    // Page size selector
+    const pageSizeSelect = document.getElementById('clients-page-size');
+    if (pageSizeSelect) {
+      pageSizeSelect.addEventListener('change', (e) => {
+        enhancedClientsState.pageSize = parseInt(e.target.value);
+        enhancedClientsState.currentPage = 1;
+        applyFiltersAndRender();
+      });
+    }
+  }
+  
+  /**
+   * Setup cross-linking with projects and invoices
+   */
+  function setupCrossLinking() {
+    // This will be implemented to show related projects and invoices
+    // when viewing or editing a client
+  }
+  
+  /**
+   * Apply filters and re-render
+   */
+  function applyFiltersAndRender() {
+    const allClients = window.ubaStore?.clients?.getAll() || [];
+    
+    // Apply search filter
+    let filtered = allClients.filter(client => {
+      if (!enhancedClientsState.searchTerm) return true;
+      
+      const searchLower = enhancedClientsState.searchTerm.toLowerCase();
+      return (
+        client.name?.toLowerCase().includes(searchLower) ||
+        client.email?.toLowerCase().includes(searchLower) ||
+        client.company?.toLowerCase().includes(searchLower) ||
+        client.phone?.toLowerCase().includes(searchLower)
+      );
+    });
+    
+    // Apply sorting
+    filtered.sort((a, b) => {
+      const aVal = a[enhancedClientsState.sortBy] || '';
+      const bVal = b[enhancedClientsState.sortBy] || '';
+      
+      if (enhancedClientsState.sortOrder === 'asc') {
+        return aVal.toString().localeCompare(bVal.toString());
+      } else {
+        return bVal.toString().localeCompare(aVal.toString());
+      }
+    });
+    
+    enhancedClientsState.filteredClients = filtered;
+    renderEnhancedClientsPage();
+  }
+  
+  /**
+   * Render enhanced clients page
+   */
+  function renderEnhancedClientsPage() {
+    renderClientsToolbar();
+    renderClientsTable();
+    renderPaginationControls();
+  }
+  
+  /**
+   * Render clients toolbar with search and filters
+   */
+  function renderClientsToolbar() {
+    // Implementation will be added to render the enhanced toolbar
+  }
+  
+  /**
+   * Enhanced form submission handler
+   */
+  function handleEnhancedSubmit(e) {
+    e.preventDefault();
+    
+    const clientData = getCurrentFormData();
+    const existingClients = window.ubaStore?.clients?.getAll() || [];
+    
+    // Comprehensive validation
+    if (window.UBAValidation && window.UBAValidation.validateClient) {
+      const validation = window.UBAValidation.validateClient(
+        clientData, 
+        existingClients, 
+        enhancedClientsState.editingId
+      );
+      
+      if (!validation.isValid) {
+        // Show all errors
+        Object.keys(validation.errors).forEach(field => {
+          const fieldId = field === 'name' ? 'clients-name' : 
+                         field === 'email' ? 'clients-email' :
+                         field === 'phone' ? 'clients-phone' :
+                         field === 'company' ? 'clients-company' :
+                         field === 'notes' ? 'clients-notes' : 
+                         `custom-${field}`;
+          
+          if (fieldId !== 'duplicate') {
+            window.UBAValidation.showFieldError(fieldId, validation.errors[field]);
+          }
+        });
+        
+        // Handle duplicate error specially
+        if (validation.errors.duplicate) {
+          showDuplicateError(validation.errors.duplicate);
+        }
+        
+        return;
+      }
+      
+      // Show warnings but allow submission
+      if (validation.warnings.length > 0) {
+        showValidationWarnings(validation.warnings);
+      }
+    }
+    
+    // Proceed with saving
+    saveEnhancedClient(clientData);
+  }
+  
+  /**
+   * Save enhanced client with custom fields
+   */
+  function saveEnhancedClient(clientData) {
+    try {
+      const store = window.ubaStore;
+      if (!store || !store.clients) {
+        throw new Error('Client store not available');
+      }
+      
+      if (enhancedClientsState.isEditing && enhancedClientsState.editingId) {
+        // Update existing client
+        store.clients.update(enhancedClientsState.editingId, clientData);
+        console.log('✓ Client updated successfully');
+      } else {
+        // Create new client
+        const newClient = {
+          ...clientData,
+          id: generateClientId(),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        
+        store.clients.add(newClient);
+        console.log('✓ New client created successfully');
+      }
+      
+      // Reset form and state
+      resetClientForm();
+      applyFiltersAndRender();
+      
+      // Show success message
+      showSuccessMessage(enhancedClientsState.isEditing ? 'Client updated successfully' : 'Client created successfully');
+      
+    } catch (error) {
+      console.error('Error saving client:', error);
+      showErrorMessage('Failed to save client. Please try again.');
+    }
+  }
+  
+  /**
+   * Generate unique client ID
+   */
+  function generateClientId() {
+    return 'client_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  }
+  
+  /**
+   * Reset client form and editing state
+   */
+  function resetClientForm() {
+    enhancedClientsState.isEditing = false;
+    enhancedClientsState.editingId = null;
+    
+    const form = document.getElementById('clients-page-form');
+    if (form) {
+      form.reset();
+    }
+    
+    // Clear all validation errors
+    const errorElements = document.querySelectorAll('.uba-field-error');
+    errorElements.forEach(el => el.remove());
+    
+    const inputElements = document.querySelectorAll('.uba-input-error');
+    inputElements.forEach(el => el.classList.remove('uba-input-error'));
+    
+    hideDuplicateWarning();
+  }
+  
+  /**
+   * Show success message
+   */
+  function showSuccessMessage(message) {
+    // Implementation to show success notification
+    if (window.UBANotifications) {
+      window.UBANotifications.show(message, 'success');
+    }
+  }
+  
+  /**
+   * Show error message
+   */
+  function showErrorMessage(message) {
+    // Implementation to show error notification
+    if (window.UBANotifications) {
+      window.UBANotifications.show(message, 'error');
+    }
+  }
+  
+  /**
+   * Show validation warnings
+   */
+  function showValidationWarnings(warnings) {
+    warnings.forEach(warning => {
+      if (window.UBANotifications) {
+        window.UBANotifications.show(warning, 'warning');
+      }
+    });
+  }
+  
+  /**
+   * Show duplicate error
+   */
+  function showDuplicateError(message) {
+    const form = document.getElementById('clients-page-form');
+    if (form) {
+      let errorEl = document.getElementById('duplicate-error');
+      if (!errorEl) {
+        errorEl = document.createElement('div');
+        errorEl.id = 'duplicate-error';
+        errorEl.className = 'uba-error-banner';
+        form.insertBefore(errorEl, form.firstChild);
+      }
+      
+      errorEl.innerHTML = `
+        <span class=\"uba-error-icon\">❌</span>
+        <span>${message}</span>
+        <button type=\"button\" onclick=\"this.parentElement.style.display='none'\">×</button>
+      `;
+      errorEl.style.display = 'block';
+    }
+  }
+  
+  // Expose enhanced clients API
+  window.UBAEnhancedClients = {
+    init: initEnhancedClients,
+    viewSimilarClient: viewSimilarClient,
+    resetForm: resetClientForm
+  };
+  
+  // Auto-initialize if on clients page
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      if (document.getElementById('clients-page-form')) {
+        initEnhancedClients();
+      }
+    });
+  } else if (document.getElementById('clients-page-form')) {
+    initEnhancedClients();
+  }
+  
+  console.log('✓ Enhanced Clients module loaded');
+  
+})();

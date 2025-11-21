@@ -63,4 +63,161 @@
       month: monthFilter && monthFilter.value ? parseInt(monthFilter.value) : null,
       workspace: 'main'
     };
-  }\n  \n  /**\n   * Refresh dashboard metrics with current filters\n   */\n  function refreshDashboardMetrics() {\n    if (!window.UBAMetrics) {\n      console.warn('UBAMetrics not available, using fallback');\n      return;\n    }\n    \n    const filters = getCurrentFilters();\n    currentMetrics = window.UBAMetrics.calculate(filters);\n    \n    // Update KPI values\n    updateKPIValues();\n    \n    // Update sparklines\n    updateSparklines();\n    \n    console.log('✓ Dashboard metrics refreshed', currentMetrics);\n  }\n  \n  /**\n   * Update KPI card values\n   */\n  function updateKPIValues() {\n    if (!currentMetrics) return;\n    \n    const { revenue, clients, tasks, projects } = currentMetrics;\n    \n    // Revenue KPI\n    const revenueEl = document.getElementById('kpi-billed');\n    const revenueTrendEl = document.getElementById('kpi-billed-trend');\n    if (revenueEl) {\n      revenueEl.textContent = window.UBAMetrics.formatCurrency(revenue.totalRevenue);\n    }\n    if (revenueTrendEl) {\n      const change = window.UBAMetrics.calculateChange(revenue.monthlyRevenue, revenue.totalRevenue / 12);\n      revenueTrendEl.textContent = `${change >= 0 ? '+' : ''}${change}% this period`;\n    }\n    \n    // Open Invoices KPI\n    const openInvoicesEl = document.getElementById('kpi-open-invoices');\n    const openTrendEl = document.getElementById('kpi-open-invoices-trend');\n    if (openInvoicesEl) {\n      openInvoicesEl.textContent = window.UBAMetrics.formatCurrency(revenue.openInvoices + revenue.overdueInvoices);\n    }\n    if (openTrendEl) {\n      const overdueCount = Math.round(revenue.overdueInvoices / Math.max(revenue.averageInvoiceValue, 1));\n      openTrendEl.textContent = overdueCount > 0 ? `${overdueCount} overdue` : 'All current';\n    }\n    \n    // Active Clients KPI\n    const clientsEl = document.getElementById('kpi-active-clients');\n    const clientsTrendEl = document.getElementById('kpi-active-clients-trend');\n    if (clientsEl) {\n      clientsEl.textContent = clients.totalClients;\n    }\n    if (clientsTrendEl) {\n      clientsTrendEl.textContent = `${clients.newThisMonth} new this month`;\n    }\n    \n    // Tasks Today KPI\n    const tasksEl = document.getElementById('kpi-tasks-today');\n    const tasksTrendEl = document.getElementById('kpi-tasks-today-trend');\n    if (tasksEl) {\n      tasksEl.textContent = tasks.tasksDueToday;\n    }\n    if (tasksTrendEl) {\n      tasksTrendEl.textContent = `${tasks.completedTasks} completed`;\n    }\n  }\n  \n  /**\n   * Update sparkline charts\n   */\n  function updateSparklines() {\n    if (!currentMetrics || !window.UBASparkline) return;\n    \n    const { revenue, clients, tasks, projects } = currentMetrics;\n    \n    // Revenue sparkline\n    const revenueContainer = document.getElementById('revenue-sparkline');\n    if (revenueContainer && revenue.revenueTrend) {\n      window.UBASparkline.createKPI(revenueContainer, revenue.revenueTrend, 'revenue', {\n        width: 80,\n        height: 24\n      });\n    }\n    \n    // Invoices sparkline (show overdue trend)\n    const invoicesContainer = document.getElementById('invoices-sparkline');\n    if (invoicesContainer) {\n      // Create a simple trend based on invoice status\n      const invoiceTrend = [\n        revenue.draftInvoices,\n        revenue.openInvoices,\n        revenue.overdueInvoices,\n        revenue.paidInvoices\n      ];\n      window.UBASparkline.createKPI(invoicesContainer, invoiceTrend, 'danger', {\n        width: 80,\n        height: 24\n      });\n    }\n    \n    // Clients sparkline\n    const clientsContainer = document.getElementById('clients-sparkline');\n    if (clientsContainer && clients.clientTrend) {\n      window.UBASparkline.createKPI(clientsContainer, clients.clientTrend, 'clients', {\n        width: 80,\n        height: 24\n      });\n    }\n    \n    // Tasks sparkline\n    const tasksContainer = document.getElementById('tasks-sparkline');\n    if (tasksContainer && tasks.taskTrend) {\n      window.UBASparkline.createKPI(tasksContainer, tasks.taskTrend, 'tasks', {\n        width: 80,\n        height: 24\n      });\n    }\n  }\n  \n  /**\n   * Export current metrics (for reports consistency)\n   */\n  function exportCurrentMetrics() {\n    return currentMetrics;\n  }\n  \n  /**\n   * Force refresh from external trigger\n   */\n  function forceRefresh() {\n    refreshDashboardMetrics();\n  }\n  \n  // Initialize on DOM ready\n  if (document.readyState === 'loading') {\n    document.addEventListener('DOMContentLoaded', initEnhancedDashboard);\n  } else {\n    initEnhancedDashboard();\n  }\n  \n  // Expose enhanced dashboard API\n  window.UBAEnhancedDashboard = {\n    init: initEnhancedDashboard,\n    refresh: forceRefresh,\n    exportMetrics: exportCurrentMetrics,\n    getCurrentFilters: getCurrentFilters\n  };\n  \n  console.log('✓ Enhanced Dashboard module loaded');\n  \n})();
+  }
+  
+  /**
+   * Refresh dashboard metrics with current filters
+   */
+  function refreshDashboardMetrics() {
+    if (!window.UBAMetrics) {
+      console.warn('UBAMetrics not available, using fallback');
+      return;
+    }
+    
+    const filters = getCurrentFilters();
+    currentMetrics = window.UBAMetrics.calculate(filters);
+    
+    // Update KPI values
+    updateKPIValues();
+    
+    // Update sparklines
+    updateSparklines();
+    
+    console.log('✓ Dashboard metrics refreshed', currentMetrics);
+  }
+  
+  /**
+   * Update KPI card values
+   */
+  function updateKPIValues() {
+    if (!currentMetrics) return;
+    
+    const { revenue, clients, tasks, projects } = currentMetrics;
+    
+    // Revenue KPI
+    const revenueEl = document.getElementById('kpi-billed');
+    const revenueTrendEl = document.getElementById('kpi-billed-trend');
+    if (revenueEl) {
+      revenueEl.textContent = window.UBAMetrics.formatCurrency(revenue.totalRevenue);
+    }
+    if (revenueTrendEl) {
+      const change = window.UBAMetrics.calculateChange(revenue.monthlyRevenue, revenue.totalRevenue / 12);
+      revenueTrendEl.textContent = `${change >= 0 ? '+' : ''}${change}% this period`;
+    }
+    
+    // Open Invoices KPI
+    const openInvoicesEl = document.getElementById('kpi-open-invoices');
+    const openTrendEl = document.getElementById('kpi-open-invoices-trend');
+    if (openInvoicesEl) {
+      openInvoicesEl.textContent = window.UBAMetrics.formatCurrency(revenue.openInvoices + revenue.overdueInvoices);
+    }
+    if (openTrendEl) {
+      const overdueCount = Math.round(revenue.overdueInvoices / Math.max(revenue.averageInvoiceValue, 1));
+      openTrendEl.textContent = overdueCount > 0 ? `${overdueCount} overdue` : 'All current';
+    }
+    
+    // Active Clients KPI
+    const clientsEl = document.getElementById('kpi-active-clients');
+    const clientsTrendEl = document.getElementById('kpi-active-clients-trend');
+    if (clientsEl) {
+      clientsEl.textContent = clients.totalClients;
+    }
+    if (clientsTrendEl) {
+      clientsTrendEl.textContent = `${clients.newThisMonth} new this month`;
+    }
+    
+    // Tasks Today KPI
+    const tasksEl = document.getElementById('kpi-tasks-today');
+    const tasksTrendEl = document.getElementById('kpi-tasks-today-trend');
+    if (tasksEl) {
+      tasksEl.textContent = tasks.tasksDueToday;
+    }
+    if (tasksTrendEl) {
+      tasksTrendEl.textContent = `${tasks.completedTasks} completed`;
+    }
+  }
+  
+  /**
+   * Update sparkline charts
+   */
+  function updateSparklines() {
+    if (!currentMetrics || !window.UBASparkline) return;
+    
+    const { revenue, clients, tasks, projects } = currentMetrics;
+    
+    // Revenue sparkline
+    const revenueContainer = document.getElementById('revenue-sparkline');
+    if (revenueContainer && revenue.revenueTrend) {
+      window.UBASparkline.createKPI(revenueContainer, revenue.revenueTrend, 'revenue', {
+        width: 80,
+        height: 24
+      });
+    }
+    
+    // Invoices sparkline (show overdue trend)
+    const invoicesContainer = document.getElementById('invoices-sparkline');
+    if (invoicesContainer) {
+      // Create a simple trend based on invoice status
+      const invoiceTrend = [
+        revenue.draftInvoices,
+        revenue.openInvoices,
+        revenue.overdueInvoices,
+        revenue.paidInvoices
+      ];
+      window.UBASparkline.createKPI(invoicesContainer, invoiceTrend, 'danger', {
+        width: 80,
+        height: 24
+      });
+    }
+    
+    // Clients sparkline
+    const clientsContainer = document.getElementById('clients-sparkline');
+    if (clientsContainer && clients.clientTrend) {
+      window.UBASparkline.createKPI(clientsContainer, clients.clientTrend, 'clients', {
+        width: 80,
+        height: 24
+      });
+    }
+    
+    // Tasks sparkline
+    const tasksContainer = document.getElementById('tasks-sparkline');
+    if (tasksContainer && tasks.taskTrend) {
+      window.UBASparkline.createKPI(tasksContainer, tasks.taskTrend, 'tasks', {
+        width: 80,
+        height: 24
+      });
+    }
+  }
+  
+  /**
+   * Export current metrics (for reports consistency)
+   */
+  function exportCurrentMetrics() {
+    return currentMetrics;
+  }
+  
+  /**
+   * Force refresh from external trigger
+   */
+  function forceRefresh() {
+    refreshDashboardMetrics();
+  }
+  
+  // Initialize on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEnhancedDashboard);
+  } else {
+    initEnhancedDashboard();
+  }
+  
+  // Expose enhanced dashboard API
+  window.UBAEnhancedDashboard = {
+    init: initEnhancedDashboard,
+    refresh: forceRefresh,
+    exportMetrics: exportCurrentMetrics,
+    getCurrentFilters: getCurrentFilters
+  };
+  
+  console.log('✓ Enhanced Dashboard module loaded');
+  
+})();

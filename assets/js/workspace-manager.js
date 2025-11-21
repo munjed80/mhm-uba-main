@@ -299,12 +299,20 @@
     }
 
     const confirmed = confirm(
-      `Are you sure you want to delete "${workspace.name}"?\n\n` +
-      'This will permanently delete all data in this workspace including:\n' +
-      '• All clients, projects, and tasks\n' +
-      '• All invoices and financial data\n' +
-      '• All files and documents\n' +
-      '• All settings and customizations\n\n' +
+      `Are you sure you want to delete "${workspace.name}"?
+
+` +
+      'This will permanently delete all data in this workspace including:
+' +
+      '• All clients, projects, and tasks
+' +
+      '• All invoices and financial data
+' +
+      '• All files and documents
+' +
+      '• All settings and customizations
+
+' +
       'This action cannot be undone!'
     );
 

@@ -512,7 +512,9 @@
     const project = store.projects.get(id);
     if (!project) return;
     
-    if (!confirm(`Delete "${project.title}"?\n\nThis action cannot be undone.`)) return;
+    if (!confirm(`Delete "${project.title}"?
+
+This action cannot be undone.`)) return;
     
     try {
       store.projects.delete(id);

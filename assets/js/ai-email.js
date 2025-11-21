@@ -76,12 +76,17 @@
       
       // Add professional salutations if missing
       if (!polished.match(/^(Dear|Hi|Hello)/i)) {
-        polished = 'Dear valued customer,\n\n' + polished;
+        polished = 'Dear valued customer,
+
+' + polished;
       }
       
       // Add professional closing if missing
       if (!polished.match(/(Regards|Sincerely|Best)/i)) {
-        polished += '\n\nBest regards,\nThe Team';
+        polished += '
+
+Best regards,
+The Team';
       }
       
       return polished;
@@ -165,32 +170,50 @@
       
       if (tone === 'friendly') {
         greeting = `Hi ${clientName},`;
-        body = `I hope you're doing well! I wanted to follow up on ${context}.\n\n`;
+        body = `I hope you're doing well! I wanted to follow up on ${context}.
+
+`;
         body += `I'd love to ${nextSteps} and see how we can help you achieve your goals.`;
-        closing = `\n\nLooking forward to hearing from you!\n\nCheers,`;
+        closing = `
+
+Looking forward to hearing from you!
+
+Cheers,`;
       } else if (tone === 'formal') {
         greeting = `Dear ${clientName},`;
-        body = `I trust this message finds you well. I am writing to follow up on ${context}.\n\n`;
+        body = `I trust this message finds you well. I am writing to follow up on ${context}.
+
+`;
         body += `I would appreciate the opportunity to ${nextSteps} at your earliest convenience.`;
-        closing = `\n\nYours sincerely,`;
+        closing = `
+
+Yours sincerely,`;
       } else {
         greeting = `Hi ${clientName},`;
-        body = `I wanted to follow up on ${context}.\n\n`;
+        body = `I wanted to follow up on ${context}.
+
+`;
         body += `Let's schedule a time to ${nextSteps}.`;
-        closing = `\n\nBest regards,`;
+        closing = `
+
+Best regards,`;
       }
       
       if (verbosity === 'short') {
         body = `Following up on ${context}. Can we schedule a time to ${nextSteps}?`;
       } else if (verbosity === 'long') {
-        body += `\n\nWe value your business and are committed to providing you with the best possible service. `;
+        body += `
+
+We value your business and are committed to providing you with the best possible service. `;
         body += `Please let me know if there's anything specific you'd like to discuss or if you have any questions.`;
       }
       
       return {
         to: payload.email || '',
         subject: `Follow-up: ${context}`,
-        body: `${greeting}\n\n${body}${closing}`
+        body: `${greeting}
+
+${body}${closing}`
       };
     },
 
@@ -207,30 +230,48 @@
       
       if (tone === 'friendly') {
         greeting = `Hi ${clientName},`;
-        body = `Just a friendly reminder about invoice ${invoiceNumber} for €${amount}.\n\n`;
+        body = `Just a friendly reminder about invoice ${invoiceNumber} for €${amount}.
+
+`;
         body += `The payment was due on ${dueDate}. If you've already sent it, please disregard this message!`;
-        closing = `\n\nThanks!\n\nBest,`;
+        closing = `
+
+Thanks!
+
+Best,`;
       } else if (tone === 'formal') {
         greeting = `Dear ${clientName},`;
-        body = `This is a formal reminder regarding invoice ${invoiceNumber} in the amount of €${amount}.\n\n`;
+        body = `This is a formal reminder regarding invoice ${invoiceNumber} in the amount of €${amount}.
+
+`;
         body += `Payment was due on ${dueDate}. We kindly request that you process this payment at your earliest convenience.`;
-        closing = `\n\nYours sincerely,`;
+        closing = `
+
+Yours sincerely,`;
       } else {
         greeting = `Hi ${clientName},`;
-        body = `This is a reminder about invoice ${invoiceNumber} for €${amount}.\n\n`;
+        body = `This is a reminder about invoice ${invoiceNumber} for €${amount}.
+
+`;
         body += `Payment was due on ${dueDate}. Please process the payment when convenient.`;
-        closing = `\n\nBest regards,`;
+        closing = `
+
+Best regards,`;
       }
       
       if (verbosity === 'long') {
-        body += `\n\nIf you have any questions or concerns about this invoice, please don't hesitate to reach out. `;
+        body += `
+
+If you have any questions or concerns about this invoice, please don't hesitate to reach out. `;
         body += `We're here to help and appreciate your prompt attention to this matter.`;
       }
       
       return {
         to: payload.email || '',
         subject: `Payment Reminder - Invoice ${invoiceNumber}`,
-        body: `${greeting}\n\n${body}${closing}`
+        body: `${greeting}
+
+${body}${closing}`
       };
     },
 
@@ -248,32 +289,52 @@
       
       if (tone === 'friendly') {
         greeting = `Hi ${clientName},`;
-        body = `Great news! I wanted to give you a quick update on ${projectName}.\n\n`;
+        body = `Great news! I wanted to give you a quick update on ${projectName}.
+
+`;
         body += `We're currently at ${progress} completion and have achieved ${milestones}. `;
         body += `Next up, we'll ${nextSteps}.`;
-        closing = `\n\nExcited to keep the momentum going!\n\nCheers,`;
+        closing = `
+
+Excited to keep the momentum going!
+
+Cheers,`;
       } else if (tone === 'formal') {
         greeting = `Dear ${clientName},`;
-        body = `I am pleased to provide you with a progress update on ${projectName}.\n\n`;
+        body = `I am pleased to provide you with a progress update on ${projectName}.
+
+`;
         body += `Current progress stands at ${progress}, with ${milestones} successfully completed. `;
         body += `Our next phase will ${nextSteps}.`;
-        closing = `\n\nYours sincerely,`;
+        closing = `
+
+Yours sincerely,`;
       } else {
         greeting = `Hi ${clientName},`;
-        body = `Here's an update on ${projectName}.\n\n`;
-        body += `Progress: ${progress}\nCompleted: ${milestones}\nNext: ${nextSteps}`;
-        closing = `\n\nBest regards,`;
+        body = `Here's an update on ${projectName}.
+
+`;
+        body += `Progress: ${progress}
+Completed: ${milestones}
+Next: ${nextSteps}`;
+        closing = `
+
+Best regards,`;
       }
       
       if (verbosity === 'long') {
-        body += `\n\nWe remain committed to delivering exceptional results and meeting all project objectives. `;
+        body += `
+
+We remain committed to delivering exceptional results and meeting all project objectives. `;
         body += `Please feel free to reach out if you have any questions or would like to discuss the project in more detail.`;
       }
       
       return {
         to: payload.email || '',
         subject: `Project Update: ${projectName}`,
-        body: `${greeting}\n\n${body}${closing}`
+        body: `${greeting}
+
+${body}${closing}`
       };
     },
 
@@ -290,25 +351,42 @@
       
       if (tone === 'friendly') {
         greeting = `Hi ${clientName},`;
-        body = `Thanks for your interest in ${serviceName}!\n\n`;
+        body = `Thanks for your interest in ${serviceName}!
+
+`;
         body += `I'm happy to provide you with a quote of €${amount}. `;
         body += `This quote is valid until ${validUntil}.`;
-        closing = `\n\nLet me know if you have any questions!\n\nBest,`;
+        closing = `
+
+Let me know if you have any questions!
+
+Best,`;
       } else if (tone === 'formal') {
         greeting = `Dear ${clientName},`;
-        body = `Thank you for your inquiry regarding ${serviceName}.\n\n`;
+        body = `Thank you for your inquiry regarding ${serviceName}.
+
+`;
         body += `We are pleased to provide you with a quotation in the amount of €${amount}. `;
         body += `This quotation remains valid until ${validUntil}.`;
-        closing = `\n\nYours sincerely,`;
+        closing = `
+
+Yours sincerely,`;
       } else {
         greeting = `Hi ${clientName},`;
-        body = `Thank you for your interest in ${serviceName}.\n\n`;
-        body += `Quote: €${amount}\nValid until: ${validUntil}`;
-        closing = `\n\nBest regards,`;
+        body = `Thank you for your interest in ${serviceName}.
+
+`;
+        body += `Quote: €${amount}
+Valid until: ${validUntil}`;
+        closing = `
+
+Best regards,`;
       }
       
       if (verbosity === 'long') {
-        body += `\n\nThis quotation includes all the details we discussed. `;
+        body += `
+
+This quotation includes all the details we discussed. `;
         body += `We're confident we can deliver exceptional value and look forward to the opportunity to work with you. `;
         body += `Please don't hesitate to reach out with any questions or if you'd like to discuss further.`;
       }
@@ -316,7 +394,9 @@
       return {
         to: payload.email || '',
         subject: `Quotation for ${serviceName}`,
-        body: `${greeting}\n\n${body}${closing}`
+        body: `${greeting}
+
+${body}${closing}`
       };
     },
 
@@ -331,33 +411,56 @@
       
       if (tone === 'friendly') {
         greeting = `Hi ${clientName},`;
-        body = `Welcome to ${companyName}! We're so excited to have you on board! 🎉\n\n`;
+        body = `Welcome to ${companyName}! We're so excited to have you on board! 🎉
+
+`;
         body += `We're here to help you succeed. Feel free to reach out anytime you need assistance.`;
-        closing = `\n\nCan't wait to work with you!\n\nCheers,`;
+        closing = `
+
+Can't wait to work with you!
+
+Cheers,`;
       } else if (tone === 'formal') {
         greeting = `Dear ${clientName},`;
-        body = `Welcome to ${companyName}. We are delighted to have you join us.\n\n`;
+        body = `Welcome to ${companyName}. We are delighted to have you join us.
+
+`;
         body += `Our team is committed to providing you with exceptional service and support.`;
-        closing = `\n\nYours sincerely,`;
+        closing = `
+
+Yours sincerely,`;
       } else {
         greeting = `Hi ${clientName},`;
-        body = `Welcome to ${companyName}!\n\n`;
+        body = `Welcome to ${companyName}!
+
+`;
         body += `We're here to help. Reach out anytime you need assistance.`;
-        closing = `\n\nBest regards,`;
+        closing = `
+
+Best regards,`;
       }
       
       if (verbosity === 'long') {
-        body += `\n\nAs you get started, we'd like to share a few resources to help you make the most of our services:\n`;
-        body += `- Getting Started Guide\n`;
-        body += `- Support Documentation\n`;
-        body += `- Contact Information\n\n`;
+        body += `
+
+As you get started, we'd like to share a few resources to help you make the most of our services:
+`;
+        body += `- Getting Started Guide
+`;
+        body += `- Support Documentation
+`;
+        body += `- Contact Information
+
+`;
         body += `We look forward to a successful partnership and are here to support you every step of the way.`;
       }
       
       return {
         to: payload.email || '',
         subject: `Welcome to ${companyName}!`,
-        body: `${greeting}\n\n${body}${closing}`
+        body: `${greeting}
+
+${body}${closing}`
       };
     },
 
@@ -486,7 +589,10 @@
       const subject = document.getElementById('ai-email-subject').value;
       const body = document.getElementById('ai-email-body').value;
       
-      const emailText = `To: ${to}\nSubject: ${subject}\n\n${body}`;
+      const emailText = `To: ${to}
+Subject: ${subject}
+
+${body}`;
       
       navigator.clipboard.writeText(emailText).then(() => {
         alert('Email copied to clipboard!');

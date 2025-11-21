@@ -1,0 +1,48 @@
+{
+  "name": "mhm-uba",
+  "version": "1.0.0",
+  "description": "MHM Universal Business Automator - One workspace for clients, tasks, invoices and smart tools",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 8000 -c-1",
+    "dev": "npx http-server -p 8000 -c-1 -o",
+    "test": "cypress open --config baseUrl=http://localhost:8000",
+    "test:headless": "cypress run --config baseUrl=http://localhost:8000",
+    "lint:js": "eslint assets/js/**/*.js",
+    "lint:css": "stylelint 'assets/css/**/*.css'",
+    "format": "prettier --write '**/*.{js,css,html,md}'",
+    "format:check": "prettier --check '**/*.{js,css,html,md}'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/munjed80/mhm-uba-main.git"
+  },
+  "keywords": [
+    "business",
+    "crm",
+    "invoicing",
+    "task-management",
+    "automation",
+    "dashboard",
+    "supabase"
+  ],
+  "author": "MHM",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/munjed80/mhm-uba-main/issues"
+  },
+  "homepage": "https://github.com/munjed80/mhm-uba-main#readme",
+  "devDependencies": {
+    "cypress": "^13.6.0",
+    "eslint": "^8.56.0",
+    "http-server": "^14.1.1",
+    "prettier": "^3.1.1",
+    "stylelint": "^16.1.0",
+    "stylelint-config-standard": "^36.0.0"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}

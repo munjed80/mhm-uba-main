@@ -45,4 +45,808 @@
    */
   function setupEnhancedDragDrop() {
     // Handle mouse events
-    document.addEventListener('mousedown', handleDragStart);\n    document.addEventListener('mousemove', handleDragMove);\n    document.addEventListener('mouseup', handleDragEnd);\n    \n    // Handle touch events for mobile\n    document.addEventListener('touchstart', handleTouchStart, { passive: false });\n    document.addEventListener('touchmove', handleTouchMove, { passive: false });\n    document.addEventListener('touchend', handleTouchEnd);\n    \n    // Prevent default drag behavior on project cards\n    document.addEventListener('dragstart', (e) => {\n      if (e.target.closest('.uba-project-card')) {\n        e.preventDefault();\n      }\n    });\n  }\n  \n  /**\n   * Handle drag start\n   */\n  function handleDragStart(e) {\n    const projectCard = e.target.closest('.uba-project-card');\n    if (!projectCard || e.button !== 0) return; // Only left mouse button\n    \n    const projectId = projectCard.dataset.projectId;\n    const project = getProjectById(projectId);\n    if (!project) return;\n    \n    e.preventDefault();\n    \n    // Initialize drag state\n    enhancedProjectsState.isDragging = true;\n    enhancedProjectsState.draggedElement = projectCard;\n    enhancedProjectsState.draggedProject = project;\n    enhancedProjectsState.draggedFromStage = project.stage;\n    \n    // Calculate drag offset\n    const rect = projectCard.getBoundingClientRect();\n    enhancedProjectsState.dragOffset = {\n      x: e.clientX - rect.left,\n      y: e.clientY - rect.top\n    };\n    \n    // Start drag visual feedback\n    startDragVisuals(projectCard, e.clientX, e.clientY);\n    \n    // Add body class to change cursor\n    document.body.classList.add('uba-dragging');\n  }\n  \n  /**\n   * Handle drag move\n   */\n  function handleDragMove(e) {\n    if (!enhancedProjectsState.isDragging) return;\n    \n    e.preventDefault();\n    \n    // Update drag position\n    updateDragPosition(e.clientX, e.clientY);\n    \n    // Update drop zones\n    updateDropZones(e.clientX, e.clientY);\n  }\n  \n  /**\n   * Handle drag end\n   */\n  function handleDragEnd(e) {\n    if (!enhancedProjectsState.isDragging) return;\n    \n    e.preventDefault();\n    \n    // Determine drop target\n    const dropResult = getDropTarget(e.clientX, e.clientY);\n    \n    if (dropResult.isValid) {\n      // Valid drop - update project stage\n      updateProjectStage(enhancedProjectsState.draggedProject.id, dropResult.stage);\n      \n      // Animate to final position\n      animateToFinalPosition(dropResult.targetElement);\n    } else {\n      // Invalid drop - animate back to original position\n      animateToOriginalPosition();\n    }\n    \n    // Clean up drag state\n    setTimeout(cleanupDragState, 300);\n  }\n  \n  /**\n   * Handle touch start\n   */\n  function handleTouchStart(e) {\n    const projectCard = e.target.closest('.uba-project-card');\n    if (!projectCard) return;\n    \n    const touch = e.touches[0];\n    enhancedProjectsState.touchStartPos = { x: touch.clientX, y: touch.clientY };\n    \n    // Start touch drag after a short delay to distinguish from tap\n    setTimeout(() => {\n      if (e.touches.length === 1) { // Still touching\n        handleDragStart({\n          target: e.target,\n          button: 0,\n          clientX: touch.clientX,\n          clientY: touch.clientY,\n          preventDefault: () => e.preventDefault()\n        });\n      }\n    }, 150);\n  }\n  \n  /**\n   * Handle touch move\n   */\n  function handleTouchMove(e) {\n    if (!enhancedProjectsState.isDragging) return;\n    \n    const touch = e.touches[0];\n    handleDragMove({\n      clientX: touch.clientX,\n      clientY: touch.clientY,\n      preventDefault: () => e.preventDefault()\n    });\n  }\n  \n  /**\n   * Handle touch end\n   */\n  function handleTouchEnd(e) {\n    if (!enhancedProjectsState.isDragging) return;\n    \n    const touch = e.changedTouches[0];\n    handleDragEnd({\n      clientX: touch.clientX,\n      clientY: touch.clientY,\n      preventDefault: () => e.preventDefault()\n    });\n  }\n  \n  /**\n   * Start drag visual feedback\n   */\n  function startDragVisuals(element, x, y) {\n    // Create drag preview\n    const preview = element.cloneNode(true);\n    preview.classList.add('uba-drag-preview');\n    preview.style.position = 'fixed';\n    preview.style.pointerEvents = 'none';\n    preview.style.zIndex = '10000';\n    preview.style.transform = 'rotate(5deg) scale(1.05)';\n    preview.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.3)';\n    preview.style.opacity = '0.9';\n    \n    document.body.appendChild(preview);\n    \n    // Position preview\n    updateDragPosition(x, y, preview);\n    \n    // Fade out original element\n    element.style.opacity = '0.3';\n    element.style.transform = 'scale(0.95)';\n    \n    // Highlight drop zones\n    highlightDropZones();\n  }\n  \n  /**\n   * Update drag position\n   */\n  function updateDragPosition(x, y, preview = null) {\n    const dragPreview = preview || document.querySelector('.uba-drag-preview');\n    if (!dragPreview) return;\n    \n    const { dragOffset } = enhancedProjectsState;\n    dragPreview.style.left = (x - dragOffset.x) + 'px';\n    dragPreview.style.top = (y - dragOffset.y) + 'px';\n  }\n  \n  /**\n   * Highlight drop zones\n   */\n  function highlightDropZones() {\n    const stages = document.querySelectorAll('.uba-pipeline-stage');\n    stages.forEach(stage => {\n      stage.classList.add('uba-drop-zone-active');\n    });\n  }\n  \n  /**\n   * Update drop zones during drag\n   */\n  function updateDropZones(x, y) {\n    const dropTarget = document.elementFromPoint(x, y);\n    const stage = dropTarget?.closest('.uba-pipeline-stage');\n    \n    // Clear previous drop zone highlights\n    document.querySelectorAll('.uba-drop-zone-highlight').forEach(el => {\n      el.classList.remove('uba-drop-zone-highlight');\n    });\n    \n    // Highlight current drop zone\n    if (stage) {\n      stage.classList.add('uba-drop-zone-highlight');\n      enhancedProjectsState.dropZone = stage;\n    } else {\n      enhancedProjectsState.dropZone = null;\n    }\n  }\n  \n  /**\n   * Get drop target information\n   */\n  function getDropTarget(x, y) {\n    const element = document.elementFromPoint(x, y);\n    const stageElement = element?.closest('.uba-pipeline-stage');\n    \n    if (!stageElement) {\n      return { isValid: false, stage: null, targetElement: null };\n    }\n    \n    const stage = stageElement.dataset.stage;\n    const isValidDrop = enhancedProjectsState.stageColumns.includes(stage) &&\n                       stage !== enhancedProjectsState.draggedFromStage;\n    \n    return {\n      isValid: isValidDrop,\n      stage: stage,\n      targetElement: stageElement\n    };\n  }\n  \n  /**\n   * Animate to final position\n   */\n  function animateToFinalPosition(targetElement) {\n    const dragPreview = document.querySelector('.uba-drag-preview');\n    if (!dragPreview || !targetElement) return;\n    \n    const targetRect = targetElement.getBoundingClientRect();\n    const targetX = targetRect.left + targetRect.width / 2;\n    const targetY = targetRect.top + targetRect.height / 2;\n    \n    dragPreview.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';\n    dragPreview.style.transform = 'scale(0.8) rotate(0deg)';\n    dragPreview.style.left = targetX + 'px';\n    dragPreview.style.top = targetY + 'px';\n    dragPreview.style.opacity = '0';\n  }\n  \n  /**\n   * Animate back to original position\n   */\n  function animateToOriginalPosition() {\n    const dragPreview = document.querySelector('.uba-drag-preview');\n    const originalElement = enhancedProjectsState.draggedElement;\n    \n    if (!dragPreview || !originalElement) return;\n    \n    const originalRect = originalElement.getBoundingClientRect();\n    \n    dragPreview.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';\n    dragPreview.style.transform = 'scale(1) rotate(0deg)';\n    dragPreview.style.left = originalRect.left + 'px';\n    dragPreview.style.top = originalRect.top + 'px';\n    dragPreview.style.opacity = '0';\n  }\n  \n  /**\n   * Clean up drag state\n   */\n  function cleanupDragState() {\n    // Remove drag preview\n    const dragPreview = document.querySelector('.uba-drag-preview');\n    if (dragPreview) {\n      dragPreview.remove();\n    }\n    \n    // Reset original element\n    if (enhancedProjectsState.draggedElement) {\n      enhancedProjectsState.draggedElement.style.opacity = '';\n      enhancedProjectsState.draggedElement.style.transform = '';\n    }\n    \n    // Clear drop zone highlights\n    document.querySelectorAll('.uba-drop-zone-active, .uba-drop-zone-highlight').forEach(el => {\n      el.classList.remove('uba-drop-zone-active', 'uba-drop-zone-highlight');\n    });\n    \n    // Remove body class\n    document.body.classList.remove('uba-dragging');\n    \n    // Reset state\n    enhancedProjectsState.isDragging = false;\n    enhancedProjectsState.draggedElement = null;\n    enhancedProjectsState.draggedProject = null;\n    enhancedProjectsState.draggedFromStage = null;\n    enhancedProjectsState.dropZone = null;\n  }\n  \n  /**\n   * Update project stage\n   */\n  function updateProjectStage(projectId, newStage) {\n    const store = window.ubaStore;\n    if (!store || !store.projects) return;\n    \n    const project = store.projects.getAll().find(p => p.id === projectId);\n    if (!project) return;\n    \n    // Update project stage\n    const updatedProject = { ...project, stage: newStage, updated_at: new Date().toISOString() };\n    store.projects.update(projectId, updatedProject);\n    \n    // Show success notification\n    showProjectMoveNotification(project.name, newStage);\n    \n    // Re-render projects\n    setTimeout(() => {\n      renderEnhancedProjects();\n    }, 300);\n  }\n  \n  /**\n   * Show project move notification\n   */\n  function showProjectMoveNotification(projectName, newStage) {\n    const stageLabels = {\n      lead: 'Lead',\n      in_progress: 'In Progress',\n      ongoing: 'Ongoing',\n      completed: 'Completed'\n    };\n    \n    const message = `Project \"${projectName}\" moved to ${stageLabels[newStage]}`;\n    \n    if (window.UBANotifications) {\n      window.UBANotifications.show(message, 'success');\n    }\n  }\n  \n  /**\n   * Get project by ID\n   */\n  function getProjectById(projectId) {\n    const store = window.ubaStore;\n    if (!store || !store.projects) return null;\n    \n    return store.projects.getAll().find(p => p.id === projectId);\n  }\n  \n  /**\n   * Setup project details functionality\n   */\n  function setupProjectDetails() {\n    // Create project details modal if it doesn't exist\n    createProjectDetailsModal();\n  }\n  \n  /**\n   * Create project details modal\n   */\n  function createProjectDetailsModal() {\n    if (document.getElementById('project-details-modal')) return;\n    \n    const modal = document.createElement('div');\n    modal.id = 'project-details-modal';\n    modal.className = 'uba-modal';\n    modal.style.display = 'none';\n    \n    modal.innerHTML = `\n      <div class=\"uba-modal-overlay\" onclick=\"closeProjectDetailsModal()\"></div>\n      <div class=\"uba-modal-content uba-modal-large\">\n        <div class=\"uba-modal-header\">\n          <h3 id=\"project-details-title\">Project Details</h3>\n          <button type=\"button\" class=\"uba-modal-close\" onclick=\"closeProjectDetailsModal()\">×</button>\n        </div>\n        <div class=\"uba-modal-body\">\n          <div class=\"uba-project-details\">\n            <!-- Project details will be rendered here -->\n          </div>\n        </div>\n        <div class=\"uba-modal-footer\">\n          <button type=\"button\" class=\"uba-btn-ghost\" onclick=\"closeProjectDetailsModal()\">Close</button>\n          <button type=\"button\" class=\"uba-btn-primary\" onclick=\"editProjectFromDetails()\">Edit Project</button>\n        </div>\n      </div>\n    `;\n    \n    document.body.appendChild(modal);\n  }\n  \n  /**\n   * Setup progress tracking\n   */\n  function setupProgressTracking() {\n    // Progress tracking will be based on linked tasks completion\n  }\n  \n  /**\n   * Setup project linking with tasks and invoices\n   */\n  function setupProjectLinking() {\n    // This will integrate with the client relationships system\n  }\n  \n  /**\n   * Render enhanced projects\n   */\n  function renderEnhancedProjects() {\n    const store = window.ubaStore;\n    if (!store || !store.projects) return;\n    \n    const projects = store.projects.getAll();\n    enhancedProjectsState.projectsData = projects;\n    \n    // Update project cards with enhanced features\n    enhanceExistingProjectCards();\n  }\n  \n  /**\n   * Enhance existing project cards\n   */\n  function enhanceExistingProjectCards() {\n    const projectCards = document.querySelectorAll('.uba-project-card');\n    \n    projectCards.forEach(card => {\n      // Add project ID as data attribute\n      const projectName = card.querySelector('.uba-card-title')?.textContent;\n      const project = enhancedProjectsState.projectsData.find(p => p.name === projectName);\n      \n      if (project) {\n        card.dataset.projectId = project.id;\n        \n        // Add progress bar if not exists\n        addProgressBarToCard(card, project);\n        \n        // Add click handler for project details\n        addProjectDetailsHandler(card, project);\n        \n        // Enhance card styling\n        enhanceCardStyling(card);\n      }\n    });\n  }\n  \n  /**\n   * Add progress bar to project card\n   */\n  function addProgressBarToCard(card, project) {\n    if (card.querySelector('.uba-project-progress')) return;\n    \n    const progress = calculateProjectProgress(project);\n    \n    const progressBar = document.createElement('div');\n    progressBar.className = 'uba-project-progress';\n    progressBar.innerHTML = `\n      <div class=\"uba-progress-label\">\n        <span>Progress</span>\n        <span>${progress.percentage}%</span>\n      </div>\n      <div class=\"uba-progress-bar\">\n        <div class=\"uba-progress-fill\" style=\"width: ${progress.percentage}%\"></div>\n      </div>\n      <div class=\"uba-progress-details\">\n        <small>${progress.completed}/${progress.total} tasks completed</small>\n      </div>\n    `;\n    \n    // Insert before card actions or at the end\n    const cardActions = card.querySelector('.uba-card-actions');\n    if (cardActions) {\n      card.insertBefore(progressBar, cardActions);\n    } else {\n      card.appendChild(progressBar);\n    }\n  }\n  \n  /**\n   * Calculate real project progress based on linked tasks\n   */\n  function calculateProjectProgress(project) {\n    // Get linked tasks\n    const linkedTasks = getProjectTasks(project.id);\n    \n    if (linkedTasks.length === 0) {\n      return { percentage: 0, completed: 0, total: 0 };\n    }\n    \n    const completedTasks = linkedTasks.filter(task => task.status === 'done').length;\n    const percentage = Math.round((completedTasks / linkedTasks.length) * 100);\n    \n    return {\n      percentage,\n      completed: completedTasks,\n      total: linkedTasks.length\n    };\n  }\n  \n  /**\n   * Get tasks linked to a project\n   */\n  function getProjectTasks(projectId) {\n    const store = window.ubaStore;\n    if (!store || !store.tasks) return [];\n    \n    const tasks = store.tasks.getAll();\n    const project = getProjectById(projectId);\n    if (!project) return [];\n    \n    // Find tasks linked to this project\n    return tasks.filter(task => {\n      return (\n        task.project_id === projectId ||\n        task.project === project.name ||\n        (task.title && task.title.toLowerCase().includes(project.name.toLowerCase()))\n      );\n    });\n  }\n  \n  /**\n   * Add project details handler\n   */\n  function addProjectDetailsHandler(card, project) {\n    // Remove existing handlers\n    const existingHandler = card.onclick;\n    \n    card.addEventListener('click', (e) => {\n      // Don't trigger if clicking on action buttons\n      if (e.target.closest('.uba-card-actions')) return;\n      if (enhancedProjectsState.isDragging) return;\n      \n      showProjectDetails(project.id);\n    });\n    \n    // Add details button if not exists\n    if (!card.querySelector('.uba-project-details-btn')) {\n      let actionsContainer = card.querySelector('.uba-card-actions');\n      if (!actionsContainer) {\n        actionsContainer = document.createElement('div');\n        actionsContainer.className = 'uba-card-actions';\n        card.appendChild(actionsContainer);\n      }\n      \n      const detailsBtn = document.createElement('button');\n      detailsBtn.className = 'uba-btn-sm uba-btn-ghost uba-project-details-btn';\n      detailsBtn.innerHTML = '👁️ Details';\n      detailsBtn.onclick = (e) => {\n        e.stopPropagation();\n        showProjectDetails(project.id);\n      };\n      \n      actionsContainer.appendChild(detailsBtn);\n    }\n  }\n  \n  /**\n   * Enhance card styling for better drag feedback\n   */\n  function enhanceCardStyling(card) {\n    card.style.transition = 'all 0.2s ease';\n    card.style.cursor = 'grab';\n    \n    card.addEventListener('mouseenter', () => {\n      if (!enhancedProjectsState.isDragging) {\n        card.style.transform = 'translateY(-2px)';\n      }\n    });\n    \n    card.addEventListener('mouseleave', () => {\n      if (!enhancedProjectsState.isDragging) {\n        card.style.transform = '';\n      }\n    });\n  }\n  \n  /**\n   * Show project details in modal\n   */\n  function showProjectDetails(projectId) {\n    const project = getProjectById(projectId);\n    if (!project) return;\n    \n    const modal = document.getElementById('project-details-modal');\n    const title = document.getElementById('project-details-title');\n    const detailsContainer = modal.querySelector('.uba-project-details');\n    \n    if (!modal || !detailsContainer) return;\n    \n    // Set title\n    if (title) {\n      title.textContent = project.name || 'Project Details';\n    }\n    \n    // Get linked data\n    const linkedTasks = getProjectTasks(projectId);\n    const linkedInvoices = getProjectInvoices(projectId);\n    const progress = calculateProjectProgress(project);\n    \n    // Render project details\n    detailsContainer.innerHTML = `\n      <div class=\"uba-project-overview\">\n        <div class=\"uba-overview-section\">\n          <h4>Project Information</h4>\n          <div class=\"uba-project-info-grid\">\n            <div><strong>Stage:</strong> <span class=\"uba-stage-badge uba-stage-${project.stage}\">${formatStage(project.stage)}</span></div>\n            <div><strong>Created:</strong> ${formatDate(project.created_at)}</div>\n            <div><strong>Budget:</strong> ${formatCurrency(project.budget || 0)}</div>\n            <div><strong>Progress:</strong> ${progress.percentage}% (${progress.completed}/${progress.total} tasks)</div>\n          </div>\n          ${project.description ? `<p class=\"uba-project-description\">${project.description}</p>` : ''}\n        </div>\n        \n        <div class=\"uba-overview-section\">\n          <h4>Progress Overview</h4>\n          <div class=\"uba-project-progress-detailed\">\n            <div class=\"uba-progress-bar-large\">\n              <div class=\"uba-progress-fill\" style=\"width: ${progress.percentage}%\"></div>\n            </div>\n            <div class=\"uba-progress-stats\">\n              <div class=\"uba-stat\">\n                <span class=\"uba-stat-label\">Completed Tasks:</span>\n                <span class=\"uba-stat-value\">${progress.completed}</span>\n              </div>\n              <div class=\"uba-stat\">\n                <span class=\"uba-stat-label\">Remaining Tasks:</span>\n                <span class=\"uba-stat-value\">${progress.total - progress.completed}</span>\n              </div>\n              <div class=\"uba-stat\">\n                <span class=\"uba-stat-label\">Total Tasks:</span>\n                <span class=\"uba-stat-value\">${progress.total}</span>\n              </div>\n            </div>\n          </div>\n        </div>\n        \n        <div class=\"uba-overview-section\">\n          <h4>Linked Tasks (${linkedTasks.length})</h4>\n          <div class=\"uba-linked-items\">\n            ${linkedTasks.length === 0 ? '<p class=\"uba-empty-state\">No linked tasks found</p>' : \n              linkedTasks.map(task => `\n                <div class=\"uba-linked-item uba-task-item\">\n                  <div class=\"uba-item-info\">\n                    <div class=\"uba-item-title\">${task.title || 'Untitled Task'}</div>\n                    <div class=\"uba-item-meta\">\n                      <span class=\"uba-status uba-status-${task.status}\">${formatTaskStatus(task.status)}</span>\n                      ${task.due ? `<span class=\"uba-due-date\">Due: ${formatDate(task.due)}</span>` : ''}\n                    </div>\n                  </div>\n                  <div class=\"uba-item-actions\">\n                    <button class=\"uba-btn-sm uba-btn-ghost\" onclick=\"viewTask('${task.id}')\">View</button>\n                  </div>\n                </div>\n              `).join('')\n            }\n          </div>\n        </div>\n        \n        <div class=\"uba-overview-section\">\n          <h4>Linked Invoices (${linkedInvoices.length})</h4>\n          <div class=\"uba-linked-items\">\n            ${linkedInvoices.length === 0 ? '<p class=\"uba-empty-state\">No linked invoices found</p>' : \n              linkedInvoices.map(invoice => `\n                <div class=\"uba-linked-item uba-invoice-item\">\n                  <div class=\"uba-item-info\">\n                    <div class=\"uba-item-title\">${invoice.label || 'Invoice'} - ${formatCurrency(invoice.amount)}</div>\n                    <div class=\"uba-item-meta\">\n                      <span class=\"uba-status uba-status-${invoice.status}\">${formatInvoiceStatus(invoice.status)}</span>\n                      ${invoice.due ? `<span class=\"uba-due-date\">Due: ${formatDate(invoice.due)}</span>` : ''}\n                    </div>\n                  </div>\n                  <div class=\"uba-item-actions\">\n                    <button class=\"uba-btn-sm uba-btn-ghost\" onclick=\"viewInvoice('${invoice.id}')\">View</button>\n                  </div>\n                </div>\n              `).join('')\n            }\n          </div>\n        </div>\n      </div>\n    `;\n    \n    // Show modal\n    modal.style.display = 'block';\n  }\n  \n  /**\n   * Get invoices linked to a project\n   */\n  function getProjectInvoices(projectId) {\n    const store = window.ubaStore;\n    if (!store || !store.invoices) return [];\n    \n    const invoices = store.invoices.getAll();\n    const project = getProjectById(projectId);\n    if (!project) return [];\n    \n    // Find invoices linked to this project\n    return invoices.filter(invoice => {\n      return (\n        invoice.project_id === projectId ||\n        (invoice.label && invoice.label.toLowerCase().includes(project.name.toLowerCase()))\n      );\n    });\n  }\n  \n  /**\n   * Format currency\n   */\n  function formatCurrency(amount) {\n    return new Intl.NumberFormat('en-US', {\n      style: 'currency',\n      currency: 'EUR',\n      minimumFractionDigits: 0\n    }).format(amount || 0);\n  }\n  \n  /**\n   * Format date\n   */\n  function formatDate(date) {\n    if (!date) return 'Not set';\n    return new Date(date).toLocaleDateString('en-US', {\n      year: 'numeric',\n      month: 'short',\n      day: 'numeric'\n    });\n  }\n  \n  /**\n   * Format stage name\n   */\n  function formatStage(stage) {\n    const stageNames = {\n      lead: 'Lead',\n      in_progress: 'In Progress',\n      ongoing: 'Ongoing',\n      completed: 'Completed'\n    };\n    return stageNames[stage] || stage;\n  }\n  \n  /**\n   * Format task status\n   */\n  function formatTaskStatus(status) {\n    const statusNames = {\n      todo: 'To Do',\n      in_progress: 'In Progress',\n      done: 'Done'\n    };\n    return statusNames[status] || status;\n  }\n  \n  /**\n   * Format invoice status\n   */\n  function formatInvoiceStatus(status) {\n    const statusNames = {\n      draft: 'Draft',\n      sent: 'Sent',\n      paid: 'Paid',\n      overdue: 'Overdue'\n    };\n    return statusNames[status] || status;\n  }\n  \n  // Global functions for modal interactions\n  window.closeProjectDetailsModal = function() {\n    const modal = document.getElementById('project-details-modal');\n    if (modal) {\n      modal.style.display = 'none';\n    }\n  };\n  \n  window.editProjectFromDetails = function() {\n    // Implementation for editing project from details modal\n    console.log('Edit project functionality to be implemented');\n  };\n  \n  window.showProjectDetails = showProjectDetails;\n  \n  // Expose enhanced projects API\n  window.UBAEnhancedProjects = {\n    init: initEnhancedProjects,\n    showDetails: showProjectDetails,\n    calculateProgress: calculateProjectProgress,\n    getProjectTasks: getProjectTasks,\n    getProjectInvoices: getProjectInvoices\n  };\n  \n  // Auto-initialize\n  if (document.readyState === 'loading') {\n    document.addEventListener('DOMContentLoaded', initEnhancedProjects);\n  } else {\n    // Delay initialization to ensure other modules are loaded\n    setTimeout(initEnhancedProjects, 100);\n  }\n  \n  console.log('✓ Enhanced Projects module loaded');\n  \n})();
+    document.addEventListener('mousedown', handleDragStart);
+    document.addEventListener('mousemove', handleDragMove);
+    document.addEventListener('mouseup', handleDragEnd);
+    
+    // Handle touch events for mobile
+    document.addEventListener('touchstart', handleTouchStart, { passive: false });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+    
+    // Prevent default drag behavior on project cards
+    document.addEventListener('dragstart', (e) => {
+      if (e.target.closest('.uba-project-card')) {
+        e.preventDefault();
+      }
+    });
+  }
+  
+  /**
+   * Handle drag start
+   */
+  function handleDragStart(e) {
+    const projectCard = e.target.closest('.uba-project-card');
+    if (!projectCard || e.button !== 0) return; // Only left mouse button
+    
+    const projectId = projectCard.dataset.projectId;
+    const project = getProjectById(projectId);
+    if (!project) return;
+    
+    e.preventDefault();
+    
+    // Initialize drag state
+    enhancedProjectsState.isDragging = true;
+    enhancedProjectsState.draggedElement = projectCard;
+    enhancedProjectsState.draggedProject = project;
+    enhancedProjectsState.draggedFromStage = project.stage;
+    
+    // Calculate drag offset
+    const rect = projectCard.getBoundingClientRect();
+    enhancedProjectsState.dragOffset = {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+    
+    // Start drag visual feedback
+    startDragVisuals(projectCard, e.clientX, e.clientY);
+    
+    // Add body class to change cursor
+    document.body.classList.add('uba-dragging');
+  }
+  
+  /**
+   * Handle drag move
+   */
+  function handleDragMove(e) {
+    if (!enhancedProjectsState.isDragging) return;
+    
+    e.preventDefault();
+    
+    // Update drag position
+    updateDragPosition(e.clientX, e.clientY);
+    
+    // Update drop zones
+    updateDropZones(e.clientX, e.clientY);
+  }
+  
+  /**
+   * Handle drag end
+   */
+  function handleDragEnd(e) {
+    if (!enhancedProjectsState.isDragging) return;
+    
+    e.preventDefault();
+    
+    // Determine drop target
+    const dropResult = getDropTarget(e.clientX, e.clientY);
+    
+    if (dropResult.isValid) {
+      // Valid drop - update project stage
+      updateProjectStage(enhancedProjectsState.draggedProject.id, dropResult.stage);
+      
+      // Animate to final position
+      animateToFinalPosition(dropResult.targetElement);
+    } else {
+      // Invalid drop - animate back to original position
+      animateToOriginalPosition();
+    }
+    
+    // Clean up drag state
+    setTimeout(cleanupDragState, 300);
+  }
+  
+  /**
+   * Handle touch start
+   */
+  function handleTouchStart(e) {
+    const projectCard = e.target.closest('.uba-project-card');
+    if (!projectCard) return;
+    
+    const touch = e.touches[0];
+    enhancedProjectsState.touchStartPos = { x: touch.clientX, y: touch.clientY };
+    
+    // Start touch drag after a short delay to distinguish from tap
+    setTimeout(() => {
+      if (e.touches.length === 1) { // Still touching
+        handleDragStart({
+          target: e.target,
+          button: 0,
+          clientX: touch.clientX,
+          clientY: touch.clientY,
+          preventDefault: () => e.preventDefault()
+        });
+      }
+    }, 150);
+  }
+  
+  /**
+   * Handle touch move
+   */
+  function handleTouchMove(e) {
+    if (!enhancedProjectsState.isDragging) return;
+    
+    const touch = e.touches[0];
+    handleDragMove({
+      clientX: touch.clientX,
+      clientY: touch.clientY,
+      preventDefault: () => e.preventDefault()
+    });
+  }
+  
+  /**
+   * Handle touch end
+   */
+  function handleTouchEnd(e) {
+    if (!enhancedProjectsState.isDragging) return;
+    
+    const touch = e.changedTouches[0];
+    handleDragEnd({
+      clientX: touch.clientX,
+      clientY: touch.clientY,
+      preventDefault: () => e.preventDefault()
+    });
+  }
+  
+  /**
+   * Start drag visual feedback
+   */
+  function startDragVisuals(element, x, y) {
+    // Create drag preview
+    const preview = element.cloneNode(true);
+    preview.classList.add('uba-drag-preview');
+    preview.style.position = 'fixed';
+    preview.style.pointerEvents = 'none';
+    preview.style.zIndex = '10000';
+    preview.style.transform = 'rotate(5deg) scale(1.05)';
+    preview.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.3)';
+    preview.style.opacity = '0.9';
+    
+    document.body.appendChild(preview);
+    
+    // Position preview
+    updateDragPosition(x, y, preview);
+    
+    // Fade out original element
+    element.style.opacity = '0.3';
+    element.style.transform = 'scale(0.95)';
+    
+    // Highlight drop zones
+    highlightDropZones();
+  }
+  
+  /**
+   * Update drag position
+   */
+  function updateDragPosition(x, y, preview = null) {
+    const dragPreview = preview || document.querySelector('.uba-drag-preview');
+    if (!dragPreview) return;
+    
+    const { dragOffset } = enhancedProjectsState;
+    dragPreview.style.left = (x - dragOffset.x) + 'px';
+    dragPreview.style.top = (y - dragOffset.y) + 'px';
+  }
+  
+  /**
+   * Highlight drop zones
+   */
+  function highlightDropZones() {
+    const stages = document.querySelectorAll('.uba-pipeline-stage');
+    stages.forEach(stage => {
+      stage.classList.add('uba-drop-zone-active');
+    });
+  }
+  
+  /**
+   * Update drop zones during drag
+   */
+  function updateDropZones(x, y) {
+    const dropTarget = document.elementFromPoint(x, y);
+    const stage = dropTarget?.closest('.uba-pipeline-stage');
+    
+    // Clear previous drop zone highlights
+    document.querySelectorAll('.uba-drop-zone-highlight').forEach(el => {
+      el.classList.remove('uba-drop-zone-highlight');
+    });
+    
+    // Highlight current drop zone
+    if (stage) {
+      stage.classList.add('uba-drop-zone-highlight');
+      enhancedProjectsState.dropZone = stage;
+    } else {
+      enhancedProjectsState.dropZone = null;
+    }
+  }
+  
+  /**
+   * Get drop target information
+   */
+  function getDropTarget(x, y) {
+    const element = document.elementFromPoint(x, y);
+    const stageElement = element?.closest('.uba-pipeline-stage');
+    
+    if (!stageElement) {
+      return { isValid: false, stage: null, targetElement: null };
+    }
+    
+    const stage = stageElement.dataset.stage;
+    const isValidDrop = enhancedProjectsState.stageColumns.includes(stage) &&
+                       stage !== enhancedProjectsState.draggedFromStage;
+    
+    return {
+      isValid: isValidDrop,
+      stage: stage,
+      targetElement: stageElement
+    };
+  }
+  
+  /**
+   * Animate to final position
+   */
+  function animateToFinalPosition(targetElement) {
+    const dragPreview = document.querySelector('.uba-drag-preview');
+    if (!dragPreview || !targetElement) return;
+    
+    const targetRect = targetElement.getBoundingClientRect();
+    const targetX = targetRect.left + targetRect.width / 2;
+    const targetY = targetRect.top + targetRect.height / 2;
+    
+    dragPreview.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+    dragPreview.style.transform = 'scale(0.8) rotate(0deg)';
+    dragPreview.style.left = targetX + 'px';
+    dragPreview.style.top = targetY + 'px';
+    dragPreview.style.opacity = '0';
+  }
+  
+  /**
+   * Animate back to original position
+   */
+  function animateToOriginalPosition() {
+    const dragPreview = document.querySelector('.uba-drag-preview');
+    const originalElement = enhancedProjectsState.draggedElement;
+    
+    if (!dragPreview || !originalElement) return;
+    
+    const originalRect = originalElement.getBoundingClientRect();
+    
+    dragPreview.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+    dragPreview.style.transform = 'scale(1) rotate(0deg)';
+    dragPreview.style.left = originalRect.left + 'px';
+    dragPreview.style.top = originalRect.top + 'px';
+    dragPreview.style.opacity = '0';
+  }
+  
+  /**
+   * Clean up drag state
+   */
+  function cleanupDragState() {
+    // Remove drag preview
+    const dragPreview = document.querySelector('.uba-drag-preview');
+    if (dragPreview) {
+      dragPreview.remove();
+    }
+    
+    // Reset original element
+    if (enhancedProjectsState.draggedElement) {
+      enhancedProjectsState.draggedElement.style.opacity = '';
+      enhancedProjectsState.draggedElement.style.transform = '';
+    }
+    
+    // Clear drop zone highlights
+    document.querySelectorAll('.uba-drop-zone-active, .uba-drop-zone-highlight').forEach(el => {
+      el.classList.remove('uba-drop-zone-active', 'uba-drop-zone-highlight');
+    });
+    
+    // Remove body class
+    document.body.classList.remove('uba-dragging');
+    
+    // Reset state
+    enhancedProjectsState.isDragging = false;
+    enhancedProjectsState.draggedElement = null;
+    enhancedProjectsState.draggedProject = null;
+    enhancedProjectsState.draggedFromStage = null;
+    enhancedProjectsState.dropZone = null;
+  }
+  
+  /**
+   * Update project stage
+   */
+  function updateProjectStage(projectId, newStage) {
+    const store = window.ubaStore;
+    if (!store || !store.projects) return;
+    
+    const project = store.projects.getAll().find(p => p.id === projectId);
+    if (!project) return;
+    
+    // Update project stage
+    const updatedProject = { ...project, stage: newStage, updated_at: new Date().toISOString() };
+    store.projects.update(projectId, updatedProject);
+    
+    // Show success notification
+    showProjectMoveNotification(project.name, newStage);
+    
+    // Re-render projects
+    setTimeout(() => {
+      renderEnhancedProjects();
+    }, 300);
+  }
+  
+  /**
+   * Show project move notification
+   */
+  function showProjectMoveNotification(projectName, newStage) {
+    const stageLabels = {
+      lead: 'Lead',
+      in_progress: 'In Progress',
+      ongoing: 'Ongoing',
+      completed: 'Completed'
+    };
+    
+    const message = `Project \"${projectName}\" moved to ${stageLabels[newStage]}`;
+    
+    if (window.UBANotifications) {
+      window.UBANotifications.show(message, 'success');
+    }
+  }
+  
+  /**
+   * Get project by ID
+   */
+  function getProjectById(projectId) {
+    const store = window.ubaStore;
+    if (!store || !store.projects) return null;
+    
+    return store.projects.getAll().find(p => p.id === projectId);
+  }
+  
+  /**
+   * Setup project details functionality
+   */
+  function setupProjectDetails() {
+    // Create project details modal if it doesn't exist
+    createProjectDetailsModal();
+  }
+  
+  /**
+   * Create project details modal
+   */
+  function createProjectDetailsModal() {
+    if (document.getElementById('project-details-modal')) return;
+    
+    const modal = document.createElement('div');
+    modal.id = 'project-details-modal';
+    modal.className = 'uba-modal';
+    modal.style.display = 'none';
+    
+    modal.innerHTML = `
+      <div class=\"uba-modal-overlay\" onclick=\"closeProjectDetailsModal()\"></div>
+      <div class=\"uba-modal-content uba-modal-large\">
+        <div class=\"uba-modal-header\">
+          <h3 id=\"project-details-title\">Project Details</h3>
+          <button type=\"button\" class=\"uba-modal-close\" onclick=\"closeProjectDetailsModal()\">×</button>
+        </div>
+        <div class=\"uba-modal-body\">
+          <div class=\"uba-project-details\">
+            <!-- Project details will be rendered here -->
+          </div>
+        </div>
+        <div class=\"uba-modal-footer\">
+          <button type=\"button\" class=\"uba-btn-ghost\" onclick=\"closeProjectDetailsModal()\">Close</button>
+          <button type=\"button\" class=\"uba-btn-primary\" onclick=\"editProjectFromDetails()\">Edit Project</button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+  }
+  
+  /**
+   * Setup progress tracking
+   */
+  function setupProgressTracking() {
+    // Progress tracking will be based on linked tasks completion
+  }
+  
+  /**
+   * Setup project linking with tasks and invoices
+   */
+  function setupProjectLinking() {
+    // This will integrate with the client relationships system
+  }
+  
+  /**
+   * Render enhanced projects
+   */
+  function renderEnhancedProjects() {
+    const store = window.ubaStore;
+    if (!store || !store.projects) return;
+    
+    const projects = store.projects.getAll();
+    enhancedProjectsState.projectsData = projects;
+    
+    // Update project cards with enhanced features
+    enhanceExistingProjectCards();
+  }
+  
+  /**
+   * Enhance existing project cards
+   */
+  function enhanceExistingProjectCards() {
+    const projectCards = document.querySelectorAll('.uba-project-card');
+    
+    projectCards.forEach(card => {
+      // Add project ID as data attribute
+      const projectName = card.querySelector('.uba-card-title')?.textContent;
+      const project = enhancedProjectsState.projectsData.find(p => p.name === projectName);
+      
+      if (project) {
+        card.dataset.projectId = project.id;
+        
+        // Add progress bar if not exists
+        addProgressBarToCard(card, project);
+        
+        // Add click handler for project details
+        addProjectDetailsHandler(card, project);
+        
+        // Enhance card styling
+        enhanceCardStyling(card);
+      }
+    });
+  }
+  
+  /**
+   * Add progress bar to project card
+   */
+  function addProgressBarToCard(card, project) {
+    if (card.querySelector('.uba-project-progress')) return;
+    
+    const progress = calculateProjectProgress(project);
+    
+    const progressBar = document.createElement('div');
+    progressBar.className = 'uba-project-progress';
+    progressBar.innerHTML = `
+      <div class=\"uba-progress-label\">
+        <span>Progress</span>
+        <span>${progress.percentage}%</span>
+      </div>
+      <div class=\"uba-progress-bar\">
+        <div class=\"uba-progress-fill\" style=\"width: ${progress.percentage}%\"></div>
+      </div>
+      <div class=\"uba-progress-details\">
+        <small>${progress.completed}/${progress.total} tasks completed</small>
+      </div>
+    `;
+    
+    // Insert before card actions or at the end
+    const cardActions = card.querySelector('.uba-card-actions');
+    if (cardActions) {
+      card.insertBefore(progressBar, cardActions);
+    } else {
+      card.appendChild(progressBar);
+    }
+  }
+  
+  /**
+   * Calculate real project progress based on linked tasks
+   */
+  function calculateProjectProgress(project) {
+    // Get linked tasks
+    const linkedTasks = getProjectTasks(project.id);
+    
+    if (linkedTasks.length === 0) {
+      return { percentage: 0, completed: 0, total: 0 };
+    }
+    
+    const completedTasks = linkedTasks.filter(task => task.status === 'done').length;
+    const percentage = Math.round((completedTasks / linkedTasks.length) * 100);
+    
+    return {
+      percentage,
+      completed: completedTasks,
+      total: linkedTasks.length
+    };
+  }
+  
+  /**
+   * Get tasks linked to a project
+   */
+  function getProjectTasks(projectId) {
+    const store = window.ubaStore;
+    if (!store || !store.tasks) return [];
+    
+    const tasks = store.tasks.getAll();
+    const project = getProjectById(projectId);
+    if (!project) return [];
+    
+    // Find tasks linked to this project
+    return tasks.filter(task => {
+      return (
+        task.project_id === projectId ||
+        task.project === project.name ||
+        (task.title && task.title.toLowerCase().includes(project.name.toLowerCase()))
+      );
+    });
+  }
+  
+  /**
+   * Add project details handler
+   */
+  function addProjectDetailsHandler(card, project) {
+    // Remove existing handlers
+    const existingHandler = card.onclick;
+    
+    card.addEventListener('click', (e) => {
+      // Don't trigger if clicking on action buttons
+      if (e.target.closest('.uba-card-actions')) return;
+      if (enhancedProjectsState.isDragging) return;
+      
+      showProjectDetails(project.id);
+    });
+    
+    // Add details button if not exists
+    if (!card.querySelector('.uba-project-details-btn')) {
+      let actionsContainer = card.querySelector('.uba-card-actions');
+      if (!actionsContainer) {
+        actionsContainer = document.createElement('div');
+        actionsContainer.className = 'uba-card-actions';
+        card.appendChild(actionsContainer);
+      }
+      
+      const detailsBtn = document.createElement('button');
+      detailsBtn.className = 'uba-btn-sm uba-btn-ghost uba-project-details-btn';
+      detailsBtn.innerHTML = '👁️ Details';
+      detailsBtn.onclick = (e) => {
+        e.stopPropagation();
+        showProjectDetails(project.id);
+      };
+      
+      actionsContainer.appendChild(detailsBtn);
+    }
+  }
+  
+  /**
+   * Enhance card styling for better drag feedback
+   */
+  function enhanceCardStyling(card) {
+    card.style.transition = 'all 0.2s ease';
+    card.style.cursor = 'grab';
+    
+    card.addEventListener('mouseenter', () => {
+      if (!enhancedProjectsState.isDragging) {
+        card.style.transform = 'translateY(-2px)';
+      }
+    });
+    
+    card.addEventListener('mouseleave', () => {
+      if (!enhancedProjectsState.isDragging) {
+        card.style.transform = '';
+      }
+    });
+  }
+  
+  /**
+   * Show project details in modal
+   */
+  function showProjectDetails(projectId) {
+    const project = getProjectById(projectId);
+    if (!project) return;
+    
+    const modal = document.getElementById('project-details-modal');
+    const title = document.getElementById('project-details-title');
+    const detailsContainer = modal.querySelector('.uba-project-details');
+    
+    if (!modal || !detailsContainer) return;
+    
+    // Set title
+    if (title) {
+      title.textContent = project.name || 'Project Details';
+    }
+    
+    // Get linked data
+    const linkedTasks = getProjectTasks(projectId);
+    const linkedInvoices = getProjectInvoices(projectId);
+    const progress = calculateProjectProgress(project);
+    
+    // Render project details
+    detailsContainer.innerHTML = `
+      <div class=\"uba-project-overview\">
+        <div class=\"uba-overview-section\">
+          <h4>Project Information</h4>
+          <div class=\"uba-project-info-grid\">
+            <div><strong>Stage:</strong> <span class=\"uba-stage-badge uba-stage-${project.stage}\">${formatStage(project.stage)}</span></div>
+            <div><strong>Created:</strong> ${formatDate(project.created_at)}</div>
+            <div><strong>Budget:</strong> ${formatCurrency(project.budget || 0)}</div>
+            <div><strong>Progress:</strong> ${progress.percentage}% (${progress.completed}/${progress.total} tasks)</div>
+          </div>
+          ${project.description ? `<p class=\"uba-project-description\">${project.description}</p>` : ''}
+        </div>
+        
+        <div class=\"uba-overview-section\">
+          <h4>Progress Overview</h4>
+          <div class=\"uba-project-progress-detailed\">
+            <div class=\"uba-progress-bar-large\">
+              <div class=\"uba-progress-fill\" style=\"width: ${progress.percentage}%\"></div>
+            </div>
+            <div class=\"uba-progress-stats\">
+              <div class=\"uba-stat\">
+                <span class=\"uba-stat-label\">Completed Tasks:</span>
+                <span class=\"uba-stat-value\">${progress.completed}</span>
+              </div>
+              <div class=\"uba-stat\">
+                <span class=\"uba-stat-label\">Remaining Tasks:</span>
+                <span class=\"uba-stat-value\">${progress.total - progress.completed}</span>
+              </div>
+              <div class=\"uba-stat\">
+                <span class=\"uba-stat-label\">Total Tasks:</span>
+                <span class=\"uba-stat-value\">${progress.total}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class=\"uba-overview-section\">
+          <h4>Linked Tasks (${linkedTasks.length})</h4>
+          <div class=\"uba-linked-items\">
+            ${linkedTasks.length === 0 ? '<p class=\"uba-empty-state\">No linked tasks found</p>' : 
+              linkedTasks.map(task => `
+                <div class=\"uba-linked-item uba-task-item\">
+                  <div class=\"uba-item-info\">
+                    <div class=\"uba-item-title\">${task.title || 'Untitled Task'}</div>
+                    <div class=\"uba-item-meta\">
+                      <span class=\"uba-status uba-status-${task.status}\">${formatTaskStatus(task.status)}</span>
+                      ${task.due ? `<span class=\"uba-due-date\">Due: ${formatDate(task.due)}</span>` : ''}
+                    </div>
+                  </div>
+                  <div class=\"uba-item-actions\">
+                    <button class=\"uba-btn-sm uba-btn-ghost\" onclick=\"viewTask('${task.id}')\">View</button>
+                  </div>
+                </div>
+              `).join('')
+            }
+          </div>
+        </div>
+        
+        <div class=\"uba-overview-section\">
+          <h4>Linked Invoices (${linkedInvoices.length})</h4>
+          <div class=\"uba-linked-items\">
+            ${linkedInvoices.length === 0 ? '<p class=\"uba-empty-state\">No linked invoices found</p>' : 
+              linkedInvoices.map(invoice => `
+                <div class=\"uba-linked-item uba-invoice-item\">
+                  <div class=\"uba-item-info\">
+                    <div class=\"uba-item-title\">${invoice.label || 'Invoice'} - ${formatCurrency(invoice.amount)}</div>
+                    <div class=\"uba-item-meta\">
+                      <span class=\"uba-status uba-status-${invoice.status}\">${formatInvoiceStatus(invoice.status)}</span>
+                      ${invoice.due ? `<span class=\"uba-due-date\">Due: ${formatDate(invoice.due)}</span>` : ''}
+                    </div>
+                  </div>
+                  <div class=\"uba-item-actions\">
+                    <button class=\"uba-btn-sm uba-btn-ghost\" onclick=\"viewInvoice('${invoice.id}')\">View</button>
+                  </div>
+                </div>
+              `).join('')
+            }
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Show modal
+    modal.style.display = 'block';
+  }
+  
+  /**
+   * Get invoices linked to a project
+   */
+  function getProjectInvoices(projectId) {
+    const store = window.ubaStore;
+    if (!store || !store.invoices) return [];
+    
+    const invoices = store.invoices.getAll();
+    const project = getProjectById(projectId);
+    if (!project) return [];
+    
+    // Find invoices linked to this project
+    return invoices.filter(invoice => {
+      return (
+        invoice.project_id === projectId ||
+        (invoice.label && invoice.label.toLowerCase().includes(project.name.toLowerCase()))
+      );
+    });
+  }
+  
+  /**
+   * Format currency
+   */
+  function formatCurrency(amount) {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'EUR',
+      minimumFractionDigits: 0
+    }).format(amount || 0);
+  }
+  
+  /**
+   * Format date
+   */
+  function formatDate(date) {
+    if (!date) return 'Not set';
+    return new Date(date).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  }
+  
+  /**
+   * Format stage name
+   */
+  function formatStage(stage) {
+    const stageNames = {
+      lead: 'Lead',
+      in_progress: 'In Progress',
+      ongoing: 'Ongoing',
+      completed: 'Completed'
+    };
+    return stageNames[stage] || stage;
+  }
+  
+  /**
+   * Format task status
+   */
+  function formatTaskStatus(status) {
+    const statusNames = {
+      todo: 'To Do',
+      in_progress: 'In Progress',
+      done: 'Done'
+    };
+    return statusNames[status] || status;
+  }
+  
+  /**
+   * Format invoice status
+   */
+  function formatInvoiceStatus(status) {
+    const statusNames = {
+      draft: 'Draft',
+      sent: 'Sent',
+      paid: 'Paid',
+      overdue: 'Overdue'
+    };
+    return statusNames[status] || status;
+  }
+  
+  // Global functions for modal interactions
+  window.closeProjectDetailsModal = function() {
+    const modal = document.getElementById('project-details-modal');
+    if (modal) {
+      modal.style.display = 'none';
+    }
+  };
+  
+  window.editProjectFromDetails = function() {
+    // Implementation for editing project from details modal
+    console.log('Edit project functionality to be implemented');
+  };
+  
+  window.showProjectDetails = showProjectDetails;
+  
+  // Expose enhanced projects API
+  window.UBAEnhancedProjects = {
+    init: initEnhancedProjects,
+    showDetails: showProjectDetails,
+    calculateProgress: calculateProjectProgress,
+    getProjectTasks: getProjectTasks,
+    getProjectInvoices: getProjectInvoices
+  };
+  
+  // Auto-initialize
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEnhancedProjects);
+  } else {
+    // Delay initialization to ensure other modules are loaded
+    setTimeout(initEnhancedProjects, 100);
+  }
+  
+  console.log('✓ Enhanced Projects module loaded');
+  
+})();

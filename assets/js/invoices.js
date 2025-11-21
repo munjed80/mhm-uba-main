@@ -920,7 +920,9 @@ function deleteInvoice(id) {
         return;
     }
     
-    const confirmMessage = `Are you sure you want to delete the invoice for "${invoice.client}"?\n\nThis action cannot be undone.`;
+    const confirmMessage = `Are you sure you want to delete the invoice for "${invoice.client}"?
+
+This action cannot be undone.`;
     
     if (confirm(confirmMessage)) {
         try {
@@ -1253,7 +1255,8 @@ window.initInvoicesPage = initInvoicesPage;
 
 // Verification function to test all connections
 window.verifyInvoicesSetup = function() {
-    console.log('🔍 VERIFYING INVOICES SETUP...\n');
+    console.log('🔍 VERIFYING INVOICES SETUP...
+');
     
     // 1. Check HTML elements
     const elements = [
@@ -1269,7 +1272,8 @@ window.verifyInvoicesSetup = function() {
     });
     
     // 2. Check global functions
-    console.log('\n2️⃣ Checking global functions:');
+    console.log('
+2️⃣ Checking global functions:');
     const functions = [
         'initInvoicesPage', 'openInvoiceModal', 'closeInvoiceModal', 
         'editInvoice', 'deleteInvoice'
@@ -1281,7 +1285,8 @@ window.verifyInvoicesSetup = function() {
     });
     
     // 3. Check ubaStore
-    console.log('\n3️⃣ Checking data store:');
+    console.log('
+3️⃣ Checking data store:');
     const hasUbaStore = !!window.ubaStore;
     console.log(`   ${hasUbaStore ? '✅' : '❌'} window.ubaStore: ${hasUbaStore ? 'Available' : 'MISSING'}`);
     
@@ -1299,7 +1304,8 @@ window.verifyInvoicesSetup = function() {
     }
     
     // 4. Test modal functionality
-    console.log('\n4️⃣ Testing modal functionality:');
+    console.log('
+4️⃣ Testing modal functionality:');
     try {
         const modal = document.getElementById('invoice-modal');
         if (modal) {
@@ -1320,7 +1326,8 @@ window.verifyInvoicesSetup = function() {
     }
     
     // 5. Test data operations
-    console.log('\n5️⃣ Testing data operations:');
+    console.log('
+5️⃣ Testing data operations:');
     if (window.ubaStore && window.ubaStore.invoices) {
         try {
             const testInvoice = {
@@ -1358,7 +1365,8 @@ window.verifyInvoicesSetup = function() {
         console.log('   ❌ Cannot test - ubaStore not available');
     }
     
-    console.log('\n🔍 VERIFICATION COMPLETE');
+    console.log('
+🔍 VERIFICATION COMPLETE');
     console.log('Run this verification by calling: verifyInvoicesSetup()');
 };
 

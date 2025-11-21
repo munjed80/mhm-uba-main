@@ -527,25 +527,35 @@ function suggestOutreachTemplates(client) {
   if (overdue.length) {
     templates.push({
       title: t("smart.outreach.reminder", "Invoice reminder"),
-      text: `Hi ${client.name},\n\nWe noticed invoice ${overdue[0].id || ""} for €${Number(overdue[0].amount || 0)} is still outstanding. Could you confirm payment date? Thanks!`,
+      text: `Hi ${client.name},
+
+We noticed invoice ${overdue[0].id || ""} for €${Number(overdue[0].amount || 0)} is still outstanding. Could you confirm payment date? Thanks!`,
     });
     templates.push({
       title: t("smart.outreach.nudge", "Friendly nudge"),
-      text: `Hi ${client.name},\n\nQuick check-in — just following up on the outstanding invoice and next steps for the project.`,
+      text: `Hi ${client.name},
+
+Quick check-in — just following up on the outstanding invoice and next steps for the project.`,
     });
   } else if (lastInvoiceDays > 90) {
     templates.push({
       title: t("smart.outreach.reengage", "Re-engagement"),
-      text: `Hi ${client.name},\n\nIt's been a while since we last worked together. Would you like to schedule a short catch-up to explore next opportunities?`,
+      text: `Hi ${client.name},
+
+It's been a while since we last worked together. Would you like to schedule a short catch-up to explore next opportunities?`,
     });
     templates.push({
       title: t("smart.outreach.share", "Share update"),
-      text: `Hi ${client.name},\n\nWe have some updates and ideas that may help your project — would you be open to a 20-min call?`,
+      text: `Hi ${client.name},
+
+We have some updates and ideas that may help your project — would you be open to a 20-min call?`,
     });
   } else {
     templates.push({
       title: t("smart.outreach.thanks", "Quick thanks"),
-      text: `Hi ${client.name},\n\nThanks for the recent work together. Let us know if there's anything else we can help with.`,
+      text: `Hi ${client.name},
+
+Thanks for the recent work together. Let us know if there's anything else we can help with.`,
     });
   }
   return templates.slice(0, 3);
@@ -1165,7 +1175,8 @@ function downloadCSV(filename, rows) {
   const headers = Object.keys(rows[0]);
   const csv = [headers.join(",")]
     .concat(rows.map((r) => headers.map((h) => esc(r[h])).join(",")))
-    .join("\n");
+    .join("
+");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -3428,7 +3439,8 @@ const renderSmartToolsGrid = () => {
             t("tool.insights.topExpense", "Top expense:") +
               ` ${insights.topExpenseCategory.category} (€${Number(insights.topExpenseCategory.amount || 0).toLocaleString()})`,
           );
-        return lines.join("\n");
+        return lines.join("
+");
       })(),
     });
 
@@ -3441,7 +3453,8 @@ const renderSmartToolsGrid = () => {
         ? actions
             .slice(0, 4)
             .map((a) => `• ${a.title}`)
-            .join("\n")
+            .join("
+")
         : t("tool.actions.empty", "No immediate actions"),
     });
 
@@ -3453,7 +3466,8 @@ const renderSmartToolsGrid = () => {
         badge: "CRM",
         body: topClients
           .map((c) => `• ${c.name}: €${Number(c.amount || 0).toLocaleString()}`)
-          .join("\n"),
+          .join("
+"),
       });
     }
 
@@ -3466,7 +3480,8 @@ const renderSmartToolsGrid = () => {
         body: inactive
           .slice(0, 4)
           .map((c) => `• ${c.name}`)
-          .join("\n"),
+          .join("
+"),
       });
     }
 
@@ -3671,7 +3686,8 @@ function renderQuickInsightsPanel() {
     if (topClients.length) {
       const c = document.createElement("div");
       c.className = "uba-support-card";
-      c.innerHTML = `<div class="uba-support-icon">💰</div><div><h4>${t("tool.insights.topClients", "Top clients")}</h4><p style="color:var(--muted,#6b7280);">${topClients.map((x) => `${escapeHtml(x.name)}: €${Number(x.amount || 0).toLocaleString()}`).join("\n")}</p></div>`;
+      c.innerHTML = `<div class="uba-support-icon">💰</div><div><h4>${t("tool.insights.topClients", "Top clients")}</h4><p style="color:var(--muted,#6b7280);">${topClients.map((x) => `${escapeHtml(x.name)}: €${Number(x.amount || 0).toLocaleString()}`).join("
+")}</p></div>`;
       container.appendChild(c);
     }
     // overdue tasks

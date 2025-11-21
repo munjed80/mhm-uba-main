@@ -714,7 +714,9 @@
     const task = store.tasks.get(id);
     if (!task) return;
     
-    if (!confirm(`Delete "${task.title}"?\n\nThis action cannot be undone.`)) return;
+    if (!confirm(`Delete "${task.title}"?
+
+This action cannot be undone.`)) return;
     
     try {
       store.tasks.delete(id);

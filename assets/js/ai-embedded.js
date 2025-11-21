@@ -109,13 +109,22 @@
         const clients = await UBA.data.list('clients');
         const client = clients.find(c => c.id === invoice.clientId);
         
-        const content = `**Invoice ${invoice.number}**\n\n` +
-          `Amount: €${invoice.amount}\n` +
-          `Status: ${invoice.status}\n` +
-          `Client: ${client?.name || 'Unknown'}\n\n` +
-          `**AI Suggestions:**\n` +
-          (invoice.status === 'overdue' ? '- Send payment reminder immediately\n' : '') +
-          (invoice.status === 'sent' ? '- Follow up in 3-5 days if not paid\n' : '') +
+        const content = `**Invoice ${invoice.number}**
+
+` +
+          `Amount: €${invoice.amount}
+` +
+          `Status: ${invoice.status}
+` +
+          `Client: ${client?.name || 'Unknown'}
+
+` +
+          `**AI Suggestions:**
+` +
+          (invoice.status === 'overdue' ? '- Send payment reminder immediately
+' : '') +
+          (invoice.status === 'sent' ? '- Follow up in 3-5 days if not paid
+' : '') +
           '- Keep client communication professional and friendly';
         
         this._showPanel({
@@ -206,7 +215,8 @@
       return content
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        .replace(/\n/g, '<br>');
+        .replace(/
+/g, '<br>');
     },
 
     // ============ Action Methods ============

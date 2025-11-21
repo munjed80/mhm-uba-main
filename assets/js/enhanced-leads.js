@@ -135,4 +135,877 @@
      * Add scoring interface to leads page
      */
     addScoringInterface() {
-      const leadsPage = document.querySelector('#leads-page');\n      if (!leadsPage) return;\n      \n      // Add scoring overview section\n      const scoringOverview = document.createElement('div');\n      scoringOverview.className = 'scoring-overview';\n      scoringOverview.innerHTML = `\n        <div class=\"uba-card scoring-card\">\n          <div class=\"uba-card-header\">\n            <div>\n              <div class=\"uba-card-title\">🎯 Lead Scoring Overview</div>\n              <p class=\"uba-card-sub\">Intelligent lead prioritization system</p>\n            </div>\n            <div class=\"scoring-actions\">\n              <button class=\"uba-btn uba-btn-ghost\" onclick=\"window.UBAEnhancedLeads.openScoreConfig()\">Configure Scoring</button>\n              <button class=\"uba-btn uba-btn-primary\" onclick=\"window.UBAEnhancedLeads.recalculateAllScores()\">Recalculate All</button>\n            </div>\n          </div>\n          <div class=\"scoring-metrics\">\n            <div class=\"score-metric\">\n              <div class=\"score-value\" id=\"avg-lead-score\">0</div>\n              <div class=\"score-label\">Avg Score</div>\n            </div>\n            <div class=\"score-metric\">\n              <div class=\"score-value\" id=\"high-quality-leads\">0</div>\n              <div class=\"score-label\">High Quality (80+)</div>\n            </div>\n            <div class=\"score-metric\">\n              <div class=\"score-value\" id=\"medium-quality-leads\">0</div>\n              <div class=\"score-label\">Medium Quality (50-79)</div>\n            </div>\n            <div class=\"score-metric\">\n              <div class=\"score-value\" id=\"low-quality-leads\">0</div>\n              <div class=\"score-label\">Low Quality (<50)</div>\n            </div>\n          </div>\n        </div>\n      `;\n      \n      // Insert before the main leads table\n      const leadsTable = leadsPage.querySelector('.uba-card');\n      if (leadsTable) {\n        leadsPage.insertBefore(scoringOverview, leadsTable);\n      }\n      \n      // Create score configuration modal\n      this.createScoreConfigModal();\n    },\n    \n    /**\n     * Create score configuration modal\n     */\n    createScoreConfigModal() {\n      const modal = document.createElement('div');\n      modal.id = 'score-config-modal';\n      modal.className = 'uba-modal score-config-modal';\n      modal.innerHTML = `\n        <div class=\"uba-modal-overlay\" onclick=\"window.UBAEnhancedLeads.closeScoreConfig()\"></div>\n        <div class=\"uba-modal-dialog score-config-dialog\">\n          <div class=\"uba-modal-header\">\n            <h3>🎯 Lead Scoring Configuration</h3>\n            <button class=\"uba-modal-close\" onclick=\"window.UBAEnhancedLeads.closeScoreConfig()\">×</button>\n          </div>\n          <div class=\"uba-modal-body\">\n            <div class=\"scoring-categories\">\n              <!-- Dynamic scoring categories will be rendered here -->\n            </div>\n            <div class=\"scoring-preview\">\n              <h4>Preview Score Calculation</h4>\n              <div class=\"score-preview-content\">\n                <div class=\"preview-lead-score\">85</div>\n                <div class=\"preview-breakdown\">\n                  <!-- Score breakdown will be shown here -->\n                </div>\n              </div>\n            </div>\n          </div>\n          <div class=\"uba-modal-footer\">\n            <button class=\"uba-btn uba-btn-ghost\" onclick=\"window.UBAEnhancedLeads.resetScoreConfig()\">Reset to Default</button>\n            <button class=\"uba-btn uba-btn-primary\" onclick=\"window.UBAEnhancedLeads.saveScoreConfig()\">Save Configuration</button>\n          </div>\n        </div>\n      `;\n      \n      document.body.appendChild(modal);\n    },\n    \n    /**\n     * Calculate lead score\n     */\n    calculateLeadScore(lead) {\n      let totalScore = 0;\n      \n      for (const [category, config] of Object.entries(this.leadScoreConfig)) {\n        const categoryScore = this.calculateCategoryScore(lead, category, config);\n        const weightedScore = (categoryScore * config.weight) / 100;\n        totalScore += weightedScore;\n      }\n      \n      return Math.min(Math.round(totalScore), 100);\n    },\n    \n    /**\n     * Calculate category score\n     */\n    calculateCategoryScore(lead, category, config) {\n      const leadValue = lead.scoring?.[category] || this.inferCategoryValue(lead, category);\n      return config.criteria[leadValue] || 0;\n    },\n    \n    /**\n     * Infer category value from lead data\n     */\n    inferCategoryValue(lead, category) {\n      switch (category) {\n        case 'budget':\n          if (lead.budget) {\n            if (lead.budget < 1000) return 'under_1k';\n            if (lead.budget < 5000) return '1k_5k';\n            if (lead.budget < 15000) return '5k_15k';\n            if (lead.budget < 50000) return '15k_50k';\n            return 'over_50k';\n          }\n          return 'under_1k';\n          \n        case 'company':\n          if (lead.companySize) {\n            if (lead.companySize === 'Enterprise') return 'enterprise';\n            if (lead.companySize === 'Medium') return 'medium_business';\n            if (lead.companySize === 'Small') return 'small_business';\n          }\n          return 'startup';\n          \n        case 'timeline':\n          if (lead.timeline) {\n            if (lead.timeline.includes('immediate')) return 'immediate';\n            if (lead.timeline.includes('quarter')) return 'this_quarter';\n            if (lead.timeline.includes('year')) return 'this_year';\n          }\n          return 'no_timeline';\n          \n        default:\n          return Object.keys(this.leadScoreConfig[category]?.criteria || {})[0] || '';\n      }\n    },\n    \n    /**\n     * Calculate all lead scores\n     */\n    calculateAllLeadScores() {\n      this.leads.forEach(lead => {\n        lead.score = this.calculateLeadScore(lead);\n        lead.scoreUpdated = new Date().toISOString();\n      });\n      \n      // Update scoring metrics\n      this.updateScoringMetrics();\n    },\n    \n    /**\n     * Update scoring metrics display\n     */\n    updateScoringMetrics() {\n      const scores = this.leads.map(lead => lead.score || 0).filter(score => score > 0);\n      \n      if (scores.length === 0) return;\n      \n      const avgScore = Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length);\n      const highQuality = scores.filter(score => score >= 80).length;\n      const mediumQuality = scores.filter(score => score >= 50 && score < 80).length;\n      const lowQuality = scores.filter(score => score < 50).length;\n      \n      // Update UI\n      this.updateElement('avg-lead-score', avgScore);\n      this.updateElement('high-quality-leads', highQuality);\n      this.updateElement('medium-quality-leads', mediumQuality);\n      this.updateElement('low-quality-leads', lowQuality);\n    },\n    \n    /**\n     * Setup contact logging system\n     */\n    setupContactLogging() {\n      console.log('💬 Setting up contact logging system');\n      \n      // Add contact log interface to lead details\n      this.enhanceLeadDetailsWithLogs();\n    },\n    \n    /**\n     * Enhance lead details with contact logs\n     */\n    enhanceLeadDetailsWithLogs() {\n      // This will be added to the lead modal when opened\n      // We'll inject the contact log section dynamically\n    },\n    \n    /**\n     * Add contact log section to lead modal\n     */\n    addContactLogToModal(leadId) {\n      const modal = document.getElementById('lead-modal');\n      if (!modal) return;\n      \n      // Check if contact log section already exists\n      if (modal.querySelector('.contact-log-section')) return;\n      \n      const modalBody = modal.querySelector('.uba-modal-body');\n      if (!modalBody) return;\n      \n      const contactLogSection = document.createElement('div');\n      contactLogSection.className = 'contact-log-section';\n      contactLogSection.innerHTML = `\n        <div class=\"contact-log-tabs\">\n          <button class=\"log-tab active\" data-tab=\"timeline\">📋 Timeline</button>\n          <button class=\"log-tab\" data-tab=\"conversations\">💬 Conversations</button>\n          <button class=\"log-tab\" data-tab=\"notes\">📝 Notes</button>\n          <button class=\"log-tab\" data-tab=\"activities\">🎯 Activities</button>\n        </div>\n        \n        <div class=\"contact-log-content\">\n          <!-- Timeline Tab -->\n          <div class=\"log-tab-content active\" data-tab=\"timeline\">\n            <div class=\"timeline-header\">\n              <h4>محادثات – ملاحظات – نشاط (Contact Timeline)</h4>\n              <button class=\"uba-btn uba-btn-sm uba-btn-primary\" onclick=\"window.UBAEnhancedLeads.addTimelineEntry('${leadId}')\">\n                + Add Entry\n              </button>\n            </div>\n            <div id=\"timeline-${leadId}\" class=\"contact-timeline\">\n              <!-- Timeline entries will be rendered here -->\n            </div>\n          </div>\n          \n          <!-- Conversations Tab -->\n          <div class=\"log-tab-content\" data-tab=\"conversations\">\n            <div class=\"conversations-header\">\n              <h4>Conversation History</h4>\n              <button class=\"uba-btn uba-btn-sm uba-btn-primary\" onclick=\"window.UBAEnhancedLeads.addConversation('${leadId}')\">\n                + New Conversation\n              </button>\n            </div>\n            <div id=\"conversations-${leadId}\" class=\"conversations-list\">\n              <!-- Conversations will be rendered here -->\n            </div>\n          </div>\n          \n          <!-- Notes Tab -->\n          <div class=\"log-tab-content\" data-tab=\"notes\">\n            <div class=\"notes-header\">\n              <h4>Internal Notes</h4>\n              <button class=\"uba-btn uba-btn-sm uba-btn-primary\" onclick=\"window.UBAEnhancedLeads.addNote('${leadId}')\">\n                + Add Note\n              </button>\n            </div>\n            <div id=\"notes-${leadId}\" class=\"notes-list\">\n              <!-- Notes will be rendered here -->\n            </div>\n          </div>\n          \n          <!-- Activities Tab -->\n          <div class=\"log-tab-content\" data-tab=\"activities\">\n            <div class=\"activities-header\">\n              <h4>Activities & Follow-ups</h4>\n              <button class=\"uba-btn uba-btn-sm uba-btn-primary\" onclick=\"window.UBAEnhancedLeads.scheduleActivity('${leadId}')\">\n                + Schedule Activity\n              </button>\n            </div>\n            <div id=\"activities-${leadId}\" class=\"activities-list\">\n              <!-- Activities will be rendered here -->\n            </div>\n          </div>\n        </div>\n      `;\n      \n      modalBody.appendChild(contactLogSection);\n      \n      // Setup tab switching\n      this.setupContactLogTabs();\n      \n      // Render existing logs\n      this.renderContactLogs(leadId);\n    },\n    \n    /**\n     * Setup contact log tabs\n     */\n    setupContactLogTabs() {\n      const tabs = document.querySelectorAll('.log-tab');\n      const contents = document.querySelectorAll('.log-tab-content');\n      \n      tabs.forEach(tab => {\n        tab.addEventListener('click', () => {\n          const targetTab = tab.getAttribute('data-tab');\n          \n          // Update tab states\n          tabs.forEach(t => t.classList.remove('active'));\n          tab.classList.add('active');\n          \n          // Update content states\n          contents.forEach(content => {\n            content.classList.remove('active');\n            if (content.getAttribute('data-tab') === targetTab) {\n              content.classList.add('active');\n            }\n          });\n        });\n      });\n    },\n    \n    /**\n     * Add timeline entry\n     */\n    addTimelineEntry(leadId) {\n      const entry = {\n        id: 'timeline-' + Date.now(),\n        leadId: leadId,\n        type: 'timeline',\n        timestamp: new Date().toISOString(),\n        title: prompt('Enter timeline entry title:'),\n        description: prompt('Enter description (optional):') || '',\n        category: 'general'\n      };\n      \n      if (entry.title) {\n        this.contactLogs.push(entry);\n        this.saveContactLogs();\n        this.renderContactLogs(leadId);\n      }\n    },\n    \n    /**\n     * Add conversation\n     */\n    addConversation(leadId) {\n      const conversation = {\n        id: 'conv-' + Date.now(),\n        leadId: leadId,\n        type: 'conversation',\n        timestamp: new Date().toISOString(),\n        medium: prompt('Communication medium (email, phone, meeting):') || 'email',\n        summary: prompt('Conversation summary:'),\n        outcome: prompt('Outcome/Next steps:') || '',\n        participants: ['User'] // Could be enhanced to include multiple participants\n      };\n      \n      if (conversation.summary) {\n        this.contactLogs.push(conversation);\n        this.saveContactLogs();\n        this.renderContactLogs(leadId);\n      }\n    },\n    \n    /**\n     * Add note\n     */\n    addNote(leadId) {\n      const note = {\n        id: 'note-' + Date.now(),\n        leadId: leadId,\n        type: 'note',\n        timestamp: new Date().toISOString(),\n        content: prompt('Enter note content:'),\n        category: prompt('Note category (research, follow-up, technical):') || 'general',\n        private: confirm('Make this note private (internal only)?')\n      };\n      \n      if (note.content) {\n        this.contactLogs.push(note);\n        this.saveContactLogs();\n        this.renderContactLogs(leadId);\n      }\n    },\n    \n    /**\n     * Schedule activity\n     */\n    scheduleActivity(leadId) {\n      const activity = {\n        id: 'activity-' + Date.now(),\n        leadId: leadId,\n        type: 'activity',\n        timestamp: new Date().toISOString(),\n        activityType: prompt('Activity type (call, demo, meeting, proposal):') || 'call',\n        title: prompt('Activity title:'),\n        scheduledFor: prompt('Schedule for (YYYY-MM-DD HH:MM):'),\n        description: prompt('Activity description:') || '',\n        status: 'scheduled'\n      };\n      \n      if (activity.title) {\n        this.contactLogs.push(activity);\n        this.saveContactLogs();\n        this.renderContactLogs(leadId);\n      }\n    },\n    \n    /**\n     * Render contact logs for a specific lead\n     */\n    renderContactLogs(leadId) {\n      const leadLogs = this.contactLogs.filter(log => log.leadId === leadId);\n      \n      // Render timeline\n      this.renderTimeline(leadId, leadLogs);\n      \n      // Render conversations\n      this.renderConversations(leadId, leadLogs.filter(log => log.type === 'conversation'));\n      \n      // Render notes\n      this.renderNotes(leadId, leadLogs.filter(log => log.type === 'note'));\n      \n      // Render activities\n      this.renderActivities(leadId, leadLogs.filter(log => log.type === 'activity'));\n    },\n    \n    /**\n     * Render timeline\n     */\n    renderTimeline(leadId, logs) {\n      const timeline = document.getElementById(`timeline-${leadId}`);\n      if (!timeline) return;\n      \n      const sortedLogs = logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));\n      \n      timeline.innerHTML = sortedLogs.map(log => {\n        const date = new Date(log.timestamp).toLocaleDateString();\n        const time = new Date(log.timestamp).toLocaleTimeString();\n        const icon = this.getLogIcon(log.type);\n        \n        return `\n          <div class=\"timeline-entry ${log.type}\">\n            <div class=\"timeline-marker\">${icon}</div>\n            <div class=\"timeline-content\">\n              <div class=\"timeline-header\">\n                <strong>${log.title || log.summary || log.content || 'Activity'}</strong>\n                <span class=\"timeline-time\">${date} ${time}</span>\n              </div>\n              ${log.description || log.outcome || log.category ? `\n                <div class=\"timeline-details\">\n                  ${log.description || log.outcome || log.category}\n                </div>\n              ` : ''}\n            </div>\n          </div>\n        `;\n      }).join('');\n    },\n    \n    /**\n     * Get icon for log type\n     */\n    getLogIcon(type) {\n      const icons = {\n        'timeline': '📋',\n        'conversation': '💬',\n        'note': '📝',\n        'activity': '🎯'\n      };\n      return icons[type] || '📌';\n    },\n    \n    /**\n     * Save contact logs to localStorage\n     */\n    saveContactLogs() {\n      try {\n        localStorage.setItem('uba-contact-logs', JSON.stringify(this.contactLogs));\n      } catch (error) {\n        console.error('❌ Failed to save contact logs:', error);\n      }\n    },\n    \n    /**\n     * Setup project integration\n     */\n    setupProjectIntegration() {\n      console.log('🔗 Setting up project integration');\n      \n      // Add project conversion functionality\n      this.addProjectConversionInterface();\n      \n      // Load existing projects for linking\n      this.loadProjectsData();\n    },\n    \n    /**\n     * Add project conversion interface\n     */\n    addProjectConversionInterface() {\n      // This will be added to lead modal and table actions\n      // Enhanced when lead modal is opened\n    },\n    \n    /**\n     * Convert lead to project\n     */\n    convertLeadToProject(leadId) {\n      const lead = this.leads.find(l => l.id === leadId);\n      if (!lead) return;\n      \n      const project = {\n        id: 'proj-' + Date.now(),\n        name: lead.company + ' Project',\n        client: lead.name,\n        clientCompany: lead.company,\n        email: lead.email,\n        phone: lead.phone,\n        description: `Project converted from lead: ${lead.description || 'No description'}`,\n        stage: 'planning',\n        status: 'active',\n        budget: lead.budget || 0,\n        startDate: new Date().toISOString().slice(0, 10),\n        priority: this.getProjectPriority(lead.score),\n        leadId: leadId,\n        createdAt: new Date().toISOString(),\n        tags: ['converted-from-lead']\n      };\n      \n      // Save project\n      if (window.ubaStore?.projects) {\n        window.ubaStore.projects.create(project);\n      }\n      \n      // Update lead status\n      lead.status = 'converted';\n      lead.projectId = project.id;\n      lead.convertedAt = new Date().toISOString();\n      \n      // Add conversion log\n      this.contactLogs.push({\n        id: 'conv-log-' + Date.now(),\n        leadId: leadId,\n        type: 'timeline',\n        timestamp: new Date().toISOString(),\n        title: 'Lead converted to project',\n        description: `Project \"${project.name}\" created`,\n        category: 'conversion'\n      });\n      \n      this.saveContactLogs();\n      \n      this.showNotification(`Lead successfully converted to project: \"${project.name}\"`, 'success');\n      \n      // Offer to navigate to projects\n      if (confirm('Would you like to view the new project?')) {\n        window.location.href = `projects.html?id=${project.id}`;\n      }\n    },\n    \n    /**\n     * Get project priority based on lead score\n     */\n    getProjectPriority(score) {\n      if (score >= 80) return 'high';\n      if (score >= 60) return 'medium';\n      return 'low';\n    },\n    \n    /**\n     * Enhance table view\n     */\n    enhanceTableView() {\n      console.log('📊 Enhancing table view');\n      \n      // Add advanced filtering and sorting\n      this.addAdvancedFilters();\n      \n      // Add bulk actions\n      this.addBulkActions();\n      \n      // Enhance table columns\n      this.enhanceTableColumns();\n      \n      // Add export functionality\n      this.addExportFunctionality();\n    },\n    \n    /**\n     * Add advanced filters\n     */\n    addAdvancedFilters() {\n      const leadsCard = document.querySelector('#leads-page .uba-card');\n      if (!leadsCard) return;\n      \n      const filtersSection = document.createElement('div');\n      filtersSection.className = 'leads-filters';\n      filtersSection.innerHTML = `\n        <div class=\"filters-row\">\n          <div class=\"filter-group\">\n            <label>Score Range</label>\n            <select id=\"score-filter\" class=\"uba-select enhanced-dropdown\">\n              <option value=\"\">All Scores</option>\n              <option value=\"high\">High (80-100)</option>\n              <option value=\"medium\">Medium (50-79)</option>\n              <option value=\"low\">Low (0-49)</option>\n            </select>\n          </div>\n          \n          <div class=\"filter-group\">\n            <label>Status</label>\n            <select id=\"status-filter\" class=\"uba-select enhanced-dropdown\">\n              <option value=\"\">All Statuses</option>\n              <option value=\"new\">New</option>\n              <option value=\"contacted\">Contacted</option>\n              <option value=\"qualified\">Qualified</option>\n              <option value=\"proposal\">Proposal</option>\n              <option value=\"negotiation\">Negotiation</option>\n              <option value=\"won\">Won</option>\n              <option value=\"lost\">Lost</option>\n              <option value=\"converted\">Converted</option>\n            </select>\n          </div>\n          \n          <div class=\"filter-group\">\n            <label>Source</label>\n            <select id=\"source-filter\" class=\"uba-select enhanced-dropdown\">\n              <option value=\"\">All Sources</option>\n              <option value=\"website\">Website</option>\n              <option value=\"referral\">Referral</option>\n              <option value=\"social\">Social Media</option>\n              <option value=\"email\">Email Campaign</option>\n              <option value=\"event\">Event/Conference</option>\n              <option value=\"cold_call\">Cold Call</option>\n              <option value=\"other\">Other</option>\n            </select>\n          </div>\n          \n          <div class=\"filter-group\">\n            <label>Date Range</label>\n            <select id=\"date-filter\" class=\"uba-select enhanced-dropdown\">\n              <option value=\"\">All Time</option>\n              <option value=\"today\">Today</option>\n              <option value=\"week\">This Week</option>\n              <option value=\"month\">This Month</option>\n              <option value=\"quarter\">This Quarter</option>\n            </select>\n          </div>\n          \n          <div class=\"filter-actions\">\n            <button class=\"uba-btn uba-btn-ghost\" onclick=\"window.UBAEnhancedLeads.clearFilters()\">Clear</button>\n            <button class=\"uba-btn uba-btn-primary\" onclick=\"window.UBAEnhancedLeads.applyFilters()\">Apply Filters</button>\n          </div>\n        </div>\n      `;\n      \n      // Insert after card header\n      const cardBody = leadsCard.querySelector('.uba-card-body') || leadsCard;\n      cardBody.insertBefore(filtersSection, cardBody.firstChild);\n    },\n    \n    /**\n     * Add bulk actions\n     */\n    addBulkActions() {\n      const leadsTable = document.querySelector('#leads-table');\n      if (!leadsTable) return;\n      \n      // Add checkbox column to table header\n      const thead = leadsTable.querySelector('thead tr');\n      if (thead) {\n        const checkboxTh = document.createElement('th');\n        checkboxTh.innerHTML = '<input type=\"checkbox\" id=\"select-all-leads\" onchange=\"window.UBAEnhancedLeads.toggleSelectAll()\" />';\n        thead.insertBefore(checkboxTh, thead.firstChild);\n      }\n      \n      // Add bulk actions bar\n      const bulkActions = document.createElement('div');\n      bulkActions.id = 'bulk-actions-bar';\n      bulkActions.className = 'bulk-actions-bar hidden';\n      bulkActions.innerHTML = `\n        <div class=\"bulk-actions-content\">\n          <span class=\"selected-count\">0 leads selected</span>\n          <div class=\"bulk-action-buttons\">\n            <button class=\"uba-btn uba-btn-sm uba-btn-ghost\" onclick=\"window.UBAEnhancedLeads.bulkUpdateStatus()\">Update Status</button>\n            <button class=\"uba-btn uba-btn-sm uba-btn-ghost\" onclick=\"window.UBAEnhancedLeads.bulkAssignOwner()\">Assign Owner</button>\n            <button class=\"uba-btn uba-btn-sm uba-btn-primary\" onclick=\"window.UBAEnhancedLeads.bulkConvertToProjects()\">Convert to Projects</button>\n            <button class=\"uba-btn uba-btn-sm uba-btn-danger\" onclick=\"window.UBAEnhancedLeads.bulkDelete()\">Delete</button>\n          </div>\n          <button class=\"close-bulk-actions\" onclick=\"window.UBAEnhancedLeads.clearSelection()\">×</button>\n        </div>\n      `;\n      \n      leadsTable.parentNode.insertBefore(bulkActions, leadsTable);\n    },\n    \n    /**\n     * Enhance table columns with score display\n     */\n    enhanceTableColumns() {\n      // This will be done when rendering the table\n      // Add score column, improve status display, add action buttons\n    },\n    \n    /**\n     * Initialize UI components\n     */\n    initializeUI() {\n      // Update scoring metrics\n      setTimeout(() => {\n        this.updateScoringMetrics();\n      }, 500);\n      \n      // Enhance existing lead modal opening\n      this.enhanceLeadModalOpening();\n    },\n    \n    /**\n     * Enhance lead modal opening\n     */\n    enhanceLeadModalOpening() {\n      // Override the original openLeadModal function if it exists\n      const originalOpenModal = window.openLeadModal;\n      \n      window.openLeadModal = (leadData = null) => {\n        if (originalOpenModal) {\n          originalOpenModal(leadData);\n        }\n        \n        // Add our enhancements\n        if (leadData?.id) {\n          setTimeout(() => {\n            this.addContactLogToModal(leadData.id);\n            this.addProjectConversionToModal(leadData.id);\n          }, 100);\n        }\n      };\n    },\n    \n    /**\n     * Add project conversion to modal\n     */\n    addProjectConversionToModal(leadId) {\n      const modal = document.getElementById('lead-modal');\n      if (!modal || modal.querySelector('.project-conversion-section')) return;\n      \n      const lead = this.leads.find(l => l.id === leadId);\n      if (!lead) return;\n      \n      const conversionSection = document.createElement('div');\n      conversionSection.className = 'project-conversion-section';\n      conversionSection.innerHTML = `\n        <div class=\"conversion-card\">\n          <div class=\"conversion-header\">\n            <h4>🚀 Project Conversion (ربط lead بالـ projects)</h4>\n            <div class=\"lead-score-display\">\n              <span class=\"score-label\">Score:</span>\n              <span class=\"score-badge score-${this.getScoreClass(lead.score || 0)}\">${lead.score || 0}</span>\n            </div>\n          </div>\n          \n          ${lead.status === 'converted' ? `\n            <div class=\"conversion-status converted\">\n              <span class=\"status-icon\">✅</span>\n              <span>Already converted to project</span>\n              ${lead.projectId ? `<button class=\"uba-btn uba-btn-sm uba-btn-ghost\" onclick=\"window.location.href='projects.html?id=${lead.projectId}'\">View Project</button>` : ''}\n            </div>\n          ` : `\n            <div class=\"conversion-actions\">\n              <p class=\"conversion-description\">Convert this lead to an active project with automated data transfer.</p>\n              <div class=\"conversion-preview\">\n                <div class=\"preview-item\">\n                  <strong>Project Name:</strong> ${lead.company} Project\n                </div>\n                <div class=\"preview-item\">\n                  <strong>Client:</strong> ${lead.name}\n                </div>\n                <div class=\"preview-item\">\n                  <strong>Budget:</strong> €${lead.budget || 0}\n                </div>\n                <div class=\"preview-item\">\n                  <strong>Priority:</strong> ${this.getProjectPriority(lead.score || 0)}\n                </div>\n              </div>\n              <button class=\"uba-btn uba-btn-primary conversion-btn\" onclick=\"window.UBAEnhancedLeads.convertLeadToProject('${leadId}')\">\n                🚀 Convert to Project\n              </button>\n            </div>\n          `}\n        </div>\n      `;\n      \n      const modalBody = modal.querySelector('.uba-modal-body');\n      if (modalBody) {\n        modalBody.appendChild(conversionSection);\n      }\n    },\n    \n    /**\n     * Get score class for styling\n     */\n    getScoreClass(score) {\n      if (score >= 80) return 'high';\n      if (score >= 50) return 'medium';\n      return 'low';\n    },\n    \n    // Utility methods\n    \n    /**\n     * Load projects data\n     */\n    loadProjectsData() {\n      this.projects = window.ubaStore?.projects?.getAll() || [];\n    },\n    \n    /**\n     * Get demo leads data\n     */\n    getDemoLeads() {\n      return [\n        {\n          id: 'lead-demo-1',\n          name: 'Ahmed Al-Rashid',\n          company: 'Tech Solutions MENA',\n          email: 'ahmed@techsolutions.ae',\n          phone: '+971-50-123-4567',\n          status: 'qualified',\n          source: 'website',\n          budget: 25000,\n          description: 'Looking for CRM automation solution',\n          createdAt: '2024-11-15T10:00:00Z',\n          score: 85\n        },\n        {\n          id: 'lead-demo-2',\n          name: 'Sarah Johnson',\n          company: 'Digital Marketing Pro',\n          email: 'sarah@digitalmarketingpro.com',\n          phone: '+1-555-0123',\n          status: 'contacted',\n          source: 'referral',\n          budget: 15000,\n          description: 'Needs marketing automation tools',\n          createdAt: '2024-11-18T14:30:00Z',\n          score: 72\n        }\n      ];\n    },\n    \n    /**\n     * Update element content safely\n     */\n    updateElement(id, value) {\n      const element = document.getElementById(id);\n      if (element) {\n        element.textContent = value;\n      }\n    },\n    \n    /**\n     * Show notification\n     */\n    showNotification(message, type = 'info', options = {}) {\n      if (window.showToast) {\n        window.showToast(message, type, options);\n      } else {\n        console.log(`${type.toUpperCase()}: ${message}`);\n      }\n    }\n  };\n  \n  // Auto-initialize when DOM is ready\n  if (document.readyState === 'loading') {\n    document.addEventListener('DOMContentLoaded', () => {\n      setTimeout(() => window.UBAEnhancedLeads.init(), 1000);\n    });\n  } else {\n    setTimeout(() => window.UBAEnhancedLeads.init(), 1000);\n  }\n  \n  console.log('✅ Enhanced Leads module loaded');\n  \n})();
+      const leadsPage = document.querySelector('#leads-page');
+      if (!leadsPage) return;
+      
+      // Add scoring overview section
+      const scoringOverview = document.createElement('div');
+      scoringOverview.className = 'scoring-overview';
+      scoringOverview.innerHTML = `
+        <div class=\"uba-card scoring-card\">
+          <div class=\"uba-card-header\">
+            <div>
+              <div class=\"uba-card-title\">🎯 Lead Scoring Overview</div>
+              <p class=\"uba-card-sub\">Intelligent lead prioritization system</p>
+            </div>
+            <div class=\"scoring-actions\">
+              <button class=\"uba-btn uba-btn-ghost\" onclick=\"window.UBAEnhancedLeads.openScoreConfig()\">Configure Scoring</button>
+              <button class=\"uba-btn uba-btn-primary\" onclick=\"window.UBAEnhancedLeads.recalculateAllScores()\">Recalculate All</button>
+            </div>
+          </div>
+          <div class=\"scoring-metrics\">
+            <div class=\"score-metric\">
+              <div class=\"score-value\" id=\"avg-lead-score\">0</div>
+              <div class=\"score-label\">Avg Score</div>
+            </div>
+            <div class=\"score-metric\">
+              <div class=\"score-value\" id=\"high-quality-leads\">0</div>
+              <div class=\"score-label\">High Quality (80+)</div>
+            </div>
+            <div class=\"score-metric\">
+              <div class=\"score-value\" id=\"medium-quality-leads\">0</div>
+              <div class=\"score-label\">Medium Quality (50-79)</div>
+            </div>
+            <div class=\"score-metric\">
+              <div class=\"score-value\" id=\"low-quality-leads\">0</div>
+              <div class=\"score-label\">Low Quality (<50)</div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Insert before the main leads table
+      const leadsTable = leadsPage.querySelector('.uba-card');
+      if (leadsTable) {
+        leadsPage.insertBefore(scoringOverview, leadsTable);
+      }
+      
+      // Create score configuration modal
+      this.createScoreConfigModal();
+    },
+    
+    /**
+     * Create score configuration modal
+     */
+    createScoreConfigModal() {
+      const modal = document.createElement('div');
+      modal.id = 'score-config-modal';
+      modal.className = 'uba-modal score-config-modal';
+      modal.innerHTML = `
+        <div class=\"uba-modal-overlay\" onclick=\"window.UBAEnhancedLeads.closeScoreConfig()\"></div>
+        <div class=\"uba-modal-dialog score-config-dialog\">
+          <div class=\"uba-modal-header\">
+            <h3>🎯 Lead Scoring Configuration</h3>
+            <button class=\"uba-modal-close\" onclick=\"window.UBAEnhancedLeads.closeScoreConfig()\">×</button>
+          </div>
+          <div class=\"uba-modal-body\">
+            <div class=\"scoring-categories\">
+              <!-- Dynamic scoring categories will be rendered here -->
+            </div>
+            <div class=\"scoring-preview\">
+              <h4>Preview Score Calculation</h4>
+              <div class=\"score-preview-content\">
+                <div class=\"preview-lead-score\">85</div>
+                <div class=\"preview-breakdown\">
+                  <!-- Score breakdown will be shown here -->
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class=\"uba-modal-footer\">
+            <button class=\"uba-btn uba-btn-ghost\" onclick=\"window.UBAEnhancedLeads.resetScoreConfig()\">Reset to Default</button>
+            <button class=\"uba-btn uba-btn-primary\" onclick=\"window.UBAEnhancedLeads.saveScoreConfig()\">Save Configuration</button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+    },
+    
+    /**
+     * Calculate lead score
+     */
+    calculateLeadScore(lead) {
+      let totalScore = 0;
+      
+      for (const [category, config] of Object.entries(this.leadScoreConfig)) {
+        const categoryScore = this.calculateCategoryScore(lead, category, config);
+        const weightedScore = (categoryScore * config.weight) / 100;
+        totalScore += weightedScore;
+      }
+      
+      return Math.min(Math.round(totalScore), 100);
+    },
+    
+    /**
+     * Calculate category score
+     */
+    calculateCategoryScore(lead, category, config) {
+      const leadValue = lead.scoring?.[category] || this.inferCategoryValue(lead, category);
+      return config.criteria[leadValue] || 0;
+    },
+    
+    /**
+     * Infer category value from lead data
+     */
+    inferCategoryValue(lead, category) {
+      switch (category) {
+        case 'budget':
+          if (lead.budget) {
+            if (lead.budget < 1000) return 'under_1k';
+            if (lead.budget < 5000) return '1k_5k';
+            if (lead.budget < 15000) return '5k_15k';
+            if (lead.budget < 50000) return '15k_50k';
+            return 'over_50k';
+          }
+          return 'under_1k';
+          
+        case 'company':
+          if (lead.companySize) {
+            if (lead.companySize === 'Enterprise') return 'enterprise';
+            if (lead.companySize === 'Medium') return 'medium_business';
+            if (lead.companySize === 'Small') return 'small_business';
+          }
+          return 'startup';
+          
+        case 'timeline':
+          if (lead.timeline) {
+            if (lead.timeline.includes('immediate')) return 'immediate';
+            if (lead.timeline.includes('quarter')) return 'this_quarter';
+            if (lead.timeline.includes('year')) return 'this_year';
+          }
+          return 'no_timeline';
+          
+        default:
+          return Object.keys(this.leadScoreConfig[category]?.criteria || {})[0] || '';
+      }
+    },
+    
+    /**
+     * Calculate all lead scores
+     */
+    calculateAllLeadScores() {
+      this.leads.forEach(lead => {
+        lead.score = this.calculateLeadScore(lead);
+        lead.scoreUpdated = new Date().toISOString();
+      });
+      
+      // Update scoring metrics
+      this.updateScoringMetrics();
+    },
+    
+    /**
+     * Update scoring metrics display
+     */
+    updateScoringMetrics() {
+      const scores = this.leads.map(lead => lead.score || 0).filter(score => score > 0);
+      
+      if (scores.length === 0) return;
+      
+      const avgScore = Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length);
+      const highQuality = scores.filter(score => score >= 80).length;
+      const mediumQuality = scores.filter(score => score >= 50 && score < 80).length;
+      const lowQuality = scores.filter(score => score < 50).length;
+      
+      // Update UI
+      this.updateElement('avg-lead-score', avgScore);
+      this.updateElement('high-quality-leads', highQuality);
+      this.updateElement('medium-quality-leads', mediumQuality);
+      this.updateElement('low-quality-leads', lowQuality);
+    },
+    
+    /**
+     * Setup contact logging system
+     */
+    setupContactLogging() {
+      console.log('💬 Setting up contact logging system');
+      
+      // Add contact log interface to lead details
+      this.enhanceLeadDetailsWithLogs();
+    },
+    
+    /**
+     * Enhance lead details with contact logs
+     */
+    enhanceLeadDetailsWithLogs() {
+      // This will be added to the lead modal when opened
+      // We'll inject the contact log section dynamically
+    },
+    
+    /**
+     * Add contact log section to lead modal
+     */
+    addContactLogToModal(leadId) {
+      const modal = document.getElementById('lead-modal');
+      if (!modal) return;
+      
+      // Check if contact log section already exists
+      if (modal.querySelector('.contact-log-section')) return;
+      
+      const modalBody = modal.querySelector('.uba-modal-body');
+      if (!modalBody) return;
+      
+      const contactLogSection = document.createElement('div');
+      contactLogSection.className = 'contact-log-section';
+      contactLogSection.innerHTML = `
+        <div class=\"contact-log-tabs\">
+          <button class=\"log-tab active\" data-tab=\"timeline\">📋 Timeline</button>
+          <button class=\"log-tab\" data-tab=\"conversations\">💬 Conversations</button>
+          <button class=\"log-tab\" data-tab=\"notes\">📝 Notes</button>
+          <button class=\"log-tab\" data-tab=\"activities\">🎯 Activities</button>
+        </div>
+        
+        <div class=\"contact-log-content\">
+          <!-- Timeline Tab -->
+          <div class=\"log-tab-content active\" data-tab=\"timeline\">
+            <div class=\"timeline-header\">
+              <h4>محادثات – ملاحظات – نشاط (Contact Timeline)</h4>
+              <button class=\"uba-btn uba-btn-sm uba-btn-primary\" onclick=\"window.UBAEnhancedLeads.addTimelineEntry('${leadId}')\">
+                + Add Entry
+              </button>
+            </div>
+            <div id=\"timeline-${leadId}\" class=\"contact-timeline\">
+              <!-- Timeline entries will be rendered here -->
+            </div>
+          </div>
+          
+          <!-- Conversations Tab -->
+          <div class=\"log-tab-content\" data-tab=\"conversations\">
+            <div class=\"conversations-header\">
+              <h4>Conversation History</h4>
+              <button class=\"uba-btn uba-btn-sm uba-btn-primary\" onclick=\"window.UBAEnhancedLeads.addConversation('${leadId}')\">
+                + New Conversation
+              </button>
+            </div>
+            <div id=\"conversations-${leadId}\" class=\"conversations-list\">
+              <!-- Conversations will be rendered here -->
+            </div>
+          </div>
+          
+          <!-- Notes Tab -->
+          <div class=\"log-tab-content\" data-tab=\"notes\">
+            <div class=\"notes-header\">
+              <h4>Internal Notes</h4>
+              <button class=\"uba-btn uba-btn-sm uba-btn-primary\" onclick=\"window.UBAEnhancedLeads.addNote('${leadId}')\">
+                + Add Note
+              </button>
+            </div>
+            <div id=\"notes-${leadId}\" class=\"notes-list\">
+              <!-- Notes will be rendered here -->
+            </div>
+          </div>
+          
+          <!-- Activities Tab -->
+          <div class=\"log-tab-content\" data-tab=\"activities\">
+            <div class=\"activities-header\">
+              <h4>Activities & Follow-ups</h4>
+              <button class=\"uba-btn uba-btn-sm uba-btn-primary\" onclick=\"window.UBAEnhancedLeads.scheduleActivity('${leadId}')\">
+                + Schedule Activity
+              </button>
+            </div>
+            <div id=\"activities-${leadId}\" class=\"activities-list\">
+              <!-- Activities will be rendered here -->
+            </div>
+          </div>
+        </div>
+      `;
+      
+      modalBody.appendChild(contactLogSection);
+      
+      // Setup tab switching
+      this.setupContactLogTabs();
+      
+      // Render existing logs
+      this.renderContactLogs(leadId);
+    },
+    
+    /**
+     * Setup contact log tabs
+     */
+    setupContactLogTabs() {
+      const tabs = document.querySelectorAll('.log-tab');
+      const contents = document.querySelectorAll('.log-tab-content');
+      
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const targetTab = tab.getAttribute('data-tab');
+          
+          // Update tab states
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          
+          // Update content states
+          contents.forEach(content => {
+            content.classList.remove('active');
+            if (content.getAttribute('data-tab') === targetTab) {
+              content.classList.add('active');
+            }
+          });
+        });
+      });
+    },
+    
+    /**
+     * Add timeline entry
+     */
+    addTimelineEntry(leadId) {
+      const entry = {
+        id: 'timeline-' + Date.now(),
+        leadId: leadId,
+        type: 'timeline',
+        timestamp: new Date().toISOString(),
+        title: prompt('Enter timeline entry title:'),
+        description: prompt('Enter description (optional):') || '',
+        category: 'general'
+      };
+      
+      if (entry.title) {
+        this.contactLogs.push(entry);
+        this.saveContactLogs();
+        this.renderContactLogs(leadId);
+      }
+    },
+    
+    /**
+     * Add conversation
+     */
+    addConversation(leadId) {
+      const conversation = {
+        id: 'conv-' + Date.now(),
+        leadId: leadId,
+        type: 'conversation',
+        timestamp: new Date().toISOString(),
+        medium: prompt('Communication medium (email, phone, meeting):') || 'email',
+        summary: prompt('Conversation summary:'),
+        outcome: prompt('Outcome/Next steps:') || '',
+        participants: ['User'] // Could be enhanced to include multiple participants
+      };
+      
+      if (conversation.summary) {
+        this.contactLogs.push(conversation);
+        this.saveContactLogs();
+        this.renderContactLogs(leadId);
+      }
+    },
+    
+    /**
+     * Add note
+     */
+    addNote(leadId) {
+      const note = {
+        id: 'note-' + Date.now(),
+        leadId: leadId,
+        type: 'note',
+        timestamp: new Date().toISOString(),
+        content: prompt('Enter note content:'),
+        category: prompt('Note category (research, follow-up, technical):') || 'general',
+        private: confirm('Make this note private (internal only)?')
+      };
+      
+      if (note.content) {
+        this.contactLogs.push(note);
+        this.saveContactLogs();
+        this.renderContactLogs(leadId);
+      }
+    },
+    
+    /**
+     * Schedule activity
+     */
+    scheduleActivity(leadId) {
+      const activity = {
+        id: 'activity-' + Date.now(),
+        leadId: leadId,
+        type: 'activity',
+        timestamp: new Date().toISOString(),
+        activityType: prompt('Activity type (call, demo, meeting, proposal):') || 'call',
+        title: prompt('Activity title:'),
+        scheduledFor: prompt('Schedule for (YYYY-MM-DD HH:MM):'),
+        description: prompt('Activity description:') || '',
+        status: 'scheduled'
+      };
+      
+      if (activity.title) {
+        this.contactLogs.push(activity);
+        this.saveContactLogs();
+        this.renderContactLogs(leadId);
+      }
+    },
+    
+    /**
+     * Render contact logs for a specific lead
+     */
+    renderContactLogs(leadId) {
+      const leadLogs = this.contactLogs.filter(log => log.leadId === leadId);
+      
+      // Render timeline
+      this.renderTimeline(leadId, leadLogs);
+      
+      // Render conversations
+      this.renderConversations(leadId, leadLogs.filter(log => log.type === 'conversation'));
+      
+      // Render notes
+      this.renderNotes(leadId, leadLogs.filter(log => log.type === 'note'));
+      
+      // Render activities
+      this.renderActivities(leadId, leadLogs.filter(log => log.type === 'activity'));
+    },
+    
+    /**
+     * Render timeline
+     */
+    renderTimeline(leadId, logs) {
+      const timeline = document.getElementById(`timeline-${leadId}`);
+      if (!timeline) return;
+      
+      const sortedLogs = logs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      
+      timeline.innerHTML = sortedLogs.map(log => {
+        const date = new Date(log.timestamp).toLocaleDateString();
+        const time = new Date(log.timestamp).toLocaleTimeString();
+        const icon = this.getLogIcon(log.type);
+        
+        return `
+          <div class=\"timeline-entry ${log.type}\">
+            <div class=\"timeline-marker\">${icon}</div>
+            <div class=\"timeline-content\">
+              <div class=\"timeline-header\">
+                <strong>${log.title || log.summary || log.content || 'Activity'}</strong>
+                <span class=\"timeline-time\">${date} ${time}</span>
+              </div>
+              ${log.description || log.outcome || log.category ? `
+                <div class=\"timeline-details\">
+                  ${log.description || log.outcome || log.category}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    },
+    
+    /**
+     * Get icon for log type
+     */
+    getLogIcon(type) {
+      const icons = {
+        'timeline': '📋',
+        'conversation': '💬',
+        'note': '📝',
+        'activity': '🎯'
+      };
+      return icons[type] || '📌';
+    },
+    
+    /**
+     * Save contact logs to localStorage
+     */
+    saveContactLogs() {
+      try {
+        localStorage.setItem('uba-contact-logs', JSON.stringify(this.contactLogs));
+      } catch (error) {
+        console.error('❌ Failed to save contact logs:', error);
+      }
+    },
+    
+    /**
+     * Setup project integration
+     */
+    setupProjectIntegration() {
+      console.log('🔗 Setting up project integration');
+      
+      // Add project conversion functionality
+      this.addProjectConversionInterface();
+      
+      // Load existing projects for linking
+      this.loadProjectsData();
+    },
+    
+    /**
+     * Add project conversion interface
+     */
+    addProjectConversionInterface() {
+      // This will be added to lead modal and table actions
+      // Enhanced when lead modal is opened
+    },
+    
+    /**
+     * Convert lead to project
+     */
+    convertLeadToProject(leadId) {
+      const lead = this.leads.find(l => l.id === leadId);
+      if (!lead) return;
+      
+      const project = {
+        id: 'proj-' + Date.now(),
+        name: lead.company + ' Project',
+        client: lead.name,
+        clientCompany: lead.company,
+        email: lead.email,
+        phone: lead.phone,
+        description: `Project converted from lead: ${lead.description || 'No description'}`,
+        stage: 'planning',
+        status: 'active',
+        budget: lead.budget || 0,
+        startDate: new Date().toISOString().slice(0, 10),
+        priority: this.getProjectPriority(lead.score),
+        leadId: leadId,
+        createdAt: new Date().toISOString(),
+        tags: ['converted-from-lead']
+      };
+      
+      // Save project
+      if (window.ubaStore?.projects) {
+        window.ubaStore.projects.create(project);
+      }
+      
+      // Update lead status
+      lead.status = 'converted';
+      lead.projectId = project.id;
+      lead.convertedAt = new Date().toISOString();
+      
+      // Add conversion log
+      this.contactLogs.push({
+        id: 'conv-log-' + Date.now(),
+        leadId: leadId,
+        type: 'timeline',
+        timestamp: new Date().toISOString(),
+        title: 'Lead converted to project',
+        description: `Project \"${project.name}\" created`,
+        category: 'conversion'
+      });
+      
+      this.saveContactLogs();
+      
+      this.showNotification(`Lead successfully converted to project: \"${project.name}\"`, 'success');
+      
+      // Offer to navigate to projects
+      if (confirm('Would you like to view the new project?')) {
+        window.location.href = `projects.html?id=${project.id}`;
+      }
+    },
+    
+    /**
+     * Get project priority based on lead score
+     */
+    getProjectPriority(score) {
+      if (score >= 80) return 'high';
+      if (score >= 60) return 'medium';
+      return 'low';
+    },
+    
+    /**
+     * Enhance table view
+     */
+    enhanceTableView() {
+      console.log('📊 Enhancing table view');
+      
+      // Add advanced filtering and sorting
+      this.addAdvancedFilters();
+      
+      // Add bulk actions
+      this.addBulkActions();
+      
+      // Enhance table columns
+      this.enhanceTableColumns();
+      
+      // Add export functionality
+      this.addExportFunctionality();
+    },
+    
+    /**
+     * Add advanced filters
+     */
+    addAdvancedFilters() {
+      const leadsCard = document.querySelector('#leads-page .uba-card');
+      if (!leadsCard) return;
+      
+      const filtersSection = document.createElement('div');
+      filtersSection.className = 'leads-filters';
+      filtersSection.innerHTML = `
+        <div class=\"filters-row\">
+          <div class=\"filter-group\">
+            <label>Score Range</label>
+            <select id=\"score-filter\" class=\"uba-select enhanced-dropdown\">
+              <option value=\"\">All Scores</option>
+              <option value=\"high\">High (80-100)</option>
+              <option value=\"medium\">Medium (50-79)</option>
+              <option value=\"low\">Low (0-49)</option>
+            </select>
+          </div>
+          
+          <div class=\"filter-group\">
+            <label>Status</label>
+            <select id=\"status-filter\" class=\"uba-select enhanced-dropdown\">
+              <option value=\"\">All Statuses</option>
+              <option value=\"new\">New</option>
+              <option value=\"contacted\">Contacted</option>
+              <option value=\"qualified\">Qualified</option>
+              <option value=\"proposal\">Proposal</option>
+              <option value=\"negotiation\">Negotiation</option>
+              <option value=\"won\">Won</option>
+              <option value=\"lost\">Lost</option>
+              <option value=\"converted\">Converted</option>
+            </select>
+          </div>
+          
+          <div class=\"filter-group\">
+            <label>Source</label>
+            <select id=\"source-filter\" class=\"uba-select enhanced-dropdown\">
+              <option value=\"\">All Sources</option>
+              <option value=\"website\">Website</option>
+              <option value=\"referral\">Referral</option>
+              <option value=\"social\">Social Media</option>
+              <option value=\"email\">Email Campaign</option>
+              <option value=\"event\">Event/Conference</option>
+              <option value=\"cold_call\">Cold Call</option>
+              <option value=\"other\">Other</option>
+            </select>
+          </div>
+          
+          <div class=\"filter-group\">
+            <label>Date Range</label>
+            <select id=\"date-filter\" class=\"uba-select enhanced-dropdown\">
+              <option value=\"\">All Time</option>
+              <option value=\"today\">Today</option>
+              <option value=\"week\">This Week</option>
+              <option value=\"month\">This Month</option>
+              <option value=\"quarter\">This Quarter</option>
+            </select>
+          </div>
+          
+          <div class=\"filter-actions\">
+            <button class=\"uba-btn uba-btn-ghost\" onclick=\"window.UBAEnhancedLeads.clearFilters()\">Clear</button>
+            <button class=\"uba-btn uba-btn-primary\" onclick=\"window.UBAEnhancedLeads.applyFilters()\">Apply Filters</button>
+          </div>
+        </div>
+      `;
+      
+      // Insert after card header
+      const cardBody = leadsCard.querySelector('.uba-card-body') || leadsCard;
+      cardBody.insertBefore(filtersSection, cardBody.firstChild);
+    },
+    
+    /**
+     * Add bulk actions
+     */
+    addBulkActions() {
+      const leadsTable = document.querySelector('#leads-table');
+      if (!leadsTable) return;
+      
+      // Add checkbox column to table header
+      const thead = leadsTable.querySelector('thead tr');
+      if (thead) {
+        const checkboxTh = document.createElement('th');
+        checkboxTh.innerHTML = '<input type=\"checkbox\" id=\"select-all-leads\" onchange=\"window.UBAEnhancedLeads.toggleSelectAll()\" />';
+        thead.insertBefore(checkboxTh, thead.firstChild);
+      }
+      
+      // Add bulk actions bar
+      const bulkActions = document.createElement('div');
+      bulkActions.id = 'bulk-actions-bar';
+      bulkActions.className = 'bulk-actions-bar hidden';
+      bulkActions.innerHTML = `
+        <div class=\"bulk-actions-content\">
+          <span class=\"selected-count\">0 leads selected</span>
+          <div class=\"bulk-action-buttons\">
+            <button class=\"uba-btn uba-btn-sm uba-btn-ghost\" onclick=\"window.UBAEnhancedLeads.bulkUpdateStatus()\">Update Status</button>
+            <button class=\"uba-btn uba-btn-sm uba-btn-ghost\" onclick=\"window.UBAEnhancedLeads.bulkAssignOwner()\">Assign Owner</button>
+            <button class=\"uba-btn uba-btn-sm uba-btn-primary\" onclick=\"window.UBAEnhancedLeads.bulkConvertToProjects()\">Convert to Projects</button>
+            <button class=\"uba-btn uba-btn-sm uba-btn-danger\" onclick=\"window.UBAEnhancedLeads.bulkDelete()\">Delete</button>
+          </div>
+          <button class=\"close-bulk-actions\" onclick=\"window.UBAEnhancedLeads.clearSelection()\">×</button>
+        </div>
+      `;
+      
+      leadsTable.parentNode.insertBefore(bulkActions, leadsTable);
+    },
+    
+    /**
+     * Enhance table columns with score display
+     */
+    enhanceTableColumns() {
+      // This will be done when rendering the table
+      // Add score column, improve status display, add action buttons
+    },
+    
+    /**
+     * Initialize UI components
+     */
+    initializeUI() {
+      // Update scoring metrics
+      setTimeout(() => {
+        this.updateScoringMetrics();
+      }, 500);
+      
+      // Enhance existing lead modal opening
+      this.enhanceLeadModalOpening();
+    },
+    
+    /**
+     * Enhance lead modal opening
+     */
+    enhanceLeadModalOpening() {
+      // Override the original openLeadModal function if it exists
+      const originalOpenModal = window.openLeadModal;
+      
+      window.openLeadModal = (leadData = null) => {
+        if (originalOpenModal) {
+          originalOpenModal(leadData);
+        }
+        
+        // Add our enhancements
+        if (leadData?.id) {
+          setTimeout(() => {
+            this.addContactLogToModal(leadData.id);
+            this.addProjectConversionToModal(leadData.id);
+          }, 100);
+        }
+      };
+    },
+    
+    /**
+     * Add project conversion to modal
+     */
+    addProjectConversionToModal(leadId) {
+      const modal = document.getElementById('lead-modal');
+      if (!modal || modal.querySelector('.project-conversion-section')) return;
+      
+      const lead = this.leads.find(l => l.id === leadId);
+      if (!lead) return;
+      
+      const conversionSection = document.createElement('div');
+      conversionSection.className = 'project-conversion-section';
+      conversionSection.innerHTML = `
+        <div class=\"conversion-card\">
+          <div class=\"conversion-header\">
+            <h4>🚀 Project Conversion (ربط lead بالـ projects)</h4>
+            <div class=\"lead-score-display\">
+              <span class=\"score-label\">Score:</span>
+              <span class=\"score-badge score-${this.getScoreClass(lead.score || 0)}\">${lead.score || 0}</span>
+            </div>
+          </div>
+          
+          ${lead.status === 'converted' ? `
+            <div class=\"conversion-status converted\">
+              <span class=\"status-icon\">✅</span>
+              <span>Already converted to project</span>
+              ${lead.projectId ? `<button class=\"uba-btn uba-btn-sm uba-btn-ghost\" onclick=\"window.location.href='projects.html?id=${lead.projectId}'\">View Project</button>` : ''}
+            </div>
+          ` : `
+            <div class=\"conversion-actions\">
+              <p class=\"conversion-description\">Convert this lead to an active project with automated data transfer.</p>
+              <div class=\"conversion-preview\">
+                <div class=\"preview-item\">
+                  <strong>Project Name:</strong> ${lead.company} Project
+                </div>
+                <div class=\"preview-item\">
+                  <strong>Client:</strong> ${lead.name}
+                </div>
+                <div class=\"preview-item\">
+                  <strong>Budget:</strong> €${lead.budget || 0}
+                </div>
+                <div class=\"preview-item\">
+                  <strong>Priority:</strong> ${this.getProjectPriority(lead.score || 0)}
+                </div>
+              </div>
+              <button class=\"uba-btn uba-btn-primary conversion-btn\" onclick=\"window.UBAEnhancedLeads.convertLeadToProject('${leadId}')\">
+                🚀 Convert to Project
+              </button>
+            </div>
+          `}
+        </div>
+      `;
+      
+      const modalBody = modal.querySelector('.uba-modal-body');
+      if (modalBody) {
+        modalBody.appendChild(conversionSection);
+      }
+    },
+    
+    /**
+     * Get score class for styling
+     */
+    getScoreClass(score) {
+      if (score >= 80) return 'high';
+      if (score >= 50) return 'medium';
+      return 'low';
+    },
+    
+    // Utility methods
+    
+    /**
+     * Load projects data
+     */
+    loadProjectsData() {
+      this.projects = window.ubaStore?.projects?.getAll() || [];
+    },
+    
+    /**
+     * Get demo leads data
+     */
+    getDemoLeads() {
+      return [
+        {
+          id: 'lead-demo-1',
+          name: 'Ahmed Al-Rashid',
+          company: 'Tech Solutions MENA',
+          email: 'ahmed@techsolutions.ae',
+          phone: '+971-50-123-4567',
+          status: 'qualified',
+          source: 'website',
+          budget: 25000,
+          description: 'Looking for CRM automation solution',
+          createdAt: '2024-11-15T10:00:00Z',
+          score: 85
+        },
+        {
+          id: 'lead-demo-2',
+          name: 'Sarah Johnson',
+          company: 'Digital Marketing Pro',
+          email: 'sarah@digitalmarketingpro.com',
+          phone: '+1-555-0123',
+          status: 'contacted',
+          source: 'referral',
+          budget: 15000,
+          description: 'Needs marketing automation tools',
+          createdAt: '2024-11-18T14:30:00Z',
+          score: 72
+        }
+      ];
+    },
+    
+    /**
+     * Update element content safely
+     */
+    updateElement(id, value) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.textContent = value;
+      }
+    },
+    
+    /**
+     * Show notification
+     */
+    showNotification(message, type = 'info', options = {}) {
+      if (window.showToast) {
+        window.showToast(message, type, options);
+      } else {
+        console.log(`${type.toUpperCase()}: ${message}`);
+      }
+    }
+  };
+  
+  // Auto-initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => window.UBAEnhancedLeads.init(), 1000);
+    });
+  } else {
+    setTimeout(() => window.UBAEnhancedLeads.init(), 1000);
+  }
+  
+  console.log('✅ Enhanced Leads module loaded');
+  
+})();
