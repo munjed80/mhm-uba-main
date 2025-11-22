@@ -311,13 +311,58 @@
   };
 
   // =====================================================
+  // DASHBOARD STATS ADAPTER
+  // =====================================================
+  const dashboard = {
+    async getStats() {
+      try {
+        showLoading('Loading dashboard stats...');
+        const result = await api.dashboard.getStats();
+        hideLoading();
+        return result || {
+          totalClients: 0,
+          totalProjects: 0,
+          totalTasks: 0,
+          overdueTasks: 0,
+          totalInvoices: 0,
+          paidInvoices: 0,
+          unpaidInvoices: 0,
+          totalRevenue: 0,
+          recentClients: [],
+          recentProjects: [],
+          recentTasks: [],
+          recentInvoices: []
+        };
+      } catch (error) {
+        hideLoading();
+        showError(error.message || 'Failed to load dashboard stats');
+        return {
+          totalClients: 0,
+          totalProjects: 0,
+          totalTasks: 0,
+          overdueTasks: 0,
+          totalInvoices: 0,
+          paidInvoices: 0,
+          unpaidInvoices: 0,
+          totalRevenue: 0,
+          recentClients: [],
+          recentProjects: [],
+          recentTasks: [],
+          recentInvoices: []
+        };
+      }
+    }
+  };
+
+  // =====================================================
   // EXPORT AS GLOBAL
   // =====================================================
   window.SupabaseStore = {
     clients,
     projects,
     tasks,
-    invoices
+    invoices,
+    dashboard
   };
 
   console.log('[SupabaseStoreAdapter] Initialized successfully');

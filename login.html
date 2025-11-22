@@ -223,53 +223,26 @@
       </div>
     </div>
 
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Supabase Config (if exists) -->
+    <script>
+      // Try to load config, fail silently if not found
+      const script = document.createElement('script');
+      script.src = 'supabase-config.js';
+      script.onerror = () => console.warn('[Auth] supabase-config.js not found - running in local mode');
+      document.head.appendChild(script);
+    </script>
+
+    <!-- Core scripts -->
     <script src="assets/js/i18n.js"></script>
     <script src="assets/js/store.js"></script>
     <script src="assets/js/data-layer.js"></script>
+    <script src="assets/js/supabase-api-service.js"></script>
+    <script src="assets/js/auth-login.js"></script>
     <script src="assets/js/app.js"></script>
     <script src="assets/js/page-loader.js"></script>
-    <script>
-      // Login handler using UBA.auth
-      async function login() {
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value.trim();
-        const errorBox = document.getElementById('errorBox');
-        
-        errorBox.textContent = '';
-        
-        if (!email || !password) {
-          errorBox.textContent = 'Please enter both email and password';
-          return;
-        }
-        
-        try {
-          // Use UBA.auth for login
-          const result = await window.UBA.auth.login(email, password);
-          console.log('Login successful:', result.user.name);
-          // Redirect to dashboard
-          window.location.href = 'index.html';
-        } catch (error) {
-          console.error('Login error:', error);
-          errorBox.textContent = error.message || 'Login failed. Please try again.';
-        }
-      }
-      
-      // Allow Enter key to submit
-      document.addEventListener('DOMContentLoaded', () => {
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        
-        [emailInput, passwordInput].forEach(input => {
-          if (input) {
-            input.addEventListener('keypress', (e) => {
-              if (e.key === 'Enter') {
-                login();
-              }
-            });
-          }
-        });
-      });
-    </script>
     <script>
       (function () {
         const lang = localStorage.getItem("uba-lang") || "en";
