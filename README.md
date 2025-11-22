@@ -1,8 +1,38 @@
 # MHM Universal Business Automator (UBA)
 
+> ⚠️ **IMPORTANT: NOT PRODUCTION READY** - This is a demo/prototype application. See [Production Readiness](#-production-readiness) section below.
+
 A comprehensive business management platform that provides an all-in-one workspace for clients, tasks, invoices, and smart automation tools.
 
 ![MHM UBA Dashboard](https://github.com/user-attachments/assets/b6ca306c-2bd0-48bb-95ac-dd91a66ccd81)
+
+## 🚨 Production Readiness
+
+**Current Status:** Demo/Prototype Only (25/100 production readiness score)
+
+This application is **NOT suitable for production deployment** due to:
+- ❌ No backend infrastructure (localStorage only)
+- ❌ No real authentication (guest mode only)
+- ❌ Critical security vulnerabilities (270+ XSS issues)
+- ❌ Minimal testing coverage
+- ❌ No deployment infrastructure
+
+**Safe Uses:**
+- ✅ Local development and testing
+- ✅ UI/UX demonstrations
+- ✅ Feature showcases
+- ✅ Learning and experimentation
+
+**For Production Use:**
+See comprehensive guides:
+- 📋 [Production Readiness Review](./PRODUCTION-READINESS-REVIEW.md) - Complete assessment
+- 🔒 [Security Guide](./SECURITY-GUIDE.md) - Security hardening
+- 🏗️ [Architecture Guide](./ARCHITECTURE-GUIDE.md) - Implementation roadmap
+- 📖 [Quick Reference](./QUICK-REFERENCE.md) - Summary and next steps
+
+**Estimated effort to production:** 5-7 months with 2-3 developers. See guides for details.
+
+---
 
 ## ✨ Features
 
@@ -188,6 +218,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🗺️ Roadmap
 
+**Note:** Before implementing new features, the application must first be made production-ready. See [Production Readiness](#-production-readiness) section above.
+
+### Phase 1: Production Readiness (Priority)
+- [ ] Implement backend infrastructure (Supabase or custom)
+- [ ] Add real authentication and authorization
+- [ ] Fix security vulnerabilities
+- [ ] Add comprehensive testing
+- [ ] Set up CI/CD and deployment
+
+### Phase 2: Core Features (After Production Ready)
 - [ ] Real-time collaboration
 - [ ] Mobile apps (iOS/Android)
 - [ ] Advanced reporting and analytics
@@ -195,6 +235,22 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [ ] Team collaboration features
 - [ ] Advanced automation workflows
 
+## 📚 Comprehensive Documentation
+
+**Production Readiness Assessment (Nov 2025):**
+- 📋 [Production Readiness Review](./PRODUCTION-READINESS-REVIEW.md) - Complete 360° assessment with roadmap
+- 🔒 [Security Guide](./SECURITY-GUIDE.md) - Security vulnerabilities and hardening guide
+- 🏗️ [Architecture Guide](./ARCHITECTURE-GUIDE.md) - Technical architecture and implementation
+- 📖 [Quick Reference](./QUICK-REFERENCE.md) - Summary and immediate actions
+
+**Development Guides:**
+- 📖 [Contributing Guidelines](./CONTRIBUTING.md) - How to contribute
+- 🧪 [Testing Guide](./TESTING.md) - Manual and automated testing
+- 🏢 [SaaS Architecture](./SAAS-ARCHITECTURE.md) - Multi-tenancy design
+- ✅ [QA Checklist](./QA-Checklist.md) - Release checklist
+
 ---
 
 **MHM UBA** - One workspace for all your business needs.
+
+⚠️ **Remember:** This is currently a demo/prototype. See production readiness guides before deploying.
