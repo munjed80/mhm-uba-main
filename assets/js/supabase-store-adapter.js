@@ -12,6 +12,22 @@
 (function() {
   'use strict';
 
+  // Production mode detection
+  const isProduction = window.location.hostname !== 'localhost' && 
+                       window.location.hostname !== '127.0.0.1' &&
+                       !window.location.hostname.includes('192.168');
+
+  // Disable console logs in production (except errors/warnings)
+  if (isProduction) {
+    const originalLog = console.log;
+    console.log = function(...args) {
+      // Only log in development or when explicitly enabled
+      if (window.UBA_DEBUG_MODE) {
+        originalLog.apply(console, args);
+      }
+    };
+  }
+
   // Check if Supabase API service is available
   if (!window.UBAApi) {
     console.error('[SupabaseStoreAdapter] UBAApi not found. Please load supabase-api-service.js first.');
