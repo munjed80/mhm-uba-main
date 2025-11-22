@@ -497,12 +497,9 @@
         const icon = value ? '✅' : '❌';
         return `${icon} ${label}`;
       })
-      .join('
-');
+      .join('\n');
 
-    alert(`Permissions for ${roleInfo.name}:
-
-${permissionsList}`);
+    alert(`Permissions for ${roleInfo.name}:\n\n${permissionsList}`);
   }
 
   function formatDate(isoString) {

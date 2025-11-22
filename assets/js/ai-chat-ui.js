@@ -431,8 +431,7 @@
       formatted = formatted.replace(/\*(.+?)\*/g, '<em>$1</em>');
 
       // Line breaks
-      formatted = formatted.replace(/
-/g, '<br>');
+      formatted = formatted.replace(/\n/g, '<br>');
 
       // Code blocks
       formatted = formatted.replace(/`(.+?)`/g, '<code>$1</code>');
