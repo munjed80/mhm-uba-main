@@ -13,8 +13,8 @@
 // Add supabase-config.js to .gitignore
 
 // Replace these with your Supabase project credentials
-window.SUPABASE_URL = 'https://your-project-id.supabase.co';
-window.SUPABASE_ANON_KEY = 'your-anon-key-here';
+window.SUPABASE_URL = 'https://klevfdkwixblkiqllrpq.supabase.co';
+window.SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsZXZmZGt3aXhibGtpcWxscnBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4MzMyMTEsImV4cCI6MjA3OTQwOTIxMX0.vNBVa5h3AXShrmb4XmUmE7FKFtXiCwGefSMlW_Kxvmg';
 
 /**
  * To get your credentials:
@@ -23,6 +23,7 @@ window.SUPABASE_ANON_KEY = 'your-anon-key-here';
  * 3. Copy the "anon" / "public" key (NOT the service_role key)
  * 
  * Example:
- * window.SUPABASE_URL = 'https://abcdefghijklmnop.supabase.co';
- * window.SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+ * window.SUPABASE_URL = 'https://klevfdkwixblkiqllrpq.supabase.co';
+ * window.SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsZXZmZGt3aXhibGtpcWxscnBxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4MzMyMTEsImV4cCI6MjA3OTQwOTIxMX0.vNBVa5h3AXShrmb4XmUmE7FKFtXiCwGefSMlW_Kxvmg';
+
  */
