@@ -22,19 +22,43 @@
 
   // Helper: Show loading indicator
   function showLoading(message = 'Loading...') {
-    // Simple implementation - can be enhanced with UI overlays
-    console.log(`[Loading] ${message}`);
+    // Use UI helpers if available (Week 5)
+    if (window.UBALoading && window.UBALoading.show) {
+      // Loading will be shown per-container by calling code
+      console.log(`[Loading] ${message}`);
+    } else {
+      console.log(`[Loading] ${message}`);
+    }
   }
 
   // Helper: Hide loading indicator
   function hideLoading() {
-    console.log('[Loading] Complete');
+    if (window.UBALoading && window.UBALoading.hide) {
+      // Loading will be hidden per-container by calling code
+      console.log('[Loading] Complete');
+    } else {
+      console.log('[Loading] Complete');
+    }
   }
 
   // Helper: Show error message
   function showError(message) {
-    alert(`Error: ${message}`);
+    // Use notifications if available (Week 5)
+    if (window.notifyError) {
+      window.notifyError(message, 5000);
+    } else {
+      alert(`Error: ${message}`);
+    }
     console.error('[Error]', message);
+  }
+
+  // Helper: Show success message
+  function showSuccess(message) {
+    // Use notifications if available (Week 5)
+    if (window.notifySuccess) {
+      window.notifySuccess(message, 3000);
+    }
+    console.log('[Success]', message);
   }
 
   // =====================================================

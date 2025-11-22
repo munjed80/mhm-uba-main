@@ -72,6 +72,11 @@
       errorDiv.textContent = '';
     }
 
+    // Clear form errors if UI helpers are available
+    if (window.UBAFormHelpers) {
+      window.UBAFormHelpers.clearFormErrors('signup-form');
+    }
+
     // Validation
     if (!name || !email || !password || !confirmPassword) {
       showError('Please fill in all fields');
@@ -80,21 +85,51 @@
 
     if (name.length < 2) {
       showError('Name must be at least 2 characters');
+      if (window.UBAFormHelpers) {
+        window.UBAFormHelpers.showFieldError('name', 'Name must be at least 2 characters');
+      }
       return;
     }
 
     if (!validateEmail(email)) {
       showError('Please enter a valid email address');
+      if (window.UBAFormHelpers) {
+        window.UBAFormHelpers.showFieldError('email', 'Invalid email address');
+      }
       return;
     }
 
-    if (password.length < 6) {
-      showError('Password must be at least 6 characters');
-      return;
+    // Enhanced password validation (Week 5 requirement)
+    if (window.UBASecurity) {
+      const passwordCheck = window.UBASecurity.validatePassword(password);
+      if (!passwordCheck.valid) {
+        showError(passwordCheck.errors.join('. '));
+        if (window.UBAFormHelpers) {
+          window.UBAFormHelpers.showFieldError('password', passwordCheck.errors[0]);
+        }
+        return;
+      }
+    } else {
+      // Fallback validation
+      if (password.length < 8) {
+        showError('Password must be at least 8 characters');
+        return;
+      }
+      if (!/[a-zA-Z]/.test(password)) {
+        showError('Password must contain at least one letter');
+        return;
+      }
+      if (!/\d/.test(password)) {
+        showError('Password must contain at least one number');
+        return;
+      }
     }
 
     if (password !== confirmPassword) {
       showError('Passwords do not match');
+      if (window.UBAFormHelpers) {
+        window.UBAFormHelpers.showFieldError('confirm-password', 'Passwords do not match');
+      }
       return;
     }
 
@@ -116,13 +151,17 @@
       if (result && result.user) {
         console.log('[Auth] Signup successful:', result.user.email);
         
-        // Show success message
-        const successDiv = document.getElementById('signup-success');
-        if (successDiv) {
-          successDiv.textContent = 'Account created! Redirecting to login...';
-          successDiv.style.display = 'block';
+        // Show success notification (Week 5 improvement)
+        if (window.notifySuccess) {
+          window.notifySuccess('Account created! Redirecting to login...', 2000);
         } else {
-          alert('Account created successfully! Please login.');
+          const successDiv = document.getElementById('signup-success');
+          if (successDiv) {
+            successDiv.textContent = 'Account created! Redirecting to login...';
+            successDiv.style.display = 'block';
+          } else {
+            alert('Account created successfully! Please login.');
+          }
         }
         
         // Redirect to login after a short delay
@@ -135,15 +174,23 @@
     } catch (error) {
       console.error('[Auth] Signup error:', error);
       
+      // Improved error handling (Week 5 requirement)
       let errorMessage = 'Signup failed. Please try again.';
       
       if (error.message) {
-        if (error.message.includes('already registered')) {
+        const msg = error.message.toLowerCase();
+        if (msg.includes('already registered') || msg.includes('already exists') || msg.includes('already been taken')) {
           errorMessage = 'This email is already registered. Please login instead.';
-        } else if (error.message.includes('password')) {
-          errorMessage = 'Password is too weak. Please use a stronger password.';
+        } else if (msg.includes('invalid email')) {
+          errorMessage = 'Please enter a valid email address.';
+        } else if (msg.includes('password')) {
+          errorMessage = 'Password does not meet requirements. Please use a stronger password.';
+        } else if (msg.includes('network') || msg.includes('fetch')) {
+          errorMessage = 'Network error. Please check your connection and try again.';
         } else {
-          errorMessage = error.message;
+          // Don't expose raw Supabase errors to users
+          errorMessage = 'Unable to create account. Please try again later.';
+          console.error('[Auth] Raw error:', error.message);
         }
       }
       
@@ -161,11 +208,16 @@
    * Show error message
    */
   function showError(message) {
+    // Use notifications if available (Week 5)
+    if (window.notifyError) {
+      window.notifyError(message, 5000);
+    }
+    
     const errorDiv = document.getElementById('signup-error');
     if (errorDiv) {
       errorDiv.textContent = message;
       errorDiv.style.display = 'block';
-    } else {
+    } else if (!window.notifyError) {
       alert('Error: ' + message);
     }
   }

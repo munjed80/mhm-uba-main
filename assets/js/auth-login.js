@@ -70,6 +70,11 @@
       errorDiv.textContent = '';
     }
 
+    // Clear form errors if UI helpers are available
+    if (window.UBAFormHelpers) {
+      window.UBAFormHelpers.clearFormErrors('login-form');
+    }
+
     // Basic validation
     if (!email || !password) {
       showError('Please enter both email and password');
@@ -78,6 +83,9 @@
 
     if (!validateEmail(email)) {
       showError('Please enter a valid email address');
+      if (window.UBAFormHelpers) {
+        window.UBAFormHelpers.showFieldError('email', 'Invalid email address');
+      }
       return;
     }
 
@@ -102,23 +110,38 @@
         // Store user info in memory only (not localStorage for security)
         window.currentUser = result.user;
         
+        // Show success notification (Week 5 improvement)
+        if (window.notifySuccess) {
+          window.notifySuccess('Login successful! Redirecting...', 1500);
+        }
+        
         // Redirect to dashboard
-        window.location.href = 'index.html';
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 500);
       } else {
         showError('Login failed. Please check your credentials.');
       }
     } catch (error) {
       console.error('[Auth] Login error:', error);
       
+      // Improved error handling (Week 5 requirement)
       let errorMessage = 'Login failed. Please try again.';
       
       if (error.message) {
-        if (error.message.includes('Invalid login credentials')) {
+        const msg = error.message.toLowerCase();
+        if (msg.includes('invalid login credentials') || msg.includes('invalid email or password')) {
           errorMessage = 'Invalid email or password';
-        } else if (error.message.includes('Email not confirmed')) {
+        } else if (msg.includes('email not confirmed') || msg.includes('confirm')) {
           errorMessage = 'Please confirm your email address first';
+        } else if (msg.includes('too many requests') || msg.includes('rate limit')) {
+          errorMessage = 'Too many login attempts. Please try again later.';
+        } else if (msg.includes('network') || msg.includes('fetch')) {
+          errorMessage = 'Network error. Please check your connection and try again.';
         } else {
-          errorMessage = error.message;
+          // Don't expose raw Supabase errors to users
+          errorMessage = 'Unable to sign in. Please try again later.';
+          console.error('[Auth] Raw error:', error.message);
         }
       }
       
@@ -136,11 +159,16 @@
    * Show error message
    */
   function showError(message) {
+    // Use notifications if available (Week 5)
+    if (window.notifyError) {
+      window.notifyError(message, 5000);
+    }
+    
     const errorDiv = document.getElementById('login-error');
     if (errorDiv) {
       errorDiv.textContent = message;
       errorDiv.style.display = 'block';
-    } else {
+    } else if (!window.notifyError) {
       alert('Error: ' + message);
     }
   }
