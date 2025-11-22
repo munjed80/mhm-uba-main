@@ -58,6 +58,7 @@ pnpm-lock.yaml
 
 # Supabase
 .supabase/
+supabase-config.js
 
 # Backup files
 *.bak

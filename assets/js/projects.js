@@ -18,11 +18,17 @@
     }
   }
 
-  function updateProjectCounts() {
-    const store = window.ubaStore;
+  async function updateProjectCounts() {
+    const store = window.SupabaseStore || window.ubaStore;
     if (!store || !store.projects) return;
     
-    const projects = store.projects.getAll() || [];
+    let projects = [];
+    if (window.SupabaseStore) {
+      projects = await store.projects.getAll() || [];
+    } else {
+      projects = store.projects.getAll() || [];
+    }
+    
     const stages = ['lead', 'in_progress', 'ongoing', 'completed'];
     
     // Update individual column counts
@@ -75,11 +81,17 @@
     }
   }
 
-  function renderProjects() {
-    const store = window.ubaStore;
+  async function renderProjects() {
+    const store = window.SupabaseStore || window.ubaStore;
     if (!store || !store.projects) return;
     
-    let projects = store.projects.getAll() || [];
+    let projects = [];
+    if (window.SupabaseStore) {
+      projects = await store.projects.getAll() || [];
+    } else {
+      projects = store.projects.getAll() || [];
+    }
+    
     projects = filterProjects(sortProjects(projects));
     
     const stages = ['lead', 'in_progress', 'ongoing', 'completed'];
@@ -103,7 +115,7 @@
       }
     });
 
-    updateProjectCounts();
+    await updateProjectCounts();
   }
 
   function createProjectCard(project) {
@@ -293,7 +305,7 @@
     }
   }
 
-  function handleDrop(e) {
+  async function handleDrop(e) {
     e.preventDefault();
     e.target.classList.remove('uba-drag-over');
     
@@ -306,18 +318,25 @@
     if (!projectId || !newStage || oldStage === newStage) return;
 
     // Update project stage in store
-    const store = window.ubaStore;
+    const store = window.SupabaseStore || window.ubaStore;
     if (store && store.projects) {
       try {
-        store.projects.update(projectId, { 
-          stage: newStage,
-          updated: new Date().toISOString()
-        });
+        if (window.SupabaseStore) {
+          await store.projects.update(projectId, { 
+            stage: newStage,
+            updated: new Date().toISOString()
+          });
+        } else {
+          store.projects.update(projectId, { 
+            stage: newStage,
+            updated: new Date().toISOString()
+          });
+        }
         
         // Show success feedback
         showToast(`Project moved to ${newStage.replace('_', ' ')}`, 'success');
         
-        renderProjects();
+        await renderProjects();
       } catch (err) {
         console.warn('Error updating project stage:', err);
         showToast('Failed to move project', 'error');
@@ -380,11 +399,17 @@
     qs("project-title").focus();
   }
 
-  function openEditForm(id) {
-    const store = window.ubaStore;
+  async function openEditForm(id) {
+    const store = window.SupabaseStore || window.ubaStore;
     if (!store || !store.projects) return;
     
-    const project = store.projects.get(id);
+    let project = null;
+    if (window.SupabaseStore) {
+      project = await store.projects.get(id);
+    } else {
+      project = store.projects.get(id);
+    }
+    
     if (!project) return;
     
     qs("project-id").value = project.id;
@@ -505,11 +530,17 @@
     showModal("project-detail-modal");
   }
 
-  function deleteProject(id) {
-    const store = window.ubaStore;
+  async function deleteProject(id) {
+    const store = window.SupabaseStore || window.ubaStore;
     if (!store || !store.projects) return;
     
-    const project = store.projects.get(id);
+    let project = null;
+    if (window.SupabaseStore) {
+      project = await store.projects.get(id);
+    } else {
+      project = store.projects.get(id);
+    }
+    
     if (!project) return;
     
     if (!confirm(`Delete "${project.title}"?
@@ -517,9 +548,13 @@
 This action cannot be undone.`)) return;
     
     try {
-      store.projects.delete(id);
+      if (window.SupabaseStore) {
+        await store.projects.delete(id);
+      } else {
+        store.projects.delete(id);
+      }
       showToast(`Project "${project.title}" deleted`, 'success');
-      renderProjects();
+      await renderProjects();
     } catch (e) {
       console.warn("Error deleting project:", e);
       showToast('Failed to delete project', 'error');
@@ -534,9 +569,9 @@ This action cannot be undone.`)) return;
     // Form submission
     const form = qs("project-form");
     if (form) {
-      form.addEventListener("submit", (e) => {
+      form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const store = window.ubaStore;
+        const store = window.SupabaseStore || window.ubaStore;
         if (!store || !store.projects) return;
         
         const id = qs("project-id").value;
@@ -563,14 +598,22 @@ This action cannot be undone.`)) return;
         
         try {
           if (id) {
-            store.projects.update(id, payload);
+            if (window.SupabaseStore) {
+              await store.projects.update(id, payload);
+            } else {
+              store.projects.update(id, payload);
+            }
             showToast(`Project "${title}" updated`, 'success');
           } else {
-            store.projects.create(payload);
+            if (window.SupabaseStore) {
+              await store.projects.create(payload);
+            } else {
+              store.projects.create(payload);
+            }
             showToast(`Project "${title}" created`, 'success');
           }
           hideModal("project-form-modal");
-          renderProjects();
+          await renderProjects();
         } catch (e) {
           console.warn("Error saving project:", e);
           showToast('Failed to save project', 'error');
@@ -631,16 +674,21 @@ This action cannot be undone.`)) return;
     });
   }
 
-  function initProjectsPage() {
+  async function initProjectsPage() {
     try {
       bindEvents();
       setupDropZones();
-      renderProjects();
+      await renderProjects();
       
       // Auto-focus search if no projects exist
-      const store = window.ubaStore;
+      const store = window.SupabaseStore || window.ubaStore;
       if (store && store.projects) {
-        const projects = store.projects.getAll() || [];
+        let projects = [];
+        if (window.SupabaseStore) {
+          projects = await store.projects.getAll() || [];
+        } else {
+          projects = store.projects.getAll() || [];
+        }
         if (projects.length === 0) {
           // Show welcome state or auto-open add form after a delay
           setTimeout(() => {

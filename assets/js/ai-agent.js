@@ -878,20 +878,13 @@
       }
       
       const insights = analysis.insights;
-      let response = "Here's what I found:
-
-";
+      let response = "Here's what I found:\n\n";
       
-      response += `📊 **Workspace Overview:**
-`;
-      response += `- ${insights.summary.totalTasks} tasks (${insights.tasks.overdue} overdue)
-`;
-      response += `- ${insights.summary.totalClients} clients
-`;
-      response += `- ${insights.summary.totalProjects} projects
-`;
-      response += `- ${insights.summary.totalInvoices} invoices
-`;
+      response += '📊 **Workspace Overview:**\n';
+      response += `- ${insights.summary.totalTasks} tasks (${insights.tasks.overdue} overdue)\n`;
+      response += `- ${insights.summary.totalClients} clients\n`;
+      response += `- ${insights.summary.totalProjects} projects\n`;
+      response += `- ${insights.summary.totalInvoices} invoices\n`;
       response += `- Activity score: ${insights.summary.activityScore}/100
 
 `;
@@ -1280,8 +1273,7 @@
       }
       
       return {
-        content: content + (recommendations.length > 0 ? recommendations.join('
-') : '- Project is on track'),
+        content: content + (recommendations.length > 0 ? recommendations.join('\n') : '- Project is on track'),
         data: { project, progress, tasks: projectTasks.length, completed: completedTasks.length },
         recommendations
       };
@@ -1331,8 +1323,7 @@
       }
       
       return {
-        content: content + (recommendations.length > 0 ? recommendations.join('
-') : '- Client relationship is healthy'),
+        content: content + (recommendations.length > 0 ? recommendations.join('\n') : '- Client relationship is healthy'),
         data: { client, revenue: totalRevenue, projects: clientProjects.length, invoices: clientInvoices.length },
         recommendations
       };
@@ -1382,8 +1373,7 @@
       }
       
       return {
-        content: content + (recommendations.length > 0 ? recommendations.join('
-') : '- You\'re all caught up!'),
+        content: content + (recommendations.length > 0 ? recommendations.join('\n') : '- You\'re all caught up!'),
         data: { total: tasks.length, completed: completed.length, overdue: overdue.length, dueToday: dueToday.length },
         recommendations
       };
@@ -1429,8 +1419,7 @@
       }
       
       return {
-        content: content + (recommendations.length > 0 ? recommendations.join('
-') : '- Invoice management is on track'),
+        content: content + (recommendations.length > 0 ? recommendations.join('\n') : '- Invoice management is on track'),
         data: { total: invoices.length, paid: paid.length, unpaid: unpaid.length, revenue: totalRevenue, outstanding },
         recommendations
       };
@@ -1468,8 +1457,7 @@
       const recommendations = insights.recommendations.slice(0, 3).map(r => `- ${r.message}`);
       
       return {
-        content: content + (recommendations.length > 0 ? recommendations.join('
-') : '- Workspace is performing well'),
+        content: content + (recommendations.length > 0 ? recommendations.join('\n') : '- Workspace is performing well'),
         data: insights.summary,
         recommendations: insights.recommendations
       };
@@ -1484,9 +1472,7 @@
       
       if (!subscription || !usage) {
         return {
-          content: '**Billing Usage**
-
-No subscription data available.',
+          content: '**Billing Usage**\n\nNo subscription data available.',
           data: {},
           recommendations: []
         };
@@ -1521,8 +1507,7 @@ No subscription data available.',
       });
       
       return {
-        content: content + (recommendations.length > 0 ? recommendations.join('
-') : '- Usage is within limits'),
+        content: content + (recommendations.length > 0 ? recommendations.join('\n') : '- Usage is within limits'),
         data: { plan: plan?.name, usage, limits },
         recommendations
       };

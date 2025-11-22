@@ -76,17 +76,12 @@
       
       // Add professional salutations if missing
       if (!polished.match(/^(Dear|Hi|Hello)/i)) {
-        polished = 'Dear valued customer,
-
-' + polished;
+        polished = 'Dear valued customer,\n\n' + polished;
       }
       
       // Add professional closing if missing
       if (!polished.match(/(Regards|Sincerely|Best)/i)) {
-        polished += '
-
-Best regards,
-The Team';
+        polished += '\n\nBest regards,\nThe Team';
       }
       
       return polished;

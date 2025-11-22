@@ -116,9 +116,7 @@
           results.push(summary);
           
           // Post to AI chat
-          this._postToAIChat('📊 **Weekly Summary**
-
-' + (summary.content || 'Summary generated'));
+          this._postToAIChat('📊 **Weekly Summary**\n\n' + (summary.content || 'Summary generated'));
         }
         
         // Update last run time
@@ -156,18 +154,12 @@
           const message = `⚠️ **Overdue Tasks Alert**
 
 You have ${overdueTasks.length} overdue task${overdueTasks.length > 1 ? 's' : ''}:
-
 ` +
             overdueTasks.slice(0, 5).map((t, i) => 
               `${i + 1}. ${t.title || t.name || 'Untitled'} (due ${new Date(t.dueDate).toLocaleDateString()})`
-            ).join('
-') +
-            (overdueTasks.length > 5 ? `
-
-...and ${overdueTasks.length - 5} more.` : '') +
-            '
-
-💡 Tip: Consider rescheduling or delegating these tasks.';
+            ).join('\n') +
+            (overdueTasks.length > 5 ? `\n\n...and ${overdueTasks.length - 5} more.` : '') +
+            '\n\n💡 Tip: Consider rescheduling or delegating these tasks.';
           
           this._postToAIChat(message);
           
@@ -216,14 +208,9 @@ ${coldLeads.length} lead${coldLeads.length > 1 ? 's need' : ' needs'} follow-up:
             coldLeads.slice(0, 5).map((l, i) => {
               const lastContact = l.lastContactDate ? new Date(l.lastContactDate).toLocaleDateString() : 'Never';
               return `${i + 1}. ${l.name || l.company || 'Untitled'} (Last contact: ${lastContact})`;
-            }).join('
-') +
-            (coldLeads.length > 5 ? `
-
-...and ${coldLeads.length - 5} more.` : '') +
-            '
-
-💡 Tip: Reach out to keep the conversation warm!';
+            }).join('\n') +
+            (coldLeads.length > 5 ? `\n\n...and ${coldLeads.length - 5} more.` : '') +
+            '\n\n💡 Tip: Reach out to keep the conversation warm!';
           
           this._postToAIChat(message);
           
@@ -268,15 +255,11 @@ ${coldLeads.length} lead${coldLeads.length > 1 ? 's need' : ' needs'} follow-up:
           const message = `⚠️ **Project Health Alert**
 
 ${atRiskProjects.length} project${atRiskProjects.length > 1 ? 's are' : ' is'} at risk:
-
 ` +
             atRiskProjects.map((p, i) => 
               `${i + 1}. ${p.project} - Health Score: ${p.score}/100`
-            ).join('
-') +
-            '
-
-💡 Tip: Review timeline, budget, and resources for these projects.';
+            ).join('\n') +
+            '\n\n💡 Tip: Review timeline, budget, and resources for these projects.';
           
           this._postToAIChat(message);
           
@@ -344,13 +327,8 @@ ${atRiskProjects.length} project${atRiskProjects.length > 1 ? 's are' : ' is'} a
         }
         
         if (insights.length > 0) {
-          const message = `💳 **Billing Insights**
-
-` + insights.join('
-') +
-            '
-
-💡 Tip: Send reminders for overdue invoices and follow up on upcoming payments.';
+          const message = `💳 **Billing Insights**\n\n` + insights.join('\n') +
+            '\n\n💡 Tip: Send reminders for overdue invoices and follow up on upcoming payments.';
           
           this._postToAIChat(message);
           

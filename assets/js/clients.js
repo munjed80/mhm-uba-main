@@ -84,10 +84,17 @@ function getPagedClients() {
   return filteredClients.slice(startIndex, endIndex);
 }
 
-function editClient(id) {
-  const store = window.ubaStore;
-  const clients = (store && store.clients.getAll()) || [];
-  const client = clients.find(c => c.id === id);
+async function editClient(id) {
+  // Use Supabase store if available, otherwise fall back to localStorage
+  const store = window.SupabaseStore || window.ubaStore;
+  
+  let client = null;
+  if (window.SupabaseStore) {
+    client = await store.clients.get(id);
+  } else {
+    const clients = (store && store.clients.getAll()) || [];
+    client = clients.find(c => c.id === id);
+  }
   
   if (!client) return;
   
