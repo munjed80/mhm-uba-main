@@ -37,11 +37,17 @@
     };
   }
 
-  function updateTaskCounts() {
-    const store = window.ubaStore;
+  async function updateTaskCounts() {
+    const store = window.SupabaseStore || window.ubaStore;
     if (!store || !store.tasks) return;
     
-    const tasks = store.tasks.getAll() || [];
+    let tasks = [];
+    if (window.SupabaseStore) {
+      tasks = await store.tasks.getAll() || [];
+    } else {
+      tasks = store.tasks.getAll() || [];
+    }
+    
     const statuses = ['todo', 'in_progress', 'done'];
     
     // Update individual column counts
@@ -93,11 +99,17 @@
     });
   }
 
-  function renderTasks() {
-    const store = window.ubaStore;
+  async function renderTasks() {
+    const store = window.SupabaseStore || window.ubaStore;
     if (!store || !store.tasks) return;
     
-    let tasks = store.tasks.getAll() || [];
+    let tasks = [];
+    if (window.SupabaseStore) {
+      tasks = await store.tasks.getAll() || [];
+    } else {
+      tasks = store.tasks.getAll() || [];
+    }
+    
     tasks = sortTasks(filterTasks(tasks));
     
     const statuses = ['todo', 'in_progress', 'done'];
@@ -302,20 +314,33 @@
     return card;
   }
 
-  function updateTaskStatus(taskId, newStatus) {
-    const store = window.ubaStore;
+  async function updateTaskStatus(taskId, newStatus) {
+    const store = window.SupabaseStore || window.ubaStore;
     if (!store || !store.tasks) return;
     
     try {
       // Get original task for automation trigger
-      const originalTask = store.tasks.getById ? store.tasks.getById(taskId) : 
-                          store.tasks.get ? store.tasks.get(taskId) : null;
+      let originalTask = null;
+      if (window.SupabaseStore) {
+        originalTask = await store.tasks.get(taskId);
+      } else {
+        originalTask = store.tasks.getById ? store.tasks.getById(taskId) : 
+                            store.tasks.get ? store.tasks.get(taskId) : null;
+      }
+      
       const oldStatus = originalTask ? originalTask.status : null;
       
-      store.tasks.update(taskId, { 
-        status: newStatus, 
-        updated: new Date().toISOString()
-      });
+      if (window.SupabaseStore) {
+        await store.tasks.update(taskId, { 
+          status: newStatus, 
+          updated: new Date().toISOString()
+        });
+      } else {
+        store.tasks.update(taskId, { 
+          status: newStatus, 
+          updated: new Date().toISOString()
+        });
+      }
       
       const statusLabels = {
         todo: 'To Do',
@@ -331,7 +356,7 @@
       }
       
       showToast(`Task moved to ${statusLabels[newStatus]}`, 'success');
-      renderTasks();
+      await renderTasks();
     } catch (err) {
       console.warn('Error updating task status:', err);
       showToast('Failed to update task', 'error');
@@ -494,11 +519,17 @@
     qs("task-title").focus();
   }
 
-  function editTask(id) {
-    const store = window.ubaStore;
+  async function editTask(id) {
+    const store = window.SupabaseStore || window.ubaStore;
     if (!store || !store.tasks) return;
     
-    const task = store.tasks.get(id);
+    let task = null;
+    if (window.SupabaseStore) {
+      task = await store.tasks.get(id);
+    } else {
+      task = store.tasks.get(id);
+    }
+    
     if (!task) return;
     
     qs("task-id").value = task.id;
@@ -517,14 +548,20 @@
     qs("task-title").focus();
   }
 
-  function viewTask(id) {
-    const store = window.ubaStore;
+  async function viewTask(id) {
+    const store = window.SupabaseStore || window.ubaStore;
     if (!store || !store.tasks) return;
     
-    const task = store.tasks.get(id);
+    let task = null;
+    if (window.SupabaseStore) {
+      task = await store.tasks.get(id);
+    } else {
+      task = store.tasks.get(id);
+    }
+    
     if (!task) return;
 
-    const project = task.projectId && store.projects ? store.projects.get(task.projectId) : null;
+    const project = task.projectId && store.projects ? (window.SupabaseStore ? await store.projects.get(task.projectId) : store.projects.get(task.projectId)) : null;
 
     const content = qs("task-detail-content");
     const titleEl = qs("task-detail-title");
@@ -673,14 +710,20 @@
     showModal("task-detail-modal");
   }
 
-  function duplicateTask(id) {
-    const store = window.ubaStore;
+  async function duplicateTask(id) {
+    const store = window.SupabaseStore || window.ubaStore;
     if (!store || !store.tasks) return;
     
-    const task = store.tasks.get(id);
+    let task = null;
+    if (window.SupabaseStore) {
+      task = await store.tasks.get(id);
+    } else {
+      task = store.tasks.get(id);
+    }
+    
     if (!task) return;
     
-    const newTask = {
+    const newTaskData = {
       title: `${task.title} (Copy)`,
       projectId: task.projectId,
       status: 'todo',
@@ -692,26 +735,37 @@
     };
     
     try {
-      const newTask = store.tasks.create(newTask);
+      let createdTask = null;
+      if (window.SupabaseStore) {
+        createdTask = await store.tasks.create(newTaskData);
+      } else {
+        createdTask = store.tasks.create(newTaskData);
+      }
       
       // Trigger automations for new task
-      if (typeof window.runAutomations === 'function' && newTask) {
-        window.runAutomations('task_created', { task: newTask });
+      if (typeof window.runAutomations === 'function' && createdTask) {
+        window.runAutomations('task_created', { task: createdTask });
       }
       
       showToast('Task duplicated successfully', 'success');
-      renderTasks();
+      await renderTasks();
     } catch (e) {
       console.warn("Error duplicating task:", e);
       showToast('Failed to duplicate task', 'error');
     }
   }
 
-  function deleteTask(id) {
-    const store = window.ubaStore;
+  async function deleteTask(id) {
+    const store = window.SupabaseStore || window.ubaStore;
     if (!store || !store.tasks) return;
     
-    const task = store.tasks.get(id);
+    let task = null;
+    if (window.SupabaseStore) {
+      task = await store.tasks.get(id);
+    } else {
+      task = store.tasks.get(id);
+    }
+    
     if (!task) return;
     
     if (!confirm(`Delete "${task.title}"?
@@ -719,9 +773,13 @@
 This action cannot be undone.`)) return;
     
     try {
-      store.tasks.delete(id);
+      if (window.SupabaseStore) {
+        await store.tasks.delete(id);
+      } else {
+        store.tasks.delete(id);
+      }
       showToast(`Task "${task.title}" deleted`, 'success');
-      renderTasks();
+      await renderTasks();
     } catch (e) {
       console.warn("Error deleting task:", e);
       showToast('Failed to delete task', 'error');
@@ -732,9 +790,9 @@ This action cannot be undone.`)) return;
     // Form submission
     const form = qs("task-form");
     if (form) {
-      form.addEventListener("submit", (e) => {
+      form.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const store = window.ubaStore;
+        const store = window.SupabaseStore || window.ubaStore;
         if (!store || !store.tasks) return;
         
         const id = qs("task-id").value;
@@ -763,10 +821,19 @@ This action cannot be undone.`)) return;
         
         try {
           if (id) {
-            store.tasks.update(id, payload);
+            if (window.SupabaseStore) {
+              await store.tasks.update(id, payload);
+            } else {
+              store.tasks.update(id, payload);
+            }
             showToast(`Task "${title}" updated`, 'success');
           } else {
-            const newTask = store.tasks.create(payload);
+            let newTask = null;
+            if (window.SupabaseStore) {
+              newTask = await store.tasks.create(payload);
+            } else {
+              newTask = store.tasks.create(payload);
+            }
             showToast(`Task "${title}" created`, 'success');
             
             // Trigger automations for new task
@@ -775,7 +842,7 @@ This action cannot be undone.`)) return;
             }
           }
           hideModal("task-form-modal");
-          renderTasks();
+          await renderTasks();
         } catch (e) {
           console.warn("Error saving task:", e);
           showToast('Failed to save task', 'error');
@@ -844,12 +911,12 @@ This action cannot be undone.`)) return;
     });
   }
 
-  function initTasksPage() {
+  async function initTasksPage() {
     try {
       populateProjectDropdowns();
       bindEvents();
       setupDropZones();
-      renderTasks();
+      await renderTasks();
 
       // Handle URL parameters
       const urlParams = getUrlParams();
