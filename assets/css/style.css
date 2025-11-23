@@ -4181,10 +4181,14 @@ a:focus-visible {
   align-items: center;
   justify-content: center;
   pointer-events: none;
+  /* Ensure modal is above all other content */
+  isolation: isolate;
 }
 
 .uba-modal:not(.is-hidden) {
   /* When not explicitly hidden, show the modal */
+  display: flex !important;
+  pointer-events: auto !important;
   opacity: 0;
   animation: modalFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
@@ -4205,6 +4209,8 @@ a:focus-visible {
   backdrop-filter: blur(2px);
   animation: modalBackdropFadeIn 0.3s ease forwards;
   pointer-events: auto;
+  /* Ensure backdrop captures all clicks */
+  z-index: 1;
 }
 
 .uba-modal-overlay {
@@ -4217,6 +4223,8 @@ a:focus-visible {
   backdrop-filter: blur(2px);
   animation: modalBackdropFadeIn 0.3s ease forwards;
   pointer-events: auto;
+  /* Ensure overlay captures all clicks */
+  z-index: 1;
 }
 
 .uba-modal-dialog {
@@ -4231,6 +4239,11 @@ a:focus-visible {
   overflow: hidden;
   transform: translateY(-20px);
   animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  /* Critical: Ensure dialog is above overlay and captures clicks */
+  z-index: 2;
+  pointer-events: auto;
+  /* Prevent clicks from passing through to overlay */
+  -webkit-tap-highlight-color: transparent;
 }
 
 .uba-modal-header {
@@ -4277,6 +4290,21 @@ a:focus-visible {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
+}
+
+/* Body scroll lock for modals - mobile-friendly */
+body.uba-modal-open {
+  overflow: hidden !important;
+  /* iOS Safari scroll lock */
+  position: fixed !important;
+  width: 100% !important;
+  height: 100% !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure modal body can still scroll */
+.uba-modal-body {
+  -webkit-overflow-scrolling: touch;
 }
 
 .uba-form-group {
@@ -6025,6 +6053,20 @@ a:focus-visible {
 }
 
 .uba-modal-content {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow: hidden;
+  /* Critical: Ensure content is above overlay and captures clicks */
+  z-index: 2;
+  pointer-events: auto;
+  /* Prevent clicks from passing through to overlay */
+  -webkit-tap-highlight-color: transparent;
   animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

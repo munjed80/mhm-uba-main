@@ -10,6 +10,9 @@ console.log("Running in local/demo mode — Supabase disabled");
 // Global Modal Management System
 // ======================================================
 
+// Store scroll position for iOS scroll lock
+let scrollPosition = 0;
+
 // Unified modal management functions
 function showModal(modalId) {
   const modal = document.getElementById(modalId);
@@ -18,6 +21,9 @@ function showModal(modalId) {
     return;
   }
 
+  // Store current scroll position for iOS
+  scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+  
   // Handle different modal patterns
   if (modal.classList.contains('uba-modal')) {
     // New pattern with .is-hidden class
@@ -31,7 +37,9 @@ function showModal(modalId) {
     modal.style.pointerEvents = 'auto'; // Ensure pointer events are enabled
   }
   
-  document.body.style.overflow = 'hidden';
+  // Apply mobile-friendly scroll lock
+  document.body.classList.add('uba-modal-open');
+  document.body.style.top = `-${scrollPosition}px`;
   
   // Focus first input if available
   setTimeout(() => {
@@ -59,7 +67,11 @@ function hideModal(modalId) {
   // Always set display none and disable pointer events for both patterns
   modal.style.display = 'none';
   modal.style.pointerEvents = 'none';
-  document.body.style.overflow = '';
+  
+  // Remove scroll lock and restore scroll position
+  document.body.classList.remove('uba-modal-open');
+  document.body.style.top = '';
+  window.scrollTo(0, scrollPosition);
 }
 
 function closeModal(modalId) {
@@ -78,6 +90,29 @@ function initGlobalModalHandlers() {
     setTimeout(() => recentlyOpenedModals.delete(modalId), 300);
     return originalShowModal.apply(this, arguments);
   };
+  
+  // Prevent clicks inside modal dialog from bubbling to backdrop/overlay
+  // BUT allow close buttons and other interactive elements to work
+  document.addEventListener('click', (e) => {
+    // Don't stop propagation for close buttons or other control elements
+    if (e.target.classList.contains('uba-modal-close') || 
+        e.target.closest('.uba-modal-close') ||
+        e.target.classList.contains('uba-btn-ghost') ||
+        e.target.classList.contains('uba-btn-primary')) {
+      return; // Let these events bubble normally
+    }
+    
+    // If clicking inside a modal dialog (but not on backdrop/overlay), stop propagation
+    const modalDialog = e.target.closest('.uba-modal-dialog') || e.target.closest('.uba-modal-content');
+    const isBackdrop = e.target.classList.contains('uba-modal') || 
+                       e.target.classList.contains('uba-modal-backdrop') ||
+                       e.target.classList.contains('uba-modal-overlay');
+    
+    if (modalDialog && !isBackdrop) {
+      e.stopPropagation();
+      return;
+    }
+  }, true); // Use capture phase to ensure this runs first
   
   // ESC key handler for all modals
   document.addEventListener('keydown', (e) => {
@@ -98,7 +133,7 @@ function initGlobalModalHandlers() {
     }
   });
 
-  // Click outside to close modals
+  // Click outside to close modals (backdrop/overlay clicks)
   document.addEventListener('click', (e) => {
     // Only close if clicking directly on the modal backdrop or overlay, not its children
     if (e.target.classList.contains('uba-modal') || 
@@ -121,6 +156,14 @@ function initGlobalModalHandlers() {
       }
     }
   });
+  
+  // Touch event handlers for mobile
+  document.addEventListener('touchstart', (e) => {
+    // Prevent touch events from passing through modal dialog
+    if (e.target.closest('.uba-modal-dialog') || e.target.closest('.uba-modal-content')) {
+      e.stopPropagation();
+    }
+  }, { passive: true, capture: true });
 }
 
 // Make modal functions globally available
