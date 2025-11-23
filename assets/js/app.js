@@ -4144,3 +4144,92 @@ const renderSettingsPage = () => {
     });
   }
 };
+
+// ======================================================
+// Mobile Navigation Handler
+// ======================================================
+(function initMobileNav() {
+  'use strict';
+  
+  // Only run on mobile/tablet
+  function isMobile() {
+    return window.innerWidth <= 768;
+  }
+  
+  // Create mobile nav toggle button and overlay
+  function setupMobileNav() {
+    if (!isMobile()) return;
+    
+    const sidebar = document.querySelector('.uba-sidebar');
+    if (!sidebar) return;
+    
+    // Create toggle button if it doesn't exist
+    let toggleBtn = document.querySelector('.uba-mobile-nav-toggle');
+    if (!toggleBtn) {
+      toggleBtn = document.createElement('button');
+      toggleBtn.className = 'uba-mobile-nav-toggle';
+      toggleBtn.innerHTML = '☰';
+      toggleBtn.setAttribute('aria-label', 'Toggle navigation');
+      document.body.appendChild(toggleBtn);
+    }
+    
+    // Create overlay if it doesn't exist
+    let overlay = document.querySelector('.uba-sidebar-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.className = 'uba-sidebar-overlay';
+      document.body.appendChild(overlay);
+    }
+    
+    // Toggle sidebar
+    function toggleSidebar() {
+      sidebar.classList.toggle('is-open');
+      overlay.classList.toggle('is-visible');
+      document.body.style.overflow = sidebar.classList.contains('is-open') ? 'hidden' : '';
+    }
+    
+    // Close sidebar
+    function closeSidebar() {
+      sidebar.classList.remove('is-open');
+      overlay.classList.remove('is-visible');
+      document.body.style.overflow = '';
+    }
+    
+    // Event listeners
+    toggleBtn.addEventListener('click', toggleSidebar);
+    overlay.addEventListener('click', closeSidebar);
+    
+    // Close sidebar when clicking on navigation links
+    const navLinks = sidebar.querySelectorAll('.uba-nav-btn, .uba-nav a');
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        if (isMobile()) {
+          closeSidebar();
+        }
+      });
+    });
+    
+    // Close sidebar on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && sidebar.classList.contains('is-open')) {
+        closeSidebar();
+      }
+    });
+  }
+  
+  // Initialize on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupMobileNav);
+  } else {
+    setupMobileNav();
+  }
+  
+  // Re-initialize on window resize
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      setupMobileNav();
+    }, 250);
+  });
+})();
