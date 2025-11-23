@@ -636,13 +636,22 @@
               <a href="tasks.html?project=${projectId}" class="uba-btn uba-btn-primary uba-btn-sm">
                 <span class="icon">✅</span> ${tasks.length ? 'Manage Tasks' : 'Add Tasks'}
               </a>
-              <button class="uba-btn uba-btn-ghost uba-btn-sm" onclick="window.editProject('${projectId}'); window.hideModal('project-detail-modal');">
+              <button class="uba-btn uba-btn-ghost uba-btn-sm" data-edit-project="${projectId}">
                 <span class="icon">✏️</span> Edit Project
               </button>
             </div>
           </div>
         </div>
       `;
+      
+      // Add event listener for edit button
+      const editBtn = contentEl.querySelector('[data-edit-project]');
+      if (editBtn) {
+        editBtn.addEventListener('click', () => {
+          hideModal('project-detail-modal');
+          editProject(editBtn.dataset.editProject);
+        });
+      }
     }
     
     showModal('project-detail-modal');
