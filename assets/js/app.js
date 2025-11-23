@@ -700,6 +700,7 @@ async function getCurrentUserId() {
 window.login = async function () {
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
+  const rememberMeInput = document.getElementById("remember-me");
   const errorBox = document.getElementById("errorBox");
 
   if (errorBox) errorBox.textContent = "";
@@ -714,30 +715,85 @@ window.login = async function () {
 
   const email = emailInput.value.trim();
   const password = passwordInput.value;
+  const rememberMe = rememberMeInput ? rememberMeInput.checked : true;
 
   if (!email || !password) {
     if (errorBox) {
-      errorBox.textContent = t("auth.login.missing");
+      errorBox.textContent = t("auth.login.missing") || 'Please enter both email and password';
     }
     return;
   }
 
   try {
-    const store = window.ubaStore;
-    if (store && store.auth && typeof store.auth.login === "function") {
-      const result = store.auth.login(email, password);
-      // set label if present
-      const label = document.getElementById("uba-user-label");
-      if (label && result && result.user)
-        label.textContent = result.user.name || result.user.email || "User";
-      window.location.href = "index.html";
-      return;
+    // Check if Supabase is configured and ready
+    if (window.UbaAPI && window.UbaAPI.isReady()) {
+      console.log('[Login] Using Supabase authentication');
+      
+      // Attempt Supabase login
+      const result = await window.UbaAPI.auth.login(email, password);
+
+      if (result.success) {
+        console.log('[Login] ✅ Login successful');
+        
+        // Store remember me preference
+        if (rememberMe) {
+          localStorage.setItem('uba-remember-me', 'true');
+          console.log('[Login] Session will persist across browser restarts');
+        } else {
+          localStorage.setItem('uba-remember-me', 'false');
+          console.log('[Login] Session will expire on browser close');
+        }
+        
+        // Update user label if present
+        const label = document.getElementById("uba-user-label");
+        if (label && result.data && result.data.user) {
+          label.textContent = result.data.user.email || "User";
+        }
+        
+        // Redirect to dashboard
+        window.location.href = "index.html";
+        return;
+      } else {
+        // Show Supabase error
+        if (errorBox) {
+          errorBox.textContent = result.error || 'Login failed. Please check your credentials.';
+        }
+        console.error('[Login] Login failed:', result.error);
+        return;
+      }
     }
-    // fallback: redirect
+    
+    // Fallback to demo/local mode
+    console.log('[Login] Supabase not configured, using demo mode');
+    
+    // Store demo user info
+    const demoUserData = {
+      email: email,
+      mode: 'demo',
+      loginTime: new Date().toISOString(),
+      rememberMe: rememberMe
+    };
+    
+    if (rememberMe) {
+      localStorage.setItem('uba-demo-user', JSON.stringify(demoUserData));
+      localStorage.setItem('uba-remember-me', 'true');
+    } else {
+      // For session-only mode in demo, use sessionStorage
+      sessionStorage.setItem('uba-demo-user-session', JSON.stringify(demoUserData));
+      localStorage.setItem('uba-remember-me', 'false');
+    }
+    
+    // Update user label if present
+    const label = document.getElementById("uba-user-label");
+    if (label) {
+      label.textContent = email.split('@')[0] || "Demo User";
+    }
+
+    // Redirect to dashboard
     window.location.href = "index.html";
   } catch (e) {
     console.error("login error", e);
-    if (errorBox) errorBox.textContent = e.message || t("auth.login.network");
+    if (errorBox) errorBox.textContent = e.message || t("auth.login.network") || 'An error occurred. Please try again.';
   }
 };
 

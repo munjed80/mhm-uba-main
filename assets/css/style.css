@@ -135,26 +135,28 @@
   top: 0;
   bottom: 0;
   left: 0;
-  width: 200px;
+  width: 220px;
   background: var(--bg-soft);
   border-right: 1px solid rgba(51, 65, 85, 0.7);
-  padding: 16px 0 18px 0;
+  padding: 20px 0 20px 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 1000;
-  /* WordPress-style: prevent any content shifts or animations that affect layout */
+  /* Enhanced visual polish */
   will-change: auto;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
 }
 
 .uba-logo {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 0 14px;
+  padding: 0 16px;
+  margin-bottom: 4px;
 }
 
 .uba-logo span {
@@ -169,22 +171,22 @@
   color: var(--muted);
   margin-top: 4px;
   line-height: 1.4;
-  padding: 0 14px;
-  display: none; /* Hidden in narrow sidebar like WordPress */
+  padding: 0 16px;
+  display: none; /* Hidden in compact sidebar */
 }
 
 .uba-badge {
-  margin-top: 8px;
-  margin-left: 14px;
-  margin-right: 14px;
+  margin-top: 10px;
+  margin-left: 16px;
+  margin-right: 16px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 8px;
+  padding: 5px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.4);
   font-size: 10px;
-  color: var(--muted);
+  color: rgba(148, 163, 184, 0.9);
   background: rgba(15, 23, 42, 0.9);
 }
 
@@ -194,28 +196,40 @@
   border-radius: 999px;
   background: radial-gradient(circle, var(--good), var(--accent));
   box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 .uba-nav-label {
-  margin-top: 8px;
+  margin-top: 12px;
+  margin-bottom: 6px;
   font-size: 10px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
-  padding: 0 14px;
+  padding: 0 16px;
+  font-weight: 600;
 }
 
 .uba-nav {
   margin-top: 4px;
   display: flex;
   flex-direction: column;
-  gap: 2px; /* WordPress-style tight spacing */
+  gap: 3px; /* Improved spacing between items */
 }
 
-/* Language selector - WordPress style */
+/* Language selector - Enhanced styling */
 .uba-language {
-  padding: 0 14px;
-  margin-bottom: 8px;
+  padding: 0 16px;
+  margin-bottom: 10px;
 }
 
 .uba-language label {
@@ -224,17 +238,31 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  font-weight: 600;
 }
 
 .uba-language select {
   width: 100%;
   font-size: 12px;
-  padding: 4px 6px;
+  padding: 6px 8px;
   background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(55, 65, 81, 0.4);
+  border: 1px solid rgba(55, 65, 81, 0.5);
   color: var(--text);
   border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.uba-language select:hover {
+  border-color: rgba(55, 65, 81, 0.7);
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.uba-language select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.1);
 }
 
 .uba-nav-btn {
@@ -242,58 +270,89 @@
   background: transparent;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   width: 100%;
   text-align: left;
   font-size: 13px;
-  color: var(--text);
-  padding: 8px 14px;
-  border-radius: 0; /* WordPress-style: no rounded corners in list */
+  color: rgba(226, 232, 240, 0.85);
+  padding: 10px 16px 10px 13px;
+  border-radius: 0;
   cursor: pointer;
-  transition: background-color 0.15s ease;
-  text-decoration: none; /* WordPress-style: no underlines */
-  border-left: 3px solid transparent; /* WordPress-style active indicator */
+  transition: all 0.2s ease;
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  position: relative;
 }
 
 .uba-nav-btn span.icon {
-  width: 16px;
-  text-align: center;
-  font-size: 13px;
-  color: var(--accent);
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: rgba(148, 163, 184, 0.9);
   flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+/* SVG icon styling */
+.uba-nav-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  stroke: none;
+  transition: all 0.2s ease;
 }
 
 .uba-nav-btn small {
   margin-left: auto;
   font-size: 10px;
   color: var(--muted);
-  display: none; /* Hide in narrow WordPress-style sidebar */
+  opacity: 0.7;
+  display: none; /* Hidden in compact sidebar */
 }
 
-/* Hover & focus - WordPress-style subtle interactions */
+/* Hover state - Enhanced with smooth transitions */
 
 .uba-nav-btn:hover:not(.active) {
-  background-color: rgba(55, 65, 81, 0.15);
-  color: var(--text);
+  background-color: rgba(55, 65, 81, 0.25);
+  color: rgba(248, 250, 252, 0.95);
   text-decoration: none;
+  border-left-color: rgba(34, 211, 238, 0.3);
+}
+
+.uba-nav-btn:hover:not(.active) span.icon {
+  color: rgba(34, 211, 238, 0.8);
+  transform: translateX(1px);
 }
 
 .uba-nav-btn:focus-visible {
   outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline-offset: -2px;
+  background-color: rgba(55, 65, 81, 0.2);
 }
 
-/* Active state - WordPress-style current page highlighting */
+/* Active state - Enhanced with glow effect */
 
 .uba-nav-btn.active {
-  background: rgba(34, 211, 238, 0.08);
+  background: rgba(34, 211, 238, 0.12);
   border-left: 3px solid var(--accent);
-  color: #f9fafb;
+  color: #f8fafc;
   text-decoration: none;
+  box-shadow: inset 0 0 20px rgba(34, 211, 238, 0.08);
 }
 
 .uba-nav-btn.active span.icon {
   color: var(--accent);
+  filter: drop-shadow(0 0 4px rgba(34, 211, 238, 0.4));
+}
+
+/* Navigation section separator */
+.uba-nav-separator {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(55, 65, 81, 0.4), transparent);
+  margin: 10px 16px;
 }
 
 .uba-sidebar-footer {
@@ -301,8 +360,8 @@
   font-size: 10px;
   color: var(--muted);
   line-height: 1.3;
-  padding: 0 14px;
-  display: none; /* Hidden in narrow WordPress-style sidebar */
+  padding: 0 16px;
+  display: none; /* Hidden in compact sidebar */
 }
 
 .uba-language {
@@ -3290,17 +3349,17 @@ a:focus-visible {
 /* Mobile responsiveness - WordPress-style narrow sidebar */
 @media (max-width: 768px) {
   .uba-sidebar {
-    width: 180px;
-    padding: 12px 0 16px 0;
+    width: 200px;
+    padding: 16px 0 18px 0;
   }
   
   .uba-shell {
-    margin-left: 180px;
+    margin-left: 200px;
   }
   
   .rtl .uba-shell {
     margin-left: 0;
-    margin-right: 180px;
+    margin-right: 200px;
   }
   
   .uba-main {
@@ -3308,27 +3367,33 @@ a:focus-visible {
   }
   
   .uba-logo {
-    font-size: 14px;
-    padding: 0 12px;
+    font-size: 15px;
+    padding: 0 14px;
   }
   
   .uba-nav-label {
-    padding: 0 12px;
+    padding: 0 14px;
     font-size: 9px;
   }
   
   .uba-language {
-    padding: 0 12px;
+    padding: 0 14px;
   }
   
   .uba-nav-btn {
-    padding: 6px 12px;
+    padding: 9px 14px 9px 11px;
     font-size: 12px;
   }
   
   .uba-nav-btn span.icon {
-    width: 14px;
+    width: 16px;
+    height: 16px;
     font-size: 12px;
+  }
+  
+  .uba-nav-btn svg {
+    width: 16px;
+    height: 16px;
   }
   
   .uba-nav-btn small {

@@ -141,10 +141,89 @@
   // =====================================================
 
   /**
+   * Check if user is already authenticated on auth pages (login/signup)
+   * If authenticated, redirect to dashboard
+   * @returns {Promise<boolean>} True if already authenticated and redirected
+   */
+  async function checkAndRedirectIfAuthenticated() {
+    try {
+      // Check Supabase authentication
+      if (window.UbaAPI && window.UbaAPI.isReady()) {
+        const sessionResult = await window.UbaAPI.auth.getSession();
+        if (sessionResult.success && sessionResult.data && sessionResult.data.session) {
+          console.log('[Auth Guard] User already authenticated, redirecting to dashboard');
+          window.location.href = CONFIG.homePage;
+          return true;
+        }
+      }
+      
+      // Check demo mode authentication (both persistent and session-only)
+      const demoUser = localStorage.getItem('uba-demo-user');
+      const demoUserSession = sessionStorage.getItem('uba-demo-user-session');
+      
+      if (demoUser || demoUserSession) {
+        try {
+          const userData = JSON.parse(demoUser || demoUserSession);
+          if (userData && userData.email) {
+            console.log('[Auth Guard] Demo user already authenticated, redirecting to dashboard');
+            window.location.href = CONFIG.homePage;
+            return true;
+          }
+        } catch (e) {
+          // Invalid demo user data, clear it
+          localStorage.removeItem('uba-demo-user');
+          sessionStorage.removeItem('uba-demo-user-session');
+        }
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('[Auth Guard] Error checking existing auth:', error);
+      return false;
+    }
+  }
+
+  /**
    * Check if user has valid session
    * @returns {Promise<boolean>}
    */
   async function checkAuthentication() {
+    // Handle session-only mode cleanup on page load
+    // When "remember me" is unchecked, we use session-only storage which automatically
+    // clears when the browser closes. However, we also need to detect new browser sessions
+    // and clear any persistent data that might still be in localStorage.
+    const rememberMe = localStorage.getItem('uba-remember-me');
+    if (rememberMe === 'false') {
+      // In session-only mode, check if this is a new browser session
+      const sessionMarker = sessionStorage.getItem('uba-session-active');
+      if (!sessionMarker) {
+        // New browser session detected - clear persistent localStorage
+        // but keep sessionStorage data for this session
+        console.log('[Auth Guard] Session-only mode: new browser session detected');
+        localStorage.removeItem('uba-demo-user');
+        // Mark this session as active so we don't clear again
+        sessionStorage.setItem('uba-session-active', 'true');
+      }
+    }
+
+    // Check for demo mode authentication (both persistent and session-only)
+    const demoUser = localStorage.getItem('uba-demo-user');
+    const demoUserSession = sessionStorage.getItem('uba-demo-user-session');
+    
+    if (demoUser || demoUserSession) {
+      try {
+        const userData = JSON.parse(demoUser || demoUserSession);
+        if (userData && userData.email) {
+          console.log('[Auth Guard] ✅ Demo user authenticated');
+          return true;
+        }
+      } catch (e) {
+        // Invalid demo user data, clear it
+        localStorage.removeItem('uba-demo-user');
+        sessionStorage.removeItem('uba-demo-user-session');
+      }
+    }
+
     // If UbaAPI is not available, allow access (fallback to demo mode)
     if (!window.UbaAPI || !window.UbaAPI.isReady()) {
       console.warn('[Auth Guard] UbaAPI not available, allowing access');
@@ -224,6 +303,8 @@
 
     // Clear any cached data
     sessionStorage.removeItem('uba_redirect_after_login');
+    sessionStorage.removeItem('uba-session-active');
+    sessionStorage.removeItem('uba-demo-user-session');
     
     // If UbaAPI is available, use it to logout
     if (window.UbaAPI && window.UbaAPI.isReady()) {
@@ -240,13 +321,9 @@
       }
     }
 
-    // Clear localStorage (demo mode data)
-    const demoKeys = Object.keys(localStorage).filter(key => 
-      key.startsWith('uba-') || key.startsWith('ubaLanguage')
-    );
-    
-    // Optionally clear demo data (commented out to preserve data)
-    // demoKeys.forEach(key => localStorage.removeItem(key));
+    // Clear demo mode data
+    localStorage.removeItem('uba-demo-user');
+    localStorage.removeItem('uba-remember-me');
 
     // Redirect to login
     redirectToLogin('Logged out');
@@ -360,6 +437,7 @@
   // Export utilities for use by other scripts
   window.UbaAuthGuard = {
     checkAuthentication,
+    checkAndRedirectIfAuthenticated,
     redirectToLogin,
     redirectToHome,
     handleLogout,

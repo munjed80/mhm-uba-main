@@ -258,11 +258,20 @@
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- Supabase Configuration -->
-    <script src="supabase-config.js"></script>
+    <!-- Supabase Config (if exists) -->
+    <script>
+      // Try to load config, fail silently if not found
+      const script = document.createElement('script');
+      script.src = 'supabase-config.js';
+      script.onerror = () => console.warn('[Auth] supabase-config.js not found - running in local/demo mode');
+      document.head.appendChild(script);
+    </script>
     
     <!-- Supabase API Service -->
     <script src="assets/js/supabase-api-service.js"></script>
+
+    <!-- Auth Guard (for auto-redirect if already authenticated) -->
+    <script src="assets/js/auth-guard.js"></script>
 
     <!-- Core scripts -->
     <script src="assets/js/i18n.js"></script>
@@ -271,6 +280,12 @@
     
     <!-- Signup functionality -->
     <script>
+      // Check if user is already authenticated and redirect to dashboard
+      // Auth-guard.js is loaded before this script (see script includes above)
+      if (window.UbaAuthGuard && window.UbaAuthGuard.checkAndRedirectIfAuthenticated) {
+        window.UbaAuthGuard.checkAndRedirectIfAuthenticated();
+      }
+
       // Enhanced signup function with Supabase support
       document.getElementById('signup-form').addEventListener('submit', async function(e) {
         e.preventDefault();
