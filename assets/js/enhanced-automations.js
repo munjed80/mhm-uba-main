@@ -1342,15 +1342,7 @@
     }
   };
   
-  // Auto-initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => window.UBAEnhancedAutomations.init(), 1000);
-    });
-  } else {
-    setTimeout(() => window.UBAEnhancedAutomations.init(), 1000);
-  }
-  
+  // Module loaded - initialization will be triggered by page-loader.js via initAutomationsPage()
   console.log('✅ Enhanced Automations module loaded');
   
 })();

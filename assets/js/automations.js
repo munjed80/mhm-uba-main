@@ -48,6 +48,15 @@ const ACTION_TYPES = {
 function initAutomationsPage() {
     console.log('🤖 Initializing Automations V2 page...');
     
+    // Initialize Enhanced Automation System first
+    if (window.UBAEnhancedAutomations && typeof window.UBAEnhancedAutomations.init === 'function') {
+        try {
+            window.UBAEnhancedAutomations.init();
+        } catch (error) {
+            console.error('❌ Enhanced Automation System initialization failed:', error);
+        }
+    }
+    
     // Check if required elements exist
     const requiredElements = {
         'new-automation-btn': 'New Automation button',
