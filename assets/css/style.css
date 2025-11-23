@@ -9074,10 +9074,16 @@ a:focus-visible {
     background: rgba(0, 0, 0, 0.6);
     z-index: 1900;
     display: none;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
   }
   
   .uba-sidebar-overlay.is-visible {
     display: block;
+    pointer-events: auto;
+    opacity: 1;
+    visibility: visible;
   }
   
   /* Make sidebar full height and scrollable */
