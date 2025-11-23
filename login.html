@@ -250,6 +250,9 @@
     <!-- Supabase API Service -->
     <script src="assets/js/supabase-api-service.js"></script>
 
+    <!-- Auth Guard (for auto-redirect if already authenticated) -->
+    <script src="assets/js/auth-guard.js"></script>
+
     <!-- Core scripts -->
     <script src="assets/js/i18n.js"></script>
     <script src="assets/js/store.js"></script>
@@ -258,37 +261,10 @@
     <!-- Login functionality -->
     <script>
       // Check if user is already authenticated and redirect to dashboard
-      (async function checkExistingAuth() {
-        try {
-          // Check Supabase authentication
-          if (window.UbaAPI && window.UbaAPI.isReady()) {
-            const session = await window.UbaAPI.auth.getSession();
-            if (session.success && session.data && session.data.session) {
-              console.log('[Login] User already authenticated, redirecting to dashboard');
-              window.location.href = 'index.html';
-              return;
-            }
-          }
-          
-          // Check demo mode authentication
-          const demoUser = localStorage.getItem('uba-demo-user');
-          if (demoUser) {
-            try {
-              const userData = JSON.parse(demoUser);
-              if (userData && userData.email) {
-                console.log('[Login] Demo user already authenticated, redirecting to dashboard');
-                window.location.href = 'index.html';
-                return;
-              }
-            } catch (e) {
-              // Invalid demo user data, clear it
-              localStorage.removeItem('uba-demo-user');
-            }
-          }
-        } catch (error) {
-          console.error('[Login] Error checking existing auth:', error);
-        }
-      })();
+      // Auth-guard.js is loaded before this script, so function is available
+      if (window.UbaAuthGuard && window.UbaAuthGuard.checkAndRedirectIfAuthenticated) {
+        window.UbaAuthGuard.checkAndRedirectIfAuthenticated();
+      }
 
       // Allow Enter key to submit
       document.addEventListener('DOMContentLoaded', () => {
