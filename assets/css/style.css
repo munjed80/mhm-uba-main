@@ -314,7 +314,7 @@
 }
 
 .uba-nav-btn span.icon {
-  width: 20px; /* Slightly larger for better visual balance */
+  width: 20px; /* Increased from 18px for better visual balance */
   height: 20px;
   display: flex;
   align-items: center;
@@ -3519,15 +3519,14 @@ a:focus-visible {
     gap: 8px;
   }
   
-  .uba-nav-btn span.icon {
-    width: 16px;
-    height: 16px;
-    font-size: 13px; /* Keep icons readable */
-  }
-  
+  .uba-nav-btn span.icon,
   .uba-nav-btn svg {
     width: 16px;
     height: 16px;
+  }
+  
+  .uba-nav-btn span.icon {
+    font-size: 13px; /* Keep icons readable */
   }
   
   /* Ensure text doesn't wrap or overflow on small screens */

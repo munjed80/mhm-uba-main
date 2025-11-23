@@ -1194,12 +1194,6 @@
      * Render enhanced automations table
      */
     renderEnhancedAutomationsTable() {
-      // Additional safety check to prevent rendering if already in progress
-      if (this._isRenderingTable) {
-        console.warn('⚠️ Skipping renderEnhancedAutomationsTable - render already in progress');
-        return;
-      }
-      
       const tableBody = document.getElementById('automations-body');
       if (!tableBody) return;
       
@@ -1499,7 +1493,7 @@
         noActions.style.display = 'none';
       }
       
-      const actionId = 'action-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+      const actionId = 'action-' + Date.now() + '-' + Math.random().toString(36).slice(2, 11);
       
       const actionDiv = document.createElement('div');
       actionDiv.className = 'action-item';
