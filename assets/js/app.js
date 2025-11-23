@@ -1758,9 +1758,12 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // Robust button handler that works regardless of individual page script loading
   function handleGlobalButtonClicks(e) {
-    const target = e.target.closest('button') || e.target;
-    const buttonId = target.id;
-    const buttonText = target.textContent.trim();
+    // Only process if the clicked element is actually a button
+    const button = e.target.closest('button');
+    if (!button) return;
+    
+    const buttonId = button.id;
+    const buttonText = button.textContent.trim();
     
     console.log('🔘 Button clicked:', buttonId, '|', buttonText);
     
@@ -1820,7 +1823,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // Handle by button class or text content
-    if (target.classList.contains('uba-action-btn')) {
+    if (button.classList.contains('uba-action-btn')) {
       console.log('⚡ Quick action button clicked');
       
       if (buttonText.includes('New Invoice')) {
@@ -1867,46 +1870,6 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // Add global click handler
   document.addEventListener('click', handleGlobalButtonClicks);
-  
-  // Legacy button handlers for backward compatibility
-  // These handlers only trigger for actual button elements with specific IDs or classes
-  document.addEventListener('click', (e) => {
-    // Only process if the clicked element is a button or inside a button
-    const button = e.target.closest('button');
-    if (!button) return;
-    
-    const buttonId = button.id;
-    const buttonClasses = button.className;
-    
-    // Check for specific button IDs or classes only (not text content)
-    if (buttonId === 'new-invoice-btn' || buttonClasses.includes('new-invoice-btn')) {
-      if (typeof window.openInvoiceModal === 'function') {
-        e.preventDefault();
-        window.openInvoiceModal();
-      } else {
-        // Navigate to invoices page if modal function not available
-        window.location.href = 'invoices.html';
-      }
-    }
-    else if (buttonId === 'new-lead-btn' || buttonClasses.includes('new-lead-btn')) {
-      if (typeof window.openLeadModal === 'function') {
-        e.preventDefault();
-        window.openLeadModal();
-      } else {
-        // Navigate to leads page if modal function not available
-        window.location.href = 'leads.html';
-      }
-    }
-    else if (buttonId === 'new-automation-btn' || buttonClasses.includes('new-automation-btn')) {
-      if (typeof window.openAutomationModal === 'function') {
-        e.preventDefault();
-        window.openAutomationModal();
-      } else {
-        // Navigate to automations page if modal function not available
-        window.location.href = 'automations.html';
-      }
-    }
-  });
   
 });
 
