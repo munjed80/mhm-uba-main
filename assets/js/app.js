@@ -1844,6 +1844,20 @@ document.addEventListener("DOMContentLoaded", () => {
   // Failsafe: Remove any leftover overlay elements that might block interactions
   // This runs after page load to ensure no invisible overlays remain
   // Using shorter timeout to prevent interference with modal operations
+  
+  // Helper function to clean up stray overlays (excluding modal overlays)
+  const STRAY_OVERLAY_SELECTOR = '#page-overlay, .page-overlay:not(.uba-sidebar-overlay):not(.uba-modal-overlay)';
+  
+  function removeStrayOverlays(logPrefix = '') {
+    document.querySelectorAll(STRAY_OVERLAY_SELECTOR).forEach(el => {
+      // Only remove if not inside a modal
+      if (!el.closest('.uba-modal')) {
+        console.warn(logPrefix + 'Removing stray overlay element:', el);
+        el.remove();
+      }
+    });
+  }
+  
   setTimeout(() => {
     const ubaSidebarOverlay = document.querySelector('.uba-sidebar-overlay');
     // Only remove the sidebar overlay if it's not supposed to be visible
@@ -1856,24 +1870,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // Remove any other stray page overlays that shouldn't exist
-    // Exclude overlays that are part of modals (child elements of .uba-modal)
-    document.querySelectorAll('#page-overlay, .page-overlay:not(.uba-sidebar-overlay):not(.uba-modal-overlay)').forEach(el => {
-      // Only remove if not inside a modal
-      if (!el.closest('.uba-modal')) {
-        console.warn('Removing stray overlay element:', el);
-        el.remove();
-      }
-    });
+    removeStrayOverlays();
   }, 100);
   
   // Secondary failsafe that runs a bit later to catch any async-created overlays
   setTimeout(() => {
-    document.querySelectorAll('#page-overlay, .page-overlay:not(.uba-sidebar-overlay):not(.uba-modal-overlay)').forEach(el => {
-      if (!el.closest('.uba-modal')) {
-        console.warn('Removing late stray overlay element:', el);
-        el.remove();
-      }
-    });
+    removeStrayOverlays('[Late cleanup] ');
   }, 1000);
   
 });
