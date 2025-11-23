@@ -586,6 +586,16 @@
     },
     
     /**
+     * HTML escape utility
+     */
+    escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    },
+    
+    /**
      * Render conversations
      */
     renderConversations(leadId, conversations) {
@@ -600,10 +610,10 @@
       container.innerHTML = conversations.map(conv => `
         <div class="conversation-item">
           <div class="conversation-header">
-            <strong>${conv.medium || 'Contact'}</strong>
+            <strong>${this.escapeHtml(conv.medium || 'Contact')}</strong>
             <span>${new Date(conv.timestamp).toLocaleDateString()}</span>
           </div>
-          <div class="conversation-summary">${conv.summary || ''}</div>
+          <div class="conversation-summary">${this.escapeHtml(conv.summary || '')}</div>
         </div>
       `).join('');
     },
@@ -623,10 +633,10 @@
       container.innerHTML = notes.map(note => `
         <div class="note-item">
           <div class="note-header">
-            <span class="note-category">${note.category || 'General'}</span>
+            <span class="note-category">${this.escapeHtml(note.category || 'General')}</span>
             <span>${new Date(note.timestamp).toLocaleDateString()}</span>
           </div>
-          <div class="note-content">${note.content || ''}</div>
+          <div class="note-content">${this.escapeHtml(note.content || '')}</div>
         </div>
       `).join('');
     },
@@ -646,12 +656,12 @@
       container.innerHTML = activities.map(activity => `
         <div class="activity-item">
           <div class="activity-header">
-            <strong>${activity.activityType || 'Activity'}: ${activity.title || ''}</strong>
-            <span class="activity-status">${activity.status || 'scheduled'}</span>
+            <strong>${this.escapeHtml(activity.activityType || 'Activity')}: ${this.escapeHtml(activity.title || '')}</strong>
+            <span class="activity-status">${this.escapeHtml(activity.status || 'scheduled')}</span>
           </div>
           <div class="activity-details">
-            ${activity.scheduledFor ? `<div>Scheduled: ${activity.scheduledFor}</div>` : ''}
-            ${activity.description ? `<div>${activity.description}</div>` : ''}
+            ${activity.scheduledFor ? `<div>Scheduled: ${this.escapeHtml(activity.scheduledFor)}</div>` : ''}
+            ${activity.description ? `<div>${this.escapeHtml(activity.description)}</div>` : ''}
           </div>
         </div>
       `).join('');
