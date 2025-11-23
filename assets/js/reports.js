@@ -375,48 +375,48 @@
     const kpiTasksChange = document.getElementById('kpi-tasks-change');
     
     if (kpiTotalRevenue) {
-      const formatCurrency = window.UBAMetrics ? window.UBAMetrics.formatCurrency : formatCurrency;
-      kpiTotalRevenue.textContent = formatCurrency(metrics.revenue.totalRevenue);
+      const formatCurrency = window.UBAMetrics ? window.UBAMetrics.formatCurrency : (val => `€${(val || 0).toLocaleString()}`);
+      kpiTotalRevenue.textContent = formatCurrency(metrics.revenue.totalRevenue || 0);
     }
     
     if (kpiRevenueChange) {
-      kpiRevenueChange.textContent = `€${metrics.revenue.monthlyRevenue.toLocaleString()} this month`;
+      kpiRevenueChange.textContent = `€${(metrics.revenue.thisMonthRevenue || 0).toLocaleString()} this month`;
     }
     
     if (kpiTotalInvoices) {
-      kpiTotalInvoices.textContent = metrics.revenue.totalInvoices.toString();
+      kpiTotalInvoices.textContent = (metrics.revenue.totalInvoices || 0).toString();
     }
     
     if (kpiInvoicesChange) {
-      const overdueCount = Math.round(metrics.revenue.overdueInvoices / Math.max(metrics.revenue.averageInvoiceValue || 1000, 1));
+      const overdueCount = metrics.revenue.overdueInvoices || 0;
       kpiInvoicesChange.textContent = overdueCount > 0 ? `${overdueCount} overdue` : 'All current';
       kpiInvoicesChange.className = 'reports-kpi-change' + (overdueCount > 0 ? ' negative' : '');
     }
     
     if (kpiTotalClients) {
-      kpiTotalClients.textContent = metrics.clients.totalClients.toString();
+      kpiTotalClients.textContent = (metrics.clients.totalClients || 0).toString();
     }
     
     if (kpiClientsChange) {
-      kpiClientsChange.textContent = `${metrics.clients.newThisMonth} new this month`;
+      kpiClientsChange.textContent = `${metrics.clients.newThisMonth || 0} new this month`;
     }
     
     if (kpiTasksCompleted) {
-      kpiTasksCompleted.textContent = metrics.tasks.completedTasks.toString();
+      kpiTasksCompleted.textContent = (metrics.tasks.done || metrics.tasks.completedThisMonth || 0).toString();
     }
     
     if (kpiTasksChange) {
-      kpiTasksChange.textContent = `${metrics.tasks.tasksDueToday} due today`;
+      kpiTasksChange.textContent = `${metrics.tasks.todo || 0} due today`;
     }
     
     // Render charts with unified metrics data
     const revenueChart = document.getElementById('revenue-chart');
-    if (revenueChart && metrics.revenue.revenueTrend) {
-      const monthlyData = getMonthlyRevenueData(metrics.revenue.revenueTrend);
+    if (revenueChart && metrics.revenue.monthlyRevenue) {
+      const monthlyData = getMonthlyRevenueData(metrics.revenue.monthlyRevenue);
       drawLineChart(revenueChart, monthlyData, {
         lineColor: '#10b981',
         pointColor: '#10b981',
-        formatValue: window.UBAMetrics ? window.UBAMetrics.formatCurrency : formatCurrency
+        formatValue: (val) => `€${(val || 0).toLocaleString()}`
       });
     }
     
@@ -440,10 +440,10 @@
       const projectData = {
         labels: ['Lead', 'In Progress', 'Ongoing', 'Completed'],
         values: [
-          projectMetrics.lead,
-          projectMetrics.in_progress,
-          projectMetrics.ongoing,
-          projectMetrics.completed
+          metrics.projects.lead,
+          metrics.projects.in_progress,
+          metrics.projects.ongoing,
+          metrics.projects.completed
         ]
       };
       drawBarChart(projectsChart, projectData, {
@@ -455,7 +455,7 @@
     if (tasksChart) {
       const taskData = {
         labels: ['To Do', 'In Progress', 'Done'],
-        values: [taskMetrics.todo, taskMetrics.in_progress, taskMetrics.done]
+        values: [metrics.tasks.todo, metrics.tasks.in_progress, metrics.tasks.done]
       };
       drawDonutChart(tasksChart, taskData, {
         colors: ['#f59e0b', '#3b82f6', '#10b981']

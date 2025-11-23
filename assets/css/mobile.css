@@ -1,0 +1,534 @@
+/* ====================================
+   Mobile-Friendly Enhancements
+   UBA Business Dashboard
+   ==================================== */
+
+/* ===== Touch-Friendly Buttons ===== */
+@media (max-width: 768px) {
+  /* Increase button sizes for easier tapping */
+  .uba-btn,
+  .uba-btn-primary,
+  .uba-btn-secondary,
+  .uba-btn-ghost {
+    min-height: 44px; /* Apple's recommended minimum touch target */
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+
+  .uba-btn-sm {
+    min-height: 40px;
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  /* Make icon buttons larger */
+  button[class*="icon"],
+  .uba-icon-btn {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 10px;
+  }
+
+  /* Navigation buttons */
+  .uba-nav-btn {
+    padding: 14px 16px;
+    min-height: 48px;
+  }
+
+  /* Form inputs */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="date"],
+  textarea,
+  select {
+    min-height: 44px;
+    padding: 12px 14px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Table action buttons */
+  table button {
+    min-height: 40px;
+    padding: 8px 14px;
+  }
+}
+
+/* ===== Mobile Sidebar Navigation ===== */
+@media (max-width: 960px) {
+  .uba-sidebar {
+    position: fixed;
+    left: -280px;
+    top: 0;
+    height: 100vh;
+    width: 280px;
+    z-index: 1000;
+    transition: left 0.3s ease;
+    overflow-y: auto;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .uba-sidebar.open {
+    left: 0;
+  }
+
+  /* Mobile menu toggle button */
+  .uba-mobile-menu-toggle {
+    display: block;
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 1001;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .uba-mobile-menu-toggle svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--text);
+  }
+
+  /* Overlay for mobile sidebar */
+  .uba-mobile-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+
+  .uba-mobile-overlay.active {
+    display: block;
+  }
+
+  /* Adjust main content when sidebar is hidden */
+  main {
+    margin-left: 0;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+/* ===== Responsive Tables ===== */
+@media (max-width: 768px) {
+  /* Make tables scroll horizontally */
+  .uba-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -16px;
+    padding: 0 16px;
+  }
+
+  table {
+    min-width: 600px;
+  }
+
+  /* Compact table cells */
+  table td,
+  table th {
+    padding: 10px 8px;
+    font-size: 14px;
+  }
+
+  /* Stack table actions vertically on very small screens */
+  @media (max-width: 480px) {
+    table td > div {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    table button {
+      width: 100%;
+    }
+  }
+}
+
+/* ===== Forms and Modals ===== */
+@media (max-width: 768px) {
+  /* Full-screen modals on mobile */
+  .uba-modal,
+  .modal-content,
+  [class*="modal"] .modal-content {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    border-radius: 0;
+    margin: 0;
+  }
+
+  .uba-modal-body,
+  .modal-body {
+    padding: 16px;
+  }
+
+  /* Form grids stack vertically */
+  .uba-form-grid,
+  .uba-form-row,
+  [class*="grid"] {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  /* Form labels and inputs stack */
+  .uba-form-group {
+    margin-bottom: 16px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 6px;
+  }
+}
+
+/* ===== Kanban Boards Mobile ===== */
+@media (max-width: 960px) {
+  .uba-kanban-board,
+  [class*="kanban"] {
+    display: flex;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 12px;
+    padding-bottom: 16px;
+  }
+
+  .uba-kanban-column {
+    min-width: 280px;
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .uba-kanban-column {
+    min-width: 260px;
+  }
+}
+
+/* ===== Dashboard Cards ===== */
+@media (max-width: 768px) {
+  .uba-kpi-grid,
+  .uba-stats-grid,
+  [class*="grid"] {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .uba-kpi-card,
+  .uba-card {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Stack everything on very small screens */
+  .uba-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .uba-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .uba-header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* ===== Typography Adjustments ===== */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 24px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  h3 {
+    font-size: 18px;
+  }
+
+  h4 {
+    font-size: 16px;
+  }
+
+  /* Reduce padding on mobile */
+  .uba-page-header {
+    padding: 16px 0;
+  }
+
+  .uba-section {
+    padding: 16px 0;
+  }
+}
+
+/* ===== Touch-Friendly List Items ===== */
+@media (max-width: 768px) {
+  .uba-list-item,
+  [class*="list"] > li,
+  [class*="item"] {
+    padding: 12px 16px;
+    min-height: 44px;
+  }
+
+  /* Task cards */
+  .uba-task-card,
+  .uba-project-card {
+    padding: 14px;
+  }
+}
+
+/* ===== Improved Spacing ===== */
+@media (max-width: 768px) {
+  /* Reduce gaps between elements */
+  .uba-content-wrapper {
+    padding: 12px;
+  }
+
+  .uba-section-gap {
+    margin-bottom: 20px;
+  }
+
+  /* Better spacing for cards */
+  .uba-card + .uba-card {
+    margin-top: 12px;
+  }
+}
+
+/* ===== Pagination Controls ===== */
+@media (max-width: 768px) {
+  .uba-pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .uba-pagination button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .uba-page-info {
+    width: 100%;
+    text-align: center;
+    margin: 8px 0;
+  }
+}
+
+/* ===== Search and Filter Controls ===== */
+@media (max-width: 768px) {
+  .uba-search-bar,
+  .uba-filters {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .uba-search-input {
+    width: 100%;
+  }
+
+  .uba-filter-group {
+    width: 100%;
+  }
+
+  select,
+  .uba-select {
+    width: 100%;
+  }
+}
+
+/* ===== Charts and Visualizations ===== */
+@media (max-width: 768px) {
+  canvas,
+  .uba-chart {
+    max-width: 100%;
+    height: auto !important;
+  }
+
+  .uba-chart-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ===== Floating Action Button (FAB) ===== */
+@media (max-width: 768px) {
+  .uba-fab {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+
+  .uba-fab:active {
+    transform: scale(0.95);
+  }
+}
+
+/* ===== Swipe Indicators ===== */
+@media (max-width: 768px) {
+  .uba-swipeable::after {
+    content: '⟵ ⟶';
+    display: block;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-top: 8px;
+    opacity: 0.6;
+  }
+}
+
+/* ===== Accessibility - Larger Touch Targets ===== */
+@media (max-width: 768px) {
+  /* Ensure all clickable elements meet minimum size */
+  a,
+  button,
+  input[type="submit"],
+  input[type="button"],
+  input[type="checkbox"],
+  input[type="radio"],
+  [role="button"],
+  [onclick] {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Checkbox and radio inputs */
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 24px;
+    height: 24px;
+    margin: 10px;
+  }
+}
+
+/* ===== Mobile Navigation Tabs ===== */
+@media (max-width: 768px) {
+  .uba-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    gap: 8px;
+    padding-bottom: 8px;
+  }
+
+  .uba-tab {
+    white-space: nowrap;
+    padding: 12px 20px;
+    min-height: 44px;
+  }
+}
+
+/* ===== Mobile Dropdown Menus ===== */
+@media (max-width: 768px) {
+  .uba-dropdown-menu,
+  [class*="dropdown"] {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 70vh;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .uba-dropdown-item {
+    padding: 16px 20px;
+    min-height: 48px;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+/* ===== Loading States ===== */
+@media (max-width: 768px) {
+  .uba-loading {
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  .uba-spinner {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* ===== Empty States ===== */
+@media (max-width: 768px) {
+  .uba-empty-state {
+    padding: 60px 20px;
+    text-align: center;
+  }
+
+  .uba-empty-state-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+
+  .uba-empty-state-text {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+}
+
+/* ===== AI Assistant Button Mobile ===== */
+@media (max-width: 768px) {
+  [class*="ai-chat"],
+  [class*="assistant"] {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    z-index: 900;
+  }
+
+  [class*="ai-panel"] {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 80vh;
+    border-radius: 16px 16px 0 0;
+  }
+}
+
+/* ===== Print Styles (Hide on mobile) ===== */
+@media print {
+  .uba-sidebar,
+  .uba-mobile-menu-toggle,
+  .uba-mobile-overlay,
+  .uba-fab,
+  .uba-header-actions,
+  button,
+  [class*="ai-"] {
+    display: none !important;
+  }
+}

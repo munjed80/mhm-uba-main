@@ -323,6 +323,79 @@
   }
   
   /**
+   * Render clients table with current data
+   */
+  function renderClientsTable() {
+    const clients = enhancedClientsState.filteredClients.length > 0 
+      ? enhancedClientsState.filteredClients 
+      : (window.ubaStore?.clients?.getAll() || []);
+    
+    const table = document.getElementById('clients-page-table');
+    if (!table) return;
+    
+    const tbody = table.querySelector('tbody');
+    if (!tbody) return;
+    
+    // Get paginated clients
+    const pageSize = enhancedClientsState.pageSize;
+    const startIndex = (enhancedClientsState.currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const pagedClients = clients.slice(startIndex, endIndex);
+    
+    if (pagedClients.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem;">No clients found</td></tr>';
+      return;
+    }
+    
+    tbody.innerHTML = pagedClients.map(client => `
+      <tr>
+        <td><strong>${escapeHtml(client.name || '')}</strong></td>
+        <td>${escapeHtml(client.company || '')}</td>
+        <td>${escapeHtml(client.email || '')}</td>
+        <td>${escapeHtml(client.phone || '')}</td>
+        <td>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="uba-btn-ghost uba-btn-sm" onclick="editClient('${client.id}')">Edit</button>
+            <button class="uba-btn-ghost uba-btn-sm" onclick="deleteClient('${client.id}')">Delete</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+  
+  /**
+   * Render pagination controls
+   */
+  function renderPaginationControls() {
+    const clients = enhancedClientsState.filteredClients.length > 0 
+      ? enhancedClientsState.filteredClients 
+      : (window.ubaStore?.clients?.getAll() || []);
+    
+    const totalPages = Math.ceil(clients.length / enhancedClientsState.pageSize);
+    const pagination = document.getElementById('clients-pagination');
+    
+    if (!pagination) return;
+    
+    const prevBtn = pagination.querySelector('#clients-prev-page');
+    const nextBtn = pagination.querySelector('#clients-next-page');
+    const pageInfo = pagination.querySelector('#clients-page-info');
+    
+    if (prevBtn) prevBtn.disabled = enhancedClientsState.currentPage <= 1;
+    if (nextBtn) nextBtn.disabled = enhancedClientsState.currentPage >= totalPages;
+    if (pageInfo) pageInfo.textContent = `Page ${enhancedClientsState.currentPage} of ${Math.max(1, totalPages)}`;
+  }
+  
+  /**
+   * Helper function to escape HTML
+   */
+  function escapeHtml(text) {
+    if (typeof text !== 'string') return text;
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+  
+  /**
    * Enhanced form submission handler
    */
   function handleEnhancedSubmit(e) {
