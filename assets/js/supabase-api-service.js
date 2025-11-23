@@ -1,62 +1,119 @@
 /**
  * MHM UBA - Supabase API Service Layer
  * 
- * This file provides a wrapper around the Supabase client for the MHM UBA application.
- * It handles authentication and CRUD operations for all entities.
+ * Complete API wrapper for all UBA operations using Supabase backend
+ * Provides authentication and CRUD operations for all entities
  * 
- * SETUP INSTRUCTIONS:
- * 1. Install Supabase client: Add this to your HTML before this file:
- *    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+ * DEPENDENCIES:
+ * - Supabase JS Client: https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2
+ * - supabase-config.js: Configuration file with credentials
  * 
- * 2. Configure environment variables in index.html or create a config.js:
- *    const SUPABASE_URL = 'your-project-url.supabase.co';
- *    const SUPABASE_ANON_KEY = 'your-anon-key';
+ * USAGE:
+ * All functions are available via window.UbaAPI
+ * Example: await window.UbaAPI.auth.login(email, password)
  */
 
 (function() {
   'use strict';
 
   // =====================================================
-  // CONFIGURATION
+  // INITIALIZE SUPABASE CLIENT
   // =====================================================
-  // These will be set from environment or config file
-  const SUPABASE_URL = window.SUPABASE_URL || '';
-  const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
-
-  // Initialize Supabase client
+  
   let supabase = null;
 
-  // =====================================================
-  // INITIALIZE SUPABASE
-  // =====================================================
-  function initSupabase() {
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      console.error('Supabase credentials not configured. Please set SUPABASE_URL and SUPABASE_ANON_KEY');
+  function initializeSupabase() {
+    if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) {
+      console.error('[UBA API] Supabase credentials not configured');
+      console.error('[UBA API] Please configure supabase-config.js first');
       return null;
     }
 
-    if (window.supabase && window.supabase.createClient) {
-      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      console.log('[API Service] Supabase initialized successfully');
+    if (!window.supabase || !window.supabase.createClient) {
+      console.error('[UBA API] Supabase client library not loaded');
+      console.error('[UBA API] Include: <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>');
+      return null;
+    }
+
+    try {
+      const options = window.SUPABASE_OPTIONS || {
+        auth: {
+          autoRefreshToken: true,
+          persistSession: true,
+          detectSessionInUrl: true
+        }
+      };
+
+      supabase = window.supabase.createClient(
+        window.SUPABASE_URL,
+        window.SUPABASE_ANON_KEY,
+        options
+      );
+
+      console.log('[UBA API] ✅ Supabase client initialized successfully');
       return supabase;
-    } else {
-      console.error('Supabase library not loaded. Please include the Supabase CDN script.');
+    } catch (error) {
+      console.error('[UBA API] Failed to initialize Supabase:', error);
       return null;
     }
   }
 
+  // Initialize on load
+  supabase = initializeSupabase();
+
   // =====================================================
-  // AUTHENTICATION METHODS
+  // HELPER FUNCTIONS
   // =====================================================
+
+  /**
+   * Get current user ID from session
+   * @returns {string|null} User ID or null
+   */
+  async function getCurrentUserId() {
+    if (!supabase) return null;
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    return user?.id || null;
+  }
+
+  /**
+   * Standard response format
+   * @param {*} data - Response data
+   * @param {*} error - Error object
+   * @returns {Object}
+   */
+  function formatResponse(data, error) {
+    if (error) {
+      return { 
+        success: false, 
+        data: null, 
+        error: error.message || error 
+      };
+    }
+    return { 
+      success: true, 
+      data: data, 
+      error: null 
+    };
+  }
+
+  // =====================================================
+  // AUTHENTICATION API
+  // =====================================================
+
   const auth = {
     /**
      * Sign up a new user
      * @param {string} email - User email
      * @param {string} password - User password
-     * @param {Object} metadata - Additional user data (e.g., {name: 'John Doe'})
-     * @returns {Promise<Object>} User data or error
+     * @param {Object} metadata - Additional user metadata (optional)
+     * @returns {Promise<Object>}
      */
     async signup(email, password, metadata = {}) {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -67,22 +124,29 @@
         });
 
         if (error) throw error;
-        
-        console.log('[Auth] User signed up successfully:', data.user?.email);
-        return { success: true, user: data.user, session: data.session };
+
+        console.log('[Auth] User signed up:', data.user?.email);
+        return formatResponse({
+          user: data.user,
+          session: data.session
+        }, null);
       } catch (error) {
-        console.error('[Auth] Signup error:', error.message);
-        return { success: false, error: error.message };
+        console.error('[Auth] Signup error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Sign in an existing user
+     * Sign in existing user
      * @param {string} email - User email
      * @param {string} password - User password
-     * @returns {Promise<Object>} User data or error
+     * @returns {Promise<Object>}
      */
     async login(email, password) {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
@@ -90,96 +154,119 @@
         });
 
         if (error) throw error;
-        
-        console.log('[Auth] User logged in successfully:', data.user?.email);
-        return { success: true, user: data.user, session: data.session };
+
+        console.log('[Auth] User logged in:', data.user?.email);
+        return formatResponse({
+          user: data.user,
+          session: data.session
+        }, null);
       } catch (error) {
-        console.error('[Auth] Login error:', error.message);
-        return { success: false, error: error.message };
+        console.error('[Auth] Login error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Sign out the current user
-     * @returns {Promise<Object>} Success or error
+     * Sign out current user
+     * @returns {Promise<Object>}
      */
     async logout() {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { error } = await supabase.auth.signOut();
         
         if (error) throw error;
-        
-        console.log('[Auth] User logged out successfully');
-        return { success: true };
+
+        console.log('[Auth] User logged out');
+        return formatResponse({ message: 'Logged out successfully' }, null);
       } catch (error) {
-        console.error('[Auth] Logout error:', error.message);
-        return { success: false, error: error.message };
+        console.error('[Auth] Logout error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Get the current user
-     * @returns {Promise<Object>} Current user or null
+     * Get current authenticated user
+     * @returns {Promise<Object>}
      */
     async getCurrentUser() {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { data: { user }, error } = await supabase.auth.getUser();
         
         if (error) throw error;
-        
-        return user;
+
+        return formatResponse(user, null);
       } catch (error) {
-        console.error('[Auth] Get current user error:', error.message);
-        return null;
+        console.error('[Auth] Get user error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Get the current session
-     * @returns {Promise<Object>} Current session or null
+     * Get current session
+     * @returns {Promise<Object>}
      */
     async getSession() {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) throw error;
-        
-        return session;
+
+        return formatResponse(session, null);
       } catch (error) {
-        console.error('[Auth] Get session error:', error.message);
-        return null;
+        console.error('[Auth] Get session error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Reset password (send reset email)
+     * Reset password
      * @param {string} email - User email
-     * @returns {Promise<Object>} Success or error
+     * @returns {Promise<Object>}
      */
     async resetPassword(email) {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
-        const { error } = await supabase.auth.resetPasswordForEmail(email);
+        const { data, error } = await supabase.auth.resetPasswordForEmail(email);
         
         if (error) throw error;
-        
-        console.log('[Auth] Password reset email sent');
-        return { success: true };
+
+        return formatResponse({ message: 'Password reset email sent' }, null);
       } catch (error) {
-        console.error('[Auth] Password reset error:', error.message);
-        return { success: false, error: error.message };
+        console.error('[Auth] Reset password error:', error);
+        return formatResponse(null, error);
       }
     }
   };
 
   // =====================================================
-  // CLIENTS CRUD
+  // CLIENTS API
   // =====================================================
+
   const clients = {
     /**
-     * Get all clients for the current user
-     * @returns {Promise<Array>} List of clients
+     * Get all clients for current user
+     * @returns {Promise<Object>}
      */
-    async getAll() {
+    async getClients() {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { data, error } = await supabase
           .from('clients')
@@ -187,20 +274,24 @@
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        
-        return data || [];
+
+        return formatResponse(data, null);
       } catch (error) {
-        console.error('[Clients] Get all error:', error.message);
-        throw error;
+        console.error('[Clients] Get error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Get a single client by ID
+     * Get single client by ID
      * @param {string} id - Client ID
-     * @returns {Promise<Object>} Client data
+     * @returns {Promise<Object>}
      */
-    async getById(id) {
+    async getClient(id) {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { data, error } = await supabase
           .from('clients')
@@ -209,48 +300,60 @@
           .single();
 
         if (error) throw error;
-        
-        return data;
+
+        return formatResponse(data, null);
       } catch (error) {
-        console.error('[Clients] Get by ID error:', error.message);
-        throw error;
+        console.error('[Clients] Get one error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Create a new client
+     * Add new client
      * @param {Object} clientData - Client information
-     * @returns {Promise<Object>} Created client
+     * @returns {Promise<Object>}
      */
-    async create(clientData) {
+    async addClient(clientData) {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
-        // Get current user to set user_id
-        const user = await auth.getCurrentUser();
-        if (!user) throw new Error('User not authenticated');
+        const userId = await getCurrentUserId();
+        if (!userId) {
+          throw new Error('User not authenticated');
+        }
 
         const { data, error } = await supabase
           .from('clients')
-          .insert([{ ...clientData, user_id: user.id }])
+          .insert([{
+            user_id: userId,
+            ...clientData
+          }])
           .select()
           .single();
 
         if (error) throw error;
-        
-        console.log('[Clients] Created:', data.id);
-        return data;
+
+        console.log('[Clients] Added:', data.name);
+        return formatResponse(data, null);
       } catch (error) {
-        console.error('[Clients] Create error:', error.message);
-        throw error;
+        console.error('[Clients] Add error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Update an existing client
+     * Update existing client
      * @param {string} id - Client ID
-     * @param {Object} updates - Fields to update
-     * @returns {Promise<Object>} Updated client
+     * @param {Object} updates - Updated fields
+     * @returns {Promise<Object>}
      */
-    async update(id, updates) {
+    async updateClient(id, updates) {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { data, error } = await supabase
           .from('clients')
@@ -260,21 +363,25 @@
           .single();
 
         if (error) throw error;
-        
-        console.log('[Clients] Updated:', id);
-        return data;
+
+        console.log('[Clients] Updated:', data.name);
+        return formatResponse(data, null);
       } catch (error) {
-        console.error('[Clients] Update error:', error.message);
-        throw error;
+        console.error('[Clients] Update error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Delete a client
+     * Delete client
      * @param {string} id - Client ID
-     * @returns {Promise<boolean>} Success
+     * @returns {Promise<Object>}
      */
-    async delete(id) {
+    async deleteClient(id) {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { error } = await supabase
           .from('clients')
@@ -282,95 +389,123 @@
           .eq('id', id);
 
         if (error) throw error;
-        
+
         console.log('[Clients] Deleted:', id);
-        return true;
+        return formatResponse({ message: 'Client deleted' }, null);
       } catch (error) {
-        console.error('[Clients] Delete error:', error.message);
-        throw error;
+        console.error('[Clients] Delete error:', error);
+        return formatResponse(null, error);
       }
     }
   };
 
   // =====================================================
-  // PROJECTS CRUD
+  // PROJECTS API
   // =====================================================
+
   const projects = {
     /**
-     * Get all projects for the current user
-     * @returns {Promise<Array>} List of projects with client info
+     * Get all projects for current user
+     * @returns {Promise<Object>}
      */
-    async getAll() {
+    async getProjects() {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { data, error } = await supabase
           .from('projects')
-          .select('*, clients(name, company)')
+          .select(`
+            *,
+            client:clients(id, name, email, company)
+          `)
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        
-        return data || [];
+
+        return formatResponse(data, null);
       } catch (error) {
-        console.error('[Projects] Get all error:', error.message);
-        throw error;
+        console.error('[Projects] Get error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Get a single project by ID
+     * Get single project by ID
      * @param {string} id - Project ID
-     * @returns {Promise<Object>} Project data
+     * @returns {Promise<Object>}
      */
-    async getById(id) {
+    async getProject(id) {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { data, error } = await supabase
           .from('projects')
-          .select('*, clients(name, company)')
+          .select(`
+            *,
+            client:clients(id, name, email, company)
+          `)
           .eq('id', id)
           .single();
 
         if (error) throw error;
-        
-        return data;
+
+        return formatResponse(data, null);
       } catch (error) {
-        console.error('[Projects] Get by ID error:', error.message);
-        throw error;
+        console.error('[Projects] Get one error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Create a new project
+     * Add new project
      * @param {Object} projectData - Project information
-     * @returns {Promise<Object>} Created project
+     * @returns {Promise<Object>}
      */
-    async create(projectData) {
+    async addProject(projectData) {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
-        const user = await auth.getCurrentUser();
-        if (!user) throw new Error('User not authenticated');
+        const userId = await getCurrentUserId();
+        if (!userId) {
+          throw new Error('User not authenticated');
+        }
 
         const { data, error } = await supabase
           .from('projects')
-          .insert([{ ...projectData, user_id: user.id }])
+          .insert([{
+            user_id: userId,
+            ...projectData
+          }])
           .select()
           .single();
 
         if (error) throw error;
-        
-        console.log('[Projects] Created:', data.id);
-        return data;
+
+        console.log('[Projects] Added:', data.title);
+        return formatResponse(data, null);
       } catch (error) {
-        console.error('[Projects] Create error:', error.message);
-        throw error;
+        console.error('[Projects] Add error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Update an existing project
+     * Update existing project
      * @param {string} id - Project ID
-     * @param {Object} updates - Fields to update
-     * @returns {Promise<Object>} Updated project
+     * @param {Object} updates - Updated fields
+     * @returns {Promise<Object>}
      */
-    async update(id, updates) {
+    async updateProject(id, updates) {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { data, error } = await supabase
           .from('projects')
@@ -380,21 +515,25 @@
           .single();
 
         if (error) throw error;
-        
-        console.log('[Projects] Updated:', id);
-        return data;
+
+        console.log('[Projects] Updated:', data.title);
+        return formatResponse(data, null);
       } catch (error) {
-        console.error('[Projects] Update error:', error.message);
-        throw error;
+        console.error('[Projects] Update error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Delete a project
+     * Delete project
      * @param {string} id - Project ID
-     * @returns {Promise<boolean>} Success
+     * @returns {Promise<Object>}
      */
-    async delete(id) {
+    async deleteProject(id) {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { error } = await supabase
           .from('projects')
@@ -402,95 +541,123 @@
           .eq('id', id);
 
         if (error) throw error;
-        
+
         console.log('[Projects] Deleted:', id);
-        return true;
+        return formatResponse({ message: 'Project deleted' }, null);
       } catch (error) {
-        console.error('[Projects] Delete error:', error.message);
-        throw error;
+        console.error('[Projects] Delete error:', error);
+        return formatResponse(null, error);
       }
     }
   };
 
   // =====================================================
-  // TASKS CRUD
+  // TASKS API
   // =====================================================
+
   const tasks = {
     /**
-     * Get all tasks for the current user
-     * @returns {Promise<Array>} List of tasks with project info
+     * Get all tasks for current user
+     * @returns {Promise<Object>}
      */
-    async getAll() {
+    async getTasks() {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { data, error } = await supabase
           .from('tasks')
-          .select('*, projects(title)')
+          .select(`
+            *,
+            project:projects(id, title, client_id)
+          `)
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        
-        return data || [];
+
+        return formatResponse(data, null);
       } catch (error) {
-        console.error('[Tasks] Get all error:', error.message);
-        throw error;
+        console.error('[Tasks] Get error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Get a single task by ID
+     * Get single task by ID
      * @param {string} id - Task ID
-     * @returns {Promise<Object>} Task data
+     * @returns {Promise<Object>}
      */
-    async getById(id) {
+    async getTask(id) {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { data, error } = await supabase
           .from('tasks')
-          .select('*, projects(title)')
+          .select(`
+            *,
+            project:projects(id, title, client_id)
+          `)
           .eq('id', id)
           .single();
 
         if (error) throw error;
-        
-        return data;
+
+        return formatResponse(data, null);
       } catch (error) {
-        console.error('[Tasks] Get by ID error:', error.message);
-        throw error;
+        console.error('[Tasks] Get one error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Create a new task
+     * Add new task
      * @param {Object} taskData - Task information
-     * @returns {Promise<Object>} Created task
+     * @returns {Promise<Object>}
      */
-    async create(taskData) {
+    async addTask(taskData) {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
-        const user = await auth.getCurrentUser();
-        if (!user) throw new Error('User not authenticated');
+        const userId = await getCurrentUserId();
+        if (!userId) {
+          throw new Error('User not authenticated');
+        }
 
         const { data, error } = await supabase
           .from('tasks')
-          .insert([{ ...taskData, user_id: user.id }])
+          .insert([{
+            user_id: userId,
+            ...taskData
+          }])
           .select()
           .single();
 
         if (error) throw error;
-        
-        console.log('[Tasks] Created:', data.id);
-        return data;
+
+        console.log('[Tasks] Added:', data.title);
+        return formatResponse(data, null);
       } catch (error) {
-        console.error('[Tasks] Create error:', error.message);
-        throw error;
+        console.error('[Tasks] Add error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Update an existing task
+     * Update existing task
      * @param {string} id - Task ID
-     * @param {Object} updates - Fields to update
-     * @returns {Promise<Object>} Updated task
+     * @param {Object} updates - Updated fields
+     * @returns {Promise<Object>}
      */
-    async update(id, updates) {
+    async updateTask(id, updates) {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { data, error } = await supabase
           .from('tasks')
@@ -500,21 +667,25 @@
           .single();
 
         if (error) throw error;
-        
-        console.log('[Tasks] Updated:', id);
-        return data;
+
+        console.log('[Tasks] Updated:', data.title);
+        return formatResponse(data, null);
       } catch (error) {
-        console.error('[Tasks] Update error:', error.message);
-        throw error;
+        console.error('[Tasks] Update error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Delete a task
+     * Delete task
      * @param {string} id - Task ID
-     * @returns {Promise<boolean>} Success
+     * @returns {Promise<Object>}
      */
-    async delete(id) {
+    async deleteTask(id) {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { error } = await supabase
           .from('tasks')
@@ -522,97 +693,125 @@
           .eq('id', id);
 
         if (error) throw error;
-        
+
         console.log('[Tasks] Deleted:', id);
-        return true;
+        return formatResponse({ message: 'Task deleted' }, null);
       } catch (error) {
-        console.error('[Tasks] Delete error:', error.message);
-        throw error;
+        console.error('[Tasks] Delete error:', error);
+        return formatResponse(null, error);
       }
     }
   };
 
   // =====================================================
-  // INVOICES CRUD
+  // INVOICES API
   // =====================================================
+
   const invoices = {
     /**
-     * Get all invoices for the current user
-     * @returns {Promise<Array>} List of invoices with client info
+     * Get all invoices for current user
+     * @returns {Promise<Object>}
      */
-    async getAll() {
+    async getInvoices() {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { data, error } = await supabase
           .from('invoices')
-          .select('*, clients(name, company)')
+          .select(`
+            *,
+            client:clients(id, name, email, company)
+          `)
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        
-        return data || [];
+
+        return formatResponse(data, null);
       } catch (error) {
-        console.error('[Invoices] Get all error:', error.message);
-        throw error;
+        console.error('[Invoices] Get error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Get a single invoice by ID
+     * Get single invoice by ID
      * @param {string} id - Invoice ID
-     * @returns {Promise<Object>} Invoice data
+     * @returns {Promise<Object>}
      */
-    async getById(id) {
+    async getInvoice(id) {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { data, error } = await supabase
           .from('invoices')
-          .select('*, clients(name, company)')
+          .select(`
+            *,
+            client:clients(id, name, email, company)
+          `)
           .eq('id', id)
           .single();
 
         if (error) throw error;
-        
-        return data;
+
+        return formatResponse(data, null);
       } catch (error) {
-        console.error('[Invoices] Get by ID error:', error.message);
-        throw error;
+        console.error('[Invoices] Get one error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Create a new invoice
+     * Add new invoice
      * @param {Object} invoiceData - Invoice information
-     * @returns {Promise<Object>} Created invoice
+     * @returns {Promise<Object>}
      */
-    async create(invoiceData) {
+    async addInvoice(invoiceData) {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
-        const user = await auth.getCurrentUser();
-        if (!user) throw new Error('User not authenticated');
+        const userId = await getCurrentUserId();
+        if (!userId) {
+          throw new Error('User not authenticated');
+        }
 
         const { data, error } = await supabase
           .from('invoices')
-          .insert([{ ...invoiceData, user_id: user.id }])
+          .insert([{
+            user_id: userId,
+            ...invoiceData
+          }])
           .select()
           .single();
 
         if (error) throw error;
-        
-        console.log('[Invoices] Created:', data.id);
-        return data;
+
+        console.log('[Invoices] Added:', data.invoice_number);
+        return formatResponse(data, null);
       } catch (error) {
-        console.error('[Invoices] Create error:', error.message);
-        throw error;
+        console.error('[Invoices] Add error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Update an existing invoice
+     * Update existing invoice
      * @param {string} id - Invoice ID
-     * @param {Object} updates - Fields to update
-     * @returns {Promise<Object>} Updated invoice
+     * @param {Object} updates - Updated fields
+     * @returns {Promise<Object>}
      */
-    async update(id, updates) {
+    async updateInvoice(id, updates) {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
-        const { data, error} = await supabase
+        const { data, error } = await supabase
           .from('invoices')
           .update(updates)
           .eq('id', id)
@@ -620,21 +819,25 @@
           .single();
 
         if (error) throw error;
-        
-        console.log('[Invoices] Updated:', id);
-        return data;
+
+        console.log('[Invoices] Updated:', data.invoice_number);
+        return formatResponse(data, null);
       } catch (error) {
-        console.error('[Invoices] Update error:', error.message);
-        throw error;
+        console.error('[Invoices] Update error:', error);
+        return formatResponse(null, error);
       }
     },
 
     /**
-     * Delete an invoice
+     * Delete invoice
      * @param {string} id - Invoice ID
-     * @returns {Promise<boolean>} Success
+     * @returns {Promise<Object>}
      */
-    async delete(id) {
+    async deleteInvoice(id) {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
         const { error } = await supabase
           .from('invoices')
@@ -642,66 +845,72 @@
           .eq('id', id);
 
         if (error) throw error;
-        
+
         console.log('[Invoices] Deleted:', id);
-        return true;
+        return formatResponse({ message: 'Invoice deleted' }, null);
       } catch (error) {
-        console.error('[Invoices] Delete error:', error.message);
-        throw error;
+        console.error('[Invoices] Delete error:', error);
+        return formatResponse(null, error);
       }
     }
   };
 
   // =====================================================
-  // DASHBOARD STATS
+  // DASHBOARD API
   // =====================================================
+
   const dashboard = {
     /**
      * Get dashboard statistics
-     * @returns {Promise<Object>} Dashboard stats
+     * @returns {Promise<Object>}
      */
     async getStats() {
+      if (!supabase) {
+        return formatResponse(null, 'Supabase not initialized');
+      }
+
       try {
-        // Fetch all data in parallel
-        const [clientsData, projectsData, tasksData, invoicesData] = await Promise.all([
-          clients.getAll(),
-          projects.getAll(),
-          tasks.getAll(),
-          invoices.getAll()
-        ]);
+        const userId = await getCurrentUserId();
+        if (!userId) {
+          throw new Error('User not authenticated');
+        }
 
-        // Calculate stats
-        const totalClients = clientsData.length;
-        const totalProjects = projectsData.length;
-        const activeProjects = projectsData.filter(p => p.status === 'active').length;
-        const activeTasks = tasksData.filter(t => t.status !== 'done').length;
-        const totalTasks = tasksData.length;
-        
-        // Calculate revenue
-        const totalRevenue = invoicesData
-          .filter(inv => inv.status === 'paid')
-          .reduce((sum, inv) => sum + Number(inv.amount || 0), 0);
-        
-        const pendingRevenue = invoicesData
-          .filter(inv => inv.status === 'sent')
-          .reduce((sum, inv) => sum + Number(inv.amount || 0), 0);
+        // Use the database function for better performance
+        const { data, error } = await supabase
+          .rpc('get_dashboard_stats', { p_user_id: userId });
 
-        return {
-          totalClients,
-          totalProjects,
-          activeProjects,
-          totalTasks,
-          activeTasks,
-          totalRevenue,
-          pendingRevenue,
-          recentClients: clientsData.slice(0, 5),
-          recentProjects: projectsData.slice(0, 5),
-          recentTasks: tasksData.slice(0, 5),
-          recentInvoices: invoicesData.slice(0, 5)
-        };
+        if (error) throw error;
+
+        return formatResponse(data, null);
       } catch (error) {
-        console.error('[Dashboard] Get stats error:', error.message);
-        throw error;
+        // Fallback to individual queries if function fails
+        console.warn('[Dashboard] RPC failed, using fallback method');
+        
+        try {
+          const [clientsRes, projectsRes, invoicesRes, tasksRes] = await Promise.all([
+            supabase.from('clients').select('id', { count: 'exact', head: true }),
+            supabase.from('projects').select('id', { count: 'exact', head: true }).eq('status', 'in_progress'),
+            supabase.from('invoices').select('amount').eq('status', 'paid'),
+            supabase.from('tasks').select('id, status', { count: 'exact' })
+          ]);
+
+          const totalRevenue = invoicesRes.data?.reduce((sum, inv) => sum + (parseFloat(inv.amount) || 0), 0) || 0;
+          const completedTasks = tasksRes.data?.filter(t => t.status === 'done').length || 0;
+
+          const stats = {
+            total_clients: clientsRes.count || 0,
+            active_projects: projectsRes.count || 0,
+            total_revenue: totalRevenue,
+            pending_invoices: 0, // Would need another query
+            total_tasks: tasksRes.count || 0,
+            completed_tasks: completedTasks
+          };
+
+          return formatResponse(stats, null);
+        } catch (fallbackError) {
+          console.error('[Dashboard] Stats error:', fallbackError);
+          return formatResponse(null, fallbackError);
+        }
       }
     }
   };
@@ -709,19 +918,27 @@
   // =====================================================
   // EXPORT API
   // =====================================================
-  // Initialize Supabase on load
-  initSupabase();
 
-  // Expose API to window
-  window.UBAApi = {
+  window.UbaAPI = {
     auth,
     clients,
     projects,
     tasks,
     invoices,
     dashboard,
-    supabase // Expose raw supabase client for advanced use
+    
+    // Utility functions
+    getSupabaseClient: () => supabase,
+    reinitialize: initializeSupabase,
+    isReady: () => !!supabase
   };
 
-  console.log('[API Service] UBA API initialized. Available at window.UBAApi');
+  // Log API ready status
+  if (supabase) {
+    console.log('[UBA API] ✅ API initialized and ready to use');
+    console.log('[UBA API] Available via window.UbaAPI');
+  } else {
+    console.warn('[UBA API] ⚠️ API not ready - Supabase not configured');
+  }
+
 })();
