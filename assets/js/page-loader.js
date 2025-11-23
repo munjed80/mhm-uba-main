@@ -1,5 +1,6 @@
 // page-loader.js — lightweight per-page initializer and API
 (function () {
+  const initializedPages = new Set();
   function safeCall(fn, label) {
     try {
       return fn();
@@ -86,10 +87,25 @@
     }
   }
 
-  function loadPageScripts(pageId) {
-    console.log("page-loader: initialize", pageId);
+  function loadPageScripts(pageId, options = {}) {
+    const resolvedPageId = pageId || document.getElementById("page-id")?.dataset?.page;
+    if (!resolvedPageId) {
+      console.warn("page-loader: missing pageId");
+      applyTranslations();
+      return;
+    }
+
+    const force = !!options.force;
+    if (!force && initializedPages.has(resolvedPageId)) {
+      console.log("page-loader: skip duplicate init for", resolvedPageId);
+      applyTranslations(resolvedPageId);
+      return;
+    }
+
+    initializedPages.add(resolvedPageId);
+    console.log("page-loader: initialize", resolvedPageId);
     try {
-      switch (pageId) {
+      switch (resolvedPageId) {
         case "index-page":
           if (typeof initIndexPage === "function") {
             console.log("✅ Calling initIndexPage");
@@ -172,15 +188,15 @@
           break;
         default:
           if (
-            pageId &&
-            pageId.indexOf("projects") !== -1 &&
+            resolvedPageId &&
+            resolvedPageId.indexOf("projects") !== -1 &&
             typeof initProjectsPage === "function"
           ) {
             initProjectsPage();
           }
           if (
-            pageId &&
-            pageId.indexOf("tasks") !== -1 &&
+            resolvedPageId &&
+            resolvedPageId.indexOf("tasks") !== -1 &&
             typeof initTasksPage === "function"
           ) {
             initTasksPage();
@@ -191,7 +207,15 @@
       console.warn("loadPageScripts error", err);
     }
 
-    applyTranslations(pageId);
+    applyTranslations(resolvedPageId);
+  }
+
+  function resetPageInitialization(pageId) {
+    if (pageId) {
+      initializedPages.delete(pageId);
+      return;
+    }
+    initializedPages.clear();
   }
 
   function init() {
@@ -214,6 +238,6 @@
     init();
   }
 
-  window.ubaPageLoader = { init, loadPageScripts };
+  window.ubaPageLoader = { init, loadPageScripts, reset: resetPageInitialization };
   window.loadPageScripts = loadPageScripts;
 })();
