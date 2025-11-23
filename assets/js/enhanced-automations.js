@@ -12,6 +12,7 @@
     automations: [],
     logs: [],
     eventListeners: new Map(),
+    _isRenderingTable: false,
     
     // Real trigger definitions
     triggers: {
@@ -1158,17 +1159,34 @@
      * Enhance existing automations table
      */
     enhanceAutomationsTable() {
+      // Guard flag to prevent infinite render loops
+      if (this._isRenderingTable) {
+        return;
+      }
+      
       // Override the existing renderAutomationsTable function
       const originalRender = window.renderAutomationsTable;
+      const self = this;
       
       window.renderAutomationsTable = () => {
-        // Call original if exists
-        if (originalRender) {
-          originalRender();
+        // Prevent recursive calls
+        if (self._isRenderingTable) {
+          return;
         }
         
-        // Enhance with our data and controls
-        this.renderEnhancedAutomationsTable();
+        self._isRenderingTable = true;
+        
+        try {
+          // Call original if exists
+          if (originalRender && typeof originalRender === 'function') {
+            originalRender();
+          }
+          
+          // Enhance with our data and controls
+          self.renderEnhancedAutomationsTable();
+        } finally {
+          self._isRenderingTable = false;
+        }
       };
     },
     
@@ -1176,6 +1194,12 @@
      * Render enhanced automations table
      */
     renderEnhancedAutomationsTable() {
+      // Additional safety check to prevent rendering if already in progress
+      if (this._isRenderingTable) {
+        console.warn('⚠️ Skipping renderEnhancedAutomationsTable - render already in progress');
+        return;
+      }
+      
       const tableBody = document.getElementById('automations-body');
       if (!tableBody) return;
       
@@ -1339,6 +1363,445 @@
       } else {
         console.log(`${type.toUpperCase()}: ${message}`);
       }
+    },
+    
+    /**
+     * Open modal for creating/editing automation
+     */
+    openModal(automationId = null) {
+      const modal = document.getElementById('automation-modal');
+      if (!modal) {
+        console.error('Automation modal not found');
+        return;
+      }
+      
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      
+      // Reset form
+      const form = document.getElementById('enhanced-automation-form');
+      if (form) form.reset();
+      
+      // Clear actions container
+      const actionsContainer = document.getElementById('actions-container');
+      if (actionsContainer) actionsContainer.innerHTML = '';
+      
+      const noActions = document.getElementById('no-actions');
+      if (noActions) noActions.style.display = 'block';
+      
+      // Set modal title and button
+      const modalTitle = document.getElementById('automation-modal-title');
+      const deleteBtn = document.getElementById('delete-automation-btn');
+      
+      if (automationId) {
+        // Edit mode
+        const automation = this.automations.find(a => a.id === automationId);
+        if (!automation) {
+          console.error('Automation not found:', automationId);
+          this.closeModal();
+          return;
+        }
+        
+        if (modalTitle) {
+          modalTitle.innerHTML = '<span class="icon">🤖</span> Edit Automation';
+        }
+        
+        if (deleteBtn) {
+          deleteBtn.style.display = 'inline-flex';
+          deleteBtn.setAttribute('data-automation-id', automationId);
+        }
+        
+        // Populate form
+        const nameInput = document.getElementById('automation-name');
+        const descInput = document.getElementById('automation-description');
+        const triggerSelect = document.getElementById('automation-trigger');
+        const enabledCheck = document.getElementById('automation-enabled');
+        const editIdInput = document.getElementById('automation-edit-id');
+        
+        if (nameInput) nameInput.value = automation.name || '';
+        if (descInput) descInput.value = automation.description || '';
+        if (triggerSelect) triggerSelect.value = automation.trigger || '';
+        if (enabledCheck) enabledCheck.checked = automation.enabled !== false;
+        if (editIdInput) editIdInput.value = automationId;
+        
+        // Trigger change to load trigger config
+        if (automation.trigger) {
+          this.onTriggerChange();
+        }
+        
+        // Load actions
+        if (automation.actions && automation.actions.length > 0) {
+          automation.actions.forEach(action => {
+            this.addAction(action);
+          });
+        }
+      } else {
+        // Create mode
+        if (modalTitle) {
+          modalTitle.innerHTML = '<span class="icon">🤖</span> Create New Automation';
+        }
+        
+        if (deleteBtn) {
+          deleteBtn.style.display = 'none';
+        }
+      }
+    },
+    
+    /**
+     * Close modal
+     */
+    closeModal() {
+      const modal = document.getElementById('automation-modal');
+      if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+      }
+    },
+    
+    /**
+     * Handle trigger selection change
+     */
+    onTriggerChange() {
+      const triggerSelect = document.getElementById('automation-trigger');
+      if (!triggerSelect) return;
+      
+      const triggerId = triggerSelect.value;
+      const triggerConfig = document.getElementById('trigger-config');
+      
+      if (!triggerConfig) return;
+      
+      if (!triggerId) {
+        triggerConfig.classList.add('hidden');
+        return;
+      }
+      
+      const trigger = this.triggers[triggerId];
+      if (!trigger || !trigger.configurable) {
+        triggerConfig.classList.add('hidden');
+        return;
+      }
+      
+      // Show trigger configuration
+      triggerConfig.classList.remove('hidden');
+      triggerConfig.innerHTML = '<p><em>Trigger configuration coming soon...</em></p>';
+    },
+    
+    /**
+     * Add action to automation
+     */
+    addAction(existingAction = null) {
+      const actionsContainer = document.getElementById('actions-container');
+      const noActions = document.getElementById('no-actions');
+      
+      if (!actionsContainer) return;
+      
+      if (noActions) {
+        noActions.style.display = 'none';
+      }
+      
+      const actionId = 'action-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+      
+      const actionDiv = document.createElement('div');
+      actionDiv.className = 'action-item';
+      actionDiv.dataset.actionId = actionId;
+      
+      const actionOptions = Object.entries(this.actions).map(([id, action]) => 
+        `<option value="${id}" ${existingAction && existingAction.type === id ? 'selected' : ''}>${action.icon} ${action.name}</option>`
+      ).join('');
+      
+      actionDiv.innerHTML = `
+        <div class="action-header">
+          <select class="uba-select action-type-select" data-action-id="${actionId}">
+            <option value="">Select action...</option>
+            ${actionOptions}
+          </select>
+          <button type="button" class="uba-btn uba-btn-sm uba-btn-danger" 
+                  onclick="window.UBAEnhancedAutomations.removeAction('${actionId}')">
+            Remove
+          </button>
+        </div>
+        <div class="action-config" id="config-${actionId}">
+          <!-- Action configuration will be loaded here -->
+        </div>
+      `;
+      
+      actionsContainer.appendChild(actionDiv);
+      
+      // Setup change handler
+      const select = actionDiv.querySelector('.action-type-select');
+      if (select) {
+        select.addEventListener('change', (e) => {
+          this.onActionTypeChange(actionId, e.target.value);
+        });
+        
+        // If existing action, trigger config load
+        if (existingAction && existingAction.type) {
+          this.onActionTypeChange(actionId, existingAction.type, existingAction.config);
+        }
+      }
+    },
+    
+    /**
+     * Remove action
+     */
+    removeAction(actionId) {
+      const actionDiv = document.querySelector(`[data-action-id="${actionId}"]`);
+      if (actionDiv) {
+        actionDiv.remove();
+      }
+      
+      // Check if there are any actions left
+      const actionsContainer = document.getElementById('actions-container');
+      const noActions = document.getElementById('no-actions');
+      
+      if (actionsContainer && noActions) {
+        const hasActions = actionsContainer.querySelectorAll('.action-item').length > 0;
+        noActions.style.display = hasActions ? 'none' : 'block';
+      }
+    },
+    
+    /**
+     * Handle action type change
+     */
+    onActionTypeChange(actionId, actionType, existingConfig = null) {
+      const configDiv = document.getElementById(`config-${actionId}`);
+      if (!configDiv) return;
+      
+      if (!actionType) {
+        configDiv.innerHTML = '';
+        return;
+      }
+      
+      const action = this.actions[actionType];
+      if (!action || !action.config) {
+        configDiv.innerHTML = '';
+        return;
+      }
+      
+      // Build config form
+      let configHTML = '<div class="action-config-fields">';
+      
+      for (const [key, configDef] of Object.entries(action.config)) {
+        const value = existingConfig && existingConfig[key] ? existingConfig[key] : (configDef.default || '');
+        const required = configDef.required ? 'required' : '';
+        
+        configHTML += `<div class="form-group">`;
+        configHTML += `<label for="action-${actionId}-${key}">${key} ${configDef.required ? '*' : ''}</label>`;
+        
+        switch (configDef.type) {
+          case 'text':
+          case 'url':
+            configHTML += `<input type="${configDef.type}" id="action-${actionId}-${key}" 
+                          class="uba-input" placeholder="${configDef.placeholder || ''}" 
+                          value="${value}" ${required} />`;
+            break;
+          case 'textarea':
+            configHTML += `<textarea id="action-${actionId}-${key}" class="uba-textarea" 
+                          rows="3" placeholder="${configDef.placeholder || ''}" ${required}>${value}</textarea>`;
+            break;
+          case 'select':
+            if (Array.isArray(configDef.options)) {
+              configHTML += `<select id="action-${actionId}-${key}" class="uba-select" ${required}>`;
+              configHTML += `<option value="">Select...</option>`;
+              configDef.options.forEach(opt => {
+                configHTML += `<option value="${opt}" ${value === opt ? 'selected' : ''}>${opt}</option>`;
+              });
+              configHTML += `</select>`;
+            } else {
+              configHTML += `<input type="text" id="action-${actionId}-${key}" class="uba-input" 
+                            placeholder="${configDef.placeholder || ''}" value="${value}" ${required} />`;
+            }
+            break;
+          case 'boolean':
+            configHTML += `<label class="toggle-label">
+              <input type="checkbox" id="action-${actionId}-${key}" ${value ? 'checked' : ''} />
+              <span class="toggle-slider"></span>
+              ${configDef.description || key}
+            </label>`;
+            break;
+          default:
+            configHTML += `<input type="text" id="action-${actionId}-${key}" class="uba-input" 
+                          value="${value}" ${required} />`;
+        }
+        
+        configHTML += `</div>`;
+      }
+      
+      configHTML += '</div>';
+      configDiv.innerHTML = configHTML;
+    },
+    
+    /**
+     * Save automation
+     */
+    saveAutomation() {
+      const form = document.getElementById('enhanced-automation-form');
+      if (!form) return;
+      
+      const validationMsg = document.getElementById('validation-message');
+      
+      // Get form values
+      const editId = document.getElementById('automation-edit-id')?.value;
+      const name = document.getElementById('automation-name')?.value?.trim();
+      const description = document.getElementById('automation-description')?.value?.trim();
+      const trigger = document.getElementById('automation-trigger')?.value;
+      const enabled = document.getElementById('automation-enabled')?.checked !== false;
+      
+      // Collect actions
+      const actionsContainer = document.getElementById('actions-container');
+      const actionItems = actionsContainer?.querySelectorAll('.action-item') || [];
+      const actions = [];
+      
+      let hasErrors = false;
+      
+      actionItems.forEach(actionDiv => {
+        const actionId = actionDiv.dataset.actionId;
+        const select = actionDiv.querySelector('.action-type-select');
+        const actionType = select?.value;
+        
+        if (!actionType) {
+          hasErrors = true;
+          return;
+        }
+        
+        const actionDef = this.actions[actionType];
+        const config = {};
+        
+        if (actionDef && actionDef.config) {
+          for (const [key, configDef] of Object.entries(actionDef.config)) {
+            const input = document.getElementById(`action-${actionId}-${key}`);
+            if (input) {
+              if (configDef.type === 'boolean') {
+                config[key] = input.checked;
+              } else {
+                config[key] = input.value;
+              }
+              
+              // Validate required fields
+              if (configDef.required && !config[key]) {
+                hasErrors = true;
+              }
+            }
+          }
+        }
+        
+        actions.push({ type: actionType, config });
+      });
+      
+      // Validate
+      const automationData = {
+        name,
+        description,
+        trigger,
+        triggerConfig: {},
+        actions,
+        enabled
+      };
+      
+      const errors = this.validateAutomation(automationData);
+      
+      if (errors.length > 0 || hasErrors) {
+        if (validationMsg) {
+          validationMsg.textContent = errors.join(', ');
+          validationMsg.style.color = 'var(--bad)';
+        }
+        return;
+      }
+      
+      // Save automation
+      if (editId) {
+        // Update existing
+        const index = this.automations.findIndex(a => a.id === editId);
+        if (index !== -1) {
+          this.automations[index] = {
+            ...this.automations[index],
+            ...automationData,
+            updatedAt: new Date().toISOString()
+          };
+        }
+      } else {
+        // Create new
+        automationData.id = 'auto-' + Date.now();
+        automationData.createdAt = new Date().toISOString();
+        automationData.lastTriggered = null;
+        automationData.triggerCount = 0;
+        this.automations.push(automationData);
+      }
+      
+      this.saveAutomations();
+      this.closeModal();
+      
+      // Refresh table
+      if (typeof window.renderAutomationsTable === 'function') {
+        window.renderAutomationsTable();
+      }
+      
+      this.showNotification(
+        editId ? 'Automation updated successfully' : 'Automation created successfully',
+        'success'
+      );
+    },
+    
+    /**
+     * Delete automation (from modal)
+     */
+    deleteAutomation() {
+      const deleteBtn = document.getElementById('delete-automation-btn');
+      const automationId = deleteBtn?.getAttribute('data-automation-id');
+      
+      if (!automationId) return;
+      
+      this.deleteAutomationFromTable(automationId);
+      this.closeModal();
+    },
+    
+    /**
+     * Delete automation from table
+     */
+    deleteAutomationFromTable(automationId) {
+      const automation = this.automations.find(a => a.id === automationId);
+      if (!automation) return;
+      
+      if (!confirm(`Delete automation "${automation.name}"?\n\nThis action cannot be undone.`)) {
+        return;
+      }
+      
+      this.automations = this.automations.filter(a => a.id !== automationId);
+      this.saveAutomations();
+      
+      // Refresh table
+      if (typeof window.renderAutomationsTable === 'function') {
+        window.renderAutomationsTable();
+      }
+      
+      this.showNotification('Automation deleted', 'info');
+    },
+    
+    /**
+     * Edit automation
+     */
+    editAutomation(automationId) {
+      this.openModal(automationId);
+    },
+    
+    /**
+     * Test automation
+     */
+    testAutomation(automationId) {
+      const automation = this.automations.find(a => a.id === automationId);
+      if (!automation) return;
+      
+      this.showNotification(`Testing automation: ${automation.name}`, 'info');
+      
+      // Execute automation with test data
+      const testData = {
+        test: true,
+        timestamp: new Date().toISOString()
+      };
+      
+      this.executeAutomation(automation, 'test.trigger', testData);
+      
+      this.showNotification('Test execution complete - check logs', 'success');
     }
   };
   
