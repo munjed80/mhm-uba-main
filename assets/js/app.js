@@ -700,6 +700,7 @@ async function getCurrentUserId() {
 window.login = async function () {
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
+  const rememberMeInput = document.getElementById("remember-me");
   const errorBox = document.getElementById("errorBox");
 
   if (errorBox) errorBox.textContent = "";
@@ -714,30 +715,85 @@ window.login = async function () {
 
   const email = emailInput.value.trim();
   const password = passwordInput.value;
+  const rememberMe = rememberMeInput ? rememberMeInput.checked : true;
 
   if (!email || !password) {
     if (errorBox) {
-      errorBox.textContent = t("auth.login.missing");
+      errorBox.textContent = t("auth.login.missing") || 'Please enter both email and password';
     }
     return;
   }
 
   try {
-    const store = window.ubaStore;
-    if (store && store.auth && typeof store.auth.login === "function") {
-      const result = store.auth.login(email, password);
-      // set label if present
-      const label = document.getElementById("uba-user-label");
-      if (label && result && result.user)
-        label.textContent = result.user.name || result.user.email || "User";
-      window.location.href = "index.html";
-      return;
+    // Check if Supabase is configured and ready
+    if (window.UbaAPI && window.UbaAPI.isReady()) {
+      console.log('[Login] Using Supabase authentication');
+      
+      // Attempt Supabase login
+      const result = await window.UbaAPI.auth.login(email, password);
+
+      if (result.success) {
+        console.log('[Login] ✅ Login successful');
+        
+        // Store remember me preference
+        if (rememberMe) {
+          localStorage.setItem('uba-remember-me', 'true');
+          console.log('[Login] Session will persist across browser restarts');
+        } else {
+          localStorage.setItem('uba-remember-me', 'false');
+          console.log('[Login] Session will expire on browser close');
+        }
+        
+        // Update user label if present
+        const label = document.getElementById("uba-user-label");
+        if (label && result.data && result.data.user) {
+          label.textContent = result.data.user.email || "User";
+        }
+        
+        // Redirect to dashboard
+        window.location.href = "index.html";
+        return;
+      } else {
+        // Show Supabase error
+        if (errorBox) {
+          errorBox.textContent = result.error || 'Login failed. Please check your credentials.';
+        }
+        console.error('[Login] Login failed:', result.error);
+        return;
+      }
     }
-    // fallback: redirect
+    
+    // Fallback to demo/local mode
+    console.log('[Login] Supabase not configured, using demo mode');
+    
+    // Store demo user info
+    const demoUserData = {
+      email: email,
+      mode: 'demo',
+      loginTime: new Date().toISOString(),
+      rememberMe: rememberMe
+    };
+    
+    if (rememberMe) {
+      localStorage.setItem('uba-demo-user', JSON.stringify(demoUserData));
+      localStorage.setItem('uba-remember-me', 'true');
+    } else {
+      // For session-only mode in demo, use sessionStorage
+      sessionStorage.setItem('uba-demo-user-session', JSON.stringify(demoUserData));
+      localStorage.setItem('uba-remember-me', 'false');
+    }
+    
+    // Update user label if present
+    const label = document.getElementById("uba-user-label");
+    if (label) {
+      label.textContent = email.split('@')[0] || "Demo User";
+    }
+
+    // Redirect to dashboard
     window.location.href = "index.html";
   } catch (e) {
     console.error("login error", e);
-    if (errorBox) errorBox.textContent = e.message || t("auth.login.network");
+    if (errorBox) errorBox.textContent = e.message || t("auth.login.network") || 'An error occurred. Please try again.';
   }
 };
 
@@ -1702,72 +1758,30 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // Robust button handler that works regardless of individual page script loading
   function handleGlobalButtonClicks(e) {
-    const target = e.target.closest('button') || e.target;
-    const buttonId = target.id;
-    const buttonText = target.textContent.trim();
+    // Only process if the clicked element is actually a button
+    const button = e.target.closest('button');
+    if (!button) return;
     
-    console.log('🔘 Button clicked:', buttonId, '|', buttonText);
+    const buttonText = button.textContent.trim();
     
-    // Handle specific button IDs
-    if (buttonId === 'new-invoice-btn') {
-      console.log('📄 New Invoice button clicked');
-      if (typeof window.openInvoiceModal === 'function') {
-        console.log('✅ Calling openInvoiceModal');
-        e.preventDefault();
-        window.openInvoiceModal();
-      } else {
-        console.log('❌ openInvoiceModal not available, using showModal fallback');
-        if (typeof showModal === 'function') {
-          e.preventDefault();
-          showModal('invoice-modal');
-        } else {
-          console.log('⚠️ No modal functions available, allowing default navigation');
-        }
-      }
-      return;
-    }
+    // Note: new-invoice-btn, new-lead-btn, add-task-btn, and add-project-btn 
+    // are handled by their respective module files (invoices.js, leads.js, tasks.js, projects.js)
+    // No need to handle them here to avoid duplicate event handling
     
-    if (buttonId === 'new-lead-btn') {
-      console.log('🎯 New Lead button clicked');
-      if (typeof window.openLeadModal === 'function') {
-        console.log('✅ Calling openLeadModal');
-        e.preventDefault();
-        window.openLeadModal();
-      } else {
-        console.log('❌ openLeadModal not available, using showModal fallback');
-        if (typeof showModal === 'function') {
-          e.preventDefault();
-          showModal('lead-modal');
-        } else {
-          console.log('⚠️ No modal functions available, allowing default navigation');
-        }
-      }
-      return;
-    }
-    
-    if (buttonId === 'new-automation-btn') {
-      console.log('🤖 New Automation button clicked');
+    if (button.id === 'new-automation-btn') {
       if (typeof window.openAutomationModal === 'function') {
-        console.log('✅ Calling openAutomationModal');
         e.preventDefault();
         window.openAutomationModal();
-      } else {
-        console.log('❌ openAutomationModal not available, using showModal fallback');
-        if (typeof showModal === 'function') {
-          e.preventDefault();
-          showModal('automation-modal');
-        } else {
-          console.log('⚠️ No modal functions available, allowing default navigation');
-        }
+      } else if (typeof showModal === 'function') {
+        e.preventDefault();
+        showModal('automation-modal');
       }
       return;
     }
     
-    // Handle by button class or text content
-    if (target.classList.contains('uba-action-btn')) {
-      console.log('⚡ Quick action button clicked');
-      
-      if (buttonText.includes('New Invoice') || buttonText.includes('Invoice')) {
+    // Handle quick action buttons from dashboard
+    if (button.classList.contains('uba-action-btn')) {
+      if (buttonText.includes('New Invoice')) {
         if (window.location.pathname.includes('invoices.html')) {
           if (typeof window.openInvoiceModal === 'function') {
             e.preventDefault();
@@ -1778,7 +1792,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       
-      else if (buttonText.includes('Add Client') || buttonText.includes('Client')) {
+      else if (buttonText.includes('Add Client')) {
         if (window.location.pathname.includes('clients.html')) {
           const clientNameInput = document.getElementById('client-name');
           if (clientNameInput) {
@@ -1789,7 +1803,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       
-      else if (buttonText.includes('Create Task') || buttonText.includes('Task')) {
+      else if (buttonText.includes('Create Task')) {
         if (window.location.pathname.includes('tasks.html')) {
           if (typeof window.openAddForm === 'function') {
             e.preventDefault();
@@ -1803,7 +1817,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       
-      else if (buttonText.includes('View Reports') || buttonText.includes('Report')) {
+      else if (buttonText.includes('View Reports')) {
         window.location.href = 'reports.html';
       }
     }
@@ -1811,116 +1825,6 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // Add global click handler
   document.addEventListener('click', handleGlobalButtonClicks);
-  
-  // Dashboard quick action buttons (legacy handler)
-  document.addEventListener('click', (e) => {
-    const actionBtn = e.target.closest('.uba-action-btn');
-    if (!actionBtn) return;
-    
-    const actionText = actionBtn.textContent.trim();
-    
-    if (actionText.includes('New Invoice') || actionText.includes('Invoice')) {
-      // Navigate to invoices page and open modal
-      if (window.location.pathname.includes('invoices.html')) {
-        // Already on invoices page, try to open modal
-        if (typeof window.openInvoiceModal === 'function') {
-          window.openInvoiceModal();
-        } else {
-          showToast('Opening invoice form...', { type: 'info' });
-        }
-      } else {
-        // Navigate to invoices page
-        window.location.href = 'invoices.html';
-      }
-    }
-    
-    else if (actionText.includes('Add Client') || actionText.includes('Client')) {
-      // Navigate to clients page and open form
-      if (window.location.pathname.includes('clients.html')) {
-        // Already on clients page, focus on form
-        const clientNameInput = document.getElementById('client-name');
-        if (clientNameInput) {
-          clientNameInput.focus();
-        }
-      } else {
-        // Navigate to clients page
-        window.location.href = 'clients.html';
-      }
-    }
-    
-    else if (actionText.includes('Create Task') || actionText.includes('Task')) {
-      // Navigate to tasks page and open modal
-      if (window.location.pathname.includes('tasks.html')) {
-        // Already on tasks page, try to open modal
-        if (typeof window.openAddForm === 'function') {
-          window.openAddForm();
-        } else if (typeof showModal === 'function') {
-          showModal('task-form-modal');
-        } else {
-          showToast('Opening task form...', { type: 'info' });
-        }
-      } else {
-        // Navigate to tasks page
-        window.location.href = 'tasks.html';
-      }
-    }
-    
-    else if (actionText.includes('View Reports') || actionText.includes('Report')) {
-      // Navigate to reports page
-      window.location.href = 'reports.html';
-    }
-  });
-  
-  // Legacy button handlers for backward compatibility
-  document.addEventListener('click', (e) => {
-    const target = e.target;
-    if (target.textContent.includes('New Invoice') || 
-        target.id === 'new-invoice-btn' || 
-        target.classList.contains('new-invoice-btn')) {
-      
-      if (typeof window.openInvoiceModal === 'function') {
-        e.preventDefault();
-        window.openInvoiceModal();
-      } else {
-        // Navigate to invoices page if modal function not available
-        window.location.href = 'invoices.html';
-      }
-    }
-  });
-  
-  // New lead button handler
-  document.addEventListener('click', (e) => {
-    const target = e.target;
-    if (target.textContent.includes('New Lead') || 
-        target.id === 'new-lead-btn' || 
-        target.classList.contains('new-lead-btn')) {
-      
-      if (typeof window.openLeadModal === 'function') {
-        e.preventDefault();
-        window.openLeadModal();
-      } else {
-        // Navigate to leads page if modal function not available
-        window.location.href = 'leads.html';
-      }
-    }
-  });
-  
-  // New automation button handler
-  document.addEventListener('click', (e) => {
-    const target = e.target;
-    if (target.textContent.includes('New Automation') || 
-        target.id === 'new-automation-btn' || 
-        target.classList.contains('new-automation-btn')) {
-      
-      if (typeof window.openAutomationModal === 'function') {
-        e.preventDefault();
-        window.openAutomationModal();
-      } else {
-        // Navigate to automations page if modal function not available
-        window.location.href = 'automations.html';
-      }
-    }
-  });
   
 });
 
@@ -4195,3 +4099,136 @@ const renderSettingsPage = () => {
     });
   }
 };
+
+// ======================================================
+// Mobile Navigation Handler
+// ======================================================
+(function initMobileNav() {
+  'use strict';
+  
+  // Mobile breakpoint constant
+  const MOBILE_BREAKPOINT = 768;
+  
+  // Track sidebar state
+  let sidebarState = {
+    isOpen: false
+  };
+  
+  // Track if mobile nav has been initialized
+  let mobileNavInitialized = false;
+  
+  // Only run on mobile/tablet
+  function isMobile() {
+    return window.innerWidth <= MOBILE_BREAKPOINT;
+  }
+  
+  // Create mobile nav toggle button and overlay
+  function setupMobileNav() {
+    if (!isMobile()) {
+      // Clean up mobile elements on desktop
+      if (mobileNavInitialized) {
+        const sidebar = document.querySelector('.uba-sidebar');
+        if (sidebar) {
+          sidebar.classList.remove('is-open');
+          sidebarState.isOpen = false;
+        }
+        const overlay = document.querySelector('.uba-sidebar-overlay');
+        if (overlay) {
+          overlay.classList.remove('is-visible');
+        }
+        document.body.style.overflow = '';
+      }
+      return;
+    }
+    
+    const sidebar = document.querySelector('.uba-sidebar');
+    if (!sidebar) return;
+    
+    // Create toggle button if it doesn't exist
+    let toggleBtn = document.querySelector('.uba-mobile-nav-toggle');
+    if (!toggleBtn) {
+      toggleBtn = document.createElement('button');
+      toggleBtn.className = 'uba-mobile-nav-toggle';
+      toggleBtn.innerHTML = '☰';
+      toggleBtn.setAttribute('aria-label', 'Toggle navigation');
+      document.body.appendChild(toggleBtn);
+      
+      // Add event listener only once
+      toggleBtn.addEventListener('click', toggleSidebar);
+    }
+    
+    // Create overlay if it doesn't exist
+    let overlay = document.querySelector('.uba-sidebar-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.className = 'uba-sidebar-overlay';
+      document.body.appendChild(overlay);
+      
+      // Add event listener only once
+      overlay.addEventListener('click', closeSidebar);
+    }
+    
+    // Setup nav link listeners only once
+    if (!mobileNavInitialized) {
+      const navLinks = sidebar.querySelectorAll('.uba-nav-btn, .uba-nav a');
+      navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          if (isMobile()) {
+            closeSidebar();
+          }
+        });
+      });
+      
+      // Close sidebar on escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && sidebarState.isOpen) {
+          closeSidebar();
+        }
+      });
+      
+      mobileNavInitialized = true;
+    }
+  }
+  
+  // Toggle sidebar
+  function toggleSidebar() {
+    const sidebar = document.querySelector('.uba-sidebar');
+    const overlay = document.querySelector('.uba-sidebar-overlay');
+    if (!sidebar || !overlay) return;
+    
+    sidebarState.isOpen = !sidebarState.isOpen;
+    
+    sidebar.classList.toggle('is-open', sidebarState.isOpen);
+    overlay.classList.toggle('is-visible', sidebarState.isOpen);
+    document.body.style.overflow = sidebarState.isOpen ? 'hidden' : '';
+  }
+  
+  // Close sidebar
+  function closeSidebar() {
+    const sidebar = document.querySelector('.uba-sidebar');
+    const overlay = document.querySelector('.uba-sidebar-overlay');
+    if (!sidebar || !overlay) return;
+    
+    sidebarState.isOpen = false;
+    
+    sidebar.classList.remove('is-open');
+    overlay.classList.remove('is-visible');
+    document.body.style.overflow = '';
+  }
+  
+  // Initialize on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupMobileNav);
+  } else {
+    setupMobileNav();
+  }
+  
+  // Re-check on window resize (with debounce)
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      setupMobileNav();
+    }, 250);
+  });
+})();

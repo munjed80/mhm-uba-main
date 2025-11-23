@@ -3,14 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>UBA Automations</title>
+    <title>Automations - MHM UBA</title>
     <link rel="stylesheet" href="assets/css/style.css" />
-    <link rel="stylesheet" href="assets/css/enhanced-automations.css" />
+    <link rel="stylesheet" href="assets/css/automations-mvp.css" />
   </head>
   <body>
     <section id="uba-dashboard">
       <div id="page-id" data-page="automations-page">
         <div class="uba-shell">
+          <!-- Sidebar Navigation -->
           <aside class="uba-sidebar">
             <div>
               <div class="uba-logo">MHM <span>UBA</span></div>
@@ -19,17 +20,15 @@
                 invoices and smart tools.
               </p>
               <div class="uba-badge">
-                <span class="uba-badge-dot"></span
-                ><span data-i18n="app.badge">
+                <span class="uba-badge-dot"></span>
+                <span data-i18n="app.badge">
                   Private beta · Built in the Netherlands
                 </span>
               </div>
             </div>
 
             <div class="uba-language">
-              <label for="language-select" data-i18n="language.label"
-                >Language</label
-              >
+              <label for="language-select" data-i18n="language.label">Language</label>
               <select id="language-select">
                 <option value="en" data-i18n="language.en">English</option>
                 <option value="ar" data-i18n="language.ar">Arabic</option>
@@ -41,75 +40,114 @@
             </div>
 
             <div>
-              <div class="uba-nav-label" data-i18n="nav.workspaceLabel">
-                Workspace
-              </div>
+              <div class="uba-nav-label" data-i18n="nav.workspaceLabel">Workspace</div>
               <nav class="uba-nav">
-                <a class="uba-nav-btn" href="index.html"
-                  ><span class="icon">📈</span>
+                <a class="uba-nav-btn" href="index.html">
+                  <span class="icon">
+                    <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                  </span>
                   <span data-i18n="nav.dashboard">Dashboard</span>
-                  <small data-i18n="nav.dashboardSub">Overview</small></a
-                >
-                <a class="uba-nav-btn" href="clients.html"
-                  ><span class="icon">🧑‍💻</span>
+                  <small data-i18n="nav.dashboardSub">Overview</small>
+                </a>
+                <a class="uba-nav-btn" href="clients.html">
+                  <span class="icon">
+                    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                  </span>
                   <span data-i18n="nav.clients">Clients</span>
-                  <small data-i18n="nav.clientsSub">CRM</small></a
-                >
-                <a class="uba-nav-btn" href="projects.html"
-                  ><span class="icon">💼</span>
+                  <small data-i18n="nav.clientsSub">CRM</small>
+                </a>
+                <a class="uba-nav-btn" href="projects.html">
+                  <span class="icon">
+                    <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/></svg>
+                  </span>
                   <span data-i18n="nav.projects">Projects</span>
-                  <small data-i18n="nav.projectsSub">Pipeline</small></a
-                >
-                <a class="uba-nav-btn" href="tasks.html"
-                  ><span class="icon">✅</span>
+                  <small data-i18n="nav.projectsSub">Pipeline</small>
+                </a>
+                <a class="uba-nav-btn" href="tasks.html">
+                  <span class="icon">
+                    <svg viewBox="0 0 24 24"><path d="M22 5.72l-4.6-3.86-1.29 1.53 4.6 3.86L22 5.72zM7.88 3.39L6.6 1.86 2 5.71l1.29 1.53 4.59-3.85zM12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 16c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm1-11h-2v6l5.25 3.15.75-1.23-4-2.42V9z"/></svg>
+                  </span>
                   <span data-i18n="nav.tasks">Tasks</span>
-                  <small data-i18n="nav.tasksSub">Today</small></a
-                >
-                <a class="uba-nav-btn" href="invoices.html"
-                  ><span class="icon">💵</span>
+                  <small data-i18n="nav.tasksSub">Today</small>
+                </a>
+                <a class="uba-nav-btn" href="invoices.html">
+                  <span class="icon">
+                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm0 16H5V5h14v14zm-7-2h2v-2h2c.55 0 1-.45 1-1v-4c0-.55-.45-1-1-1h-4V7h4v2h2V7c0-.55-.45-1-1-1h-2V4h-2v2h-2c-.55 0-1 .45-1 1v4c0 .55.45 1 1 1h4v2H9v-2H7v2c0 .55.45 1 1 1h2v2z"/></svg>
+                  </span>
                   <span data-i18n="nav.invoices">Invoices</span>
-                  <small data-i18n="nav.invoicesSub">Billing</small></a
-                >
-                <a class="uba-nav-btn active" href="automations.html"
-                  ><span class="icon">🤖</span>
+                  <small data-i18n="nav.invoicesSub">Billing</small>
+                </a>
+                <a class="uba-nav-btn active" href="automations.html">
+                  <span class="icon">
+                    <svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg>
+                  </span>
                   <span data-i18n="nav.automations">Automations</span>
-                  <small data-i18n="nav.automationsSub">Flows</small></a
-                >
-                <a class="uba-nav-btn" href="calendar.html"
-                  ><span class="icon">📅</span><span>Calendar</span></a
-                >
-                <a class="uba-nav-btn" href="leads.html"
-                  ><span class="icon">🧲</span><span>Leads</span></a
-                >
-                <a class="uba-nav-btn" href="expenses.html"
-                  ><span class="icon">📤</span><span>Expenses</span></a
-                >
-                <a class="uba-nav-btn" href="files.html"
-                  ><span class="icon">📁</span><span>Files</span></a
-                >
-                <a class="uba-nav-btn" href="reports.html"
-                  ><span class="icon">📑</span><span>Reports</span></a
-                >
-                <a class="uba-nav-btn" href="smart-tools.html"
-                  ><span class="icon">🧠</span>
-                  <span data-i18n="nav.smartTools">UBA Smart Tools</span>
-                  <small data-i18n="nav.smartToolsSub">AI ops</small></a
-                >
-                <a class="uba-nav-btn" href="insights.html"
-                  ><span class="icon">📊</span>
+                  <small data-i18n="nav.automationsSub">Flows</small>
+                </a>
+                <a class="uba-nav-btn" href="calendar.html">
+                  <span class="icon">
+                    <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+                  </span>
+                  <span data-i18n="nav.calendar">Calendar</span>
+                </a>
+                <a class="uba-nav-btn" href="leads.html">
+                  <span class="icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                  </span>
+                  <span data-i18n="nav.leads">Leads</span>
+                </a>
+                <a class="uba-nav-btn" href="expenses.html">
+                  <span class="icon">
+                    <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+                  </span>
+                  <span data-i18n="nav.expenses">Expenses</span>
+                </a>
+                <a class="uba-nav-btn" href="files.html">
+                  <span class="icon">
+                    <svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+                  </span>
+                  <span data-i18n="nav.files">Files</span>
+                </a>
+                <a class="uba-nav-btn" href="reports.html">
+                  <span class="icon">
+                    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                  </span>
+                  <span data-i18n="nav.reports">Reports</span>
+                </a>
+                <a class="uba-nav-btn" href="smart-tools.html">
+                  <span class="icon">
+                    <svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
+                  </span>
+                  <span data-i18n="nav.smartTools">Smart Tools</span>
+                  <small data-i18n="nav.smartToolsSub">AI ops</small>
+                </a>
+                <a class="uba-nav-btn" href="assistant.html">
+                  <span class="icon">
+                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+                  </span>
+                  <span data-i18n="nav.assistant">Assistant</span>
+                </a>
+                <a class="uba-nav-btn" href="insights.html">
+                  <span class="icon">
+                    <svg viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+                  </span>
                   <span data-i18n="nav.insights">Insights Lab</span>
-                  <small data-i18n="nav.insightsSub">Reports</small></a
-                >
-                <a class="uba-nav-btn" href="help.html"
-                  ><span class="icon">💬</span>
+                  <small data-i18n="nav.insightsSub">Reports</small>
+                </a>
+                <a class="uba-nav-btn" href="help.html">
+                  <span class="icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+                  </span>
                   <span data-i18n="nav.support">Success Desk</span>
-                  <small data-i18n="nav.supportSub">Guidance</small></a
-                >
-                <a class="uba-nav-btn" href="settings.html"
-                  ><span class="icon">🛠️</span>
+                  <small data-i18n="nav.supportSub">Guidance</small>
+                </a>
+                <a class="uba-nav-btn" href="settings.html">
+                  <span class="icon">
+                    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                  </span>
                   <span data-i18n="nav.settings">Settings</span>
-                  <small data-i18n="nav.settingsSub">Workspace</small></a
-                >
+                  <small data-i18n="nav.settingsSub">Workspace</small>
+                </a>
               </nav>
             </div>
 
@@ -119,15 +157,15 @@
             </div>
           </aside>
 
+          <!-- Main Content -->
           <main class="uba-main">
+            <!-- Top Bar -->
             <header class="uba-topbar">
               <div class="uba-top-left">
                 <p class="uba-top-kicker">Automation</p>
-                <h1 id="uba-view-title" data-i18n="view.automations.title">
-                  Automations
-                </h1>
+                <h1 id="uba-view-title" data-i18n="view.automations.title">Automations</h1>
                 <p id="uba-view-desc" data-i18n="view.automations.desc">
-                  Overview of flows with sample activity logs.
+                  Create simple rules to automate actions in your workspace.
                 </p>
               </div>
               <div class="uba-top-right">
@@ -135,289 +173,191 @@
                   <option>Main workspace</option>
                 </select>
                 <div class="uba-user-pill">
-                  <span class="uba-avatar"></span
-                  ><span id="uba-user-label">Admin</span>
+                  <span class="uba-avatar"></span>
+                  <span id="uba-user-label">Admin</span>
                 </div>
               </div>
             </header>
 
+            <!-- Main View -->
             <div class="uba-views">
               <section class="uba-view" data-view="automations">
-                <div class="automation-hero-surface">
-                  <div class="automation-hero">
-                    <div class="automation-hero-content">
-                      <p class="hero-eyebrow">Automation Control Center</p>
-                      <h2>Orchestrate every client, finance, and ops workflow</h2>
-                      <p>
-                        Launch dependable automations that watch your CRM, billing, and delivery data
-                        in real time. Every rule is fully auditable, uses safe defaults, and can be
-                        extended with advanced triggers or outbound actions.
-                      </p>
-                      <div class="automation-hero-actions">
-                        <button
-                          id="new-automation-btn"
-                          class="uba-btn uba-btn-primary uba-btn-lg"
-                          type="button"
-                        >
-                          <span class="icon">⚡</span>
-                          <span>Launch Automation Builder</span>
-                        </button>
-                        <button class="uba-btn uba-btn-ghost uba-btn-lg" type="button">
-                          <span class="icon">📚</span>
-                          <span>Browse playbooks</span>
-                        </button>
-                      </div>
-                      <ul class="automation-promise-list">
-                        <li>Real triggers mapped to tasks, invoices, leads, and projects</li>
-                        <li>Multiple actions per rule with validation and safe rollbacks</li>
-                        <li>Centralized audit log with export-ready history</li>
-                      </ul>
-                    </div>
-                    <div class="automation-hero-panel" aria-label="Automation activity overview">
-                      <div class="hero-panel-header">
-                        <span>Latest orchestration</span>
-                        <span class="status-live">Live</span>
-                      </div>
-                      <div class="hero-panel-body">
-                        <div class="hero-flow-step">
-                          <span>Trigger</span>
-                          <strong>Invoice Due &middot; Enterprise Retainer</strong>
-                          <small>Queued 2 min ago</small>
-                        </div>
-                        <div class="hero-flow-step">
-                          <span>Condition</span>
-                          <strong>Amount &gt; 5,000 · Client tagged VIP</strong>
-                          <small>Ruleset matched</small>
-                        </div>
-                        <div class="hero-flow-step">
-                          <span>Actions</span>
-                          <strong>Task + Slack notification + Ledger note</strong>
-                          <small>Executed in 420ms</small>
-                        </div>
-                      </div>
-                      <div class="hero-panel-footer">
-                        <span>Next review</span>
-                        <strong>Weekly automation audit · Friday 09:00</strong>
-                      </div>
+                
+                <!-- Metrics Cards -->
+                <div class="uba-cards-row" style="margin-bottom: 2rem;">
+                  <div class="uba-card">
+                    <div class="uba-card-body">
+                      <p class="uba-card-label">Active Automations</p>
+                      <p class="uba-card-value" id="metric-active-automations">0</p>
+                      <p class="uba-card-caption">Currently running</p>
                     </div>
                   </div>
-
-                  <div class="automation-hero-metrics">
-                    <div class="hero-metric">
-                      <p>Active automations</p>
-                      <strong id="automation-count">0</strong>
-                      <small>Live safeguards</small>
-                    </div>
-                    <div class="hero-metric">
-                      <p>Total runs</p>
-                      <strong id="automation-runs">0</strong>
-                      <small>Last 30 days</small>
-                    </div>
-                    <div class="hero-metric">
-                      <p>On-time routing</p>
-                      <strong>99.4%</strong>
-                      <small>Measured across all flows</small>
-                    </div>
-                    <div class="hero-metric">
-                      <p>Blueprints ready</p>
-                      <strong>24</strong>
-                      <small>Prebuilt client journeys</small>
+                  <div class="uba-card">
+                    <div class="uba-card-body">
+                      <p class="uba-card-label">Total Automations</p>
+                      <p class="uba-card-value" id="metric-total-automations">0</p>
+                      <p class="uba-card-caption">All rules</p>
                     </div>
                   </div>
                 </div>
 
-                <section id="automations-page" class="automation-core">
-                  <div class="automation-panels">
-                    <article class="automation-panel automation-command-center">
-                      <div class="automation-panel-header">
-                        <div>
-                          <p class="eyebrow">Command panel</p>
-                          <h3>Build dependable flows in minutes</h3>
-                          <p>
-                            Define structured triggers, stack unlimited actions, and set guardrails for
-                            data updates or external notifications. Everything you configure is versioned
-                            and can be tested against sandbox data before going live.
-                          </p>
-                        </div>
-                      </div>
-                      <ul class="automation-checklist">
-                        <li>
-                          <span class="icon">🎯</span>
-                          <div>
-                            <strong>Precise trigger conditions</strong>
-                            <small>Filter on priority, monetary thresholds, project stages, or custom fields.</small>
-                          </div>
-                        </li>
-                        <li>
-                          <span class="icon">🧩</span>
-                          <div>
-                            <strong>Composable action stack</strong>
-                            <small>Mix tasks, notifications, updates, and webhooks per rule.</small>
-                          </div>
-                        </li>
-                        <li>
-                          <span class="icon">🛡️</span>
-                          <div>
-                            <strong>Safety controls</strong>
-                            <small>Enable approvals, dry-runs, and automatic throttling.</small>
-                          </div>
-                        </li>
-                      </ul>
-                      <div class="automation-command-footer">
-                        <button class="uba-btn uba-btn-secondary" type="button">
-                          Preview sandbox data
-                        </button>
-                        <button class="uba-btn uba-btn-ghost" type="button">
-                          View change history
-                        </button>
-                      </div>
-                    </article>
-
-                    <article class="automation-panel automation-signal-card">
-                      <header>
-                        <p class="eyebrow">Signal board</p>
-                        <h3>Real-time guardrails</h3>
-                        <p>Monitor execution health, failure retries, and approvals waiting on you.</p>
-                      </header>
-                      <ul class="signal-grid">
-                        <li>
-                          <span>Pending approvals</span>
-                          <strong>3</strong>
-                          <small>Finance follow-ups awaiting sign-off</small>
-                        </li>
-                        <li>
-                          <span>Retries scheduled</span>
-                          <strong>1</strong>
-                          <small>Webhook endpoint slowed down</small>
-                        </li>
-                        <li>
-                          <span>Muted rules</span>
-                          <strong>2</strong>
-                          <small>Paused during pricing experiment</small>
-                        </li>
-                        <li>
-                          <span>Success streak</span>
-                          <strong>47</strong>
-                          <small>Runs without manual intervention</small>
-                        </li>
-                      </ul>
-                    </article>
+                <!-- Automations Card -->
+                <div class="uba-card">
+                  <div class="uba-card-header">
+                    <div>
+                      <h3 class="uba-card-title">Automations</h3>
+                      <p class="uba-card-subtitle">
+                        Manage your automation rules
+                      </p>
+                    </div>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                      <select id="automation-filter" class="uba-select" style="width: auto;">
+                        <option value="all">All</option>
+                        <option value="active">Active</option>
+                        <option value="paused">Paused</option>
+                      </select>
+                      <button id="add-automation-btn" class="uba-btn uba-btn-primary" type="button">
+                        <span class="icon">+</span>
+                        <span>Add Automation</span>
+                      </button>
+                    </div>
                   </div>
 
-                  <section class="automation-data-card" aria-labelledby="automation-table-title">
-                    <div class="automation-data-card-header">
-                      <div>
-                        <p class="eyebrow">Automation library</p>
-                        <h3 id="automation-table-title">Active and draft automations</h3>
-                        <p>Every rule shows its trigger, action stack, health, and last execution time.</p>
-                      </div>
-                    </div>
+                  <div class="uba-card-body">
                     <div class="uba-table-wrap">
-                      <table class="uba-table enhanced-automations-table">
+                      <table class="uba-table">
                         <thead>
                           <tr>
                             <th>Name</th>
                             <th>Trigger</th>
-                            <th>Actions</th>
+                            <th>Action</th>
                             <th>Status</th>
                             <th>Last run</th>
-                            <th style="width: 140px">Controls</th>
+                            <th style="width: 140px;">Actions</th>
                           </tr>
                         </thead>
-                        <tbody id="automations-body">
+                        <tbody id="automations-tbody">
                           <tr>
-                            <td colspan="6">
-                              No automations yet. Create your first rule.
+                            <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted, #666);">
+                              Loading...
                             </td>
                           </tr>
                         </tbody>
                       </table>
                     </div>
-                  </section>
+                  </div>
+                </div>
 
-                  <section class="automation-data-card" aria-labelledby="automation-log-title">
-                    <div class="automation-data-card-header">
-                      <div>
-                        <p class="eyebrow">Operational telemetry</p>
-                        <h3 id="automation-log-title">Execution log</h3>
-                        <p>Chronological record of rule runs, payload summaries, and success signals.</p>
-                      </div>
-                      <button id="clear-logs-btn" class="uba-btn-ghost" type="button">
-                        Clear logs
-                      </button>
-                    </div>
-                    <div class="uba-table-wrap">
-                      <table class="uba-table">
-                        <thead>
-                          <tr>
-                            <th>Rule</th>
-                            <th>Trigger</th>
-                            <th>Result</th>
-                            <th>Details</th>
-                            <th>Timestamp</th>
-                          </tr>
-                        </thead>
-                        <tbody id="automation-logs-body">
-                          <tr>
-                            <td colspan="5">No automation runs yet.</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </section>
-
-                  <section class="automation-catalog">
-                    <article>
-                      <p class="eyebrow">Trigger catalog</p>
-                      <h3>Events you can listen to</h3>
-                      <p>
-                        Mix and match granular filters to decide when each automation fires. Every trigger
-                        supports optional constraints so you never spam your teams.
-                      </p>
-                      <ul class="catalog-list">
-                        <li><strong>Task Created</strong> &middot; react instantly when work is scheduled.</li>
-                        <li><strong>Invoice Due</strong> &middot; escalate billing risk before it grows.</li>
-                        <li><strong>Lead Updated</strong> &middot; sync follow-up cadences with sales.</li>
-                        <li><strong>Project Stage Changed</strong> &middot; align stakeholders as work moves.</li>
-                        <li><strong>Client Created</strong> &middot; onboard consistently every time.</li>
-                        <li><strong>Deadline Approaching</strong> &middot; remind the right owner ahead of time.</li>
-                      </ul>
-                    </article>
-                    <article>
-                      <p class="eyebrow">Action catalog</p>
-                      <h3>Responses you can stack</h3>
-                      <p>
-                        Combine unlimited actions per rule to keep clients informed, teams aligned, and
-                        systems in sync.
-                      </p>
-                      <ul class="catalog-list">
-                        <li><strong>Send Notification</strong> to inboxes or in-app alerts.</li>
-                        <li><strong>Create Task</strong> with prefilled context and deadlines.</li>
-                        <li><strong>Add Log Entry</strong> for your compliance or success teams.</li>
-                        <li><strong>Update Record</strong> fields when data requirements change.</li>
-                        <li><strong>Send Email</strong> using branded templates.</li>
-                        <li><strong>Webhook</strong> any payload to external platforms.</li>
-                      </ul>
-                    </article>
-                  </section>
-                </section>
               </section>
             </div>
-
-            <!-- Enhanced Automation Modal will be dynamically injected by JavaScript -->
           </main>
         </div>
       </div>
     </section>
 
+    <!-- Automation Modal -->
+    <div id="automation-modal" class="uba-modal" style="display: none;">
+      <div class="uba-modal-overlay"></div>
+      <div class="uba-modal-dialog">
+        <div class="uba-modal-header">
+          <h3 id="automation-modal-title">Add Automation</h3>
+          <button class="uba-modal-close" type="button">×</button>
+        </div>
+
+        <div class="uba-modal-body">
+          <form id="automation-form">
+            <div class="uba-form-group">
+              <label for="automation-name" class="uba-label">
+                Name <span style="color: var(--bad, #d32f2f);">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="automation-name" 
+                class="uba-input" 
+                placeholder="e.g., Welcome new clients"
+                required 
+              />
+            </div>
+
+            <div class="uba-form-group">
+              <label for="automation-trigger" class="uba-label">
+                Trigger <span style="color: var(--bad, #d32f2f);">*</span>
+              </label>
+              <select id="automation-trigger" class="uba-select" required>
+                <option value="">Select a trigger...</option>
+                <option value="client_created">New client</option>
+                <option value="invoice_overdue">Invoice overdue</option>
+                <option value="invoice_paid">Invoice paid</option>
+                <option value="task_completed">Task completed</option>
+                <option value="task_overdue">Task overdue</option>
+                <option value="project_stage_changed">Project stage changed</option>
+              </select>
+            </div>
+
+            <div class="uba-form-group">
+              <label for="automation-action" class="uba-label">
+                Action <span style="color: var(--bad, #d32f2f);">*</span>
+              </label>
+              <select id="automation-action" class="uba-select" required>
+                <option value="">Select an action...</option>
+                <option value="send_email">Send email</option>
+                <option value="create_task">Create task</option>
+                <option value="add_note">Add note</option>
+                <option value="send_notification">Send notification</option>
+              </select>
+            </div>
+
+            <div class="uba-form-group">
+              <label for="automation-notes" class="uba-label">
+                Notes / Description
+              </label>
+              <textarea 
+                id="automation-notes" 
+                class="uba-textarea" 
+                rows="3"
+                placeholder="Optional description or notes about this automation"
+              ></textarea>
+            </div>
+
+            <div class="uba-form-group">
+              <label class="uba-checkbox">
+                <input type="checkbox" id="automation-status" checked />
+                <span>Active (automation is enabled)</span>
+              </label>
+            </div>
+
+            <div id="form-error-message" class="uba-error-message" style="display: none;"></div>
+          </form>
+        </div>
+
+        <div class="uba-modal-footer">
+          <button type="button" id="cancel-automation-btn" class="uba-btn uba-btn-ghost">
+            Cancel
+          </button>
+          <button id="save-automation-btn" type="button" class="uba-btn uba-btn-primary">
+            Save Automation
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      // Try to load Supabase config, fail silently if not found
+      const script = document.createElement('script');
+      script.src = 'supabase-config.js';
+      script.onerror = () => console.warn('[Auth] supabase-config.js not found - running in local/demo mode');
+      document.head.appendChild(script);
+    </script>
+    <script src="assets/js/supabase-api-service.js"></script>
+    <script src="assets/js/auth-guard.js"></script>
     <script src="assets/js/i18n.js"></script>
     <script src="assets/js/store.js"></script>
     <script src="assets/js/data-layer.js"></script>
-    <script src="assets/js/validation.js"></script>
+    <script src="assets/js/ui-helpers.js"></script>
     <script src="assets/js/app.js"></script>
     <script src="assets/js/page-loader.js"></script>
-    <script src="assets/js/automations.js"></script>
-    <script src="assets/js/enhanced-automations.js"></script>
-    <script src="assets/js/enhanced-automations-ui.js"></script>
+    <script src="assets/js/automations-mvp.js"></script>
   </body>
 </html>

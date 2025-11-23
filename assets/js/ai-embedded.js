@@ -117,14 +117,10 @@
           `Status: ${invoice.status}
 ` +
           `Client: ${client?.name || 'Unknown'}
-
 ` +
-          `**AI Suggestions:**
-` +
-          (invoice.status === 'overdue' ? '- Send payment reminder immediately
-' : '') +
-          (invoice.status === 'sent' ? '- Follow up in 3-5 days if not paid
-' : '') +
+          '**AI Suggestions:**\n' +
+          (invoice.status === 'overdue' ? '- Send payment reminder immediately\n' : '') +
+          (invoice.status === 'sent' ? '- Follow up in 3-5 days if not paid\n' : '') +
           '- Keep client communication professional and friendly';
         
         this._showPanel({
@@ -215,8 +211,7 @@
       return content
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        .replace(/
-/g, '<br>');
+        .replace(/\n/g, '<br>');
     },
 
     // ============ Action Methods ============

@@ -7,6 +7,7 @@ let editInvoiceId = null;
 let currentPage = 1;
 let pageSize = 20;
 let filteredInvoices = [];
+let modalEventsBound = false;
 
 // Validation schema for invoices
 const invoiceValidationSchema = {
@@ -69,6 +70,10 @@ function initInvoicesPage() {
 }
 
 function initModalEvents() {
+    // Prevent duplicate event binding
+    if (modalEventsBound) return;
+    modalEventsBound = true;
+    
     console.log('🔗 Setting up modal event handlers...');
     
     // New invoice button
@@ -191,7 +196,7 @@ function closeInvoiceModal() {
     hideInvoiceError();
 }
 
-function handleSaveInvoice() {
+async function handleSaveInvoice() {
     const client = document.getElementById('invoice-client').value.trim();
     const label = document.getElementById('invoice-label').value.trim();
     const amount = parseFloat(document.getElementById('invoice-amount').value) || 0;
@@ -254,24 +259,43 @@ function handleSaveInvoice() {
     }
     
     try {
-        // Check if ubaStore is available
-        if (!window.ubaStore || !window.ubaStore.invoices) {
+        // Use Supabase store if available, otherwise fall back to localStorage
+        const store = window.SupabaseStore || window.ubaStore;
+        if (!store || !store.invoices) {
             showInvoiceError('Data store not available. Please refresh the page.');
             return;
         }
         
         if (isEditMode && editInvoiceId) {
             // Get original invoice for comparison
-            const originalInvoice = window.ubaStore.invoices.getById(editInvoiceId);
+            let originalInvoice = null;
+            if (window.SupabaseStore) {
+                originalInvoice = await store.invoices.get(editInvoiceId);
+            } else {
+                originalInvoice = store.invoices.getById ? store.invoices.getById(editInvoiceId) : store.invoices.get(editInvoiceId);
+            }
             const originalStatus = originalInvoice ? originalInvoice.status : null;
             
             // Update existing invoice
-            const success = window.ubaStore.invoices.update(editInvoiceId, invoiceData);
+            let success = false;
+            if (window.SupabaseStore) {
+                const result = await store.invoices.update(editInvoiceId, invoiceData);
+                success = !!result;
+            } else {
+                success = store.invoices.update(editInvoiceId, invoiceData);
+            }
+            
             if (success) {
                 console.log('✅ Invoice updated successfully');
                 
                 // Trigger automations for invoice update
-                const updatedInvoice = window.ubaStore.invoices.getById(editInvoiceId);
+                let updatedInvoice = null;
+                if (window.SupabaseStore) {
+                    updatedInvoice = await store.invoices.get(editInvoiceId);
+                } else {
+                    updatedInvoice = store.invoices.getById ? store.invoices.getById(editInvoiceId) : store.invoices.get(editInvoiceId);
+                }
+                
                 if (updatedInvoice && typeof window.runAutomations === 'function') {
                     // Check if status changed
                     if (originalStatus && originalStatus !== updatedInvoice.status) {
@@ -288,14 +312,20 @@ function handleSaveInvoice() {
                 }
                 
                 closeInvoiceModal();
-                renderInvoicesTable();
-                updateInvoiceMetrics();
+                await renderInvoicesTable();
+                await updateInvoiceMetrics();
             } else {
                 showInvoiceError('Failed to update invoice');
             }
         } else {
             // Create new invoice
-            const newInvoice = window.ubaStore.invoices.create(invoiceData);
+            let newInvoice = null;
+            if (window.SupabaseStore) {
+                newInvoice = await store.invoices.create(invoiceData);
+            } else {
+                newInvoice = store.invoices.create(invoiceData);
+            }
+            
             if (newInvoice) {
                 console.log('✅ Invoice created successfully:', newInvoice);
                 
@@ -310,8 +340,8 @@ function handleSaveInvoice() {
                 }
                 
                 closeInvoiceModal();
-                renderInvoicesTable();
-                updateInvoiceMetrics();
+                await renderInvoicesTable();
+                await updateInvoiceMetrics();
             } else {
                 showInvoiceError('Failed to create invoice');
             }
@@ -322,40 +352,54 @@ function handleSaveInvoice() {
     }
 }
 
-function editInvoice(id) {
-    if (!window.ubaStore || !window.ubaStore.invoices) {
-        console.error('❌ ubaStore not available');
+async function editInvoice(id) {
+    const store = window.SupabaseStore || window.ubaStore;
+    if (!store || !store.invoices) {
+        console.error('❌ Store not available');
         alert('Data store not available. Please refresh the page.');
         return;
     }
     
-    const invoice = window.ubaStore.invoices.getById(id);
+    let invoice = null;
+    if (window.SupabaseStore) {
+        invoice = await store.invoices.get(id);
+    } else {
+        invoice = store.invoices.getById ? store.invoices.getById(id) : store.invoices.get(id);
+    }
+    
     if (invoice) {
         openInvoiceModal(invoice);
     } else {
         console.error('❌ Invoice not found:', id);
         alert('Invoice not found. The table will be refreshed.');
-        renderInvoicesTable();
+        await renderInvoicesTable();
     }
 }
 
 // View invoice in detailed modal
-function viewInvoice(id) {
+async function viewInvoice(id) {
     console.log('👁️ Viewing invoice:', id);
     
-    if (!window.ubaStore || !window.ubaStore.invoices) {
-        console.error('❌ ubaStore.invoices not available');
+    const store = window.SupabaseStore || window.ubaStore;
+    if (!store || !store.invoices) {
+        console.error('❌ Store not available');
         alert('Data store not available. Please refresh the page.');
         return;
     }
     
-    const invoice = window.ubaStore.invoices.getById(id);
+    let invoice = null;
+    if (window.SupabaseStore) {
+        invoice = await store.invoices.get(id);
+    } else {
+        invoice = store.invoices.getById ? store.invoices.getById(id) : store.invoices.get(id);
+    }
+    
     if (invoice) {
         openInvoiceViewModal(invoice);
     } else {
         console.error('❌ Invoice not found:', id);
         alert('Invoice not found. The table will be refreshed.');
-        renderInvoicesTable();
+        await renderInvoicesTable();
     }
 }
 
@@ -907,14 +951,21 @@ function getInvoicePrintCSS() {
     `;
 }
 
-function deleteInvoice(id) {
-    if (!window.ubaStore || !window.ubaStore.invoices) {
-        console.error('❌ ubaStore not available');
+async function deleteInvoice(id) {
+    const store = window.SupabaseStore || window.ubaStore;
+    if (!store || !store.invoices) {
+        console.error('❌ Store not available');
         alert('Data store not available. Please refresh the page.');
         return;
     }
     
-    const invoice = window.ubaStore.invoices.getById(id);
+    let invoice = null;
+    if (window.SupabaseStore) {
+        invoice = await store.invoices.get(id);
+    } else {
+        invoice = store.invoices.getById ? store.invoices.getById(id) : store.invoices.get(id);
+    }
+    
     if (!invoice) {
         console.error('Invoice not found:', id);
         return;
@@ -926,11 +977,18 @@ This action cannot be undone.`;
     
     if (confirm(confirmMessage)) {
         try {
-            const success = window.ubaStore.invoices.delete(id);
+            let success = false;
+            if (window.SupabaseStore) {
+                await store.invoices.delete(id);
+                success = true;
+            } else {
+                success = store.invoices.delete(id);
+            }
+            
             if (success) {
                 console.log('✅ Invoice deleted successfully');
-                renderInvoicesTable();
-                updateInvoiceMetrics();
+                await renderInvoicesTable();
+                await updateInvoiceMetrics();
             } else {
                 alert('Failed to delete invoice');
             }
@@ -941,16 +999,17 @@ This action cannot be undone.`;
     }
 }
 
-function renderInvoicesTable() {
+async function renderInvoicesTable() {
     const tbody = document.getElementById('invoices-body');
     if (!tbody) {
         console.warn('❌ invoices-body element not found');
         return;
     }
     
-    // Check if ubaStore is available
-    if (!window.ubaStore || !window.ubaStore.invoices) {
-        console.warn('❌ ubaStore.invoices not available');
+    // Use Supabase store if available, otherwise fall back to localStorage
+    const store = window.SupabaseStore || window.ubaStore;
+    if (!store || !store.invoices) {
+        console.warn('❌ Store not available');
         tbody.innerHTML = `
             <tr>
                 <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">
@@ -961,7 +1020,12 @@ function renderInvoicesTable() {
         return;
     }
     
-    const allInvoices = window.ubaStore.invoices.getAll();
+    let allInvoices = [];
+    if (window.SupabaseStore) {
+        allInvoices = await store.invoices.getAll();
+    } else {
+        allInvoices = store.invoices.getAll();
+    }
     
     if (!allInvoices || allInvoices.length === 0) {
         tbody.innerHTML = `
@@ -1175,13 +1239,20 @@ function addInvoicesToolbar() {
     }
 }
 
-function updateInvoiceMetrics() {
-    if (!window.ubaStore || !window.ubaStore.invoices) {
-        console.warn('❌ ubaStore not available for metrics');
+async function updateInvoiceMetrics() {
+    const store = window.SupabaseStore || window.ubaStore;
+    if (!store || !store.invoices) {
+        console.warn('❌ Store not available for metrics');
         return;
     }
     
-    const invoices = window.ubaStore.invoices.getAll() || [];
+    let invoices = [];
+    if (window.SupabaseStore) {
+        invoices = await store.invoices.getAll() || [];
+    } else {
+        invoices = store.invoices.getAll() || [];
+    }
+    
     const count = invoices.length;
     const total = invoices.reduce((sum, inv) => sum + (parseFloat(inv.amount) || 0), 0);
     

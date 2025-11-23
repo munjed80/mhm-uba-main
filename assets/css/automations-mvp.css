@@ -1,0 +1,335 @@
+/**
+ * Automations MVP - Additional Styles
+ * Minimal styles for the automations page
+ */
+
+/* Error message styling */
+.uba-error-message {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  border-left: 3px solid #c62828;
+}
+
+/* Status badges */
+.uba-status {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.uba-status-success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.uba-status-neutral {
+  background-color: #f5f5f5;
+  color: #616161;
+}
+
+.uba-status-danger {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+/* Table actions */
+.uba-table-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.uba-btn-sm {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: transparent;
+  transition: all 0.2s;
+}
+
+.uba-btn-sm.uba-btn-ghost:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.uba-btn-sm.uba-btn-danger {
+  color: #c62828;
+}
+
+.uba-btn-sm.uba-btn-danger:hover {
+  background-color: #ffebee;
+}
+
+/* Modal overlay */
+.uba-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.uba-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.uba-modal-dialog {
+  position: relative;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  z-index: 1001;
+}
+
+.uba-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.uba-modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.uba-modal-close {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.uba-modal-close:hover {
+  background-color: #f5f5f5;
+  color: #000;
+}
+
+.uba-modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.uba-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Form groups */
+.uba-form-group {
+  margin-bottom: 1.5rem;
+}
+
+.uba-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: #424242;
+}
+
+.uba-input,
+.uba-select,
+.uba-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.uba-input:focus,
+.uba-select:focus,
+.uba-textarea:focus {
+  outline: none;
+  border-color: #2196f3;
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.uba-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.uba-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.uba-checkbox input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
+}
+
+/* Button styles */
+.uba-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.uba-btn .icon {
+  font-size: 1rem;
+}
+
+.uba-btn-primary {
+  background-color: #2196f3;
+  color: white;
+}
+
+.uba-btn-primary:hover {
+  background-color: #1976d2;
+}
+
+.uba-btn-ghost {
+  background-color: transparent;
+  color: #424242;
+  border-color: #e0e0e0;
+}
+
+.uba-btn-ghost:hover {
+  background-color: #f5f5f5;
+  border-color: #bdbdbd;
+}
+
+/* Cards */
+.uba-cards-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.uba-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.uba-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.uba-card-title {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.uba-card-subtitle {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.uba-card-body {
+  padding: 1.5rem;
+}
+
+.uba-card-label {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.875rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.uba-card-value {
+  margin: 0 0 0.25rem 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2196f3;
+}
+
+.uba-card-caption {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #999;
+}
+
+/* Table */
+.uba-table-wrap {
+  overflow-x: auto;
+}
+
+.uba-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.uba-table thead th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.uba-table tbody td {
+  padding: 1rem;
+  border-bottom: 1px solid #f5f5f5;
+  font-size: 0.875rem;
+}
+
+.uba-table tbody tr:hover {
+  background-color: #fafafa;
+}

@@ -135,26 +135,51 @@
   top: 0;
   bottom: 0;
   left: 0;
-  width: 200px;
+  width: 220px;
   background: var(--bg-soft);
   border-right: 1px solid rgba(51, 65, 85, 0.7);
-  padding: 16px 0 18px 0;
+  padding: 20px 0 20px 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 1000;
-  /* WordPress-style: prevent any content shifts or animations that affect layout */
+  /* Enhanced visual polish */
   will-change: auto;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  /* Smooth scrolling */
+  scroll-behavior: smooth;
+  /* Custom scrollbar for better UX */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+}
+
+/* Custom scrollbar styling for webkit browsers */
+.uba-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.uba-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.uba-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 3px;
+}
+
+.uba-sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
 }
 
 .uba-logo {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 0 14px;
+  padding: 0 16px;
+  margin-bottom: 4px;
 }
 
 .uba-logo span {
@@ -169,22 +194,22 @@
   color: var(--muted);
   margin-top: 4px;
   line-height: 1.4;
-  padding: 0 14px;
-  display: none; /* Hidden in narrow sidebar like WordPress */
+  padding: 0 16px;
+  display: none; /* Hidden in compact sidebar */
 }
 
 .uba-badge {
-  margin-top: 8px;
-  margin-left: 14px;
-  margin-right: 14px;
+  margin-top: 10px;
+  margin-left: 16px;
+  margin-right: 16px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 8px;
+  padding: 5px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.4);
   font-size: 10px;
-  color: var(--muted);
+  color: rgba(148, 163, 184, 0.9);
   background: rgba(15, 23, 42, 0.9);
 }
 
@@ -194,47 +219,77 @@
   border-radius: 999px;
   background: radial-gradient(circle, var(--good), var(--accent));
   box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 .uba-nav-label {
-  margin-top: 8px;
-  font-size: 10px;
-  letter-spacing: 0.12em;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-size: 9px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--muted);
-  padding: 0 14px;
+  color: rgba(148, 163, 184, 0.6);
+  padding: 0 16px;
+  font-weight: 700;
+  opacity: 0.8;
 }
 
 .uba-nav {
   margin-top: 4px;
   display: flex;
   flex-direction: column;
-  gap: 2px; /* WordPress-style tight spacing */
+  gap: 2px; /* Slightly tighter but more uniform spacing */
 }
 
-/* Language selector - WordPress style */
+/* Language selector - Enhanced styling for better consistency */
 .uba-language {
-  padding: 0 14px;
-  margin-bottom: 8px;
+  padding: 0 16px;
+  margin-bottom: 12px;
 }
 
 .uba-language label {
-  font-size: 10px;
-  color: var(--muted);
+  font-size: 9px;
+  color: rgba(148, 163, 184, 0.6);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
   display: block;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
+  font-weight: 700;
+  opacity: 0.8;
 }
 
 .uba-language select {
   width: 100%;
   font-size: 12px;
-  padding: 4px 6px;
+  padding: 8px 10px;
   background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(55, 65, 81, 0.4);
+  border: 1px solid rgba(55, 65, 81, 0.5);
   color: var(--text);
-  border-radius: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 400;
+}
+
+.uba-language select:hover {
+  border-color: rgba(55, 65, 81, 0.8);
+  background: rgba(15, 23, 42, 0.95);
+}
+
+.uba-language select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1);
+  background: rgba(15, 23, 42, 1);
 }
 
 .uba-nav-btn {
@@ -242,58 +297,115 @@
   background: transparent;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px; /* Slightly more space for better breathing room */
   width: 100%;
   text-align: left;
   font-size: 13px;
-  color: var(--text);
-  padding: 8px 14px;
-  border-radius: 0; /* WordPress-style: no rounded corners in list */
+  font-weight: 400;
+  color: rgba(226, 232, 240, 0.85);
+  padding: 11px 16px 11px 13px; /* More balanced vertical padding */
+  border-radius: 0;
   cursor: pointer;
-  transition: background-color 0.15s ease;
-  text-decoration: none; /* WordPress-style: no underlines */
-  border-left: 3px solid transparent; /* WordPress-style active indicator */
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  position: relative;
+  min-height: 44px; /* Improved touch target size */
 }
 
 .uba-nav-btn span.icon {
-  width: 16px;
-  text-align: center;
-  font-size: 13px;
-  color: var(--accent);
+  width: 20px; /* Increased from 18px for better visual balance */
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px; /* Unified size for emoji icons */
+  color: rgba(148, 163, 184, 0.9);
   flex-shrink: 0;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* SVG icon styling - unified with emoji sizing */
+.uba-nav-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  stroke: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Label text - ensure consistent flex behavior */
+.uba-nav-btn > span:not(.icon) {
+  flex: 1;
+  min-width: 0; /* Prevent text overflow issues */
+  line-height: 1.3;
 }
 
 .uba-nav-btn small {
   margin-left: auto;
   font-size: 10px;
   color: var(--muted);
-  display: none; /* Hide in narrow WordPress-style sidebar */
+  opacity: 0.7;
+  display: none; /* Hidden in compact sidebar */
+  flex-shrink: 0;
 }
 
-/* Hover & focus - WordPress-style subtle interactions */
+/* Hover state - Enhanced with smooth transitions and better visual feedback */
 
 .uba-nav-btn:hover:not(.active) {
-  background-color: rgba(55, 65, 81, 0.15);
-  color: var(--text);
+  background: linear-gradient(
+    90deg,
+    rgba(55, 65, 81, 0.3) 0%,
+    rgba(55, 65, 81, 0.2) 100%
+  );
+  color: rgba(248, 250, 252, 0.98);
   text-decoration: none;
+  border-left-color: rgba(34, 211, 238, 0.4);
+}
+
+.uba-nav-btn:hover:not(.active) span.icon {
+  color: rgba(34, 211, 238, 0.9);
+  transform: translateX(2px);
 }
 
 .uba-nav-btn:focus-visible {
   outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline-offset: -2px;
+  background: rgba(55, 65, 81, 0.25);
 }
 
-/* Active state - WordPress-style current page highlighting */
+/* Active state - Enhanced with pill background and glow effect */
 
 .uba-nav-btn.active {
-  background: rgba(34, 211, 238, 0.08);
+  background: linear-gradient(
+    90deg,
+    rgba(34, 211, 238, 0.15) 0%,
+    rgba(34, 211, 238, 0.1) 100%
+  );
   border-left: 3px solid var(--accent);
-  color: #f9fafb;
+  color: #f8fafc;
+  font-weight: 600; /* Bold text for active items */
   text-decoration: none;
+  box-shadow: 
+    inset 0 0 24px rgba(34, 211, 238, 0.08),
+    inset 3px 0 0 0 var(--accent);
 }
 
 .uba-nav-btn.active span.icon {
   color: var(--accent);
+  filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.5));
+  transform: scale(1.05);
+}
+
+.uba-nav-btn.active svg {
+  fill: var(--accent);
+}
+
+/* Navigation section separator */
+.uba-nav-separator {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(55, 65, 81, 0.4), transparent);
+  margin: 10px 16px;
 }
 
 .uba-sidebar-footer {
@@ -301,8 +413,8 @@
   font-size: 10px;
   color: var(--muted);
   line-height: 1.3;
-  padding: 0 14px;
-  display: none; /* Hidden in narrow WordPress-style sidebar */
+  padding: 0 16px;
+  display: none; /* Hidden in compact sidebar */
 }
 
 .uba-language {
@@ -3290,17 +3402,19 @@ a:focus-visible {
 /* Mobile responsiveness - WordPress-style narrow sidebar */
 @media (max-width: 768px) {
   .uba-sidebar {
-    width: 180px;
-    padding: 12px 0 16px 0;
+    width: 200px;
+    padding: 16px 0 18px 0;
+    /* Ensure smooth scrolling on mobile */
+    -webkit-overflow-scrolling: touch;
   }
   
   .uba-shell {
-    margin-left: 180px;
+    margin-left: 200px;
   }
   
   .rtl .uba-shell {
     margin-left: 0;
-    margin-right: 180px;
+    margin-right: 200px;
   }
   
   .uba-main {
@@ -3308,27 +3422,44 @@ a:focus-visible {
   }
   
   .uba-logo {
-    font-size: 14px;
-    padding: 0 12px;
+    font-size: 15px;
+    padding: 0 14px;
   }
   
   .uba-nav-label {
-    padding: 0 12px;
+    padding: 0 14px;
     font-size: 9px;
+    margin-top: 14px;
+    margin-bottom: 6px;
   }
   
   .uba-language {
-    padding: 0 12px;
+    padding: 0 14px;
   }
   
   .uba-nav-btn {
-    padding: 6px 12px;
+    padding: 10px 14px 10px 11px;
     font-size: 12px;
+    min-height: 42px; /* Maintain touch target */
+    gap: 10px;
   }
   
   .uba-nav-btn span.icon {
-    width: 14px;
-    font-size: 12px;
+    width: 18px;
+    height: 18px;
+    font-size: 14px; /* Slightly larger for readability */
+  }
+  
+  .uba-nav-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  /* Ensure text doesn't wrap or overflow */
+  .uba-nav-btn > span:not(.icon) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   
   .uba-nav-btn small {
@@ -3352,6 +3483,8 @@ a:focus-visible {
 @media (max-width: 480px) {
   .uba-sidebar {
     width: 160px;
+    /* Ensure smooth scrolling on small mobile */
+    -webkit-overflow-scrolling: touch;
   }
   
   .uba-shell {
@@ -3371,6 +3504,8 @@ a:focus-visible {
   .uba-nav-label {
     padding: 0 10px;
     font-size: 8px;
+    margin-top: 12px;
+    margin-bottom: 6px;
   }
   
   .uba-language {
@@ -3378,12 +3513,27 @@ a:focus-visible {
   }
   
   .uba-nav-btn {
-    padding: 5px 10px;
+    padding: 8px 10px 8px 8px;
     font-size: 11px;
+    min-height: 40px; /* Maintain touch target even on small screens */
+    gap: 8px;
+  }
+  
+  .uba-nav-btn span.icon,
+  .uba-nav-btn svg {
+    width: 16px;
+    height: 16px;
   }
   
   .uba-nav-btn span.icon {
-    width: 12px;
+    font-size: 13px; /* Keep icons readable */
+  }
+  
+  /* Ensure text doesn't wrap or overflow on small screens */
+  .uba-nav-btn > span:not(.icon) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 11px;
   }
   
@@ -8575,5 +8725,364 @@ a:focus-visible {
   .invoice-preview-modal .uba-modal-header,
   .invoice-preview-modal .uba-modal-footer {
     display: none;
+  }
+}
+
+/* ======================
+   Mobile Responsive Design
+   Comprehensive mobile-first layout for all screens (320px-768px)
+   ====================== */
+
+/* Tablet and below (768px) */
+@media (max-width: 768px) {
+  /* Hide sidebar by default, show mobile nav */
+  .uba-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 2000;
+  }
+  
+  .uba-sidebar.is-open {
+    transform: translateX(0);
+  }
+  
+  /* Add mobile nav toggle button */
+  .uba-mobile-nav-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1500;
+    width: 44px;
+    height: 44px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Remove sidebar margin from main content */
+  .uba-shell {
+    margin-left: 0;
+    padding: 70px 12px 20px;
+  }
+  
+  /* Stack KPI cards */
+  .uba-kpi-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  /* Stack grids */
+  .uba-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .uba-dashboard-row {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Full width cards */
+  .uba-card {
+    padding: 16px;
+  }
+  
+  /* Reduce spacing */
+  #uba-dashboard {
+    padding: 20px 8px 30px;
+  }
+  
+  .uba-main {
+    padding: 12px;
+  }
+  
+  /* Make tables scrollable horizontally */
+  .uba-table-wrapper,
+  .uba-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -16px;
+    padding: 0 16px;
+  }
+  
+  .uba-table {
+    min-width: 600px;
+  }
+  
+  /* Compact table cells on mobile */
+  .uba-table th,
+  .uba-table td {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+  
+  /* Forms full width */
+  .uba-form-row {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .uba-input,
+  .uba-select,
+  .uba-textarea {
+    width: 100%;
+    font-size: 16px; /* Prevent iOS zoom */
+  }
+  
+  /* Button groups stack */
+  .uba-btn-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .uba-btn-group .uba-btn {
+    width: 100%;
+  }
+  
+  /* Filters and controls wrap */
+  .uba-toolbar,
+  .uba-filters,
+  .uba-projects-controls {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  /* Search and filter inputs */
+  .uba-search,
+  .uba-filter-input {
+    flex: 1 1 100%;
+    min-width: 200px;
+  }
+}
+
+/* Mobile (640px and below) */
+@media (max-width: 640px) {
+  /* Single column KPI cards */
+  .uba-kpi-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Reduce padding */
+  #uba-dashboard {
+    padding: 16px 6px 24px;
+  }
+  
+  .uba-card {
+    padding: 12px;
+  }
+  
+  /* Compact headers */
+  .uba-top-left h1 {
+    font-size: 20px;
+  }
+  
+  .uba-top-left p {
+    font-size: 12px;
+  }
+  
+  /* Adjust KPI strip */
+  .uba-kpi-strip {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  /* Modern KPI strip 2 columns max */
+  .uba-kpi-strip.uba-kpi-modern {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  /* Pipeline stack */
+  .uba-pipeline {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  /* Action buttons */
+  .uba-action-btn {
+    font-size: 13px;
+    padding: 10px 14px;
+  }
+  
+  /* Modal full screen on mobile */
+  .uba-modal-content {
+    width: 95%;
+    max-width: none;
+    max-height: 90vh;
+    margin: 20px auto;
+  }
+}
+
+/* Small phones (480px and below) */
+@media (max-width: 480px) {
+  /* Minimal padding */
+  #uba-dashboard {
+    padding: 12px 4px 20px;
+  }
+  
+  .uba-shell {
+    padding: 60px 8px 16px;
+  }
+  
+  .uba-card {
+    padding: 10px;
+    border-radius: 12px;
+  }
+  
+  /* Compact text */
+  .uba-top-left h1 {
+    font-size: 18px;
+  }
+  
+  .uba-card-title {
+    font-size: 14px;
+  }
+  
+  /* All KPI single column */
+  .uba-kpi-strip,
+  .uba-kpi-strip.uba-kpi-modern {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Buttons touch-friendly */
+  .uba-btn {
+    min-height: 44px;
+    padding: 12px 16px;
+  }
+  
+  .uba-btn-sm {
+    min-height: 36px;
+    padding: 8px 12px;
+  }
+  
+  /* Table cards on very small screens */
+  .uba-table-wrapper.mobile-cards .uba-table {
+    display: block;
+  }
+  
+  .uba-table-wrapper.mobile-cards .uba-table thead {
+    display: none;
+  }
+  
+  .uba-table-wrapper.mobile-cards .uba-table tbody,
+  .uba-table-wrapper.mobile-cards .uba-table tr {
+    display: block;
+  }
+  
+  .uba-table-wrapper.mobile-cards .uba-table tr {
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    background: var(--card);
+  }
+  
+  .uba-table-wrapper.mobile-cards .uba-table td {
+    display: block;
+    text-align: left;
+    padding: 6px 0;
+    border: none;
+  }
+  
+  .uba-table-wrapper.mobile-cards .uba-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    display: inline-block;
+    margin-right: 8px;
+    color: var(--muted);
+  }
+  
+  /* Modals nearly full screen */
+  .uba-modal-content {
+    width: 98%;
+    margin: 10px auto;
+    padding: 16px;
+  }
+  
+  /* Compact modal header */
+  .uba-modal-header {
+    padding: 12px;
+  }
+  
+  .uba-modal-body {
+    padding: 12px;
+  }
+}
+
+/* Extra small phones (420px and below) */
+@media (max-width: 420px) {
+  /* Absolute minimum padding */
+  #uba-dashboard {
+    padding: 10px 2px 16px;
+  }
+  
+  .uba-card {
+    padding: 8px;
+  }
+  
+  /* Very compact text */
+  .uba-top-left h1 {
+    font-size: 16px;
+  }
+  
+  .uba-card-title {
+    font-size: 13px;
+  }
+  
+  .uba-card-sub {
+    font-size: 11px;
+  }
+  
+  /* Minimum font sizes */
+  body {
+    font-size: 13px;
+  }
+  
+  .uba-btn {
+    font-size: 13px;
+  }
+}
+
+/* Very small screens (320px - minimum mobile width) */
+@media (max-width: 320px) {
+  /* Essential spacing only */
+  .uba-card {
+    padding: 6px;
+  }
+  
+  .uba-top-left h1 {
+    font-size: 15px;
+  }
+  
+  /* Ensure readability */
+  body {
+    font-size: 12px;
+  }
+}
+
+/* Mobile sidebar overlay */
+@media (max-width: 768px) {
+  /* Overlay when sidebar is open */
+  .uba-sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1900;
+    display: none;
+  }
+  
+  .uba-sidebar-overlay.is-visible {
+    display: block;
+  }
+  
+  /* Make sidebar full height and scrollable */
+  .uba-sidebar {
+    width: 280px;
+    max-width: 85vw;
   }
 }
