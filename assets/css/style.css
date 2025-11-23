@@ -8801,13 +8801,23 @@ a:focus-visible {
   }
   
   /* Make tables scrollable horizontally */
-  .uba-table-wrapper {
+  .uba-table-wrapper,
+  .uba-table-wrap {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    margin: 0 -16px;
+    padding: 0 16px;
   }
   
   .uba-table {
     min-width: 600px;
+  }
+  
+  /* Compact table cells on mobile */
+  .uba-table th,
+  .uba-table td {
+    padding: 10px 8px;
+    font-size: 13px;
   }
   
   /* Forms full width */
@@ -8819,6 +8829,7 @@ a:focus-visible {
   .uba-select,
   .uba-textarea {
     width: 100%;
+    font-size: 16px; /* Prevent iOS zoom */
   }
   
   /* Button groups stack */
@@ -8829,6 +8840,21 @@ a:focus-visible {
   
   .uba-btn-group .uba-btn {
     width: 100%;
+  }
+  
+  /* Filters and controls wrap */
+  .uba-toolbar,
+  .uba-filters,
+  .uba-projects-controls {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  /* Search and filter inputs */
+  .uba-search,
+  .uba-filter-input {
+    flex: 1 1 100%;
+    min-width: 200px;
   }
 }
 
