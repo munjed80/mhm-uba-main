@@ -58,7 +58,8 @@ pnpm-lock.yaml
 
 # Supabase
 .supabase/
-supabase-config.js
+# Note: supabase-config.js now tracked with placeholder values
+# Users should update with their own credentials
 
 # Backup files
 *.bak
