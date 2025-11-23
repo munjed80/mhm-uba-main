@@ -94,6 +94,12 @@
       }
     }
 
+    // Cancel button in modal
+    const cancelBtn = document.getElementById('cancel-automation-btn');
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', closeModal);
+    }
+
     // Save button
     const saveBtn = document.getElementById('save-automation-btn');
     if (saveBtn) {
@@ -106,6 +112,26 @@
       form.addEventListener('submit', (e) => {
         e.preventDefault();
         handleSave();
+      });
+    }
+
+    // Event delegation for table action buttons
+    const tbody = document.getElementById('automations-tbody');
+    if (tbody) {
+      tbody.addEventListener('click', (e) => {
+        const target = e.target.closest('button');
+        if (!target) return;
+
+        const id = target.dataset.id;
+        if (!id) return;
+
+        if (target.classList.contains('automation-edit-btn')) {
+          handleEdit(id);
+        } else if (target.classList.contains('automation-toggle-btn')) {
+          handleToggle(id);
+        } else if (target.classList.contains('automation-delete-btn')) {
+          handleDelete(id);
+        }
       });
     }
 
@@ -262,15 +288,16 @@
         const action = ACTION_OPTIONS.find(a => a.value === automation.action);
         const statusBadgeClass = automation.status === 'active' ? 'uba-status-success' : 'uba-status-neutral';
         const lastRun = automation.lastRunAt ? formatDateTime(automation.lastRunAt) : 'Never';
+        const escapedId = escapeHtml(automation.id);
 
         return `
-          <tr data-automation-id="${automation.id}">
+          <tr data-automation-id="${escapedId}">
             <td>
               <strong>${escapeHtml(automation.name)}</strong>
               ${automation.notes ? `<br><small style="color: var(--text-muted, #666);">${escapeHtml(automation.notes)}</small>` : ''}
             </td>
-            <td>${trigger ? escapeHtml(trigger.label) : automation.trigger}</td>
-            <td>${action ? escapeHtml(action.label) : automation.action}</td>
+            <td>${trigger ? escapeHtml(trigger.label) : escapeHtml(automation.trigger)}</td>
+            <td>${action ? escapeHtml(action.label) : escapeHtml(automation.action)}</td>
             <td>
               <span class="uba-status ${statusBadgeClass}">
                 ${automation.status === 'active' ? 'Active' : 'Paused'}
@@ -279,13 +306,13 @@
             <td>${lastRun}</td>
             <td>
               <div class="uba-table-actions">
-                <button class="uba-btn-sm uba-btn-ghost" onclick="window.AutomationsMVP.handleEdit('${automation.id}')" title="Edit">
+                <button class="uba-btn-sm uba-btn-ghost automation-edit-btn" data-id="${escapedId}" title="Edit">
                   ✏️
                 </button>
-                <button class="uba-btn-sm uba-btn-ghost" onclick="window.AutomationsMVP.handleToggle('${automation.id}')" title="Toggle">
+                <button class="uba-btn-sm uba-btn-ghost automation-toggle-btn" data-id="${escapedId}" title="Toggle">
                   ${automation.status === 'active' ? '⏸️' : '▶️'}
                 </button>
-                <button class="uba-btn-sm uba-btn-danger" onclick="window.AutomationsMVP.handleDelete('${automation.id}')" title="Delete">
+                <button class="uba-btn-sm uba-btn-danger automation-delete-btn" data-id="${escapedId}" title="Delete">
                   🗑️
                 </button>
               </div>
