@@ -806,6 +806,7 @@
 
     const modal = document.createElement('div');
     modal.className = 'enhanced-reports-modal';
+    modal.style.display = 'none';
     modal.innerHTML = `
       <div class="enhanced-reports-modal-content">
         <div class="enhanced-reports-modal-header">

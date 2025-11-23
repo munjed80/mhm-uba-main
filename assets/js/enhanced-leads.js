@@ -191,6 +191,7 @@
       const modal = document.createElement('div');
       modal.id = 'score-config-modal';
       modal.className = 'uba-modal score-config-modal';
+      modal.style.display = 'none'; // Hide by default
       modal.innerHTML = `
         <div class=\"uba-modal-overlay\" onclick=\"window.UBAEnhancedLeads.closeScoreConfig()\"></div>
         <div class=\"uba-modal-dialog score-config-dialog\">
@@ -585,6 +586,88 @@
     },
     
     /**
+     * HTML escape utility
+     */
+    escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    },
+    
+    /**
+     * Render conversations
+     */
+    renderConversations(leadId, conversations) {
+      const container = document.getElementById(`conversations-${leadId}`);
+      if (!container) return;
+      
+      if (conversations.length === 0) {
+        container.innerHTML = '<p class="uba-empty-state">No conversations yet</p>';
+        return;
+      }
+      
+      container.innerHTML = conversations.map(conv => `
+        <div class="conversation-item">
+          <div class="conversation-header">
+            <strong>${this.escapeHtml(conv.medium || 'Contact')}</strong>
+            <span>${new Date(conv.timestamp).toLocaleDateString()}</span>
+          </div>
+          <div class="conversation-summary">${this.escapeHtml(conv.summary || '')}</div>
+        </div>
+      `).join('');
+    },
+    
+    /**
+     * Render notes
+     */
+    renderNotes(leadId, notes) {
+      const container = document.getElementById(`notes-${leadId}`);
+      if (!container) return;
+      
+      if (notes.length === 0) {
+        container.innerHTML = '<p class="uba-empty-state">No notes yet</p>';
+        return;
+      }
+      
+      container.innerHTML = notes.map(note => `
+        <div class="note-item">
+          <div class="note-header">
+            <span class="note-category">${this.escapeHtml(note.category || 'General')}</span>
+            <span>${new Date(note.timestamp).toLocaleDateString()}</span>
+          </div>
+          <div class="note-content">${this.escapeHtml(note.content || '')}</div>
+        </div>
+      `).join('');
+    },
+    
+    /**
+     * Render activities
+     */
+    renderActivities(leadId, activities) {
+      const container = document.getElementById(`activities-${leadId}`);
+      if (!container) return;
+      
+      if (activities.length === 0) {
+        container.innerHTML = '<p class="uba-empty-state">No activities scheduled</p>';
+        return;
+      }
+      
+      container.innerHTML = activities.map(activity => `
+        <div class="activity-item">
+          <div class="activity-header">
+            <strong>${this.escapeHtml(activity.activityType || 'Activity')}: ${this.escapeHtml(activity.title || '')}</strong>
+            <span class="activity-status">${this.escapeHtml(activity.status || 'scheduled')}</span>
+          </div>
+          <div class="activity-details">
+            ${activity.scheduledFor ? `<div>Scheduled: ${this.escapeHtml(activity.scheduledFor)}</div>` : ''}
+            ${activity.description ? `<div>${this.escapeHtml(activity.description)}</div>` : ''}
+          </div>
+        </div>
+      `).join('');
+    },
+    
+    /**
      * Get icon for log type
      */
     getLogIcon(type) {
@@ -827,6 +910,15 @@
     enhanceTableColumns() {
       // This will be done when rendering the table
       // Add score column, improve status display, add action buttons
+    },
+    
+    /**
+     * Add export functionality
+     */
+    addExportFunctionality() {
+      // Stub implementation - export functionality not yet implemented
+      // This prevents the initialization error
+      console.log('Export functionality placeholder');
     },
     
     /**
