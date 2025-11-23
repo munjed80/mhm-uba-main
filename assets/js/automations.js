@@ -57,18 +57,14 @@ function initAutomationsPage() {
         }
     }
     
-    // Check if required elements exist
-    const requiredElements = {
-        'new-automation-btn': 'New Automation button',
-        'save-automation-btn': 'Save button',
-        'automation-form': 'Automation form',
+    // Check if basic required elements exist (not modal-specific ones)
+    const basicElements = {
         'automations-body': 'Automations table body',
-        'automation-modal': 'Automation modal',
         'automation-logs-body': 'Automation logs table body'
     };
     
     let missingElements = [];
-    for (const [id, name] of Object.entries(requiredElements)) {
+    for (const [id, name] of Object.entries(basicElements)) {
         if (!document.getElementById(id)) {
             missingElements.push(`${name} (ID: ${id})`);
         }
@@ -85,16 +81,16 @@ function initAutomationsPage() {
         return;
     }
     
-    console.log('✓ All required elements found');
+    console.log('✓ Basic elements found');
     console.log('✓ ubaStore available');
     
     // Ensure automation collections exist
     ensureAutomationCollections();
     
-    // Initialize modal event handlers
+    // Initialize modal event handlers (only if modal exists - it's created by enhanced-automations.js)
     initModalEvents();
     
-    // Setup action type change handler
+    // Setup action type change handler (only if elements exist)
     setupActionConfigHandlers();
     
     // Render the automations table
@@ -160,6 +156,9 @@ function setupActionConfigHandlers() {
         actionSelect.addEventListener('change', (e) => {
             showActionConfig(e.target.value);
         });
+        console.log('  ✓ Action config handler attached');
+    } else {
+        console.log('  ⚠️ automation-action select not found (will be created by modal)');
     }
 }
 
