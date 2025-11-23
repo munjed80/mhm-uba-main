@@ -4177,15 +4177,22 @@ a:focus-visible {
   right: 0;
   bottom: 0;
   z-index: 9999;
-  display: flex;
+  display: none; /* Hidden by default */
   align-items: center;
   justify-content: center;
+  pointer-events: none;
+}
+
+.uba-modal:not(.is-hidden) {
+  /* When not explicitly hidden, show the modal */
   opacity: 0;
   animation: modalFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .uba-modal.is-hidden {
   display: none !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
 }
 
 .uba-modal-backdrop {
@@ -4197,6 +4204,19 @@ a:focus-visible {
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(2px);
   animation: modalBackdropFadeIn 0.3s ease forwards;
+  pointer-events: auto;
+}
+
+.uba-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  animation: modalBackdropFadeIn 0.3s ease forwards;
+  pointer-events: auto;
 }
 
 .uba-modal-dialog {

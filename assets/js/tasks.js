@@ -893,16 +893,8 @@ This action cannot be undone.`)) return;
     const detailCloseBtn = qs("task-detail-close");
     if (detailCloseBtn) detailCloseBtn.addEventListener("click", () => hideModal("task-detail-modal"));
 
-    // Modal overlay clicks
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('uba-modal-overlay')) {
-        if (e.target.closest('#task-form-modal')) {
-          hideModal('task-form-modal');
-        } else if (e.target.closest('#task-detail-modal')) {
-          hideModal('task-detail-modal');
-        }
-      }
-    });
+    // Note: Modal overlay click handling is done globally in app.js
+    // to prevent immediate closure when opening modals
 
     // ESC key handling
     document.addEventListener('keydown', (e) => {
