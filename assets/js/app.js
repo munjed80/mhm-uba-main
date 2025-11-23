@@ -1762,70 +1762,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const button = e.target.closest('button');
     if (!button) return;
     
-    const buttonId = button.id;
     const buttonText = button.textContent.trim();
     
-    console.log('🔘 Button clicked:', buttonId, '|', buttonText);
+    // Note: new-invoice-btn, new-lead-btn, add-task-btn, and add-project-btn 
+    // are handled by their respective module files (invoices.js, leads.js, tasks.js, projects.js)
+    // No need to handle them here to avoid duplicate event handling
     
-    // Handle specific button IDs
-    if (buttonId === 'new-invoice-btn') {
-      console.log('📄 New Invoice button clicked');
-      if (typeof window.openInvoiceModal === 'function') {
-        console.log('✅ Calling openInvoiceModal');
-        e.preventDefault();
-        window.openInvoiceModal();
-      } else {
-        console.log('❌ openInvoiceModal not available, using showModal fallback');
-        if (typeof showModal === 'function') {
-          e.preventDefault();
-          showModal('invoice-modal');
-        } else {
-          console.log('⚠️ No modal functions available, allowing default navigation');
-        }
-      }
-      return;
-    }
-    
-    if (buttonId === 'new-lead-btn') {
-      console.log('🎯 New Lead button clicked');
-      if (typeof window.openLeadModal === 'function') {
-        console.log('✅ Calling openLeadModal');
-        e.preventDefault();
-        window.openLeadModal();
-      } else {
-        console.log('❌ openLeadModal not available, using showModal fallback');
-        if (typeof showModal === 'function') {
-          e.preventDefault();
-          showModal('lead-modal');
-        } else {
-          console.log('⚠️ No modal functions available, allowing default navigation');
-        }
-      }
-      return;
-    }
-    
-    if (buttonId === 'new-automation-btn') {
-      console.log('🤖 New Automation button clicked');
+    if (button.id === 'new-automation-btn') {
       if (typeof window.openAutomationModal === 'function') {
-        console.log('✅ Calling openAutomationModal');
         e.preventDefault();
         window.openAutomationModal();
-      } else {
-        console.log('❌ openAutomationModal not available, using showModal fallback');
-        if (typeof showModal === 'function') {
-          e.preventDefault();
-          showModal('automation-modal');
-        } else {
-          console.log('⚠️ No modal functions available, allowing default navigation');
-        }
+      } else if (typeof showModal === 'function') {
+        e.preventDefault();
+        showModal('automation-modal');
       }
       return;
     }
     
-    // Handle by button class or text content
+    // Handle quick action buttons from dashboard
     if (button.classList.contains('uba-action-btn')) {
-      console.log('⚡ Quick action button clicked');
-      
       if (buttonText.includes('New Invoice')) {
         if (window.location.pathname.includes('invoices.html')) {
           if (typeof window.openInvoiceModal === 'function') {
