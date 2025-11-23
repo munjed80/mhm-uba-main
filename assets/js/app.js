@@ -1758,9 +1758,12 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // Robust button handler that works regardless of individual page script loading
   function handleGlobalButtonClicks(e) {
-    const target = e.target.closest('button') || e.target;
-    const buttonId = target.id;
-    const buttonText = target.textContent.trim();
+    // Only process if the clicked element is actually a button
+    const button = e.target.closest('button');
+    if (!button) return;
+    
+    const buttonId = button.id;
+    const buttonText = button.textContent.trim();
     
     console.log('🔘 Button clicked:', buttonId, '|', buttonText);
     
@@ -1820,7 +1823,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // Handle by button class or text content
-    if (target.classList.contains('uba-action-btn')) {
+    if (button.classList.contains('uba-action-btn')) {
       console.log('⚡ Quick action button clicked');
       
       if (buttonText.includes('New Invoice')) {
@@ -1867,46 +1870,6 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // Add global click handler
   document.addEventListener('click', handleGlobalButtonClicks);
-  
-  // Legacy button handlers for backward compatibility
-  // These handlers only trigger for actual button elements with specific IDs or classes
-  document.addEventListener('click', (e) => {
-    // Only process if the clicked element is a button or inside a button
-    const button = e.target.closest('button');
-    if (!button) return;
-    
-    const buttonId = button.id;
-    const buttonClasses = button.className;
-    
-    // Check for specific button IDs or classes only (not text content)
-    if (buttonId === 'new-invoice-btn' || buttonClasses.includes('new-invoice-btn')) {
-      if (typeof window.openInvoiceModal === 'function') {
-        e.preventDefault();
-        window.openInvoiceModal();
-      } else {
-        // Navigate to invoices page if modal function not available
-        window.location.href = 'invoices.html';
-      }
-    }
-    else if (buttonId === 'new-lead-btn' || buttonClasses.includes('new-lead-btn')) {
-      if (typeof window.openLeadModal === 'function') {
-        e.preventDefault();
-        window.openLeadModal();
-      } else {
-        // Navigate to leads page if modal function not available
-        window.location.href = 'leads.html';
-      }
-    }
-    else if (buttonId === 'new-automation-btn' || buttonClasses.includes('new-automation-btn')) {
-      if (typeof window.openAutomationModal === 'function') {
-        e.preventDefault();
-        window.openAutomationModal();
-      } else {
-        // Navigate to automations page if modal function not available
-        window.location.href = 'automations.html';
-      }
-    }
-  });
   
 });
 
@@ -4181,3 +4144,136 @@ const renderSettingsPage = () => {
     });
   }
 };
+
+// ======================================================
+// Mobile Navigation Handler
+// ======================================================
+(function initMobileNav() {
+  'use strict';
+  
+  // Mobile breakpoint constant
+  const MOBILE_BREAKPOINT = 768;
+  
+  // Track sidebar state
+  let sidebarState = {
+    isOpen: false
+  };
+  
+  // Track if mobile nav has been initialized
+  let mobileNavInitialized = false;
+  
+  // Only run on mobile/tablet
+  function isMobile() {
+    return window.innerWidth <= MOBILE_BREAKPOINT;
+  }
+  
+  // Create mobile nav toggle button and overlay
+  function setupMobileNav() {
+    if (!isMobile()) {
+      // Clean up mobile elements on desktop
+      if (mobileNavInitialized) {
+        const sidebar = document.querySelector('.uba-sidebar');
+        if (sidebar) {
+          sidebar.classList.remove('is-open');
+          sidebarState.isOpen = false;
+        }
+        const overlay = document.querySelector('.uba-sidebar-overlay');
+        if (overlay) {
+          overlay.classList.remove('is-visible');
+        }
+        document.body.style.overflow = '';
+      }
+      return;
+    }
+    
+    const sidebar = document.querySelector('.uba-sidebar');
+    if (!sidebar) return;
+    
+    // Create toggle button if it doesn't exist
+    let toggleBtn = document.querySelector('.uba-mobile-nav-toggle');
+    if (!toggleBtn) {
+      toggleBtn = document.createElement('button');
+      toggleBtn.className = 'uba-mobile-nav-toggle';
+      toggleBtn.innerHTML = '☰';
+      toggleBtn.setAttribute('aria-label', 'Toggle navigation');
+      document.body.appendChild(toggleBtn);
+      
+      // Add event listener only once
+      toggleBtn.addEventListener('click', toggleSidebar);
+    }
+    
+    // Create overlay if it doesn't exist
+    let overlay = document.querySelector('.uba-sidebar-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.className = 'uba-sidebar-overlay';
+      document.body.appendChild(overlay);
+      
+      // Add event listener only once
+      overlay.addEventListener('click', closeSidebar);
+    }
+    
+    // Setup nav link listeners only once
+    if (!mobileNavInitialized) {
+      const navLinks = sidebar.querySelectorAll('.uba-nav-btn, .uba-nav a');
+      navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          if (isMobile()) {
+            closeSidebar();
+          }
+        });
+      });
+      
+      // Close sidebar on escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && sidebarState.isOpen) {
+          closeSidebar();
+        }
+      });
+      
+      mobileNavInitialized = true;
+    }
+  }
+  
+  // Toggle sidebar
+  function toggleSidebar() {
+    const sidebar = document.querySelector('.uba-sidebar');
+    const overlay = document.querySelector('.uba-sidebar-overlay');
+    if (!sidebar || !overlay) return;
+    
+    sidebarState.isOpen = !sidebarState.isOpen;
+    
+    sidebar.classList.toggle('is-open', sidebarState.isOpen);
+    overlay.classList.toggle('is-visible', sidebarState.isOpen);
+    document.body.style.overflow = sidebarState.isOpen ? 'hidden' : '';
+  }
+  
+  // Close sidebar
+  function closeSidebar() {
+    const sidebar = document.querySelector('.uba-sidebar');
+    const overlay = document.querySelector('.uba-sidebar-overlay');
+    if (!sidebar || !overlay) return;
+    
+    sidebarState.isOpen = false;
+    
+    sidebar.classList.remove('is-open');
+    overlay.classList.remove('is-visible');
+    document.body.style.overflow = '';
+  }
+  
+  // Initialize on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupMobileNav);
+  } else {
+    setupMobileNav();
+  }
+  
+  // Re-check on window resize (with debounce)
+  let resizeTimeout;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      setupMobileNav();
+    }, 250);
+  });
+})();
