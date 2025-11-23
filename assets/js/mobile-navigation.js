@@ -139,8 +139,6 @@
       return; // Skip on desktop
     }
 
-    console.log('📱 Initializing mobile enhancements...');
-
     // Create mobile menu
     const { button, overlay } = createMobileMenuToggle();
 
@@ -169,8 +167,6 @@
     enhanceDropdowns();
     enhanceForms();
     handleOrientationChange();
-
-    console.log('✅ Mobile enhancements initialized');
   }
 
   // Initialize on DOM ready
@@ -201,7 +197,5 @@
     isMobile: isMobileDevice,
     init: initMobileEnhancements
   };
-
-  console.log('📱 UBA Mobile Navigation module loaded');
 
 })();
