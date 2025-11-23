@@ -148,6 +148,29 @@
   /* Enhanced visual polish */
   will-change: auto;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  /* Smooth scrolling */
+  scroll-behavior: smooth;
+  /* Custom scrollbar for better UX */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+}
+
+/* Custom scrollbar styling for webkit browsers */
+.uba-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.uba-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.uba-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 3px;
+}
+
+.uba-sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
 }
 
 .uba-logo {
@@ -209,60 +232,64 @@
 }
 
 .uba-nav-label {
-  margin-top: 12px;
-  margin-bottom: 6px;
-  font-size: 10px;
-  letter-spacing: 0.12em;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-size: 9px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: rgba(148, 163, 184, 0.6);
   padding: 0 16px;
-  font-weight: 600;
+  font-weight: 700;
+  opacity: 0.8;
 }
 
 .uba-nav {
   margin-top: 4px;
   display: flex;
   flex-direction: column;
-  gap: 3px; /* Improved spacing between items */
+  gap: 2px; /* Slightly tighter but more uniform spacing */
 }
 
-/* Language selector - Enhanced styling */
+/* Language selector - Enhanced styling for better consistency */
 .uba-language {
   padding: 0 16px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .uba-language label {
-  font-size: 10px;
-  color: var(--muted);
+  font-size: 9px;
+  color: rgba(148, 163, 184, 0.6);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
   display: block;
-  margin-bottom: 6px;
-  font-weight: 600;
+  margin-bottom: 8px;
+  font-weight: 700;
+  opacity: 0.8;
 }
 
 .uba-language select {
   width: 100%;
   font-size: 12px;
-  padding: 6px 8px;
+  padding: 8px 10px;
   background: rgba(15, 23, 42, 0.8);
   border: 1px solid rgba(55, 65, 81, 0.5);
   color: var(--text);
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 400;
 }
 
 .uba-language select:hover {
-  border-color: rgba(55, 65, 81, 0.7);
-  background: rgba(15, 23, 42, 0.9);
+  border-color: rgba(55, 65, 81, 0.8);
+  background: rgba(15, 23, 42, 0.95);
 }
 
 .uba-language select:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.1);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.1);
+  background: rgba(15, 23, 42, 1);
 }
 
 .uba-nav-btn {
@@ -270,39 +297,48 @@
   background: transparent;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px; /* Slightly more space for better breathing room */
   width: 100%;
   text-align: left;
   font-size: 13px;
+  font-weight: 400;
   color: rgba(226, 232, 240, 0.85);
-  padding: 10px 16px 10px 13px;
+  padding: 11px 16px 11px 13px; /* More balanced vertical padding */
   border-radius: 0;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
   border-left: 3px solid transparent;
   position: relative;
+  min-height: 44px; /* Improved touch target size */
 }
 
 .uba-nav-btn span.icon {
-  width: 18px;
-  height: 18px;
+  width: 20px; /* Slightly larger for better visual balance */
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 16px; /* Unified size for emoji icons */
   color: rgba(148, 163, 184, 0.9);
   flex-shrink: 0;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* SVG icon styling */
+/* SVG icon styling - unified with emoji sizing */
 .uba-nav-btn svg {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   fill: currentColor;
   stroke: none;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Label text - ensure consistent flex behavior */
+.uba-nav-btn > span:not(.icon) {
+  flex: 1;
+  min-width: 0; /* Prevent text overflow issues */
+  line-height: 1.3;
 }
 
 .uba-nav-btn small {
@@ -311,41 +347,58 @@
   color: var(--muted);
   opacity: 0.7;
   display: none; /* Hidden in compact sidebar */
+  flex-shrink: 0;
 }
 
-/* Hover state - Enhanced with smooth transitions */
+/* Hover state - Enhanced with smooth transitions and better visual feedback */
 
 .uba-nav-btn:hover:not(.active) {
-  background-color: rgba(55, 65, 81, 0.25);
-  color: rgba(248, 250, 252, 0.95);
+  background: linear-gradient(
+    90deg,
+    rgba(55, 65, 81, 0.3) 0%,
+    rgba(55, 65, 81, 0.2) 100%
+  );
+  color: rgba(248, 250, 252, 0.98);
   text-decoration: none;
-  border-left-color: rgba(34, 211, 238, 0.3);
+  border-left-color: rgba(34, 211, 238, 0.4);
 }
 
 .uba-nav-btn:hover:not(.active) span.icon {
-  color: rgba(34, 211, 238, 0.8);
-  transform: translateX(1px);
+  color: rgba(34, 211, 238, 0.9);
+  transform: translateX(2px);
 }
 
 .uba-nav-btn:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: -2px;
-  background-color: rgba(55, 65, 81, 0.2);
+  background: rgba(55, 65, 81, 0.25);
 }
 
-/* Active state - Enhanced with glow effect */
+/* Active state - Enhanced with pill background and glow effect */
 
 .uba-nav-btn.active {
-  background: rgba(34, 211, 238, 0.12);
+  background: linear-gradient(
+    90deg,
+    rgba(34, 211, 238, 0.15) 0%,
+    rgba(34, 211, 238, 0.1) 100%
+  );
   border-left: 3px solid var(--accent);
   color: #f8fafc;
+  font-weight: 600; /* Bold text for active items */
   text-decoration: none;
-  box-shadow: inset 0 0 20px rgba(34, 211, 238, 0.08);
+  box-shadow: 
+    inset 0 0 24px rgba(34, 211, 238, 0.08),
+    inset 3px 0 0 0 var(--accent);
 }
 
 .uba-nav-btn.active span.icon {
   color: var(--accent);
-  filter: drop-shadow(0 0 4px rgba(34, 211, 238, 0.4));
+  filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.5));
+  transform: scale(1.05);
+}
+
+.uba-nav-btn.active svg {
+  fill: var(--accent);
 }
 
 /* Navigation section separator */
@@ -3351,6 +3404,8 @@ a:focus-visible {
   .uba-sidebar {
     width: 200px;
     padding: 16px 0 18px 0;
+    /* Ensure smooth scrolling on mobile */
+    -webkit-overflow-scrolling: touch;
   }
   
   .uba-shell {
@@ -3374,6 +3429,8 @@ a:focus-visible {
   .uba-nav-label {
     padding: 0 14px;
     font-size: 9px;
+    margin-top: 14px;
+    margin-bottom: 6px;
   }
   
   .uba-language {
@@ -3381,19 +3438,28 @@ a:focus-visible {
   }
   
   .uba-nav-btn {
-    padding: 9px 14px 9px 11px;
+    padding: 10px 14px 10px 11px;
     font-size: 12px;
+    min-height: 42px; /* Maintain touch target */
+    gap: 10px;
   }
   
   .uba-nav-btn span.icon {
-    width: 16px;
-    height: 16px;
-    font-size: 12px;
+    width: 18px;
+    height: 18px;
+    font-size: 14px; /* Slightly larger for readability */
   }
   
   .uba-nav-btn svg {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
+  }
+  
+  /* Ensure text doesn't wrap or overflow */
+  .uba-nav-btn > span:not(.icon) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   
   .uba-nav-btn small {
@@ -3417,6 +3483,8 @@ a:focus-visible {
 @media (max-width: 480px) {
   .uba-sidebar {
     width: 160px;
+    /* Ensure smooth scrolling on small mobile */
+    -webkit-overflow-scrolling: touch;
   }
   
   .uba-shell {
@@ -3436,6 +3504,8 @@ a:focus-visible {
   .uba-nav-label {
     padding: 0 10px;
     font-size: 8px;
+    margin-top: 12px;
+    margin-bottom: 6px;
   }
   
   .uba-language {
@@ -3443,12 +3513,28 @@ a:focus-visible {
   }
   
   .uba-nav-btn {
-    padding: 5px 10px;
+    padding: 8px 10px 8px 8px;
     font-size: 11px;
+    min-height: 40px; /* Maintain touch target even on small screens */
+    gap: 8px;
   }
   
   .uba-nav-btn span.icon {
-    width: 12px;
+    width: 16px;
+    height: 16px;
+    font-size: 13px; /* Keep icons readable */
+  }
+  
+  .uba-nav-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  /* Ensure text doesn't wrap or overflow on small screens */
+  .uba-nav-btn > span:not(.icon) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 11px;
   }
   
