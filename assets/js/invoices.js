@@ -7,6 +7,7 @@ let editInvoiceId = null;
 let currentPage = 1;
 let pageSize = 20;
 let filteredInvoices = [];
+let modalEventsBound = false;
 
 // Validation schema for invoices
 const invoiceValidationSchema = {
@@ -69,6 +70,10 @@ function initInvoicesPage() {
 }
 
 function initModalEvents() {
+    // Prevent duplicate event binding
+    if (modalEventsBound) return;
+    modalEventsBound = true;
+    
     console.log('🔗 Setting up modal event handlers...');
     
     // New invoice button

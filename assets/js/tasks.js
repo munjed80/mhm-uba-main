@@ -4,6 +4,7 @@
   let currentProjectFilter = '';
   let currentPriorityFilter = '';
   let currentSort = 'created';
+  let eventsBound = false;
 
   function qs(id) {
     return document.getElementById(id);
@@ -787,6 +788,10 @@ This action cannot be undone.`)) return;
   }
 
   function bindEvents() {
+    // Prevent duplicate event binding
+    if (eventsBound) return;
+    eventsBound = true;
+    
     // Form submission
     const form = qs("task-form");
     if (form) {

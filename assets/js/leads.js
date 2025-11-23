@@ -4,6 +4,7 @@
 
 let isEditMode = false;
 let editLeadId = null;
+let modalEventsBound = false;
 
 function initLeadsPage() {
     console.log('🧲 Initializing leads page with CRUD interface');
@@ -51,6 +52,10 @@ function initLeadsPage() {
 }
 
 function initModalEvents() {
+    // Prevent duplicate event binding
+    if (modalEventsBound) return;
+    modalEventsBound = true;
+    
     console.log('🔗 Setting up lead modal event handlers...');
     
     // New lead button
