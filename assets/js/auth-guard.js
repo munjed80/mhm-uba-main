@@ -145,6 +145,38 @@
    * @returns {Promise<boolean>}
    */
   async function checkAuthentication() {
+    // Handle session-only mode cleanup on page load
+    const rememberMe = localStorage.getItem('uba-remember-me');
+    if (rememberMe === 'false') {
+      // In session-only mode, check if this is a new browser session
+      const sessionMarker = sessionStorage.getItem('uba-session-active');
+      if (!sessionMarker) {
+        // New browser session - clear persistent data but allow current session
+        console.log('[Auth Guard] Session-only mode: new browser session detected');
+        localStorage.removeItem('uba-demo-user');
+        // Mark this session as active
+        sessionStorage.setItem('uba-session-active', 'true');
+      }
+    }
+
+    // Check for demo mode authentication (both persistent and session-only)
+    const demoUser = localStorage.getItem('uba-demo-user');
+    const demoUserSession = sessionStorage.getItem('uba-demo-user-session');
+    
+    if (demoUser || demoUserSession) {
+      try {
+        const userData = JSON.parse(demoUser || demoUserSession);
+        if (userData && userData.email) {
+          console.log('[Auth Guard] ✅ Demo user authenticated');
+          return true;
+        }
+      } catch (e) {
+        // Invalid demo user data, clear it
+        localStorage.removeItem('uba-demo-user');
+        sessionStorage.removeItem('uba-demo-user-session');
+      }
+    }
+
     // If UbaAPI is not available, allow access (fallback to demo mode)
     if (!window.UbaAPI || !window.UbaAPI.isReady()) {
       console.warn('[Auth Guard] UbaAPI not available, allowing access');
@@ -224,6 +256,8 @@
 
     // Clear any cached data
     sessionStorage.removeItem('uba_redirect_after_login');
+    sessionStorage.removeItem('uba-session-active');
+    sessionStorage.removeItem('uba-demo-user-session');
     
     // If UbaAPI is available, use it to logout
     if (window.UbaAPI && window.UbaAPI.isReady()) {
@@ -240,13 +274,9 @@
       }
     }
 
-    // Clear localStorage (demo mode data)
-    const demoKeys = Object.keys(localStorage).filter(key => 
-      key.startsWith('uba-') || key.startsWith('ubaLanguage')
-    );
-    
-    // Optionally clear demo data (commented out to preserve data)
-    // demoKeys.forEach(key => localStorage.removeItem(key));
+    // Clear demo mode data
+    localStorage.removeItem('uba-demo-user');
+    localStorage.removeItem('uba-remember-me');
 
     // Redirect to login
     redirectToLogin('Logged out');

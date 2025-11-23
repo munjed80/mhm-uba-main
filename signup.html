@@ -277,6 +277,41 @@
     
     <!-- Signup functionality -->
     <script>
+      // Check if user is already authenticated and redirect to dashboard
+      (async function checkExistingAuth() {
+        try {
+          // Check Supabase authentication
+          if (window.UbaAPI && window.UbaAPI.isReady()) {
+            const session = await window.UbaAPI.auth.getSession();
+            if (session.success && session.data && session.data.session) {
+              console.log('[Signup] User already authenticated, redirecting to dashboard');
+              window.location.href = 'index.html';
+              return;
+            }
+          }
+          
+          // Check demo mode authentication
+          const demoUser = localStorage.getItem('uba-demo-user');
+          const demoUserSession = sessionStorage.getItem('uba-demo-user-session');
+          if (demoUser || demoUserSession) {
+            try {
+              const userData = JSON.parse(demoUser || demoUserSession);
+              if (userData && userData.email) {
+                console.log('[Signup] Demo user already authenticated, redirecting to dashboard');
+                window.location.href = 'index.html';
+                return;
+              }
+            } catch (e) {
+              // Invalid demo user data, clear it
+              localStorage.removeItem('uba-demo-user');
+              sessionStorage.removeItem('uba-demo-user-session');
+            }
+          }
+        } catch (error) {
+          console.error('[Signup] Error checking existing auth:', error);
+        }
+      })();
+
       // Enhanced signup function with Supabase support
       document.getElementById('signup-form').addEventListener('submit', async function(e) {
         e.preventDefault();

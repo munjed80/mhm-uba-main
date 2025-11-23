@@ -207,6 +207,18 @@
           required
         />
 
+        <div style="margin: 12px 0; display: flex; align-items: center; gap: 8px;">
+          <input
+            type="checkbox"
+            id="remember-me"
+            style="width: auto; margin: 0;"
+            checked
+          />
+          <label for="remember-me" style="margin: 0; cursor: pointer; font-size: 13px;" data-i18n="auth.rememberMe">
+            Remember me
+          </label>
+        </div>
+
         <button
           type="button"
           class="primary"
@@ -245,76 +257,38 @@
     
     <!-- Login functionality -->
     <script>
-      // Enhanced login function with Supabase support
-      async function login() {
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
-        const errorBox = document.getElementById('errorBox');
-
-        // Validate input
-        if (!email || !password) {
-          errorBox.textContent = 'Please enter both email and password';
-          return;
-        }
-
-        // Clear previous errors
-        errorBox.textContent = '';
-
-        // Disable button during login
-        const loginBtn = event.target;
-        loginBtn.disabled = true;
-        loginBtn.textContent = 'Logging in...';
-
+      // Check if user is already authenticated and redirect to dashboard
+      (async function checkExistingAuth() {
         try {
-          // Check if Supabase is configured
+          // Check Supabase authentication
           if (window.UbaAPI && window.UbaAPI.isReady()) {
-            console.log('[Login] Using Supabase authentication');
-            
-            // Attempt Supabase login
-            const result = await window.UbaAPI.auth.login(email, password);
-
-            if (result.success) {
-              console.log('[Login] ✅ Login successful');
-              errorBox.textContent = '';
-              
-              // Call auth success handler if available
-              if (window.onAuthSuccess) {
-                window.onAuthSuccess();
-              } else {
-                // Default redirect to dashboard
-                window.location.href = 'index.html';
-              }
+            const session = await window.UbaAPI.auth.getSession();
+            if (session.success && session.data && session.data.session) {
+              console.log('[Login] User already authenticated, redirecting to dashboard');
+              window.location.href = 'index.html';
               return;
-            } else {
-              // Show Supabase error
-              errorBox.textContent = result.error || 'Login failed. Please check your credentials.';
-              console.error('[Login] Login failed:', result.error);
             }
-          } else {
-            // Fallback to demo/local mode
-            console.log('[Login] Supabase not configured, using demo mode');
-            errorBox.textContent = '';
-            
-            // Store demo user info
-            localStorage.setItem('uba-demo-user', JSON.stringify({
-              email: email,
-              mode: 'demo',
-              loginTime: new Date().toISOString()
-            }));
-
-            // Redirect to dashboard
-            window.location.href = 'index.html';
-            return;
+          }
+          
+          // Check demo mode authentication
+          const demoUser = localStorage.getItem('uba-demo-user');
+          if (demoUser) {
+            try {
+              const userData = JSON.parse(demoUser);
+              if (userData && userData.email) {
+                console.log('[Login] Demo user already authenticated, redirecting to dashboard');
+                window.location.href = 'index.html';
+                return;
+              }
+            } catch (e) {
+              // Invalid demo user data, clear it
+              localStorage.removeItem('uba-demo-user');
+            }
           }
         } catch (error) {
-          console.error('[Login] Error:', error);
-          errorBox.textContent = 'An error occurred. Please try again.';
-        } finally {
-          // Re-enable button
-          loginBtn.disabled = false;
-          loginBtn.textContent = 'Login';
+          console.error('[Login] Error checking existing auth:', error);
         }
-      }
+      })();
 
       // Allow Enter key to submit
       document.addEventListener('DOMContentLoaded', () => {
