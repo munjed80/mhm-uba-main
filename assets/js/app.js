@@ -24,9 +24,11 @@ function showModal(modalId) {
     modal.classList.remove("is-hidden");
     modal.setAttribute("aria-hidden", "false");
     modal.style.display = 'flex';
+    modal.style.pointerEvents = 'auto'; // Ensure pointer events are enabled
   } else {
     // Legacy pattern with style.display
     modal.style.display = 'flex';
+    modal.style.pointerEvents = 'auto'; // Ensure pointer events are enabled
   }
   
   document.body.style.overflow = 'hidden';
@@ -54,8 +56,9 @@ function hideModal(modalId) {
     modal.setAttribute("aria-hidden", "true");
   }
   
-  // Always set display none for both patterns
+  // Always set display none and disable pointer events for both patterns
   modal.style.display = 'none';
+  modal.style.pointerEvents = 'none';
   document.body.style.overflow = '';
 }
 
@@ -1796,15 +1799,17 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Handle quick action buttons from dashboard
     if (button.classList.contains('uba-action-btn')) {
+      e.preventDefault(); // Prevent default to avoid any unintended navigation
+      
       if (buttonText.includes('New Invoice')) {
         if (window.location.pathname.includes('invoices.html')) {
           if (typeof window.openInvoiceModal === 'function') {
-            e.preventDefault();
             window.openInvoiceModal();
           }
         } else {
           window.location.href = 'invoices.html';
         }
+        return; // Exit early
       }
       
       else if (buttonText.includes('Add Client')) {
@@ -1816,24 +1821,25 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
           window.location.href = 'clients.html';
         }
+        return; // Exit early
       }
       
       else if (buttonText.includes('Create Task')) {
         if (window.location.pathname.includes('tasks.html')) {
           if (typeof window.openAddForm === 'function') {
-            e.preventDefault();
             window.openAddForm();
           } else if (typeof showModal === 'function') {
-            e.preventDefault();
             showModal('task-form-modal');
           }
         } else {
           window.location.href = 'tasks.html';
         }
+        return; // Exit early
       }
       
-      else if (buttonText.includes('View Reports')) {
-        window.location.href = 'reports.html';
+      else if (buttonText.includes('View Reports') || buttonText.includes('Demo Gallery')) {
+        // These buttons have direct href in onclick or button handlers, so just let them proceed
+        return;
       }
     }
   }
