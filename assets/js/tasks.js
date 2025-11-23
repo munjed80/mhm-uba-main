@@ -4,7 +4,7 @@
   let currentProjectFilter = '';
   let currentPriorityFilter = '';
   let currentSort = 'created';
-  let eventsbound = false;
+  let eventsBound = false;
 
   function qs(id) {
     return document.getElementById(id);
