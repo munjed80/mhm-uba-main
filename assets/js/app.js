@@ -65,6 +65,17 @@ function closeModal(modalId) {
 
 // Global modal event handlers
 function initGlobalModalHandlers() {
+  // Track recently opened modals to prevent immediate closure
+  const recentlyOpenedModals = new Set();
+  
+  // Override showModal to track opening
+  const originalShowModal = window.showModal;
+  window.showModal = function(modalId) {
+    recentlyOpenedModals.add(modalId);
+    setTimeout(() => recentlyOpenedModals.delete(modalId), 300);
+    return originalShowModal.apply(this, arguments);
+  };
+  
   // ESC key handler for all modals
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
@@ -77,17 +88,20 @@ function initGlobalModalHandlers() {
       
       if (visibleModals.length > 0) {
         const topModal = visibleModals[visibleModals.length - 1];
-        hideModal(topModal.id);
+        if (!recentlyOpenedModals.has(topModal.id)) {
+          hideModal(topModal.id);
+        }
       }
     }
   });
 
   // Click outside to close modals
   document.addEventListener('click', (e) => {
+    // Only close if clicking directly on the modal backdrop, not its children
     if (e.target.classList.contains('uba-modal') || 
         e.target.classList.contains('uba-modal-backdrop')) {
       const modal = e.target.closest('.uba-modal') || e.target;
-      if (modal && modal.id) {
+      if (modal && modal.id && !recentlyOpenedModals.has(modal.id)) {
         hideModal(modal.id);
       }
     }
@@ -1825,6 +1839,26 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // Add global click handler
   document.addEventListener('click', handleGlobalButtonClicks);
+  
+  // Failsafe: Remove any leftover overlay elements that might block interactions
+  // This runs after page load to ensure no invisible overlays remain
+  setTimeout(() => {
+    const ubaSidebarOverlay = document.querySelector('.uba-sidebar-overlay');
+    // Only remove the sidebar overlay if it's not supposed to be visible
+    if (ubaSidebarOverlay && !ubaSidebarOverlay.classList.contains('is-visible')) {
+      // Ensure it's properly hidden
+      ubaSidebarOverlay.classList.remove('is-visible');
+      ubaSidebarOverlay.style.pointerEvents = 'none';
+      ubaSidebarOverlay.style.opacity = '0';
+      ubaSidebarOverlay.style.visibility = 'hidden';
+    }
+    
+    // Remove any other stray page overlays that shouldn't exist
+    document.querySelectorAll('#page-overlay, .page-overlay:not(.uba-sidebar-overlay):not(.uba-modal-overlay)').forEach(el => {
+      console.warn('Removing stray overlay element:', el);
+      el.remove();
+    });
+  }, 500);
   
 });
 
