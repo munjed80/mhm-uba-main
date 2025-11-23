@@ -1823,7 +1823,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (target.classList.contains('uba-action-btn')) {
       console.log('⚡ Quick action button clicked');
       
-      if (buttonText.includes('New Invoice') || buttonText.includes('Invoice')) {
+      if (buttonText.includes('New Invoice')) {
         if (window.location.pathname.includes('invoices.html')) {
           if (typeof window.openInvoiceModal === 'function') {
             e.preventDefault();
@@ -1834,7 +1834,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       
-      else if (buttonText.includes('Add Client') || buttonText.includes('Client')) {
+      else if (buttonText.includes('Add Client')) {
         if (window.location.pathname.includes('clients.html')) {
           const clientNameInput = document.getElementById('client-name');
           if (clientNameInput) {
@@ -1845,7 +1845,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       
-      else if (buttonText.includes('Create Task') || buttonText.includes('Task')) {
+      else if (buttonText.includes('Create Task')) {
         if (window.location.pathname.includes('tasks.html')) {
           if (typeof window.openAddForm === 'function') {
             e.preventDefault();
@@ -1859,7 +1859,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
       
-      else if (buttonText.includes('View Reports') || buttonText.includes('Report')) {
+      else if (buttonText.includes('View Reports')) {
         window.location.href = 'reports.html';
       }
     }
@@ -1868,72 +1868,18 @@ document.addEventListener("DOMContentLoaded", () => {
   // Add global click handler
   document.addEventListener('click', handleGlobalButtonClicks);
   
-  // Dashboard quick action buttons (legacy handler)
-  document.addEventListener('click', (e) => {
-    const actionBtn = e.target.closest('.uba-action-btn');
-    if (!actionBtn) return;
-    
-    const actionText = actionBtn.textContent.trim();
-    
-    if (actionText.includes('New Invoice') || actionText.includes('Invoice')) {
-      // Navigate to invoices page and open modal
-      if (window.location.pathname.includes('invoices.html')) {
-        // Already on invoices page, try to open modal
-        if (typeof window.openInvoiceModal === 'function') {
-          window.openInvoiceModal();
-        } else {
-          showToast('Opening invoice form...', { type: 'info' });
-        }
-      } else {
-        // Navigate to invoices page
-        window.location.href = 'invoices.html';
-      }
-    }
-    
-    else if (actionText.includes('Add Client') || actionText.includes('Client')) {
-      // Navigate to clients page and open form
-      if (window.location.pathname.includes('clients.html')) {
-        // Already on clients page, focus on form
-        const clientNameInput = document.getElementById('client-name');
-        if (clientNameInput) {
-          clientNameInput.focus();
-        }
-      } else {
-        // Navigate to clients page
-        window.location.href = 'clients.html';
-      }
-    }
-    
-    else if (actionText.includes('Create Task') || actionText.includes('Task')) {
-      // Navigate to tasks page and open modal
-      if (window.location.pathname.includes('tasks.html')) {
-        // Already on tasks page, try to open modal
-        if (typeof window.openAddForm === 'function') {
-          window.openAddForm();
-        } else if (typeof showModal === 'function') {
-          showModal('task-form-modal');
-        } else {
-          showToast('Opening task form...', { type: 'info' });
-        }
-      } else {
-        // Navigate to tasks page
-        window.location.href = 'tasks.html';
-      }
-    }
-    
-    else if (actionText.includes('View Reports') || actionText.includes('Report')) {
-      // Navigate to reports page
-      window.location.href = 'reports.html';
-    }
-  });
-  
   // Legacy button handlers for backward compatibility
+  // These handlers only trigger for actual button elements with specific IDs or classes
   document.addEventListener('click', (e) => {
-    const target = e.target;
-    if (target.textContent.includes('New Invoice') || 
-        target.id === 'new-invoice-btn' || 
-        target.classList.contains('new-invoice-btn')) {
-      
+    // Only process if the clicked element is a button or inside a button
+    const button = e.target.closest('button');
+    if (!button) return;
+    
+    const buttonId = button.id;
+    const buttonClasses = button.className;
+    
+    // Check for specific button IDs or classes only (not text content)
+    if (buttonId === 'new-invoice-btn' || buttonClasses.includes('new-invoice-btn')) {
       if (typeof window.openInvoiceModal === 'function') {
         e.preventDefault();
         window.openInvoiceModal();
@@ -1942,15 +1888,7 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = 'invoices.html';
       }
     }
-  });
-  
-  // New lead button handler
-  document.addEventListener('click', (e) => {
-    const target = e.target;
-    if (target.textContent.includes('New Lead') || 
-        target.id === 'new-lead-btn' || 
-        target.classList.contains('new-lead-btn')) {
-      
+    else if (buttonId === 'new-lead-btn' || buttonClasses.includes('new-lead-btn')) {
       if (typeof window.openLeadModal === 'function') {
         e.preventDefault();
         window.openLeadModal();
@@ -1959,15 +1897,7 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = 'leads.html';
       }
     }
-  });
-  
-  // New automation button handler
-  document.addEventListener('click', (e) => {
-    const target = e.target;
-    if (target.textContent.includes('New Automation') || 
-        target.id === 'new-automation-btn' || 
-        target.classList.contains('new-automation-btn')) {
-      
+    else if (buttonId === 'new-automation-btn' || buttonClasses.includes('new-automation-btn')) {
       if (typeof window.openAutomationModal === 'function') {
         e.preventDefault();
         window.openAutomationModal();
