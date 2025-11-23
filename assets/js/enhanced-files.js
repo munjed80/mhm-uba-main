@@ -250,6 +250,7 @@
     openStorageManager() {
       const modal = document.createElement('div');
       modal.className = 'uba-modal enhanced-files-modal';
+      modal.style.display = 'none';
       modal.innerHTML = this.getStorageManagerHTML();
       document.body.appendChild(modal);
       
