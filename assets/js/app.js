@@ -97,9 +97,10 @@ function initGlobalModalHandlers() {
 
   // Click outside to close modals
   document.addEventListener('click', (e) => {
-    // Only close if clicking directly on the modal backdrop, not its children
+    // Only close if clicking directly on the modal backdrop or overlay, not its children
     if (e.target.classList.contains('uba-modal') || 
-        e.target.classList.contains('uba-modal-backdrop')) {
+        e.target.classList.contains('uba-modal-backdrop') ||
+        e.target.classList.contains('uba-modal-overlay')) {
       const modal = e.target.closest('.uba-modal') || e.target;
       if (modal && modal.id && !recentlyOpenedModals.has(modal.id)) {
         hideModal(modal.id);
@@ -1842,6 +1843,21 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // Failsafe: Remove any leftover overlay elements that might block interactions
   // This runs after page load to ensure no invisible overlays remain
+  // Using shorter timeout to prevent interference with modal operations
+  
+  // Helper function to clean up stray overlays (excluding modal overlays)
+  const STRAY_OVERLAY_SELECTOR = '#page-overlay, .page-overlay:not(.uba-sidebar-overlay):not(.uba-modal-overlay)';
+  
+  function removeStrayOverlays(logPrefix = '') {
+    document.querySelectorAll(STRAY_OVERLAY_SELECTOR).forEach(el => {
+      // Only remove if not inside a modal
+      if (!el.closest('.uba-modal')) {
+        console.warn(logPrefix + 'Removing stray overlay element:', el);
+        el.remove();
+      }
+    });
+  }
+  
   setTimeout(() => {
     const ubaSidebarOverlay = document.querySelector('.uba-sidebar-overlay');
     // Only remove the sidebar overlay if it's not supposed to be visible
@@ -1854,11 +1870,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     // Remove any other stray page overlays that shouldn't exist
-    document.querySelectorAll('#page-overlay, .page-overlay:not(.uba-sidebar-overlay):not(.uba-modal-overlay)').forEach(el => {
-      console.warn('Removing stray overlay element:', el);
-      el.remove();
-    });
-  }, 500);
+    removeStrayOverlays();
+  }, 100);
+  
+  // Secondary failsafe that runs a bit later to catch any async-created overlays
+  setTimeout(() => {
+    removeStrayOverlays('[Late cleanup] ');
+  }, 1000);
   
 });
 
