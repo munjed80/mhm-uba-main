@@ -38,6 +38,53 @@
     };
   }
 
+  const toast = (message, type = 'info') => {
+    if (typeof window.showToast === 'function') {
+      window.showToast(message, typeof type === 'string' ? { type } : type);
+      return;
+    }
+
+    if (window.UBANotifications) {
+      const notifier =
+        window.UBANotifications[type] || window.UBANotifications.info;
+      if (typeof notifier === 'function') {
+        notifier.call(window.UBANotifications, message);
+        return;
+      }
+    }
+
+    console.log(`[Toast:${type}]`, message);
+  };
+
+  const modal = {
+    show(id) {
+      if (typeof window.showModal === 'function') {
+        window.showModal(id);
+        return;
+      }
+
+      const el = qs(id);
+      if (el) {
+        el.classList.remove('is-hidden');
+        el.setAttribute('aria-hidden', 'false');
+        el.style.display = 'flex';
+      }
+    },
+    hide(id) {
+      if (typeof window.hideModal === 'function') {
+        window.hideModal(id);
+        return;
+      }
+
+      const el = qs(id);
+      if (el) {
+        el.classList.add('is-hidden');
+        el.setAttribute('aria-hidden', 'true');
+        el.style.display = 'none';
+      }
+    }
+  };
+
   async function updateTaskCounts() {
     const store = window.SupabaseStore || window.ubaStore;
     if (!store || !store.tasks) return;
@@ -356,11 +403,11 @@
         }
       }
       
-      showToast(`Task moved to ${statusLabels[newStatus]}`, 'success');
+      toast(`Task moved to ${statusLabels[newStatus]}`, 'success');
       await renderTasks();
     } catch (err) {
       console.warn('Error updating task status:', err);
-      showToast('Failed to update task', 'error');
+      toast('Failed to update task', 'error');
     }
   }
 
@@ -462,43 +509,6 @@
     }
   }
 
-  function showToast(message, type = 'info') {
-    const toast = document.createElement('div');
-    toast.className = `uba-toast uba-toast-${type}`;
-    toast.textContent = message;
-    
-    document.body.appendChild(toast);
-    
-    requestAnimationFrame(() => {
-      toast.style.opacity = '1';
-      toast.style.transform = 'translateY(0)';
-    });
-    
-    setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateY(-20px)';
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  }
-
-  function showModal(modalId) {
-    const modal = qs(modalId);
-    if (modal) {
-      modal.classList.remove("is-hidden");
-      modal.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = 'hidden';
-    }
-  }
-
-  function hideModal(modalId) {
-    const modal = qs(modalId);
-    if (modal) {
-      modal.classList.add("is-hidden");
-      modal.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = '';
-    }
-  }
-
   function addTaskToStatus(status = 'todo') {
     openAddForm(status);
   }
@@ -516,7 +526,7 @@
     const titleEl = qs("task-form-title");
     if (titleEl) titleEl.textContent = "New Task";
     
-    showModal("task-form-modal");
+    modal.show("task-form-modal");
     qs("task-title").focus();
   }
 
@@ -545,7 +555,7 @@
     const titleEl = qs("task-form-title");
     if (titleEl) titleEl.textContent = "Edit Task";
     
-    showModal("task-form-modal");
+    modal.show("task-form-modal");
     qs("task-title").focus();
   }
 
@@ -708,7 +718,7 @@
       `;
     }
     
-    showModal("task-detail-modal");
+    modal.show("task-detail-modal");
   }
 
   async function duplicateTask(id) {
@@ -748,11 +758,11 @@
         window.runAutomations('task_created', { task: createdTask });
       }
       
-      showToast('Task duplicated successfully', 'success');
+      toast('Task duplicated successfully', 'success');
       await renderTasks();
     } catch (e) {
       console.warn("Error duplicating task:", e);
-      showToast('Failed to duplicate task', 'error');
+      toast('Failed to duplicate task', 'error');
     }
   }
 
@@ -779,11 +789,11 @@ This action cannot be undone.`)) return;
       } else {
         store.tasks.delete(id);
       }
-      showToast(`Task "${task.title}" deleted`, 'success');
+      toast(`Task "${task.title}" deleted`, 'success');
       await renderTasks();
     } catch (e) {
       console.warn("Error deleting task:", e);
-      showToast('Failed to delete task', 'error');
+      toast('Failed to delete task', 'error');
     }
   }
 
@@ -804,7 +814,7 @@ This action cannot be undone.`)) return;
         const title = qs("task-title").value.trim();
         
         if (!title) {
-          showToast('Task title is required', 'error');
+          toast('Task title is required', 'error');
           qs("task-title").focus();
           return;
         }
@@ -831,7 +841,7 @@ This action cannot be undone.`)) return;
             } else {
               store.tasks.update(id, payload);
             }
-            showToast(`Task "${title}" updated`, 'success');
+            toast(`Task "${title}" updated`, 'success');
           } else {
             let newTask = null;
             if (window.SupabaseStore) {
@@ -839,18 +849,18 @@ This action cannot be undone.`)) return;
             } else {
               newTask = store.tasks.create(payload);
             }
-            showToast(`Task "${title}" created`, 'success');
+            toast(`Task "${title}" created`, 'success');
             
             // Trigger automations for new task
             if (typeof window.runAutomations === 'function' && newTask) {
               window.runAutomations('task_created', { task: newTask });
             }
           }
-          hideModal("task-form-modal");
+          modal.hide("task-form-modal");
           await renderTasks();
         } catch (e) {
           console.warn("Error saving task:", e);
-          showToast('Failed to save task', 'error');
+          toast('Failed to save task', 'error');
         }
       });
     }
@@ -885,27 +895,16 @@ This action cannot be undone.`)) return;
     if (addBtn) addBtn.addEventListener("click", () => openAddForm());
 
     const cancelBtn = qs("task-cancel");
-    if (cancelBtn) cancelBtn.addEventListener("click", () => hideModal("task-form-modal"));
+    if (cancelBtn) cancelBtn.addEventListener("click", () => modal.hide("task-form-modal"));
 
     const closeBtn = qs("task-form-close");
-    if (closeBtn) closeBtn.addEventListener("click", () => hideModal("task-form-modal"));
+    if (closeBtn) closeBtn.addEventListener("click", () => modal.hide("task-form-modal"));
 
     const detailCloseBtn = qs("task-detail-close");
-    if (detailCloseBtn) detailCloseBtn.addEventListener("click", () => hideModal("task-detail-modal"));
+    if (detailCloseBtn) detailCloseBtn.addEventListener("click", () => modal.hide("task-detail-modal"));
 
-    // Note: Modal overlay click handling is done globally in app.js
-    // to prevent immediate closure when opening modals
-
-    // ESC key handling
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        if (!qs('task-form-modal').classList.contains('is-hidden')) {
-          hideModal('task-form-modal');
-        } else if (!qs('task-detail-modal').classList.contains('is-hidden')) {
-          hideModal('task-detail-modal');
-        }
-      }
-    });
+    // Note: Modal overlay clicks and ESC-to-close handling are centralized
+    // in assets/js/app.js to keep behavior consistent across pages.
   }
 
   async function initTasksPage() {
