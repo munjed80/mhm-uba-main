@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FancyFoods Manager</title>
+  <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar navbar-light bg-white border-bottom px-3">
+    <span class="navbar-brand mb-0 h1">FancyFoods Manager</span>
+    <div class="d-flex gap-2 align-items-center">
+      <button class="btn btn-outline-secondary" id="backupExport">Export Backup</button>
+      <button class="btn btn-outline-secondary" id="backupImport">Import Backup</button>
+      <span class="text-muted">Company: Fancy Foods</span>
+    </div>
+  </nav>
+
+  <div class="d-flex">
+    <div id="sidebar" class="border-end bg-light">
+      <div class="list-group list-group-flush">
+        <button class="list-group-item list-group-item-action" data-target="products">Products</button>
+        <button class="list-group-item list-group-item-action" data-target="clients">Clients</button>
+        <button class="list-group-item list-group-item-action" data-target="broker">Broker Deals</button>
+        <button class="list-group-item list-group-item-action" data-target="orders">Orders</button>
+        <button class="list-group-item list-group-item-action" data-target="email">Email Writer</button>
+        <button class="list-group-item list-group-item-action" data-target="workflow">Workflow</button>
+      </div>
+    </div>
+    <main class="flex-fill p-4" id="mainContent">
+      <!-- content will be rendered here -->
+    </main>
+  </div>
+
+  <script src="../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="app.js"></script>
+  <script src="modules/products.js"></script>
+  <script src="modules/clients.js"></script>
+  <script src="modules/broker.js"></script>
+  <script src="modules/orders.js"></script>
+  <script src="modules/email.js"></script>
+  <script src="modules/workflow.js"></script>
+</body>
+</html>
