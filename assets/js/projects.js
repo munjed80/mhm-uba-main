@@ -9,6 +9,53 @@
     return document.getElementById(id);
   }
 
+  const toast = (message, type = 'info') => {
+    if (typeof window.showToast === 'function') {
+      window.showToast(message, typeof type === 'string' ? { type } : type);
+      return;
+    }
+
+    if (window.UBANotifications) {
+      const notifier =
+        window.UBANotifications[type] || window.UBANotifications.info;
+      if (typeof notifier === 'function') {
+        notifier.call(window.UBANotifications, message);
+        return;
+      }
+    }
+
+    console.log(`[Toast:${type}]`, message);
+  };
+
+  const modal = {
+    show(id) {
+      if (typeof window.showModal === 'function') {
+        window.showModal(id);
+        return;
+      }
+
+      const el = qs(id);
+      if (el) {
+        el.classList.remove('is-hidden');
+        el.setAttribute('aria-hidden', 'false');
+        el.style.display = 'flex';
+      }
+    },
+    hide(id) {
+      if (typeof window.hideModal === 'function') {
+        window.hideModal(id);
+        return;
+      }
+
+      const el = qs(id);
+      if (el) {
+        el.classList.add('is-hidden');
+        el.setAttribute('aria-hidden', 'true');
+        el.style.display = 'none';
+      }
+    }
+  };
+
   function formatCurrency(n) {
     try {
       return Number(n || 0).toLocaleString(undefined, {
@@ -335,53 +382,13 @@
         }
         
         // Show success feedback
-        showToast(`Project moved to ${newStage.replace('_', ' ')}`, 'success');
+        toast(`Project moved to ${newStage.replace('_', ' ')}`, 'success');
         
         await renderProjects();
       } catch (err) {
         console.warn('Error updating project stage:', err);
-        showToast('Failed to move project', 'error');
+        toast('Failed to move project', 'error');
       }
-    }
-  }
-
-  function showToast(message, type = 'info') {
-    // Create toast notification
-    const toast = document.createElement('div');
-    toast.className = `uba-toast uba-toast-${type}`;
-    toast.textContent = message;
-    
-    document.body.appendChild(toast);
-    
-    // Animate in
-    requestAnimationFrame(() => {
-      toast.style.opacity = '1';
-      toast.style.transform = 'translateY(0)';
-    });
-    
-    // Remove after delay
-    setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateY(-20px)';
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  }
-
-  function showModal(modalId) {
-    const modal = qs(modalId);
-    if (modal) {
-      modal.classList.remove("is-hidden");
-      modal.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = 'hidden';
-    }
-  }
-
-  function hideModal(modalId) {
-    const modal = qs(modalId);
-    if (modal) {
-      modal.classList.add("is-hidden");
-      modal.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = '';
     }
   }
 
@@ -396,7 +403,7 @@
     const titleEl = qs("project-form-title");
     if (titleEl) titleEl.textContent = "New Project";
     
-    showModal("project-form-modal");
+    modal.show("project-form-modal");
     qs("project-title").focus();
   }
 
@@ -423,7 +430,7 @@
     const titleEl = qs("project-form-title");
     if (titleEl) titleEl.textContent = "Edit Project";
     
-    showModal("project-form-modal");
+    modal.show("project-form-modal");
     qs("project-title").focus();
   }
 
@@ -528,7 +535,7 @@
       `;
     }
     
-    showModal("project-detail-modal");
+    modal.show("project-detail-modal");
   }
 
   async function deleteProject(id) {
@@ -554,11 +561,11 @@ This action cannot be undone.`)) return;
       } else {
         store.projects.delete(id);
       }
-      showToast(`Project "${project.title}" deleted`, 'success');
+      toast(`Project "${project.title}" deleted`, 'success');
       await renderProjects();
     } catch (e) {
       console.warn("Error deleting project:", e);
-      showToast('Failed to delete project', 'error');
+      toast('Failed to delete project', 'error');
     }
   }
 
@@ -583,7 +590,7 @@ This action cannot be undone.`)) return;
         const title = qs("project-title").value.trim();
         
         if (!title) {
-          showToast('Project title is required', 'error');
+          toast('Project title is required', 'error');
           qs("project-title").focus();
           return;
         }
@@ -608,20 +615,20 @@ This action cannot be undone.`)) return;
             } else {
               store.projects.update(id, payload);
             }
-            showToast(`Project "${title}" updated`, 'success');
+            toast(`Project "${title}" updated`, 'success');
           } else {
             if (window.SupabaseStore) {
               await store.projects.create(payload);
             } else {
               store.projects.create(payload);
             }
-            showToast(`Project "${title}" created`, 'success');
+            toast(`Project "${title}" created`, 'success');
           }
-          hideModal("project-form-modal");
+          modal.hide("project-form-modal");
           await renderProjects();
         } catch (e) {
           console.warn("Error saving project:", e);
-          showToast('Failed to save project', 'error');
+          toast('Failed to save project', 'error');
         }
       });
     }
@@ -648,35 +655,16 @@ This action cannot be undone.`)) return;
     if (addBtn) addBtn.addEventListener("click", () => openAddForm());
 
     const cancelBtn = qs("project-cancel");
-    if (cancelBtn) cancelBtn.addEventListener("click", () => hideModal("project-form-modal"));
+    if (cancelBtn) cancelBtn.addEventListener("click", () => modal.hide("project-form-modal"));
 
     const closeBtn = qs("project-form-close");
-    if (closeBtn) closeBtn.addEventListener("click", () => hideModal("project-form-modal"));
+    if (closeBtn) closeBtn.addEventListener("click", () => modal.hide("project-form-modal"));
 
     const detailCloseBtn = qs("project-detail-close");
-    if (detailCloseBtn) detailCloseBtn.addEventListener("click", () => hideModal("project-detail-modal"));
+    if (detailCloseBtn) detailCloseBtn.addEventListener("click", () => modal.hide("project-detail-modal"));
 
-    // Modal overlay clicks
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('uba-modal-overlay')) {
-        if (e.target.closest('#project-form-modal')) {
-          hideModal('project-form-modal');
-        } else if (e.target.closest('#project-detail-modal')) {
-          hideModal('project-detail-modal');
-        }
-      }
-    });
-
-    // ESC key handling
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        if (!qs('project-form-modal').classList.contains('is-hidden')) {
-          hideModal('project-form-modal');
-        } else if (!qs('project-detail-modal').classList.contains('is-hidden')) {
-          hideModal('project-detail-modal');
-        }
-      }
-    });
+    // Modal overlay clicks and ESC behavior are centralized in app.js so
+    // every page uses the exact same interaction patterns.
   }
 
   async function initProjectsPage() {
