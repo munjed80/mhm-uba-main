@@ -5,6 +5,7 @@
   let currentPriorityFilter = '';
   let currentSort = 'created';
   let eventsBound = false;
+  const statuses = ['todo', 'in_progress', 'done'];
 
   function qs(id) {
     return document.getElementById(id);
@@ -85,36 +86,40 @@
     }
   };
 
-  async function updateTaskCounts() {
+  async function getAllTasks() {
     const store = window.SupabaseStore || window.ubaStore;
-    if (!store || !store.tasks) return;
-    
-    let tasks = [];
+    if (!store || !store.tasks) return [];
+
     if (window.SupabaseStore) {
-      tasks = await store.tasks.getAll() || [];
-    } else {
-      tasks = store.tasks.getAll() || [];
+      return (await store.tasks.getAll()) || [];
     }
-    
-    const statuses = ['todo', 'in_progress', 'done'];
-    
-    // Update individual column counts
+
+    return store.tasks.getAll() || [];
+  }
+
+  async function updateTaskCounts(tasks) {
+    const sourceTasks = Array.isArray(tasks) && tasks.length ? tasks : await getAllTasks();
+    const filtered = filterTasks(sourceTasks);
+
+    const statusCounts = filtered.reduce((acc, task) => {
+      const status = statuses.includes(task.status) ? task.status : 'todo';
+      acc[status] = (acc[status] || 0) + 1;
+      return acc;
+    }, {});
+
     statuses.forEach(status => {
-      const filteredTasks = filterTasks(tasks).filter(t => t.status === status);
-      const count = filteredTasks.length;
+      const count = statusCounts[status] || 0;
       const countEl = qs(`${status}-count`);
       if (countEl) countEl.textContent = count;
-      
-      // Show/hide empty state
+
       const columnBody = qs(`tasks-${status}`);
       const emptyEl = columnBody?.querySelector('.uba-column-empty');
       if (emptyEl) {
         emptyEl.style.display = count === 0 ? 'flex' : 'none';
       }
     });
-    
-    // Update total active tasks count
-    const activeTasks = filterTasks(tasks).filter(t => t.status !== 'done');
+
+    const activeTasks = filtered.filter(t => t.status !== 'done');
     const totalCountEl = qs('tasks-count');
     if (totalCountEl) totalCountEl.textContent = activeTasks.length;
   }
@@ -150,38 +155,36 @@
   async function renderTasks() {
     const store = window.SupabaseStore || window.ubaStore;
     if (!store || !store.tasks) return;
-    
-    let tasks = [];
-    if (window.SupabaseStore) {
-      tasks = await store.tasks.getAll() || [];
-    } else {
-      tasks = store.tasks.getAll() || [];
-    }
-    
-    tasks = sortTasks(filterTasks(tasks));
-    
-    const statuses = ['todo', 'in_progress', 'done'];
 
-    // Clear all columns
+    const tasks = sortTasks(filterTasks(await getAllTasks()));
+
+    const columnFragments = statuses.reduce((acc, status) => {
+      acc[status] = document.createDocumentFragment();
+      return acc;
+    }, {});
+
     statuses.forEach(status => {
       const col = qs(`tasks-${status}`);
       if (col) {
-        const cards = col.querySelectorAll('.uba-task-card');
-        cards.forEach(card => card.remove());
+        col.querySelectorAll('.uba-task-card').forEach(card => card.remove());
       }
     });
 
-    // Render filtered tasks
     tasks.forEach((task) => {
-      const card = createTaskCard(task);
-      const targetCol = qs(`tasks-${task.status || 'todo'}`);
+      const status = statuses.includes(task.status) ? task.status : 'todo';
+      columnFragments[status].appendChild(createTaskCard(task));
+    });
+
+    statuses.forEach(status => {
+      const targetCol = qs(`tasks-${status}`);
       if (targetCol) {
         const emptyEl = targetCol.querySelector('.uba-column-empty');
-        targetCol.insertBefore(card, emptyEl);
+        const insertionTarget = emptyEl || null;
+        targetCol.insertBefore(columnFragments[status], insertionTarget);
       }
     });
 
-    updateTaskCounts();
+    await updateTaskCounts(tasks);
   }
 
   function createTaskCard(task) {
