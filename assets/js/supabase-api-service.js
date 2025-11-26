@@ -13,14 +13,65 @@
  * Example: await window.UbaAPI.auth.login(email, password)
  */
 
-(function() {
+(async function() {
   'use strict';
 
   // =====================================================
   // INITIALIZE SUPABASE CLIENT
   // =====================================================
-  
+
   let supabase = null;
+  const CONFIG_POLL_INTERVAL = 50;
+  const CONFIG_WAIT_TIMEOUT = 2000;
+
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+  function attachConfigListeners() {
+    if (window.SUPABASE_CONFIG_READY instanceof Promise) {
+      return window.SUPABASE_CONFIG_READY;
+    }
+
+    const configScript = document.querySelector('script[src*="supabase-config.js"]');
+    if (!configScript) return null;
+
+    if (!configScript.dataset.ubaConfigListenersAttached) {
+      window.SUPABASE_CONFIG_READY = new Promise((resolve) => {
+        const finalize = (result) => resolve(result);
+        configScript.addEventListener('load', () => finalize(true), { once: true });
+        configScript.addEventListener('error', () => finalize(false), { once: true });
+      });
+
+      configScript.dataset.ubaConfigListenersAttached = 'true';
+    }
+
+    return window.SUPABASE_CONFIG_READY;
+  }
+
+  async function waitForSupabaseConfig(timeoutMs = CONFIG_WAIT_TIMEOUT) {
+    if (window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
+      return true;
+    }
+
+    const configPromise = attachConfigListeners();
+    if (configPromise) {
+      const ready = await Promise.race([
+        configPromise,
+        sleep(timeoutMs).then(() => false)
+      ]);
+
+      if (ready && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
+        return true;
+      }
+    }
+
+    const start = performance.now();
+    while (performance.now() - start < timeoutMs) {
+      if (window.SUPABASE_URL && window.SUPABASE_ANON_KEY) return true;
+      await sleep(CONFIG_POLL_INTERVAL);
+    }
+
+    return false;
+  }
 
   function initializeSupabase() {
     if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) {
@@ -58,8 +109,29 @@
     }
   }
 
-  // Initialize on load
-  supabase = initializeSupabase();
+  function logApiStatus() {
+    if (supabase) {
+      console.log('[UBA API] ✅ API initialized and ready to use');
+      console.log('[UBA API] Available via window.UbaAPI');
+    } else {
+      console.warn('[UBA API] ⚠️ API not ready - Supabase not configured');
+    }
+  }
+
+  async function initSupabaseClient() {
+    const hasConfig = await waitForSupabaseConfig();
+    if (!hasConfig) {
+      console.warn('[UBA API] ⚠️ Supabase config not found within timeout; running in local/demo mode');
+      return null;
+    }
+
+    initializeSupabase();
+    logApiStatus();
+    return supabase;
+  }
+
+  // Initialize on load after waiting for configuration
+  const apiReadyPromise = initSupabaseClient();
 
   // =====================================================
   // HELPER FUNCTIONS
@@ -926,19 +998,16 @@
     tasks,
     invoices,
     dashboard,
-    
+
     // Utility functions
     getSupabaseClient: () => supabase,
-    reinitialize: initializeSupabase,
-    isReady: () => !!supabase
+    reinitialize: initSupabaseClient,
+    isReady: () => !!supabase,
+    ready: () => apiReadyPromise
   };
 
-  // Log API ready status
-  if (supabase) {
-    console.log('[UBA API] ✅ API initialized and ready to use');
-    console.log('[UBA API] Available via window.UbaAPI');
-  } else {
-    console.warn('[UBA API] ⚠️ API not ready - Supabase not configured');
-  }
+  // Backward compatibility for earlier scripts that referenced UBAApi
+  // Keep the alias in sync to avoid breaking existing pages while we migrate
+  window.UBAApi = window.UbaAPI;
 
 })();

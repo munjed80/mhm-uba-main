@@ -28,13 +28,12 @@
     };
   }
 
-  // Check if Supabase API service is available
-  if (!window.UBAApi) {
-    console.error('[SupabaseStoreAdapter] UBAApi not found. Please load supabase-api-service.js first.');
+  // Check if Supabase API service is available (support both naming variants)
+  const api = window.UbaAPI || window.UBAApi;
+  if (!api) {
+    console.error('[SupabaseStoreAdapter] UbaAPI not found. Please load supabase-api-service.js first.');
     return;
   }
-
-  const api = window.UBAApi;
 
   // Helper: Show loading indicator
   function showLoading(message = 'Loading...') {

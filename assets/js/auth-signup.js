@@ -33,17 +33,22 @@
     }
   }
 
+  function getApi() {
+    return window.UbaAPI || window.UBAApi;
+  }
+
   /**
    * Check if user already has an active session
    */
   async function checkExistingSession() {
-    if (!window.UBAApi || !window.UBAApi.auth) {
+    const api = getApi();
+    if (!api || !api.auth) {
       console.warn('[Auth] Supabase API not available - running in local mode');
       return;
     }
 
     try {
-      const session = await window.UBAApi.auth.getSession();
+      const session = await api.auth.getSession();
       if (session && session.user) {
         console.log('[Auth] Active session found, redirecting to dashboard...');
         window.location.href = 'index.html';
@@ -134,7 +139,8 @@
     }
 
     // Check if Supabase is available
-    if (!window.UBAApi || !window.UBAApi.auth) {
+    const api = getApi();
+    if (!api || !api.auth) {
       showError('Authentication service not available. Please configure Supabase.');
       return;
     }
@@ -146,7 +152,7 @@
     }
 
     try {
-      const result = await window.UBAApi.auth.signup(email, password, { name });
+      const result = await api.auth.signup(email, password, { name });
       
       if (result && result.user) {
         console.log('[Auth] Signup successful:', result.user.email);
