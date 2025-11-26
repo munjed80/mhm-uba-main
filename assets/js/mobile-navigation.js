@@ -2,46 +2,63 @@
 (function() {
   'use strict';
 
-  // Create mobile menu toggle button
+  // Create (or reuse) mobile menu toggle button
   function createMobileMenuToggle() {
-    if (document.querySelector('.uba-mobile-menu-toggle')) {
-      return; // Already created
-    }
+    const existingButton = document.querySelector('.uba-mobile-nav-toggle, .uba-mobile-menu-toggle');
+    const existingOverlay = document.querySelector('.uba-sidebar-overlay, .uba-mobile-overlay');
 
-    const button = document.createElement('button');
-    button.className = 'uba-mobile-menu-toggle';
-    button.setAttribute('aria-label', 'Toggle navigation menu');
-    button.innerHTML = `
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-      </svg>
-    `;
+    let createdButton = false;
+    let createdOverlay = false;
 
-    document.body.appendChild(button);
+    // Prefer the existing toggle button created by app.js. If it doesn't exist,
+    // create one that matches the primary `.uba-mobile-nav-toggle` styles so we
+    // avoid rendering two hamburger buttons on mobile.
+    const button = existingButton || (() => {
+      const newButton = document.createElement('button');
+      newButton.className = 'uba-mobile-nav-toggle';
+      newButton.setAttribute('aria-label', 'Toggle navigation menu');
+      newButton.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+        </svg>
+      `;
 
-    // Create overlay
-    const overlay = document.createElement('div');
-    overlay.className = 'uba-mobile-overlay';
-    overlay.setAttribute('aria-hidden', 'true');
-    document.body.appendChild(overlay);
+      document.body.appendChild(newButton);
+      createdButton = true;
+      return newButton;
+    })();
 
-    return { button, overlay };
+    // Reuse the sidebar overlay if it already exists to prevent stacking two
+    // overlays. Fall back to the existing mobile overlay or create a new
+    // sidebar overlay for consistent styling with app.js.
+    const overlay = existingOverlay || (() => {
+      const newOverlay = document.createElement('div');
+      newOverlay.className = 'uba-sidebar-overlay';
+      newOverlay.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(newOverlay);
+      createdOverlay = true;
+      return newOverlay;
+    })();
+
+    return { button, overlay, createdButton, createdOverlay };
   }
 
   // Toggle mobile sidebar
   function toggleMobileSidebar(forceClose = false) {
     const sidebar = document.querySelector('.uba-sidebar');
-    const overlay = document.querySelector('.uba-mobile-overlay');
+    const overlay = document.querySelector('.uba-sidebar-overlay') || document.querySelector('.uba-mobile-overlay');
 
     if (!sidebar) return;
 
-    if (forceClose || sidebar.classList.contains('open')) {
-      sidebar.classList.remove('open');
-      if (overlay) overlay.classList.remove('active');
+    const isOpen = sidebar.classList.contains('is-open') || sidebar.classList.contains('open');
+
+    if (forceClose || isOpen) {
+      sidebar.classList.remove('open', 'is-open');
+      if (overlay) overlay.classList.remove('active', 'is-visible');
       document.body.style.overflow = '';
     } else {
-      sidebar.classList.add('open');
-      if (overlay) overlay.classList.add('active');
+      sidebar.classList.add('is-open');
+      if (overlay) overlay.classList.add('active', 'is-visible');
       document.body.style.overflow = 'hidden';
     }
   }
@@ -140,14 +157,14 @@
     }
 
     // Create mobile menu
-    const { button, overlay } = createMobileMenuToggle();
+    const { button, overlay, createdButton, createdOverlay } = createMobileMenuToggle();
 
     // Attach event listeners
-    if (button) {
+    if (button && createdButton) {
       button.addEventListener('click', () => toggleMobileSidebar());
     }
 
-    if (overlay) {
+    if (overlay && createdOverlay) {
       overlay.addEventListener('click', () => toggleMobileSidebar(true));
     }
 
